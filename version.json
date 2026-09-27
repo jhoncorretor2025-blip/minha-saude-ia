@@ -1,5 +1,5 @@
 {
-  "version": "V5.16",
-  "updatedAt": "2026-09-27T22:30:00Z",
-  "changes": "Experiência mobile dedicada: barra inferior para uso com uma mão, menu móvel organizado, ações rápidas, formulários mais confortáveis, modais adaptados e tabelas de relatórios com rolagem horizontal no celular."
+  "version": "V5.17",
+  "updatedAt": "2026-09-27T22:45:00Z",
+  "changes": "Novo menu Recursos separado de Ferramentas. Relatórios, exportação, documentos, segurança, importação com IA, IA, ficha de saúde e preparação de consulta foram movidos para Recursos; Ferramentas ficou com busca, avisos, calendário, perguntas, lembretes e emergência."
 }
