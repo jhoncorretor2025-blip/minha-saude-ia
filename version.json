@@ -1,5 +1,5 @@
 {
-  "version": "V5.01",
-  "updatedAt": "2026-09-28T02:00:00Z",
-  "changes": "Painel de acompanhamento de medicamentos dos últimos 30 dias, baseado em doses registradas, sem inferir adesão clínica."
+  "version": "V5.02",
+  "updatedAt": "2026-09-28T02:25:00Z",
+  "changes": "Importação por IA com detecção de registros iguais/parecidos e escolha explícita entre manter o atual ou adicionar o importado."
 }
