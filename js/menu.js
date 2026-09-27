@@ -129,9 +129,12 @@
         mobileSection('Complementos',[
           ['nutricao','🥗 Nutrição'],['sono','😴 Sono e Bem-estar'],['familia','🧬 Histórico familiar']
         ])+
-        mobileSection('Ferramentas',[
+        mobileSection('Recursos',[
           ['relatorios','📊 Relatórios'],['exportar','📤 Exportar'],['documentos','📄 Documentos'],
           ['backup','🔐 Segurança'],['importar','⚡ Importar com IA'],['ia','🤖 IA'],
+          ['msaResumo','🩺 Ficha de saúde'],['msaConsulta2','👨‍⚕️ Preparar consulta']
+        ])+
+        mobileSection('Ferramentas',[
           ['buscar','🔎 Buscar em tudo'],['avisos','🔔 Central de avisos'],
           ['calendario','📅 Calendário'],['perguntas','❓ Perguntas para consulta'],
           ['lembretes','⏰ Lembretes e rotina']
