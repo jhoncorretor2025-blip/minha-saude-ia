@@ -100,3 +100,21 @@ O projeto possui suporte PWA. Em navegadores compatíveis, a opção de instalar
 - ✅ Verificador de consistência estrutural.
 - 📅 Filtros avançados na linha do tempo.
 - 🛠️ Correção de compatibilidade do módulo de melhorias.
+
+
+## V5.08 — Recursos adicionais
+- 🔎 OCR local para imagens do cofre de documentos.
+- 🏷️ Etiquetas e filtro de documentos.
+- 📱 QR Code do cartão de emergência.
+- 🕘 Histórico de alterações sem duplicar conteúdo clínico.
+- 🎯 Metas pessoais e painel inicial personalizável.
+- 📈 Padrões dos registros e acompanhamento de medicamentos.
+- 🤖 Revisão de conflitos na importação por IA.
+- 👨‍👩‍👧‍👦 Perfis locais separados.
+- 📦 Pacote de transferência entre dispositivos.
+- 🔐 Backup criptografado local.
+- 🔑 Passkey local opcional.
+- ♿ Painel de acessibilidade.
+- 📦 Exportação FHIR R4.
+
+**Limitações arquiteturais:** sincronização automática em nuvem, autenticação de conta e armazenamento médico criptografado em repouso ainda exigem uma arquitetura de servidor/backend dedicada.
