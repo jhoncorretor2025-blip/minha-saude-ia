@@ -149,4 +149,49 @@ function wrapDocumentUploadForTags(){
 function startDocumentTags(){ensureDocumentTagsUI();wrapDocumentUploadForTags();setTimeout(renderDocumentTags,320)}
 
 
+
+/* ===== V4.96 — QR Code do cartão de emergência ===== */
+function ensureQROverlay(){
+ if(byId('msaQROverlay'))return;
+ const div=document.createElement('div');div.id='msaQROverlay';div.className='msa-modal-overlay';div.style.display='none';
+ div.innerHTML='<div class="msa-modal" role="dialog" aria-modal="true" aria-labelledby="msaQRTitle"><div class="msa-modal-header"><div><h2 id="msaQRTitle" class="msa-card-title">📱 QR Code de emergência</h2><div class="msa-card-description">O QR contém apenas as informações que você escolher para este cartão.</div></div><button class="btn secondary small" type="button" id="msaQRClose">✕</button></div><div class="msa-modal-body" style="text-align:center"><div id="msaQRStatus" class="msa-feedback msa-feedback-info">Preparando QR Code…</div><img id="msaQRImage" alt="QR Code do cartão de emergência" style="display:none;width:min(100%,320px);height:auto;margin:16px auto;border:12px solid #fff;border-radius:12px;box-shadow:var(--msa-shadow-card)"><pre id="msaQRText" style="white-space:pre-wrap;text-align:left;background:#f8fafc;border:1px solid #dbe3ef;border-radius:12px;padding:12px;font-size:12px"></pre></div><div class="msa-modal-footer"><button class="btn secondary" type="button" id="msaQRCopy">📋 Copiar informações</button><button class="btn green" type="button" id="msaQRDownload">⬇️ Salvar QR</button><button class="btn secondary" type="button" id="msaQRDone">Fechar</button></div></div>';
+ document.body.appendChild(div);
+ div.querySelectorAll('#msaQRClose,#msaQRDone').forEach(b=>b.addEventListener('click',()=>{div.style.display='none';document.body.style.overflow=''}));
+ div.querySelector('#msaQRCopy').addEventListener('click',()=>{
+  const txt=byId('msaQRText')?.textContent||'';if(!txt)return;
+  navigator.clipboard?.writeText(txt).then(()=>alert('📋 Informações copiadas.')).catch(()=>prompt('Copie as informações:',txt));
+ });
+ div.querySelector('#msaQRDownload').addEventListener('click',()=>{
+  const img=byId('msaQRImage');if(!img.src)return;
+  const a=document.createElement('a');a.href=img.src;a.download='cartao-emergencia-qr.png';a.click();
+ });
+}
+function emergencyText(){
+ const p=storage.get(K.p)[0]||{},meds=storage.get(K.m);
+ return ['MINHA SAÚDE IA — CARTÃO DE EMERGÊNCIA','Nome: '+(p.nome||'Não informado'),'Tipo sanguíneo: '+(p.sangue||'Não informado'),'Alergias: '+(p.alerg||'Não informado'),'Condições: '+(p.cond||'Não informado'),'Medicamentos: '+(meds.length?meds.map(x=>x.nome+(x.dose?' — '+x.dose:'')).join('; '):'Nenhum registrado'),'Contato de emergência: '+(p.emerg||'Não informado')+(p.tel?' — '+p.tel:'')].join('\n');
+}
+async function gerarQR(){
+ ensureQROverlay();
+ const modal=byId('msaQROverlay');modal.style.display='flex';document.body.style.overflow='hidden';
+ const status=byId('msaQRStatus'),img=byId('msaQRImage'),pre=byId('msaQRText'),txt=emergencyText();
+ pre.textContent=txt;img.style.display='none';
+ try{
+  const Q=await loadScriptOnce('https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js','QRCode');
+  const src=await Q.toDataURL(txt,{width:320,margin:2,errorCorrectionLevel:'M'});
+  img.src=src;img.style.display='block';status.className='msa-feedback msa-feedback-success';status.textContent='✅ QR Code gerado neste navegador.';
+ }catch(e){
+  status.className='msa-feedback msa-feedback-error';
+  status.textContent='❌ Não foi possível gerar o QR agora. Na primeira utilização, o navegador precisa carregar o gerador de QR.';
+ }
+}
+window.msaGerarQREmergencia=gerarQR;
+function addQRButton(){
+ const actions=document.querySelector('.emergency-actions');
+ if(actions&&!actions.querySelector('[data-msa-qr]')){
+  const b=document.createElement('button');b.className='btn secondary';b.type='button';b.setAttribute('data-msa-qr','1');b.textContent='📱 QR Code';b.addEventListener('click',gerarQR);actions.insertBefore(b,actions.lastElementChild);
+ }
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{ensureQROverlay();addQRButton()},350));
+
+
 })();
