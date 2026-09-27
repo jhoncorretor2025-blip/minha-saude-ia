@@ -1,0 +1,108 @@
+name: Apply V4.4 diagnostics
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, '[skip v44]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch index
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          s=s.replace("Minha Saúde IA — V4.3","Minha Saúde IA — V4.4")
+          s=s.replace("Minha Saúde IA <span style=\"font-size:12px;opacity:.8\">V4.3</span>","Minha Saúde IA <span style=\"font-size:12px;opacity:.8\">V4.4</span>")
+          s=s.replace("🔒 V4.3 de demonstração.","🔒 V4.4 de demonstração.")
+          s=s.replace("u.searchParams.set('appv','V4.3');","u.searchParams.set('appv','V4.4');")
+          s=s.replace("data.version!=='V4.3'","data.version!=='V4.4'")
+          marker='<div id="importLoading"'
+          diag='''<div id="importDiagnostic" style="display:none;margin-top:12px"></div>'''
+          if 'id="importDiagnostic"' not in s:
+              s=s.replace(marker,diag+"\n"+marker,1)
+          old="""function atualizarProgresso(p,step,status){
+ const bar=$('importProgress'),pct=$('importPercent'),st=$('importStep'),msg=$('importStatus');
+ if(bar)bar.style.width=p+'%';
+ if(pct)pct.textContent=p+'%';
+ if(st)st.textContent=step;
+ if(msg)msg.textContent=status;
+}
+function atualizarProgresso(p,step,status){"""
+          new="""function atualizarProgresso(p,step,status){
+ const bar=$('importProgress'),pct=$('importPercent'),st=$('importStep'),msg=$('importStatus');
+ if(bar)bar.style.width=p+'%';
+ if(pct)pct.textContent=p+'%';
+ if(st)st.textContent=step;
+ if(msg)msg.textContent=status;
+}
+function criarDiagnosticoImportacao(code,step,error,raw){
+ const box=$('importDiagnostic');
+ const vers='V4.4';
+ const msg=String(error?.message||error||'Erro desconhecido');
+ const stack=String(error?.stack||'').split('\\n').slice(0,4).join('\\n');
+ const tamanho=String(raw||'').length;
+ const diag={versao:vers,codigo:code,etapa:step,mensagem:msg,tamanhoResposta:tamanho,navegador:navigator.userAgent,data:new Date().toISOString(),stack:stack};
+ const safe=esc(JSON.stringify(diag,null,2));
+ if(box){
+  box.style.display='block';
+  box.innerHTML='<div class="alert danger"><b>🔎 Diagnóstico da falha</b><br><span>Versão: '+esc(vers)+'</span> · <span>Etapa: '+esc(step)+'</span><br><span>Código: <b>'+esc(code)+'</b></span><pre id="importDiagnosticText" style="white-space:pre-wrap;word-break:break-word;background:#fff;margin-top:10px;padding:10px;border-radius:10px;color:#7f1d1d;font-size:11px">'+safe+'</pre><button class="btn secondary small" type="button" onclick="copiarDiagnosticoImportacao()">📋 Copiar diagnóstico</button></div>';
+ }
+ console.error('[Minha Saúde IA]',diag);
+ return diag;
+}
+function copiarDiagnosticoImportacao(){
+ const el=$('importDiagnosticText'); if(!el)return;
+ const text=el.textContent;
+ navigator.clipboard?.writeText(text).then(()=>{el.parentElement.insertAdjacentHTML('beforeend','<div class="muted" style="margin-top:7px">✅ Diagnóstico copiado.</div>')}).catch(()=>{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();alert('Diagnóstico copiado!')});
+}"""
+          if old in s:
+              s=s.replace(old,new,1)
+          oldcatch=""" }catch(e){
+   console.error('Importação:',e);
+   if(loading)loading.style.display='none';
+   if(btn){btn.disabled=false;btn.textContent='✨ Importar e salvar';btn.style.opacity='1'}
+   $('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui importar os dados. Verifique se a resposta contém os campos [NOME], [IDADE], [PESO], [MEDICAMENTOS] etc. Detalhe: '+esc(e.message||'erro desconhecido')+'</div>';
+   return;
+ }"""
+          newcatch=""" }catch(e){
+   console.error('Importação:',e);
+   if(loading)loading.style.display='none';
+   if(btn){btn.disabled=false;btn.textContent='✨ Importar e salvar';btn.style.opacity='1'}
+   const etapa=(String(e?.message||'').includes('Nenhuma informação')?'Organizando perfil':'Processando importação');
+   const codigo=String(e?.message||'').includes('JSON')?'IMPORT_JSON_001':String(e?.message||'').includes('Nenhuma informação')?'IMPORT_PARSE_001':'IMPORT_RUNTIME_001';
+   criarDiagnosticoImportacao(codigo,etapa,e,raw);
+   $('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui importar os dados. O diagnóstico da falha foi registrado logo abaixo. <b>Me mande um print dessa área.</b></div>';
+   return;
+ }"""
+          if oldcatch in s:
+              s=s.replace(oldcatch,newcatch,1)
+          s=s.replace("if(!raw){alert('Cole primeiro a resposta da IA.');return}","if(!raw){criarDiagnosticoImportacao('IMPORT_INPUT_001','Leitura da resposta',new Error('Campo de importação vazio'),raw);alert('Cole primeiro a resposta da IA.');return}")
+          s=s.replace("if(/Prepare meus dados pessoais de saúde para importação/i.test(raw) && !/\\[NOME\\]/i.test(raw)){","if(/Prepare meus dados pessoais de saúde para importação/i.test(raw) && !/\\[NOME\\]/i.test(raw)){")
+          p.write_text(s,encoding="utf-8")
+          PY
+      - name: Update version
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path("version.json")
+          try: d=json.loads(p.read_text(encoding="utf-8"))
+          except: d={}
+          d["version"]="V4.4"
+          d["updatedAt"]="2026-09-27T00:00:00Z"
+          d["changes"]="Diagnóstico detalhado de falhas na importação"
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "Jhon Saúde IA"
+          git config user.email "actions@github.com"
+          git add index.html version.json
+          git diff --cached --quiet && exit 0
+          git commit -m "V4.4: diagnóstico detalhado de importação [skip v44]"
+          git push
