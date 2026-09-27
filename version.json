@@ -1,5 +1,5 @@
 {
-  "version": "V4.92",
-  "updatedAt": "2026-09-27T23:35:00Z",
-  "changes": "Cinco melhorias iniciais: rascunhos automáticos, prevenção de duplicados, Lixeira, verificador de consistência e filtros avançados na linha do tempo."
+  "version": "V4.93",
+  "updatedAt": "2026-09-27T23:55:00Z",
+  "changes": "Rodada inicial concluída: rascunhos automáticos, prevenção de duplicados, Lixeira, verificador de consistência, filtros da timeline e correção de compatibilidade do módulo de melhorias."
 }
