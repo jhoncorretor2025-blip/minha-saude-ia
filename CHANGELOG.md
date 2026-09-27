@@ -1,5 +1,13 @@
 # Changelog — Minha Saúde IA
 
+## V4.88 — Rascunhos automáticos
+- 📝 Formulários passam a salvar rascunhos localmente enquanto o usuário preenche.
+- ↩️ Rascunhos podem ser retomados ou apagados.
+- 🛡️ Arquivos e campos de senha não entram no rascunho.
+- 🔒 Os rascunhos ficam separados dos registros oficiais.
+- 🧩 Alteração aditiva: dados já salvos e seus formatos permanecem iguais.
+
+
 ## V4.87 — 5 melhorias rápidas de UX
 - ♿ Pular para o conteúdo e foco mais claro para teclado.
 - 📱 Alvos de toque mais confortáveis no mobile.
