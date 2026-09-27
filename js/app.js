@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V4.53 */
+/* Minha Saúde IA — aplicação principal V4.54 */
 
 const K={d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',p:'msa2_perfil',v:'msa2_vitais',r:'msa2_lembretes',vax:'msa2_vacinas',fam:'msa2_familia',doc:'msa2_documentos',nutri:'msa2_nutri',suplReg:'msa2_suplementos',food:'msa2_reacoes_alimentares',agua:'msa2_hidratacao',sono:'msa2_sono',bem:'msa2_bemestar',gat:'msa2_gatilhos',medRot:'msa2_medicamentos_rotina',medTaken:'msa2_medicamentos_tomados'};
 const LEGACY_KEYS={msa_dores:'msa2_dores',msa_consultas:'msa2_consultas',msa_meds:'msa2_meds',msa_exames:'msa2_exames',msa_perfil:'msa2_perfil',msa_vitais:'msa2_vitais',msa_lembretes:'msa2_lembretes',msa_vacinas:'msa2_vacinas',msa_familia:'msa2_familia',msa_documentos:'msa2_documentos'};
@@ -38,7 +38,6 @@ function fecharMenus(){
  document.querySelectorAll('#nav .nav-group').forEach(g=>g.classList.remove('open'));
  document.querySelectorAll('#nav .nav-toggle').forEach(b=>{b.classList.remove('open');b.setAttribute('aria-expanded','false')});
 }
-document.querySelectorAll('nav button[data-tab]').forEach(b=>b.onclick=()=>go(b.dataset.tab));
 function bodyPick(el,v){$('dLocal').value=v;document.querySelectorAll('.bodymap button').forEach(x=>x.classList.remove('sel'));el.classList.add('sel')}
 function fmt(d){if(!d)return '—';let x=new Date(d);return isNaN(x)?d:x.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}
 function list(id,a,fn){$(id).innerHTML=a.length?a.slice().reverse().map(fn).join(''):'<div class="empty">Nenhum registro ainda.</div>'}
@@ -346,50 +345,15 @@ function gerarRelatorio(){
  <h2>Exames</h2><ul>${e.length?e.map(x=>`<li>${x.data} — ${esc(x.nome)}: ${esc(x.res||'')}</li>`).join(''):'<li>Nenhum registrado.</li>'}</ul>`;
  openReport('Resumo de Saúde',body);
 }
-// V4.53 — menus e inicialização protegidos
-function inicializarMenus(){
- const nav=document.getElementById('nav');
- if(!nav)return;
- nav.querySelectorAll('.nav-toggle').forEach(toggle=>{
-  if(toggle.dataset.bound==='1')return;
-  toggle.dataset.bound='1';
-  toggle.setAttribute('aria-expanded','false');
-  toggle.addEventListener('click',function(ev){
-   ev.preventDefault();ev.stopPropagation();
-   const group=toggle.closest('.nav-group');if(!group)return;
-   const abrir=!group.classList.contains('open');
-   fecharMenus();
-   if(abrir){
-    group.classList.add('open');
-    toggle.classList.add('open');
-    toggle.setAttribute('aria-expanded','true');
-   }
-  });
- });
- nav.querySelectorAll('button[data-tab]').forEach(btn=>{
-  if(btn.dataset.bound==='1')return;
-  btn.dataset.bound='1';
-  btn.addEventListener('click',function(ev){
-   ev.preventDefault();ev.stopPropagation();
-   go(btn.dataset.tab);
-  });
- });
- if(!document.body.dataset.menuOutsideBound){
-  document.body.dataset.menuOutsideBound='1';
-  document.addEventListener('click',function(ev){if(!nav.contains(ev.target))fecharMenus()});
-  document.addEventListener('keydown',function(ev){if(ev.key==='Escape')fecharMenus()});
- }
-}
+// V4.54 — inicialização da aplicação separada do sistema de menus
 function iniciarAplicativo(){
  try{
-  inicializarMenus();
   loadProfile();
   renderCarteirinha();
   renderNovosModulos();
   render();
  }catch(e){
   console.error('[Minha Saúde IA] falha na inicialização',e);
-  try{inicializarMenus()}catch(err){}
  }
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',iniciarAplicativo);
