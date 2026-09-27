@@ -1,5 +1,5 @@
 {
-  "version": "V4.66",
-  "updatedAt": "2026-09-27T23:10:00Z",
-  "changes": "Reforço de privacidade: dados pessoais ficam somente no armazenamento local do navegador e não são embutidos na página publicada."
+  "version": "V4.67",
+  "updatedAt": "2026-09-27T23:30:00Z",
+  "changes": "Link de instalação separado: cada URL com perfil cria um espaço de armazenamento local independente, permitindo compartilhar o aplicativo zerado sem misturar dados."
 }
