@@ -410,6 +410,7 @@ function buildImportConflictPlan(n){
    const similar=!exact&&current.some(x=>conflictSignature(x,cfg.match)===conflictSignature(item,cfg.match)&&conflictSignature(item,cfg.match)!==(''.repeat(cfg.match.length)));
    if(exact||similar)records.push({id:cfg.prop+'_'+index,prop:cfg.prop,index,label:cfg.label,kind:exact?'igual':'parecido',choice:'skip',incoming:item});
   });
+ });
  const pCurrent=storage.get(K.p)[0]||{},profile=[];
  Object.keys(n?.p||{}).forEach(field=>{
   const nv=String(n.p[field]??'').trim(),ov=String(pCurrent[field]??'').trim();
@@ -442,7 +443,7 @@ window.confirmarImportacaoPendente=function(){
  const n=window._importPendente,plan=window._msaImportConflictPlan;if(!n)return;
  const chosen=JSON.parse(JSON.stringify(n));
  (plan?.records||[]).forEach(x=>{
-  const el=document.querySelector('input[name="ic_'+CSS.escape(x.id)+'"]:checked'),choice=el?.value||'skip';
+  const el=document.querySelector('input[name="ic_'+x.id+'"]:checked'),choice=el?.value||'skip';
   if(choice==='skip'&&Array.isArray(chosen[x.prop]))chosen[x.prop]=chosen[x.prop].filter((_,i)=>i!==x.index);
  });
  const modal=byId('importReviewOverlay');if(modal)modal.style.display='none';
