@@ -1,5 +1,13 @@
 # Changelog — Minha Saúde IA
 
+## V4.71 — Aplicativo instalável e modo offline
+- Adicionado `manifest.json` para instalação como aplicativo.
+- Adicionado `sw.js` para cache da interface e funcionamento offline básico.
+- Adicionado ícone do aplicativo.
+- O modo offline armazena somente recursos da aplicação em cache; os dados pessoais continuam no armazenamento local do navegador.
+- Nenhum dado de saúde é enviado pelo service worker.
+- Versão atualizada para V4.71.
+
 ## V4.70 — Medicamentos avançados
 - Registro diário de dose para rotinas de medicamentos.
 - Evita duplicar a mesma dose no mesmo dia.
