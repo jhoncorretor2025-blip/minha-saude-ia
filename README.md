@@ -10,14 +10,19 @@ minha-saude-ia/
 ├── js/
 │   ├── app.js
 │   ├── importacao.js
-│   └── menu.js
+│   ├── menu.js
+│   ├── melhorias.js
+│   └── recursos.js
 ├── prompts/
 │   └── importacao-saude.txt
 ├── docs/
 │   ├── ARQUITETURA.md
 │   └── IMPORTACAO-IA.md
 ├── version.json
-└── CHANGELOG.md
+├── CHANGELOG.md
+├── manifest.json
+├── sw.js
+└── icon.svg
 ```
 
 A documentação em `docs/` existe para permitir que outra pessoa ou IA entenda rapidamente a arquitetura antes de alterar o projeto.
