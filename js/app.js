@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V4.23 */
+/* Minha Saúde IA — aplicação principal V4.24 */
 
 const K={d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',p:'msa2_perfil',v:'msa2_vitais',r:'msa2_lembretes',vax:'msa2_vacinas',fam:'msa2_familia',doc:'msa2_documentos'};
 const get=k=>JSON.parse(localStorage.getItem(k)||'[]'), set=(k,v)=>localStorage.setItem(k,JSON.stringify(v)), $=x=>document.getElementById(x);
@@ -137,7 +137,7 @@ function gerarRelatorio(){
  <h2>Exames</h2><ul>${e.length?e.map(x=>`<li>${x.data} — ${esc(x.nome)}: ${esc(x.res||'')}</li>`).join(''):'<li>Nenhum registrado.</li>'}</ul>`;
  openReport('Resumo de Saúde',body);
 }
-// V4.23 — comportamento dos menus robustos
+// V4.24 — comportamento dos menus robustos
 (function(){
  const nav=document.getElementById('nav');
  if(!nav)return;
