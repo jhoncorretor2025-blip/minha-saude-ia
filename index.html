@@ -1157,7 +1157,7 @@ async function copiarLinkNovoUsuario(){
  const link=base+'?perfil='+encodeURIComponent(token);
  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(link).then(()=>alert('🔗 Link zerado copiado! Envie este link para a outra pessoa.\n\nOs dados dela ficarão separados dos seus neste navegador.')).catch(()=>prompt('Copie o link para enviar:',link));}else prompt('Copie o link para enviar:',link);
 }
-function verificarNovaVersao(){
+async function verificarNovaVersao(){
  try{
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
