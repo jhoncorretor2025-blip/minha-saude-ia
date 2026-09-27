@@ -1,13 +1,13 @@
-/* Minha Saúde IA — aplicação principal V4.66 */
+/* Minha Saúde IA — aplicação principal V4.67 */
 
 const K={d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',p:'msa2_perfil',v:'msa2_vitais',r:'msa2_lembretes',vax:'msa2_vacinas',fam:'msa2_familia',doc:'msa2_documentos',nutri:'msa2_nutri',suplReg:'msa2_suplementos',food:'msa2_reacoes_alimentares',agua:'msa2_hidratacao',sono:'msa2_sono',bem:'msa2_bemestar',gat:'msa2_gatilhos',medRot:'msa2_medicamentos_rotina',medTaken:'msa2_medicamentos_tomados',anticoncepcional:'msa2_anticoncepcional'};
 const LEGACY_KEYS={msa_dores:'msa2_dores',msa_consultas:'msa2_consultas',msa_meds:'msa2_meds',msa_exames:'msa2_exames',msa_perfil:'msa2_perfil',msa_vitais:'msa2_vitais',msa_lembretes:'msa2_lembretes',msa_vacinas:'msa2_vacinas',msa_familia:'msa2_familia',msa_documentos:'msa2_documentos'};
 function lerStorage(k){
  try{
-  let raw=localStorage.getItem(k);
+  let raw=window.msaStorage.getItem(k);
   if(!raw){
-   const legacy=Object.keys(LEGACY_KEYS).find(x=>LEGACY_KEYS[x]===k&&localStorage.getItem(x));
-   if(legacy){raw=localStorage.getItem(legacy);try{localStorage.setItem(k,raw)}catch(e){}}
+   const legacy=Object.keys(LEGACY_KEYS).find(x=>LEGACY_KEYS[x]===k&&window.msaStorage.getItem(x));
+   if(legacy){raw=window.msaStorage.getItem(legacy);try{window.msaStorage.setItem(k,raw)}catch(e){}}
   }
   if(!raw)return [];
   const parsed=JSON.parse(raw);
@@ -20,9 +20,9 @@ const get=k=>lerStorage(k);
 const set=(k,v)=>{
  const json=JSON.stringify(v);
  try{
-  const old=localStorage.getItem(k);
-  if(old&&old!==json&&old.length<=300000&&!k.startsWith('msa2_backup_'))localStorage.setItem('msa2_backup_'+k,old);
-  localStorage.setItem(k,json);
+  const old=window.msaStorage.getItem(k);
+  if(old&&old!==json&&old.length<=300000&&!k.startsWith('msa2_backup_'))window.msaStorage.setItem('msa2_backup_'+k,old);
+  window.msaStorage.setItem(k,json);
   return true;
  }catch(e){console.error('[Minha Saúde IA] falha ao salvar',k,e);return false}
 };
@@ -107,7 +107,7 @@ atualizarEngajamento();atualizarSmartHome();
 
 function registrarHumor(valor){
  const key='msa2_humor'; const hoje=new Date().toISOString().slice(0,10);
- localStorage.setItem(key,JSON.stringify({data:hoje,valor:valor}));
+ window.msaStorage.setItem(key,JSON.stringify({data:hoje,valor:valor}));
  const st=$('moodStatus');if(st)st.textContent='Registrado hoje: '+valor;
  const done=$('moodDone');if(done){done.textContent='✓ Feito';done.style.background='#ecfdf3';done.style.color='#059669'}
 }
@@ -141,7 +141,7 @@ function gerarChecklistCompartilhamento(){
 }
 function atualizarEngajamento(){
  const hoje=new Date().toISOString().slice(0,10);
- const h=JSON.parse(localStorage.getItem('msa2_humor')||'null');
+ const h=JSON.parse(window.msaStorage.getItem('msa2_humor')||'null');
  if(h&&h.data===hoje){const st=$('moodStatus');if(st)st.textContent='Registrado hoje: '+h.valor;const d=$('moodDone');if(d){d.textContent='✓ Feito';d.style.background='#ecfdf3';d.style.color='#059669'}}
  const c=calcularCompletudeSaude(),pct=c.percentual;
  const pe=$('profilePercent'),pf=$('profileProgress');if(pe)pe.textContent=pct+'%';if(pf)pf.style.width=pct+'%';
@@ -335,7 +335,7 @@ function gerarPerguntasFamilia(){const a=get(K.fam),conds=[...new Set(a.map(x=>x
 $('medRotForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.medRot);a.push({id:Date.now(),nome:$('medRotNome').value,dose:$('medRotDose').value,hora:$('medRotHora').value,estoque:$('medRotEstoque').value||0,min:$('medRotMin').value||0});set(K.medRot,a);e.target.reset();renderNovosModulos();alert('💊 Rotina criada!')});
 function confirmarDose(id){let a=get(K.medTaken);a.push({id,data:new Date().toISOString()});set(K.medTaken,a);let r=get(K.medRot),i=r.findIndex(x=>x.id===id);if(i>=0&&+r[i].estoque>0){r[i].estoque=+r[i].estoque-1;set(K.medRot,r)}renderNovosModulos();alert('✅ Dose confirmada e estoque atualizado.')}
 $('lembFormPage')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.r);a.push({nome:$('lembNomePage').value,data:$('lembDataPage').value,tipo:$('lembTipoPage').value});set(K.r,a);e.target.reset();renderNovosModulos();alert('🔔 Lembrete criado!')});
-function checarMedicamentosRotina(){const now=new Date(),hm=now.toTimeString().slice(0,5),date=hojeLocal();get(K.medRot).forEach(x=>{if(x.hora===hm){const chave='msa2_alerta_'+x.id+'_'+date+'_'+hm;if(!localStorage.getItem(chave)){localStorage.setItem(chave,'1');if('Notification'in window&&Notification.permission==='granted')new Notification('💊 Hora do medicamento',{body:x.nome+(x.dose?' — '+x.dose:'')});else alert('💊 Hora do medicamento: '+x.nome+(x.dose?' — '+x.dose:''))}}})}
+function checarMedicamentosRotina(){const now=new Date(),hm=now.toTimeString().slice(0,5),date=hojeLocal();get(K.medRot).forEach(x=>{if(x.hora===hm){const chave='msa2_alerta_'+x.id+'_'+date+'_'+hm;if(!window.msaStorage.getItem(chave)){window.msaStorage.setItem(chave,'1');if('Notification'in window&&Notification.permission==='granted')new Notification('💊 Hora do medicamento',{body:x.nome+(x.dose?' — '+x.dose:'')});else alert('💊 Hora do medicamento: '+x.nome+(x.dose?' — '+x.dose:''))}}})}
 setInterval(checarMedicamentosRotina,30000);
 setInterval(checarAnticoncepcional,30000);
 renderNovosModulos();
@@ -392,8 +392,8 @@ function checarAnticoncepcional(){
  const hm=new Date().toTimeString().slice(0,5),dia=hojeLocal();
  if(hora!==hm||get(K.anticoncepcional).some(x=>x.data===dia))return;
  const chave='msa2_anticoncepcional_alerta_'+dia+'_'+hm;
- if(localStorage.getItem(chave))return;
- localStorage.setItem(chave,'1');
+ if(window.msaStorage.getItem(chave))return;
+ window.msaStorage.setItem(chave,'1');
  if('Notification'in window&&Notification.permission==='granted')new Notification('💊 Hora do anticoncepcional',{body:(p.anticoncepcionalNome||'Anticoncepcional')+' — horário programado.'});
  else alert('💊 Hora do anticoncepcional: '+(p.anticoncepcionalNome||'Anticoncepcional')+' — horário programado.');
 }
