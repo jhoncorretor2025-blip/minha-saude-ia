@@ -1,5 +1,5 @@
 {
-  "version": "V5.00",
-  "updatedAt": "2026-09-28T01:45:00Z",
-  "changes": "Painel de padrões dos registros, com frequências por local, tipo, gatilho, dia e horário, sem diagnóstico."
+  "version": "V5.01",
+  "updatedAt": "2026-09-28T02:00:00Z",
+  "changes": "Painel de acompanhamento de medicamentos dos últimos 30 dias, baseado em doses registradas, sem inferir adesão clínica."
 }
