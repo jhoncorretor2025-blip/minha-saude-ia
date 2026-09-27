@@ -1,5 +1,16 @@
 # Changelog — Minha Saúde IA
 
+## V4.64 — Controle diário de anticoncepcional
+- Para perfil **Feminino**, o bloco de saúde reprodutiva agora pergunta se há uso de anticoncepcional diário.
+- Permite registrar **nome, horário habitual e data de início**.
+- O aplicativo cria um acompanhamento diário com **✅ Tomei** e **❌ Não tomei**.
+- Mostra o histórico dos últimos dias para facilitar conferência.
+- Quando o horário programado chega, o aplicativo pode exibir um lembrete enquanto estiver aberto; se notificações do navegador estiverem autorizadas, pode usar a notificação do sistema.
+- O importador de IA reconhece e importa os dados do anticoncepcional.
+- O prompt oficial foi atualizado para solicitar esses dados somente quando estiverem disponíveis, sem criar informações.
+- Mantida a orientação de que o recurso é um lembrete/registro e não substitui orientação profissional.
+- Versão atualizada para V4.64.
+
 ## V4.63 — Menu Complementos
 - Criada a nova aba **🧩 Complementos** entre **🩺 Saúde** e **🛠️ Ferramentas**.
 - Movidos para Complementos: **🥗 Nutrição**, **😴 Sono e Bem-estar** e **🧬 Histórico familiar**.
