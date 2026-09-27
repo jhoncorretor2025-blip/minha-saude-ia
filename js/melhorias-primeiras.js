@@ -363,12 +363,52 @@ function ensureConsistencyUI(){
   }
 }
 
+
+/* ===== V4.92 — filtros avançados da linha do tempo ===== */
+function ensureTimelineFilters(){
+  const target=byId('timelineFull');
+  if(!target||byId('msaTimelineFilters'))return;
+  const bar=document.createElement('div');
+  bar.id='msaTimelineFilters';bar.className='msa-filter-bar';bar.style.margin='14px 0 16px';
+  bar.innerHTML='<div class="msa-filter-group msa-form-group"><label class="msa-form-label" for="msaTimelineSearch">🔎 Buscar no histórico</label><input class="msa-form-control" id="msaTimelineSearch" type="search" placeholder="Ex.: dermatologia, dor, exame..."></div>'+
+    '<div class="msa-filter-group msa-form-group"><label class="msa-form-label" for="msaTimelineType">Tipo de registro</label><select class="msa-form-control" id="msaTimelineType"><option value="">Todos</option><option value="Sintoma">Sintomas</option><option value="Consulta">Consultas</option><option value="Medicamento">Medicamentos</option><option value="Exame">Exames</option><option value="Sinal vital">Sinais vitais</option><option value="Vacina">Vacinas</option></select></div>'+
+    '<div class="msa-filter-group msa-form-group"><label class="msa-form-label" for="msaTimelineFrom">De</label><input class="msa-form-control" id="msaTimelineFrom" type="date"></div>'+
+    '<div class="msa-filter-group msa-form-group"><label class="msa-form-label" for="msaTimelineTo">Até</label><input class="msa-form-control" id="msaTimelineTo" type="date"></div>'+
+    '<div class="msa-filter-actions"><button class="btn secondary" type="button" id="msaTimelineClear">Limpar filtros</button></div>';
+  target.parentNode.insertBefore(bar,target);
+  ['msaTimelineSearch','msaTimelineType','msaTimelineFrom','msaTimelineTo'].forEach(id=>byId(id)?.addEventListener(id==='msaTimelineSearch'?'input':'change',renderFilteredTimeline));
+  byId('msaTimelineClear')?.addEventListener('click',()=>{
+    ['msaTimelineSearch','msaTimelineType','msaTimelineFrom','msaTimelineTo'].forEach(id=>{const e=byId(id);if(e)e.value=''});
+    renderFilteredTimeline();
+  });
+  renderFilteredTimeline();
+}
+function renderFilteredTimeline(){
+  const target=byId('timelineFull');if(!target)return;
+  const search=String(byId('msaTimelineSearch')?.value||'').trim().toLowerCase();
+  const type=String(byId('msaTimelineType')?.value||'');
+  const from=String(byId('msaTimelineFrom')?.value||'');
+  const to=String(byId('msaTimelineTo')?.value||'');
+  let rows=typeof window.buildTimeline==='function'?window.buildTimeline():[];
+  rows=rows.filter(x=>{
+    const date=String(x.date||'').slice(0,10);
+    if(type&&String(x.title)!==type)return false;
+    if(from&&date<from)return false;
+    if(to&&date>to)return false;
+    if(search&&!((String(x.title||'')+' '+String(x.sub||'')).toLowerCase().includes(search)))return false;
+    return true;
+  });
+  const info='<div class="muted" style="margin-bottom:10px">'+rows.length+' registro(s) encontrado(s).'+(search||type||from||to?' Filtros ativos na visão completa.':'')+'</div>';
+  target.innerHTML=info+(rows.length?rows.map(x=>typeof window.timelineHTML==='function'?window.timelineHTML(x):'<div class="item"><b>'+esc(x.title)+'</b><p>'+esc(x.sub)+'</p></div>').join(''):'<div class="empty">Nenhum registro corresponde aos filtros. Experimente limpar ou ampliar o período.</div>');
+}
+
 function startDrafts(){
   attachDraftHandlers();
   attachDuplicateGuard();
   ensureTrashUI();
   wrapRenderForTrash();
   ensureConsistencyUI();
+  ensureTimelineFilters();
   renderDraftPanel();
   document.addEventListener('click',e=>{
     const trash=e.target.closest&&e.target.closest('[data-trash-action]');
