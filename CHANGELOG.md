@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V5.09.1 — Core compartilhado
+- 🧩 `app.js`, `melhorias.js` e `recursos.js` passaram a reutilizar `core/utils.js`.
+- 🛡️ Mantidos aliases/fallbacks para reduzir risco de quebra.
+- 💾 Formato dos dados e chaves de armazenamento não foram alterados.
+
+
 ## V5.08.2 — Estabilidade final
 - 🛠️ Corrigido o regex do importador para aceitar `N/A` corretamente.
 - 🔎 Corrigidos os fluxos de revisão/conflitos da importação.
