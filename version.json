@@ -1,5 +1,5 @@
 {
-  "version": "V5.23",
-  "updatedAt": "2026-09-28T00:15:00Z",
-  "changes": "Navegação mobile mais visível: novo botão fixo '☰ Menu' no topo da tela, além da barra inferior já existente. O botão abre o menu completo com Visão geral, Saúde, Complementos, Recursos, Ferramentas e ações especiais."
+  "version": "V5.24",
+  "updatedAt": "2026-09-28T00:30:00Z",
+  "changes": "Correção definitiva da geração de relatórios: scripts e componentes da página principal não são mais incorporados ao documento de relatório. Relatórios completo, médico, sintomas, medicamentos, exames e consultas voltam a exibir somente seus dados formatados."
 }
