@@ -1,5 +1,5 @@
 {
-  "version": "V4.8",
+  "version": "V4.9",
   "updatedAt": "2026-09-27T00:00:00Z",
-  "changes": "Módulo de importação IA separado em importacao.js e correção da execução assíncrona da tela de carregamento"
+  "changes": "Acionamento seguro da importação, tela de carregamento imediata e diagnóstico visível se o módulo externo falhar"
 }
