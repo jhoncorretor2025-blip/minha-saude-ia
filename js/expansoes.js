@@ -239,4 +239,37 @@ function renderHistory(){
 }
 
 
+
+/* ===== V4.98 — metas pessoais ===== */
+const GOALS_KEY='msa2_metas_pessoais';
+function readGoals(){try{return JSON.parse(rawStorage.getItem(GOALS_KEY)||'[]')}catch(e){return[]}}
+function goalCurrent(goal){
+ const p=storage.get(K.p)[0]||{},today=new Date().toISOString().slice(0,10),type=goal.type;
+ if(type==='completude'&&typeof window.calcularCompletudeSaude==='function')return Number(window.calcularCompletudeSaude().percentual)||0;
+ if(type==='agua')return storage.get(K.agua).filter(x=>x.data===today).reduce((n,x)=>n+(Number(x.qtd)||0),0);
+ if(type==='registros')return [K.d,K.c,K.m,K.e,K.v,K.vax,K.r,K.nutri,K.sono,K.bem].reduce((n,k)=>n+storage.get(k).filter(x=>String(x.data||x.inicio||'').slice(0,10)===today).length,0);
+ if(type==='peso')return Number(String(p.peso||'').replace(',','.'))||0;
+ return 0;
+}
+function goalUnit(type){return ({completude:'%',agua:' ml',registros:' registro(s)',peso:' kg'})[type]||''}
+function renderGoals(){
+ const box=byId('msaGoalsList');if(!box)return;const goals=readGoals();
+ box.innerHTML=goals.length?goals.map(g=>{
+   const current=goalCurrent(g),target=Number(g.target)||0,pct=target>0?Math.min(100,Math.round(current/target*100)):0;
+   return '<div class="item"><div class="itemtop"><b>🎯 '+esc(g.title)+'</b><span class="tag">'+pct+'%</span></div><p>'+esc(String(current))+' '+goalUnit(g.type)+' de '+esc(String(target))+goalUnit(g.type)+'</p><div style="height:10px;background:#e8edf5;border-radius:99px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#2563eb,#059669)"></div></div><div class="row" style="margin-top:9px"><button class="btn secondary small" type="button" data-goal-delete="'+esc(g.id)+'">🗑️ Remover</button></div></div>';
+ }).join(''):'<div class="empty">Nenhuma meta pessoal criada.</div>';
+}
+function ensureGoalsUI(){
+ if(byId('msaGoalsPanel'))return;
+ const host=byId('home')||byId('main-content');if(!host)return;
+ const panel=document.createElement('div');panel.id='msaGoalsPanel';panel.className='card';panel.style.marginTop='13px';
+ panel.innerHTML='<div class="dash-section-title"><div><h2>🎯 Minhas metas</h2><div class="muted">Acompanhamento pessoal baseado somente nos seus registros.</div></div></div><form id="msaGoalForm" class="grid2"><label>Nome da meta<input id="msaGoalTitle" required placeholder="Ex.: Completar meu perfil"></label><label>Indicador<select id="msaGoalType"><option value="completude">Completude do perfil (%)</option><option value="agua">Água de hoje (ml)</option><option value="registros">Registros de hoje</option><option value="peso">Peso atual (kg)</option></select></label><label>Meta numérica<input id="msaGoalTarget" type="number" min="0" step="0.1" required placeholder="Ex.: 90"></label><div style="align-self:end"><button class="btn green" type="submit">➕ Criar meta</button></div></form><div id="msaGoalsList" class="list" style="margin-top:13px"></div>';
+ host.appendChild(panel);
+ panel.querySelector('#msaGoalForm').addEventListener('submit',e=>{e.preventDefault();const a=readGoals();a.push({id:String(Date.now()),title:byId('msaGoalTitle').value.trim(),type:byId('msaGoalType').value,target:byId('msaGoalTarget').value});rawStorage.setItem(GOALS_KEY,JSON.stringify(a.slice(-30)));e.target.reset();renderGoals()});
+ panel.addEventListener('click',e=>{const b=e.target.closest('[data-goal-delete]');if(!b)return;const id=b.getAttribute('data-goal-delete');rawStorage.setItem(GOALS_KEY,JSON.stringify(readGoals().filter(g=>g.id!==id)));renderGoals()});
+ renderGoals();
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(ensureGoalsUI,500));
+
+
 })();
