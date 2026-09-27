@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Saúde IA — V4.82</title>
+<title>Minha Saúde IA — V4.84</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -151,6 +151,17 @@ footer{padding-bottom:20px}
 
 /* V4.82 — completude do cadastro */
 .progress-missing{line-height:1.5}.progress-missing b{font-weight:900}
+
+/* V4.84 — navegação mais clara e acessível */
+.nav-toggle:focus-visible,.nav-menu button:focus-visible,#cicloMenuBtn:focus-visible{outline:3px solid rgba(37,99,235,.28);outline-offset:2px}
+#cicloMenuBtn{min-height:42px;background:#fff4fa;color:#9d4770;border:1px solid #f0d7e5}
+#cicloMenuBtn:hover{background:#fdebf4;color:#8f3d65}
+.nav-group:nth-child(3) .nav-menu{left:auto;right:0}
+@media(max-width:760px){
+ .grouped-nav{top:max(8px,env(safe-area-inset-top));}
+ #cicloMenuBtn{width:100%;padding:9px 6px;font-size:12px;overflow:hidden;text-overflow:ellipsis}
+}
+@media(max-width:430px){#cicloMenuBtn{font-size:11px}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
 </head>
@@ -259,7 +270,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V4.82</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V4.84</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap">
 <nav id="nav" class="grouped-nav">
  <div class="nav-group">
@@ -290,6 +301,9 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
   </div>
  </div>
  <div class="nav-group">
+  <button type="button" id="cicloMenuBtn" data-tab="perfil" onclick="setTimeout(function(){var f=document.getElementById('cicloForm');if(f){f.scrollIntoView({behavior:'smooth',block:'start');}},120)">🌸 Ciclo menstrual</button>
+ </div>
+ <div class="nav-group">
   <button type="button" class="nav-toggle" data-menu="tools">🛠️ Ferramentas ▾</button>
   <div class="nav-menu">
    <button type="button" data-tab="relatorios">📊 Relatórios</button>
@@ -305,9 +319,6 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
    <button type="button" data-tab="perguntas">❓ Perguntas para consulta</button>
    <button type="button" data-tab="lembretes">⏰ Lembretes e rotina</button>
   </div>
- </div>
- <div class="nav-group">
-  <button type="button" id="cicloMenuBtn" data-tab="perfil" onclick="setTimeout(function(){var f=document.getElementById('cicloForm');if(f){f.scrollIntoView({behavior:'smooth',block:'start');}},120)">🌸 Ciclo menstrual</button>
  </div>
 </nav>
 
@@ -1004,7 +1015,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V4.82. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V4.84. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -1025,9 +1036,9 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/menu.js?v=V4.82" defer></script>
-<script src="js/app.js?v=V4.82" defer></script>
-<script src="js/recursos.js?v=V4.82" defer></script>
+<script src="js/menu.js?v=V4.84" defer></script>
+<script src="js/app.js?v=V4.84" defer></script>
+<script src="js/recursos.js?v=V4.84" defer></script>
 
 
 <script>
@@ -1044,7 +1055,7 @@ function iniciarImportacao(){
  },80);
 }
 </script>
-<script src="js/importacao.js?v=V4.82" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/importacao.js?v=V4.84" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
 
 
 <script>
@@ -1207,7 +1218,7 @@ async function verificarNovaVersao(){
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
   const data=await r.json();
-  if(data.version && data.version!=='V4.82'){
+  if(data.version && data.version!=='V4.84'){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
