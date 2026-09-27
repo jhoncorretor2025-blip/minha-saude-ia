@@ -72,3 +72,10 @@ Para manutenção, prefira adicionar funcionalidades novas em módulos separados
 
 ## V4.71 — Instalação
 O projeto possui suporte PWA. Em navegadores compatíveis, a opção de instalar o Minha Saúde IA pode aparecer no menu do navegador. O modo offline é destinado à continuidade da interface e dos registros locais.
+
+
+## V4.84 — Organização e navegação
+- A versão exibida na interface, scripts com cache-busting, verificação de versão e service worker ficam sincronizados.
+- O menu **🌸 Ciclo menstrual** permanece independente e agora aparece antes de **🛠️ Ferramentas**.
+- A navegação móvel ganhou foco visual mais claro e suporte melhor à área segura de celulares.
+- A documentação acompanha os módulos atuais do projeto para facilitar continuidade por outras IAs.
