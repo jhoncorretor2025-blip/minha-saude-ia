@@ -1,5 +1,5 @@
 {
-  "version": "V4.45",
-  "updatedAt": "2026-09-27T22:20:00Z",
-  "changes": "Alinha o prompt, importador e contexto da IA com peso, altura, IMC, objetivo corporal, academia, atividade física, rotina de trabalho, horas sentado/em pé, água, frequência urinária, calor/suor e alimentação"
+  "version": "V4.46",
+  "updatedAt": "2026-09-27T22:30:00Z",
+  "changes": "Corrige e completa o fluxo IA: o prompt passa a solicitar dados corporais, atividade, trabalho, hidratação, frequência urinária, calor/suor e alimentação; o importador e o contexto da IA passam a reconhecer esses campos"
 }
