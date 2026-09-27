@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V4.96 — QR Code de emergência
+- 📱 Geração de QR Code para o cartão de emergência.
+- 🔒 Conteúdo limitado ao resumo do cartão pessoal.
+- 💾 Permite salvar a imagem do QR Code.
+
+
 ## V4.95 — OCR e etiquetas de documentos
 - 🔎 OCR opcional para imagens usando processamento no navegador.
 - 🏷️ Documentos podem receber etiquetas para organização e filtro.
