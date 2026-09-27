@@ -1,5 +1,5 @@
 {
-  "version": "V4.73",
-  "updatedAt": "2026-09-28T01:10:00Z",
-  "changes": "Compartilhamento seguro por níveis: completude, resumo sem dados clínicos detalhados ou ficha completa com confirmação explícita."
+  "version": "V4.74",
+  "updatedAt": "2026-09-28T01:35:00Z",
+  "changes": "Diário do sono simplificado: horário de dormir, horário de acordar, cálculo automático das horas, despertares para urinar, despertares por dor e observação opcional."
 }
