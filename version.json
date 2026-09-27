@@ -1,5 +1,5 @@
 {
-  "version": "V4.88",
-  "updatedAt": "2026-09-27T22:20:00Z"
-  "changes": "Rascunhos automáticos para formulários, com recuperação manual e armazenamento local separado, sem alterar registros já salvos."
+  "version": "V4.89",
+  "updatedAt": "2026-09-27T22:35:00Z"
+  "changes": "Prevenção de registros duplicados em formulários, com confirmação antes de salvar uma entrada igual ou muito parecida."
 }
