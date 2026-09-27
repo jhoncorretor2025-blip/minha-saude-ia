@@ -316,6 +316,11 @@ footer{padding-bottom:20px}
 </script>
 
 <style id="v526-simplified-home">
+.metric-kpi{position:relative}
+.metric-edit-btn{margin-top:7px;border:1px solid #dbe4f0;background:#f8fafc;color:#2563eb;border-radius:9px;padding:6px 9px;font:inherit;font-size:11px;font-weight:900;cursor:pointer}
+.metric-edit-btn:hover{background:#eef4ff;border-color:#b9caf4}
+body.msa-dark .metric-edit-btn{background:#0f172a;color:#93c5fd;border-color:#334155}
+@media(max-width:760px){.metric-edit-btn{min-height:34px;padding:7px 10px}}
 .home-command-center{display:grid;grid-template-columns:1.45fr .55fr;gap:14px;margin:0 0 14px}
 .home-command-main,.home-command-side{background:#fff;border:1px solid #e2e8f0;border-radius:22px;padding:18px;box-shadow:0 8px 24px rgba(15,23,42,.06)}
 .home-command-kicker{font-size:12px;font-weight:900;color:#2563eb;text-transform:uppercase;letter-spacing:.06em}
@@ -581,8 +586,14 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <div class="metric-panel">
  <div class="metric-kpi"><span>⚖️ IMC</span><b id="dashBMI">—</b><small id="dashBMIClass">Informe peso e altura</small></div>
  <div class="metric-kpi"><span>💧 Água estimada</span><b id="dashWater">—</b><small>estimativa inicial, ajustável pela rotina</small></div>
- <div class="metric-kpi"><span>🏋️ Atividade</span><b id="dashActivity">—</b><small id="dashActivityDetail">Academia / rotina</small></div>
- <div class="metric-kpi"><span>🚽 Urina</span><b id="dashUrine">—</b><small>registro diário</small></div>
+ <div class="metric-kpi">
+  <span>🏋️ Atividade</span><b id="dashActivity">—</b><small id="dashActivityDetail">Academia / rotina</small>
+  <button type="button" class="metric-edit-btn" id="dashActivityEdit" onclick="abrirEdicaoRotina('atividade')">➕ Informar</button>
+ </div>
+ <div class="metric-kpi">
+  <span>🚽 Urina</span><b id="dashUrine">—</b><small>registro diário</small>
+  <button type="button" class="metric-edit-btn" id="dashUrineEdit" onclick="abrirEdicaoRotina('urina')">➕ Informar</button>
+ </div>
 </div><div class="grid4">
 <div class="card stat"><span>😣 Sintomas</span><b id="nD">0</b></div><div class="card stat"><span>👨‍⚕️ Consultas</span><b id="nC">0</b></div><div class="card stat"><span>💊 Medicamentos</span><b id="nM">0</b></div><div class="card stat"><span>🧪 Exames</span><b id="nE">0</b></div>
 </div>
