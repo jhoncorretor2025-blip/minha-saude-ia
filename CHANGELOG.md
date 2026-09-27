@@ -1,5 +1,14 @@
 # Changelog — Minha Saúde IA
 
+## V4.68 — URL individual por página
+- Cada seção navegável agora recebe `pagina=...` na URL.
+- O botão de navegação atualiza a URL sem recarregar a aplicação.
+- O botão Voltar/Avançar do navegador retorna às páginas visitadas.
+- Atualizar a página mantém a seção aberta.
+- O parâmetro `perfil` continua funcionando junto com `pagina`, mantendo os dados isolados por perfil.
+- Nenhum dado de saúde é colocado na URL.
+- Versão atualizada para V4.68.
+
 ## V4.67 — Link separado para novos usuários
 - Adicionado sistema de **perfil local por URL**.
 - O link normal continua usando o armazenamento local já existente, preservando os dados do usuário atual.
