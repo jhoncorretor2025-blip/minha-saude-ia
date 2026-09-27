@@ -1,5 +1,5 @@
 {
-  "version": "V4.15",
+  "version": "V4.16",
   "updatedAt": "2026-09-27T00:00:00Z",
-  "changes": "Correção do erro na conclusão da importação da ficha IA e alinhamento completo da versão"
+  "changes": "Correção da atualização do perfil na importação: substitui valores provisórios e preserva Não informado corretamente"
 }
