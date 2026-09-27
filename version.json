@@ -1,5 +1,5 @@
 {
-  "version": "V4.29",
-  "updatedAt": "2026-09-27T19:35:00Z",
-  "changes": "Adiciona painel de saúde com indicadores de condições, consultas, medicamentos, exames, tempo desde consulta, total de registros, vacinas e gráficos de atividade e peso"
+  "version": "V4.30",
+  "updatedAt": "2026-09-27T19:45:00Z",
+  "changes": "Transforma a Home em uma experiência de acompanhamento: humor diário, progresso do perfil, sequência, nível de organização, registro rápido, objetivos e descobertas dos dados"
 }
