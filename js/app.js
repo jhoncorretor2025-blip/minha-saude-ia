@@ -164,10 +164,8 @@ function aplicarPreferencias(){
  document.querySelectorAll('[data-feature-nav="nutricao"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.nutricao==='off'));
  document.querySelectorAll('[data-feature-nav="sonoBem"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.sonoBem==='off'));
  document.querySelectorAll('[data-feature-nav="ciclo"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.ciclo==='off'));
- if(pref.academia==='off'){
-  document.querySelectorAll('#dashActivityEdit,#dashActivity').forEach(el=>el.closest('.metric-kpi')?.classList.add('msa-feature-off'));
-  $('medidasCorporaisCard')?.classList.add('msa-feature-off');
- }
+ document.querySelectorAll('#dashActivityEdit,#dashActivity').forEach(el=>el.closest('.metric-kpi')?.classList.toggle('msa-feature-off',pref.academia==='off'));
+ $('medidasCorporaisCard')?.classList.toggle('msa-feature-off',pref.academia==='off');
 }
 function render(){
 let d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
