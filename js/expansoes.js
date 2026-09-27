@@ -297,6 +297,12 @@ function applyDashPrefs(){
  DASH_WIDGETS.forEach(w=>{const el=w.id?byId(w.id):document.querySelector(w.selector);if(el)el.style.display=prefs[w.id||w.selector]===false?'none':''});
 }
 function ensureDashboardUI(){
+ const smart=document.querySelectorAll('#home .smart-care-card');
+ smart.forEach((el,i)=>el.setAttribute('data-msa-dash-index',String(i)));
+ const engagement=document.querySelectorAll('#home .engagement-card');
+ engagement.forEach((el,i)=>el.setAttribute('data-msa-engagement-index',String(i)));
+ if(smart.length>=4){DASH_WIDGETS[3].selector='#home .smart-care-card[data-msa-dash-index="0"]';DASH_WIDGETS[4].selector='#home .smart-care-card[data-msa-dash-index="1"]';DASH_WIDGETS[5].selector='#home .smart-care-card[data-msa-dash-index="2"]';DASH_WIDGETS[6].selector='#home .smart-care-card[data-msa-dash-index="3"]'}
+ if(engagement.length>=3){DASH_WIDGETS[7].selector='#home .engagement-card[data-msa-engagement-index="0"]';DASH_WIDGETS[8].selector='#home .engagement-card[data-msa-engagement-index="1"]';DASH_WIDGETS[10].selector='#home .engagement-card[data-msa-engagement-index="2"]'}
  const toolsGroup=[...document.querySelectorAll('#nav .nav-group')].find(g=>g.querySelector('.nav-toggle[data-menu="tools"]')),menu=toolsGroup?.querySelector('.nav-menu');
  if(menu&&!menu.querySelector('[data-tab="personalizar-inicio"]')){
   const b=document.createElement('button');b.type='button';b.setAttribute('data-tab','personalizar-inicio');b.textContent='⚙️ Personalizar início';menu.appendChild(b);
