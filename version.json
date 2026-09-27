@@ -1,5 +1,5 @@
 {
-  "version": "V5.03",
-  "updatedAt": "2026-09-28T02:50:00Z",
-  "changes": "Gerenciador de perfis locais para separar históricos de pessoas diferentes no mesmo navegador usando namespaces independentes."
+  "version": "V5.05",
+  "updatedAt": "2026-09-28T03:20:00Z",
+  "changes": "Backup criptografado local usando Web Crypto (AES-GCM + PBKDF2), com senha não armazenada."
 }
