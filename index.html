@@ -322,7 +322,8 @@ function iniciarImportacao(){
   if(box){box.style.display='block';box.innerHTML='<div class="alert danger"><b>❌ Módulo de importação não carregou.</b><br>Atualize a página e tente novamente.</div>'}
  },80);
 }
-</script>\n<script src="importacao.js?v=V4.12" defer onerror="window._importacaoScriptErro=true"></script>
+</script>
+<script src="js/importacao.js?v=V4.12" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
 
 
 <script>
