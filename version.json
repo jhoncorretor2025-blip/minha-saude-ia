@@ -1,5 +1,5 @@
 {
-  "version": "V4.4",
+  "version": "V4.5",
   "updatedAt": "2026-09-27T00:00:00Z",
-  "changes": "Diagnóstico de importação + normalização de data, idade e altura"
+  "changes": "Correção da tela de carregamento da importação + preservação de campos do perfil já preenchidos"
 }
