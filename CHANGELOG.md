@@ -1,5 +1,12 @@
 # Changelog — Minha Saúde IA
 
+## V5.08 — Exportação FHIR R4
+- 📦 Exporta um Bundle FHIR R4 em JSON.
+- 👤 Mapeia perfil e dados pessoais disponíveis.
+- 🩺 Mapeia condições, sintomas, sinais vitais, exames, medicamentos, consultas e vacinas.
+- ℹ️ O mapeamento é voltado à portabilidade e organização e não representa um perfil clínico institucional validado.
+
+
 ## V5.07 — Painel de acessibilidade
 - ♿ Tamanho do texto: 100%, 110%, 125% e 150%.
 - 🔆 Maior contraste.
