@@ -1,5 +1,5 @@
 {
-  "version": "V4.87",
-  "updatedAt": "2026-09-27T21:50:00Z"
-  "changes": "Melhorias rápidas de alto impacto em UX: salto para conteúdo, foco acessível, alvos de toque mobile, campos mais confortáveis, ações responsivas e respeito a redução de movimento."
+  "version": "V4.88",
+  "updatedAt": "2026-09-27T22:20:00Z"
+  "changes": "Rascunhos automáticos para formulários, com recuperação manual e armazenamento local separado, sem alterar registros já salvos."
 }
