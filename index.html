@@ -477,6 +477,7 @@ async function onboardIA(){
 function abrirGemini(){window.open('https://gemini.google.com/app','_blank')}
 function resetWelcome(){
  localStorage.removeItem('msa2_onboarding_done');
+ localStorage.removeItem('msa2_onboarding_v2_done');
  alert('A tela inicial aparecerá novamente quando você recarregar o site.');
  location.reload();
 }
@@ -677,12 +678,15 @@ function hasAnyHealthData(){
  return [K.d,K.c,K.m,K.e,K.p].some(k=>get(k).length>0);
 }
 function showOnboarding(){
- if(localStorage.getItem('msa2_onboarding_done')!=='1' && !hasAnyHealthData()){
+ // V2: a nova tela de escolha deve aparecer mesmo para quem já usou a versão anterior.
+ // Depois que a escolha for feita, ela não volta a aparecer a cada abertura.
+ if(localStorage.getItem('msa2_onboarding_v2_done')!=='1' && !hasAnyHealthData()){
    const o=document.getElementById('onboarding'); if(o)o.style.display='block';
  }
 }
 function finishOnboarding(mode){
  localStorage.setItem('msa2_onboarding_done','1');
+ localStorage.setItem('msa2_onboarding_v2_done','1');
  const o=document.getElementById('onboarding');if(o)o.style.display='none';
  if(mode==='import')go('importar');
  if(mode==='profile')go('perfil');
