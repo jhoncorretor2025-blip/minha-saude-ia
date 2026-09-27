@@ -1,5 +1,5 @@
 {
-  "version": "V4.20",
-  "updatedAt": "2026-09-27T00:00:00Z",
-  "changes": "Completa a nova área de acompanhamento com agenda de consultas, evolução de sinais vitais, resumo inteligente visível, notificações e compartilhamento de resumo"
+  "version": "V4.21",
+  "updatedAt": "2026-09-27T18:36:00Z",
+  "changes": "Reestrutura os menus com botões controlados por JavaScript para evitar sobreposição, travamentos e comportamento inconsistente do menu nativo"
 }
