@@ -74,6 +74,13 @@ O aplicativo possui manifesto e service worker. O cache é usado para a interfac
 O registro principal de sono usa horários de início/fim e calcula a duração. Campos de despertares por urina e dor são armazenados como contagem, sem interpretação clínica automática.
 
 
+## V4.85 — Núcleo compartilhado e reorganização segura
+- `js/core/constants.js` é a fonte compartilhada dos nomes de armazenamento.
+- `js/core/storage.js` centraliza leitura, gravação, remoção e migração das chaves legadas.
+- `js/core/utils.js` concentra utilidades reutilizáveis.
+- Os módulos existentes podem consumir `window.MSA_K`, `window.MSAStorage` e `window.MSAUtils` sem alterar o formato dos dados.
+- A reorganização deve continuar em pequenas etapas; não extrair funcionalidades grandes do `app.js` sem validação intermediária.
+
 ## V4.84 — Manutenção e navegação
 - A **versão oficial** é definida em `version.json`; ao publicar uma alteração funcional, a interface e os parâmetros de cache devem acompanhar essa versão.
 - O service worker usa um nome de cache versionado para evitar que arquivos antigos permaneçam ativos após uma atualização.
