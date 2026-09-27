@@ -1,5 +1,5 @@
 {
-  "version": "V5.18",
-  "updatedAt": "2026-09-27T23:05:00Z",
-  "changes": "Ações rápidas globais: novo botão flutuante no desktop para registrar sintoma, medicamento, consulta, exame ou sinal vital com poucos toques. Mantida a experiência mobile dedicada e atualizado o cache da aplicação para V5.18."
+  "version": "V5.19",
+  "updatedAt": "2026-09-27T23:25:00Z",
+  "changes": "Melhorias progressivas no painel: acesso rápido às áreas de saúde e bloco de atenção com resumo contextual dos registros. Mantidas as melhorias anteriores de navegação, mobile e ações rápidas."
 }
