@@ -1,5 +1,5 @@
 {
-  "version": "V4.90",
-  "updatedAt": "2026-09-27T22:50:00Z"
-  "changes": "Lixeira reversível para sintomas, consultas, medicamentos e exames, com restauração ou exclusão definitiva."
+  "version": "V4.91",
+  "updatedAt": "2026-09-27T23:05:00Z"
+  "changes": "Verificador de consistência estrutural: datas inválidas, períodos invertidos, possíveis duplicados e referências quebradas."
 }
