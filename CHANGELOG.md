@@ -1,5 +1,9 @@
 # Changelog — Minha Saúde IA
 
+## V4.99.1 — Correção da personalização do painel
+- 🛠️ Corrigidos os seletores usados para mostrar/ocultar os blocos corretos da página inicial.
+
+
 ## V4.99 — Painel inicial personalizável
 - ⚙️ Blocos da página inicial podem ser mostrados/ocultados.
 - 🔄 Preferência fica armazenada localmente.
