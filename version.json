@@ -1,5 +1,5 @@
 {
-  "version": "V4.21",
-  "updatedAt": "2026-09-27T18:36:00Z",
-  "changes": "Reestrutura os menus com botões controlados por JavaScript para evitar sobreposição, travamentos e comportamento inconsistente do menu nativo"
+  "version": "V4.22",
+  "updatedAt": "2026-09-27T18:40:00Z",
+  "changes": "Corrige definitivamente os menus removendo regras antigas conflitantes e mantendo cada menu fechado até o botão correspondente ser acionado"
 }
