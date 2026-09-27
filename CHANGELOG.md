@@ -1,5 +1,13 @@
 # Changelog — Minha Saúde IA
 
+## V4.92 — Filtros da linha do tempo
+- 🔎 Busca por texto na visão completa da timeline.
+- 🏷️ Filtro por tipo de registro.
+- 📅 Filtro por período.
+- 🧹 Limpeza rápida dos filtros.
+- 🛡️ A prévia da página inicial permanece inalterada.
+
+
 ## V4.91 — Verificador de consistência
 - 🔍 Nova área para verificar a organização dos dados.
 - 📅 Detecta datas inválidas.
