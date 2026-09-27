@@ -678,4 +678,39 @@ function ensureA11yUI(){
 document.addEventListener('DOMContentLoaded',()=>setTimeout(ensureA11yUI,900));
 
 
+
+/* ===== V5.08 — exportação FHIR R4 ===== */
+const uuid=()=>crypto.randomUUID?crypto.randomUUID():'urn:uuid:'+Date.now()+'-'+Math.random().toString(36).slice(2);
+function fhirText(v){return String(v??'').trim()}
+function buildFHIR(){
+ const p=storage.get(K.p)[0]||{},bundleId=uuid(),patientId=uuid(),entries=[];
+ entries.push({fullUrl:'urn:uuid:'+patientId,resource:{resourceType:'Patient',id:patientId,meta:{tag:[{system:'https://minhasaudeia.local',code:'user-entered'}]},name:p.nome?[{text:fhirText(p.nome)}]:undefined,birthDate:fhirText(p.nasc)||undefined,gender:/femin/i.test(fhirText(p.sexo))?'female':/masc/i.test(fhirText(p.sexo))?'male':undefined,telecom:p.tel?[{system:'phone',value:fhirText(p.tel)}]:undefined,contact:p.emerg?[{name:{text:fhirText(p.emerg)}}]:undefined}}});
+ if(p.cond)entries.push({fullUrl:'urn:uuid:'+uuid(),resource:{resourceType:'Condition',subject:{reference:'Patient/'+patientId},code:{text:fhirText(p.cond)},note:[{text:'Informação registrada pelo usuário; sem interpretação adicional.'}]}});
+ storage.get(K.d).forEach(x=>entries.push({fullUrl:'urn:uuid:'+uuid(),resource:{resourceType:'Observation',status:'final',subject:{reference:'Patient/'+patientId},effectiveDateTime:fhirText(x.data)||undefined,code:{text:'Sintoma — '+fhirText(x.local)},valueString:fhirText([x.tipo,x.sint,x.gatilho].filter(Boolean).join(' — '))||undefined,note:x.obs?[{text:fhirText(x.obs)}]:undefined}}));
+ storage.get(K.v).forEach(x=>entries.push({fullUrl:'urn:uuid:'+uuid(),resource:{resourceType:'Observation',status:'final',subject:{reference:'Patient/'+patientId},effectiveDateTime:fhirText(x.data)||undefined,code:{text:'Sinais vitais registrados pelo usuário'},valueString:fhirText(['Peso: '+(x.peso||''),'Pressão: '+(x.pressao||''),'FC: '+(x.fc||''),'Temperatura: '+(x.temp||''),'Glicemia: '+(x.glic||''),'Saturação: '+(x.sat||'')].filter(v=>!/[:]s*$/.test(v)).join(' | '))||undefined}}));
+ storage.get(K.e).forEach(x=>entries.push({fullUrl:'urn:uuid:'+uuid(),resource:{resourceType:'DiagnosticReport',status:'final',subject:{reference:'Patient/'+patientId},effectiveDateTime:fhirText(x.data)||undefined,code:{text:fhirText(x.nome)||'Exame registrado'},conclusion:fhirText(x.res)||undefined,conclusionCode:undefined,results:x.obs?[{display:fhirText(x.obs)}]:undefined}}));
+ storage.get(K.m).forEach(x=>entries.push({fullUrl:'urn:uuid:'+uuid(),resource:{resourceType:'MedicationStatement',status:'active',subject:{reference:'Patient/'+patientId},medicationCodeableConcept:{text:fhirText(x.nome)},dosage:x.dose||x.freq?[{text:fhirText([x.dose,x.freq].filter(Boolean).join(' — '))}]:undefined,effectivePeriod:{start:fhirText(x.inicio)||undefined,end:fhirText(x.fim)||undefined}}}));
+ storage.get(K.c).forEach(x=>entries.push({fullUrl:'urn:uuid:'+uuid(),resource:{resourceType:'Encounter',status:'finished',subject:{reference:'Patient/'+patientId},period:{start:fhirText(x.data)||undefined},class:{code:'AMB'},reasonCode:x.mot?[{text:fhirText(x.mot)}]:undefined,serviceType:x.esp?[{text:fhirText(x.esp)}]:undefined,participant:x.med?[{individual:{display:fhirText(x.med)}}]:undefined}}));
+ storage.get(K.vax).forEach(x=>entries.push({fullUrl:'urn:uuid:'+uuid(),resource:{resourceType:'Immunization',status:'completed',patient:{reference:'Patient/'+patientId},occurrenceDateTime:fhirText(x.data)||undefined,vaccineCode:{text:fhirText(x.nome)},note:x.obs?[{text:fhirText(x.obs)}]:undefined}}));
+ return {resourceType:'Bundle',id:bundleId,type:'collection',meta:{tag:[{system:'https://minhasaudeia.local',code:'user-entered-organized-data'}]},timestamp:new Date().toISOString(),entry:entries};
+}
+function cleanFHIR(obj){
+ if(Array.isArray(obj))return obj.map(cleanFHIR);
+ if(obj&&typeof obj==='object'){const o={};Object.keys(obj).forEach(k=>{if(obj[k]!==undefined&&obj[k]!==null&&obj[k]!==''&&(Array.isArray(obj[k])?obj[k].length:true))o[k]=cleanFHIR(obj[k])});return o}
+ return obj;
+}
+window.msaExportFHIR=function(){
+ const bundle=cleanFHIR(buildFHIR());
+ downloadLocal('minha-saude-ia-fhir-r4-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(bundle,null,2),'application/fhir+json');
+ alert('✅ Exportação FHIR criada. Antes de importar em outro sistema, confirme a compatibilidade com o perfil FHIR usado por ele.');
+};
+function ensureFHIRUI(){
+ const sec=byId('exportar')||byId('backup');if(!sec||byId('msaFHIRCard'))return;
+ const card=document.createElement('div');card.id='msaFHIRCard';card.className='card';card.style.marginTop='13px';
+ card.innerHTML='<h2>🧩 Exportação FHIR R4</h2><div class="muted">Exporte seus dados organizados em um Bundle baseado no FHIR R4 para facilitar portabilidade futura.</div><button class="btn secondary" type="button" id="msaFHIRExport" style="margin-top:12px">📦 Exportar FHIR R4</button><div class="alert warn" style="margin-top:12px">⚠️ O mapeamento é de portabilidade e organização, não um perfil clínico validado para interoperabilidade institucional.</div>';
+ sec.appendChild(card);card.querySelector('#msaFHIRExport').addEventListener('click',window.msaExportFHIR);
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(ensureFHIRUI,950));
+
+
 })();
