@@ -1,5 +1,5 @@
 {
-  "version": "V4.53",
-  "updatedAt": "2026-09-28T00:30:00Z",
-  "changes": "Corrige inicialização do aplicativo, navegação dos menus, leitura segura do localStorage, compatibilidade com dados antigos, proteção contra sobrescrita e limpeza da URL pública."
+  "version": "V4.54",
+  "updatedAt": "2026-09-28T00:45:00Z",
+  "changes": "Revisão estrutural: menu independente, navegação por delegação de eventos, inicialização separada da aplicação e correção da estrutura CSS."
 }
