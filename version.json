@@ -1,5 +1,5 @@
 {
-  "version": "V5.14",
-  "updatedAt": "2026-09-28T00:30:00Z",
-  "changes": "Fluxo de importação IA redesenhado com etapas visuais, estados claros, recuperação automática de rascunho e preservação do texto após cancelamento da revisão."
+  "version": "V5.15",
+  "updatedAt": "2026-09-27T22:00:00Z",
+  "changes": "Menu Ferramentas reorganizado em 2 colunas para reduzir a altura do dropdown e melhorar a visualização."
 }
