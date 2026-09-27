@@ -1,5 +1,5 @@
 {
-  "version": "V4.31",
-  "updatedAt": "2026-09-27T20:00:00Z",
-  "changes": "Adiciona módulo opcional de saúde reprodutiva feminina ao perfil, incluindo ciclo e menstruação, atividade sexual, preservativo, gestações, maternidade e histórico reprodutivo; atualiza importação por IA"
+  "version": "V4.32",
+  "updatedAt": "2026-09-27T20:15:00Z",
+  "changes": "Adiciona acompanhamento preventivo feminino ao perfil, com registro de preventivo do colo do útero, mamografia/acompanhamento das mamas, testes de IST, HPV e próximos acompanhamentos; atualiza importação por IA"
 }
