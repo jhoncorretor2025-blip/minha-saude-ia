@@ -385,4 +385,83 @@ function ensureMedicationAdherenceUI(){
 document.addEventListener('DOMContentLoaded',()=>setTimeout(ensureMedicationAdherenceUI,650));
 
 
+
+/* ===== V5.02 — resolução de conflitos na importação IA ===== */
+const IMPORT_CONFLICTS=[
+ {prop:'dores',key:K.d,label:'Sintomas',match:['data','local'],exact:['data','local','int','tipo']},
+ {prop:'consultas',key:K.c,label:'Consultas',match:['data','esp','med'],exact:['data','esp','med','mot']},
+ {prop:'meds',key:K.m,label:'Medicamentos',match:['nome','inicio'],exact:['nome','dose','inicio','fim']},
+ {prop:'exames',key:K.e,label:'Exames',match:['data','nome'],exact:['data','nome','res']},
+ {prop:'vitais',key:K.v,label:'Sinais vitais',match:['data'],exact:['data','peso','pressao','fc','temp','glic','sat']},
+ {prop:'vacinas',key:K.vax,label:'Vacinas',match:['data','nome'],exact:['data','nome','obs']},
+ {prop:'familia',key:K.fam,label:'Histórico familiar',match:['parente','info'],exact:['parente','info','idade']},
+ {prop:'lembretes',key:K.r,label:'Lembretes',match:['data','nome'],exact:['data','nome','tipo']},
+ {prop:'documentos',key:K.doc,label:'Documentos',match:['nome','data'],exact:['nome','data','tipo']}
+];
+const normConflict=v=>String(v??'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function conflictSignature(x,fields){return fields.map(f=>normConflict(x?.[f])).join('|')}
+function buildImportConflictPlan(n){
+ const records=[];
+ IMPORT_CONFLICTS.forEach(cfg=>{
+  const incoming=Array.isArray(n?.[cfg.prop])?n[cfg.prop]:[],current=storage.get(cfg.key);
+  incoming.forEach((item,index)=>{
+   if(!item||typeof item!=='object')return;
+   const exact=current.some(x=>conflictSignature(x,cfg.exact)===conflictSignature(item,cfg.exact));
+   const similar=!exact&&current.some(x=>conflictSignature(x,cfg.match)===conflictSignature(item,cfg.match)&&conflictSignature(item,cfg.match)!==(''.repeat(cfg.match.length)));
+   if(exact||similar)records.push({id:cfg.prop+'_'+index,prop:cfg.prop,index,label:cfg.label,kind:exact?'igual':'parecido',choice:'skip',incoming:item});
+  });
+ const pCurrent=storage.get(K.p)[0]||{},profile=[];
+ Object.keys(n?.p||{}).forEach(field=>{
+  const nv=String(n.p[field]??'').trim(),ov=String(pCurrent[field]??'').trim();
+  if(nv&&nv.toLowerCase()!=='não informado'&&ov&&normConflict(nv)!==normConflict(ov))profile.push({id:'perfil_'+field,field,label:field,valueCurrent:ov,valueIncoming:nv,choice:'keep'});
+ });
+ return {records,profile};
+}
+function importConflictSummary(plan){
+ if(!plan.records.length&&!plan.profile.length)return '<div class="msa-feedback msa-feedback-success">✅ Nenhum conflito detectado. Os dados novos podem ser adicionados normalmente.</div>';
+ const rec=plan.records.map(x=>'<div class="item"><div class="itemtop"><b>🔎 '+esc(x.label)+' — '+esc(x.kind)+'</b><span class="tag">Entrada '+(x.index+1)+'</span></div><p>Escolha o que fazer com esta entrada.</p><label><input type="radio" name="ic_'+esc(x.id)+'" value="skip" checked> Manter o que já existe</label> <label><input type="radio" name="ic_'+esc(x.id)+'" value="add"> Adicionar a entrada da IA</label></div>').join('');
+ const prof=plan.profile.map(x=>'<div class="item"><b>👤 '+esc(x.label)+'</b><p>Atual: <b>'+esc(x.valueCurrent)+'</b><br>Importado: <b>'+esc(x.valueIncoming)+'</b></p><label><input type="radio" name="ic_'+esc(x.id)+'" value="keep" checked> Manter atual</label> <label><input type="radio" name="ic_'+esc(x.id)+'" value="import"> Usar importado</label></div>').join('');
+ return '<div class="msa-feedback msa-feedback-warning"><b>⚠️ '+(plan.records.length+plan.profile.length)+' conflito(s) / possível(is) duplicata(s)</b><br>Revise cada item antes de salvar.</div>'+
+   (rec?'<h3 style="margin-top:14px">Registros</h3><div class="list">'+rec+'</div>':'')+
+   (prof?'<h3 style="margin-top:14px">Campos do perfil</h3><div class="list">'+prof+'</div>':'');
+}
+window.abrirRevisaoImportacao=function(n){
+ const plan=buildImportConflictPlan(n);
+ window._importPendente=n;window._msaImportConflictPlan=plan;
+ const box=byId('importReviewContent');
+ let base=typeof window.resumirImportacao==='function'?window.resumirImportacao(n):'<div class="msa-feedback msa-feedback-info">Revise os dados recebidos da IA.</div>';
+ if(box)box.innerHTML=base+importConflictSummary(plan);
+ const modal=byId('importReviewOverlay');if(modal)modal.style.display='flex';
+};
+window.cancelarImportacaoPendente=function(){
+ window._importPendente=null;window._msaImportConflictPlan=null;
+ const modal=byId('importReviewOverlay');if(modal)modal.style.display='none';
+ if(byId('resultadoImport'))byId('resultadoImport').innerHTML='<div class="alert">↩️ Importação cancelada. Nada foi salvo.</div>';
+};
+window.confirmarImportacaoPendente=function(){
+ const n=window._importPendente,plan=window._msaImportConflictPlan;if(!n)return;
+ const chosen=JSON.parse(JSON.stringify(n));
+ (plan?.records||[]).forEach(x=>{
+  const el=document.querySelector('input[name="ic_'+CSS.escape(x.id)+'"]:checked'),choice=el?.value||'skip';
+  if(choice==='skip'&&Array.isArray(chosen[x.prop]))chosen[x.prop]=chosen[x.prop].filter((_,i)=>i!==x.index);
+ });
+ const modal=byId('importReviewOverlay');if(modal)modal.style.display='none';
+ try{
+  if(typeof window.importarNormalizado==='function')window.importarNormalizado(chosen);
+  else if(typeof importarNormalizado==='function')importarNormalizado(chosen);
+  (plan?.profile||[]).forEach(x=>{
+    const el=document.querySelector('input[name="ic_'+CSS.escape(x.id)+'"]:checked');
+    if(el?.value==='import'){
+      const p=storage.get(K.p)[0]||{};p[x.field]=x.valueIncoming;storage.set(K.p,[p]);
+    }
+  });
+  try{render();if(typeof loadProfile==='function')loadProfile();if(typeof renderCarteirinha==='function')renderCarteirinha();if(typeof renderNovosModulos==='function')renderNovosModulos()}catch(e){}
+  const msg=byId('resultadoImport');if(msg)msg.innerHTML='<div class="alert safe">✅ <b>Importação concluída com revisão.</b> Conflitos foram tratados conforme suas escolhas.</div>';
+ }catch(e){
+  console.error('[Minha Saúde IA] confirmação da importação',e);
+  const msg=byId('resultadoImport');if(msg)msg.innerHTML='<div class="alert danger">❌ Não foi possível concluir a importação revisada.</div>';
+ }finally{window._importPendente=null;window._msaImportConflictPlan=null}
+};
+
+
 })();
