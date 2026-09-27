@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Saúde IA — V5.25</title>
+<title>Minha Saúde IA — V5.26</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -40,7 +40,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
  .nav-menu{min-width:210px;max-width:calc(100vw - 24px)}
 }
 
-/* V5.25 — Ferramentas em 2 colunas para reduzir a altura do menu */
+/* V5.26 — Ferramentas em 2 colunas para reduzir a altura do menu */
 .tools-menu{
  grid-template-columns:repeat(2,minmax(0,1fr));
  min-width:430px;
@@ -63,7 +63,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
  }
 }
  
-/* V5.25 — experiência mobile dedicada, sem alterar o desktop */
+/* V5.26 — experiência mobile dedicada, sem alterar o desktop */
 .msa-mobile-bar,.msa-mobile-drawer,.msa-mobile-backdrop{display:none}
 @media(max-width:760px){
   body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
@@ -280,10 +280,10 @@ footer{padding-bottom:20px}
 @media(max-width:430px){#cicloMenuBtn{font-size:11px}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V5.25">
+  <link rel="stylesheet" href="css/design-system.css?v=V5.26">
 
 <style id="v519-progressive-ui">
-/* V5.25 — melhorias progressivas de dashboard, favoritos e alertas */
+/* V5.26 — melhorias progressivas de dashboard, favoritos e alertas */
 .progressive-hub{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:13px}
 .progressive-card{background:#fff;border:1px solid #e6eaf1;border-radius:20px;padding:17px;box-shadow:0 8px 24px rgba(15,23,42,.06)}
 .progressive-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.progressive-head h2{margin:0 0 4px}
@@ -312,6 +312,82 @@ footer{padding-bottom:20px}
   if(d){d.setAttribute('aria-hidden','false');var bd=document.getElementById('msaMobileBackdrop');if(bd)bd.setAttribute('aria-hidden','false');document.body.classList.add('msa-mobile-menu-open');var x=d.querySelector('.msa-mobile-drawer-close');if(x)x.focus();}
  }
  document.addEventListener('DOMContentLoaded',function(){var b=document.getElementById('msaMobileMenuFab');if(b)b.addEventListener('click',abrir)});
+})();
+</script>
+
+<style id="v526-simplified-home">
+.home-command-center{display:grid;grid-template-columns:1.45fr .55fr;gap:14px;margin:0 0 14px}
+.home-command-main,.home-command-side{background:#fff;border:1px solid #e2e8f0;border-radius:22px;padding:18px;box-shadow:0 8px 24px rgba(15,23,42,.06)}
+.home-command-kicker{font-size:12px;font-weight:900;color:#2563eb;text-transform:uppercase;letter-spacing:.06em}
+.home-command-main h2{font-size:26px;margin:5px 0}.home-command-main p{margin:0;color:#64748b}
+.home-primary-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:14px}
+.home-primary-actions button{border:1px solid #dbe4f0;background:#f8fafc;border-radius:16px;padding:13px 8px;display:flex;flex-direction:column;gap:6px;align-items:center;font:inherit;font-weight:900;color:#172033;cursor:pointer}
+.home-primary-actions button:hover{background:#eef4ff;border-color:#b9caf4;color:#1d4ed8;transform:translateY(-1px)}
+.home-primary-actions strong{font-size:24px}.home-primary-actions span{font-size:12px}
+.home-secondary-actions{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}.home-more-btn,.home-guide-btn{border:0;background:transparent;color:#475569;font:inherit;font-weight:800;cursor:pointer;padding:7px 8px}
+.home-guide-btn{color:#2563eb}
+.home-side-title{font-weight:900;margin-bottom:8px}.home-command-side{display:flex;flex-direction:column;gap:7px}
+.home-command-side button{border:1px solid #e2e8f0;background:#f8fafc;border-radius:12px;padding:10px;text-align:left;font:inherit;font-weight:800;color:#334155;cursor:pointer}
+.home-secondary-content{display:none}
+.msa-home-overlay{position:fixed;inset:0;background:rgba(15,23,42,.52);z-index:13000;display:none;align-items:center;justify-content:center;padding:16px}
+.msa-home-overlay.open{display:flex}.msa-home-modal{width:min(680px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:24px;padding:20px;box-shadow:0 24px 70px rgba(15,23,42,.3)}
+.msa-home-modal-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.msa-home-modal h2{margin:0 0 5px}.msa-close{border:0;background:#f1f5f9;border-radius:12px;width:40px;height:40px;font-size:18px;cursor:pointer}
+.home-more-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:15px}.home-more-card{border:1px solid #e2e8f0;background:#f8fafc;border-radius:14px;padding:12px;text-align:left;font:inherit;font-weight:800;cursor:pointer}.home-more-card b{display:block;margin-bottom:3px}.home-more-card small{font-weight:600;color:#64748b}
+.home-guide-list{display:grid;gap:9px;margin-top:15px}.home-guide-item{border:1px solid #e2e8f0;background:#f8fafc;border-radius:14px;padding:13px;text-align:left;font:inherit;cursor:pointer}.home-guide-item b{display:block;font-size:14px}.home-guide-item span{display:block;color:#64748b;font-size:12px;margin-top:3px}
+.onboarding-progress{height:7px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin:13px 0}.onboarding-progress span{display:block;height:100%;width:25%;background:linear-gradient(90deg,#2563eb,#6d28d9);border-radius:99px}
+@media(max-width:760px){.home-command-center{grid-template-columns:1fr}.home-command-side{display:none}.home-primary-actions{grid-template-columns:repeat(2,1fr)}.home-command-main{padding:15px}.home-command-main h2{font-size:23px}.home-more-grid{grid-template-columns:1fr}.msa-home-modal{border-radius:20px;padding:16px}}
+</style>
+<div id="msaHomeMoreOverlay" class="msa-home-overlay" aria-hidden="true">
+ <div class="msa-home-modal">
+  <div class="msa-home-modal-head"><div><h2>📚 Mais opções</h2><div class="muted">Tudo continua disponível, mas organizado por objetivo.</div></div><button class="msa-close" onclick="closeHomeModal()">✕</button></div>
+  <div class="home-more-grid">
+   <button class="home-more-card" onclick="homeGo('timeline')"><b>📊 Acompanhamento</b><small>Histórico, nutrição, sono e família</small></button>
+   <button class="home-more-card" onclick="homeGo('relatorios')"><b>📁 Organização</b><small>Relatórios, documentos, calendário e segurança</small></button>
+   <button class="home-more-card" onclick="homeGo('ia')"><b>🤖 IA e ferramentas</b><small>IA, importação, busca e perguntas</small></button>
+   <button class="home-more-card" onclick="homeGo('perfil')"><b>👤 Meu perfil</b><small>Dados pessoais e carteirinha</small></button>
+  </div>
+ </div>
+</div>
+<div id="msaHomeGuideOverlay" class="msa-home-overlay" aria-hidden="true">
+ <div class="msa-home-modal">
+  <div class="msa-home-modal-head"><div><h2>🤖 O que você precisa fazer?</h2><div class="muted">Escolha uma situação e eu levo você ao lugar certo.</div></div><button class="msa-close" onclick="closeHomeModal()">✕</button></div>
+  <div class="home-guide-list">
+   <button class="home-guide-item" onclick="homeGo('dor')"><b>Estou com um sintoma ou dor</b><span>Registrar local, intensidade e observações.</span></button>
+   <button class="home-guide-item" onclick="homeGo('meds')"><b>Quero registrar um medicamento</b><span>Guardar nome, dose, frequência e observações.</span></button>
+   <button class="home-guide-item" onclick="homeGo('consultas')"><b>Tenho uma consulta</b><span>Organizar consulta, orientações e retorno.</span></button>
+   <button class="home-guide-item" onclick="homeGo('exames')"><b>Tenho um exame</b><span>Guardar resultado e observações.</span></button>
+   <button class="home-guide-item" onclick="homeGo('timeline')"><b>Quero ver meu histórico</b><span>Visualizar seus registros em ordem cronológica.</span></button>
+  </div>
+ </div>
+</div>
+<div id="msaOnboardingOverlay" class="msa-home-overlay" aria-hidden="true">
+ <div class="msa-home-modal">
+  <div class="msa-home-modal-head"><div><div class="home-command-kicker">PRIMEIRO ACESSO</div><h2>👋 Vamos começar</h2><div class="muted">Você não precisa preencher tudo agora.</div></div><button class="msa-close" onclick="finishOnboarding()">✕</button></div>
+  <div class="onboarding-progress"><span></span></div>
+  <p><b>1. Seu perfil</b> — nome, altura e outras informações básicas.</p>
+  <p><b>2. Medicamentos</b> — registre os que quiser acompanhar.</p>
+  <p><b>3. Sintomas, consultas e exames</b> — adicione somente o que fizer sentido.</p>
+  <p><b>4. Pronto!</b> — depois você usa o painel conforme precisar.</p>
+  <div class="row" style="margin-top:15px"><button class="btn green" onclick="onboardingGo('perfil')">👤 Começar pelo perfil</button><button class="btn secondary" onclick="finishOnboarding()">Pular por enquanto</button></div>
+ </div>
+</div>
+<script>
+(function(){
+ window.openHomeMore=function(){var e=document.getElementById('msaHomeMoreOverlay');if(e){e.classList.add('open');e.setAttribute('aria-hidden','false')}};
+ window.openHomeGuide=function(){var e=document.getElementById('msaHomeGuideOverlay');if(e){e.classList.add('open');e.setAttribute('aria-hidden','false')}};
+ window.closeHomeModal=function(){document.querySelectorAll('.msa-home-overlay').forEach(function(e){e.classList.remove('open');e.setAttribute('aria-hidden','true')})};
+ window.homeGo=function(id){closeHomeModal();setTimeout(function(){if(typeof go==='function')go(id)},40)};
+ window.finishOnboarding=function(){localStorage.setItem('msa2_onboarding_done','1');closeHomeModal()};
+ window.onboardingGo=function(id){finishOnboarding();setTimeout(function(){if(typeof go==='function')go(id)},40)};
+ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeHomeModal()});
+ document.addEventListener('DOMContentLoaded',function(){
+  setTimeout(function(){
+   if(!localStorage.getItem('msa2_onboarding_done') && document.getElementById('msaOnboardingOverlay')){
+    document.getElementById('msaOnboardingOverlay').classList.add('open');
+    document.getElementById('msaOnboardingOverlay').setAttribute('aria-hidden','false');
+   }
+  },500);
+ });
 })();
 </script>
 </head>
@@ -421,67 +497,87 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V5.25</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V5.26</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 <nav id="nav" class="grouped-nav">
  <div class="nav-group">
-  <button type="button" class="nav-toggle" data-menu="overview">🏠 Visão geral ▾</button>
+  <button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button>
   <div class="nav-menu">
-   <button type="button" data-tab="home">🏠 Início</button>
+   <button type="button" data-tab="home">🏠 Visão geral</button>
    <button type="button" data-tab="timeline">🕐 Linha do tempo</button>
   </div>
  </div>
  <div class="nav-group">
-  <button type="button" class="nav-toggle" data-menu="health">🩺 Saúde ▾</button>
+  <button type="button" class="nav-toggle" data-menu="health">❤️ Minha saúde ▾</button>
   <div class="nav-menu">
    <button type="button" data-tab="dor">😣 Sintomas</button>
-   <button type="button" data-tab="consultas">👨‍⚕️ Consultas</button>
    <button type="button" data-tab="meds">💊 Medicamentos</button>
+   <button type="button" data-tab="consultas">👨‍⚕️ Consultas</button>
    <button type="button" data-tab="exames">🧪 Exames</button>
-   <button type="button" data-tab="perfil">👤 Perfil</button>
-   <button type="button" data-tab="carteirinha">🪪 Carteirinha</button>
-   <button type="button" data-tab="acompanhamento">📊 Acompanhamento</button>
+   <button type="button" data-tab="acompanhamento">📈 Sinais vitais</button>
+   <button type="button" data-tab="perfil">👤 Meu perfil</button>
   </div>
  </div>
  <div class="nav-group">
-  <button type="button" class="nav-toggle" data-menu="complementos">🧩 Complementos ▾</button>
+  <button type="button" class="nav-toggle" data-menu="followup">📊 Acompanhamento ▾</button>
   <div class="nav-menu">
+   <button type="button" data-tab="timeline">🕐 Linha do tempo</button>
    <button type="button" data-tab="nutricao">🥗 Nutrição</button>
-   <button type="button" data-tab="sono">😴 Sono e Bem-estar</button>
+   <button type="button" data-tab="sono">😴 Sono e bem-estar</button>
    <button type="button" data-tab="familia">🧬 Histórico familiar</button>
   </div>
  </div>
  <div class="nav-group">
-  <button type="button" id="cicloMenuBtn" data-tab="perfil" onclick="setTimeout(function(){var f=document.getElementById('cicloForm');if(f){f.scrollIntoView({behavior:'smooth',block:'start');}},120)">🌸 Ciclo menstrual</button>
- </div>
- <div class="nav-group resources-group">
-  <button type="button" class="nav-toggle" data-menu="resources">📚 Recursos ▾</button>
-  <div class="nav-menu resources-menu">
+  <button type="button" class="nav-toggle" data-menu="organization">📁 Organização ▾</button>
+  <div class="nav-menu">
    <button type="button" data-tab="relatorios">📊 Relatórios</button>
-   <button type="button" data-tab="exportar">📤 Exportar</button>
    <button type="button" data-tab="documentos">📄 Documentos</button>
+   <button type="button" data-tab="calendario">📅 Calendário</button>
+   <button type="button" data-tab="lembretes">⏰ Lembretes</button>
+   <button type="button" data-tab="exportar">📤 Exportar</button>
    <button type="button" data-tab="backup">🔐 Segurança</button>
-   <button type="button" data-tab="importar">⚡ Importar com IA</button>
-   <button type="button" data-tab="ia">🤖 IA</button>
   </div>
  </div>
  <div class="nav-group">
-  <button type="button" id="cicloMenuBtn" data-tab="perfil" onclick="setTimeout(function(){var f=document.getElementById('cicloForm');if(f){f.scrollIntoView({behavior:'smooth',block:'start');}},120)">🌸 Ciclo menstrual</button>
- </div>
- <div class="nav-group tools-group">
-  <button type="button" class="nav-toggle" data-menu="tools">🛠️ Ferramentas ▾</button>
+  <button type="button" class="nav-toggle" data-menu="tools">🤖 IA e ferramentas ▾</button>
   <div class="nav-menu tools-menu">
-   <button type="button" onclick="abrirModoEmergencia()" style="color:#b91c1c">🚨 Emergência</button>
-   <button type="button" data-tab="buscar">🔎 Buscar em tudo</button>
-   <button type="button" data-tab="avisos">🔔 Central de avisos</button>
-   <button type="button" data-tab="calendario">📅 Calendário</button>
+   <button type="button" data-tab="ia">🤖 IA</button>
+   <button type="button" data-tab="importar">⚡ Importar com IA</button>
+   <button type="button" data-tab="buscar">🔎 Buscar</button>
    <button type="button" data-tab="perguntas">❓ Perguntas para consulta</button>
-   <button type="button" data-tab="lembretes">⏰ Lembretes e rotina</button>
+   <button type="button" data-tab="avisos">🔔 Central de avisos</button>
+   <button type="button" onclick="abrirModoEmergencia()" style="color:#b91c1c">🚨 Emergência</button>
+   <button type="button" id="cicloMenuBtn" data-tab="perfil" onclick="setTimeout(function(){var f=document.getElementById('cicloForm');if(f){f.scrollIntoView({behavior:'smooth',block:'start');}},120)">🌸 Ciclo menstrual</button>
+   <button type="button" data-tab="carteirinha">🪪 Carteirinha</button>
   </div>
  </div>
 </nav>
 
 <section id="home" class="active"><div id="homeProfileHero" class="home-profile-hero"><div class="home-avatar" id="homeAvatar"><span>👤</span></div><div class="home-profile-main"><div class="home-greeting">👋 Olá!</div><h2 id="homeProfileName">Seu nome</h2><div class="home-profile-stats"><span>🎂 <b id="homeProfileAge">—</b> anos</span><span>⚖️ <b id="homeProfileWeight">—</b> kg</span><span>📏 <b id="homeProfileHeight">—</b></span><span>🩸 <b id="homeProfileBlood">—</b></span></div></div><button class="home-profile-edit" type="button" onclick="go('perfil')">✏️ Editar</button></div>
+
+<div class="home-command-center" id="homeCommandCenter">
+ <div class="home-command-main">
+  <div class="home-command-kicker">✨ Comece por aqui</div>
+  <h2>O que você quer fazer?</h2>
+  <p>Escolha uma ação. O restante fica organizado nos menus.</p>
+  <div class="home-primary-actions">
+   <button onclick="go('dor')"><strong>😣</strong><span>Registrar sintoma</span></button>
+   <button onclick="go('meds')"><strong>💊</strong><span>Medicamento</span></button>
+   <button onclick="go('consultas')"><strong>👨‍⚕️</strong><span>Consulta</span></button>
+   <button onclick="go('exames')"><strong>🧪</strong><span>Exame</span></button>
+  </div>
+  <div class="home-secondary-actions">
+   <button class="home-more-btn" onclick="openHomeMore()">☰ Mais opções</button>
+   <button class="home-guide-btn" onclick="openHomeGuide()">🤖 Não sei por onde começar</button>
+  </div>
+ </div>
+ <div class="home-command-side">
+  <div class="home-side-title">📌 Atalhos úteis</div>
+  <button onclick="go('timeline')">🕐 Ver meu histórico</button>
+  <button onclick="prepararConsulta()">👨‍⚕️ Preparar consulta</button>
+  <button onclick="go('acompanhamento')">📈 Acompanhar sinais</button>
+ </div>
+</div>
 <div class="metric-panel">
  <div class="metric-kpi"><span>⚖️ IMC</span><b id="dashBMI">—</b><small id="dashBMIClass">Informe peso e altura</small></div>
  <div class="metric-kpi"><span>💧 Água estimada</span><b id="dashWater">—</b><small>estimativa inicial, ajustável pela rotina</small></div>
@@ -506,7 +602,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <div class="dash-section-title"><div><h2>🕐 Linha do tempo</h2><div class="muted">Veja sua evolução em ordem cronológica.</div></div><button class="btn secondary" onclick="go('timeline')">Abrir timeline</button></div>
 <div id="timelinePreview" class="timeline-mini"></div>
 </div>
-<div class="card" style="margin-top:13px"><h2>Como você está hoje?</h2><div class="muted">Registre uma informação ou prepare-se para uma consulta.</div>
+<div class="home-secondary-content"><div class="card" style="margin-top:13px"><h2>Como você está hoje?</h2><div class="muted">Registre uma informação ou prepare-se para uma consulta.</div>
 <div class="card" style="margin-top:13px;background:linear-gradient(135deg,#eef4ff,#f7f2ff);border-color:#dbe5ff">
 <h2 style="margin-bottom:5px">🤖 Minha Saúde IA</h2>
 <div class="muted">Organize seu histórico de saúde com ajuda da IA e depois mantenha tudo aqui.</div>
@@ -657,7 +753,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
   <div class="alert safe" style="margin-top:13px">💡 <b>Dica:</b> esta carteirinha é um resumo pessoal e não substitui documento oficial, prontuário ou orientação de profissionais de saúde.</div>
  </div>
 </section>
-<section id="timeline"><div class="card"><div class="dash-section-title"><div><h2>🕐 Linha do tempo da minha saúde</h2><div class="muted">Consultas, sintomas, medicamentos, exames, vacinas e sinais vitais em uma única visão.</div></div><button class="btn secondary" onclick="go('home')">← Início</button></div><div id="timelineFull" class="timeline-full"></div></div></section>
+<section id="timeline"><div class="card"><div class="dash-section-title"><div><h2>🕐 Linha do tempo da minha saúde</h2><div class="muted">Consultas, sintomas, medicamentos, exames, vacinas e sinais vitais em uma única visão.</div></div><button class="btn secondary" onclick="go('home')">← Início</button></div><div id="timelineFull" class="timeline-full"></div></div></div></section>
 <section id="timeline_old_placeholder" style="display:none"></section>
 <!-- timeline original movido visualmente para o novo painel -->><div class="card"><h2>🕐 Linha do tempo da saúde</h2><div class="muted">Todos os seus registros organizados por data.</div><div id="tl" class="timeline" style="margin-top:17px"></div></div></section>
 
@@ -1192,7 +1288,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V5.25. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V5.26. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -1213,12 +1309,12 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V5.25" defer></script>
-<script src="js/core/storage.js?v=V5.25" defer></script>
-<script src="js/core/utils.js?v=V5.25" defer></script>
-<script src="js/menu.js?v=V5.25" defer></script>
-<script src="js/app.js?v=V5.25" defer></script>
-<script src="js/recursos.js?v=V5.25" defer></script>
+<script src="js/core/constants.js?v=V5.26" defer></script>
+<script src="js/core/storage.js?v=V5.26" defer></script>
+<script src="js/core/utils.js?v=V5.26" defer></script>
+<script src="js/menu.js?v=V5.26" defer></script>
+<script src="js/app.js?v=V5.26" defer></script>
+<script src="js/recursos.js?v=V5.26" defer></script>
 
 
 <script>
@@ -1235,11 +1331,11 @@ function iniciarImportacao(){
  },80);
 }
 </script>
-<script src="js/importacao.js?v=V5.25" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/melhorias-primeiras.js?v=V5.25" defer></script>
-<script src="js/expansoes.js?v=V5.25" defer></script>
-<script src="js/importacao-fluxo-v514.js?v=V5.25" defer></script>
-<script src="js/melhorias-v513.js?v=V5.25" defer></script>
+<script src="js/importacao.js?v=V5.26" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/melhorias-primeiras.js?v=V5.26" defer></script>
+<script src="js/expansoes.js?v=V5.26" defer></script>
+<script src="js/importacao-fluxo-v514.js?v=V5.26" defer></script>
+<script src="js/melhorias-v513.js?v=V5.26" defer></script>
 
 
 <script>
@@ -1402,7 +1498,7 @@ async function verificarNovaVersao(){
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
   const data=await r.json();
-  if(data.version && data.version!=='V5.25'){
+  if(data.version && data.version!=='V5.26'){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
@@ -1532,7 +1628,7 @@ initReports();render();setTimeout(verificarNovaVersao,700);
 
 
 
-<!-- V5.25 — melhorias gráficas e funções de personalização -->
+<!-- V5.26 — melhorias gráficas e funções de personalização -->
 <style id="v520-visual">
 body.msa-dark{--bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--border:#263244;--shadow:0 8px 24px rgba(0,0,0,.28);background:#0b1220;color:#e5e7eb}
 body.msa-dark .card,body.msa-dark .box,body.msa-dark .progressive-card,body.msa-dark .modal-card,body.msa-dark .msa-fab-action{background:#111827!important;color:#e5e7eb!important;border-color:#263244!important}
@@ -1563,7 +1659,7 @@ body.msa-dark .msa-theme-toggle{background:#1f2937;color:#f8fafc;border-color:#3
  });
 })();
 </script>
-<!-- V5.25 — ações rápidas globais -->
+<!-- V5.26 — ações rápidas globais -->
 <style id="v518-quick-actions">
 .msa-fab-wrap{position:fixed;right:22px;bottom:22px;z-index:11900;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .msa-fab-menu{display:none;flex-direction:column;gap:7px;align-items:flex-end;margin-bottom:2px}
