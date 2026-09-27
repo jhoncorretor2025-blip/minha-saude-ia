@@ -1,5 +1,5 @@
 {
-  "version": "V5.24",
-  "updatedAt": "2026-09-28T00:30:00Z",
-  "changes": "Correção definitiva da geração de relatórios: scripts e componentes da página principal não são mais incorporados ao documento de relatório. Relatórios completo, médico, sintomas, medicamentos, exames e consultas voltam a exibir somente seus dados formatados."
+  "version": "V5.25",
+  "updatedAt": "2026-09-28T00:45:00Z",
+  "changes": "Privacidade na Linha do tempo: sinais vitais continuam registrados como evento, mas seus valores (peso, pressão, frequência cardíaca, temperatura, glicemia e saturação) não aparecem mais no resumo cronológico. Registros do mesmo dia são agrupados em um único evento."
 }
