@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V5.03 — Perfis locais
+- 👨‍👩‍👧‍👦 Gerenciador de perfis separados no navegador.
+- 🔗 Links individuais para abrir cada histórico.
+- 🔒 Cada perfil usa um namespace de armazenamento independente.
+
+
 ## V5.02 — Conflitos na importação IA
 - 🔎 Detecta entradas iguais ou parecidas com registros existentes.
 - ✅ Permite manter o atual ou adicionar o importado.
