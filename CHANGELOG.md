@@ -1,5 +1,14 @@
 # Changelog — Minha Saúde IA
 
+## V5.13 — Importação inteligente, ficha resumida e preparação de consulta
+- 💬 Adicionada continuidade conversacional quando a IA faz uma pergunta durante a importação.
+- 🔎 Adicionada validação prévia da resposta da IA antes de salvar.
+- 🩺 Criada ficha de saúde resumida com cópia para compartilhamento após revisão.
+- 👨‍⚕️ Criado modo Preparar consulta com condições, sintomas, medicamentos, exames, consultas anteriores e perguntas para conversar com o profissional.
+- 🧩 Recursos novos foram isolados em `js/melhorias-v513.js` para reduzir impacto no núcleo existente.
+- 🛡️ Nenhum recurso novo faz diagnóstico ou substitui avaliação profissional.
+
+
 ## V5.12 — Perguntas e doenças na importação IA
 - 🩺 A IA agora verifica explicitamente doenças/condições quando essa informação estiver ausente.
 - ❓ Pode perguntar: “Quais doenças ou condições de saúde você tem ou já teve?”.
