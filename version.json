@@ -1,5 +1,5 @@
 {
-  "version": "V4.78",
-  "updatedAt": "2026-09-27T20:20:00Z",
-  "changes": "Correção do HTML/JavaScript dos relatórios e acesso direto ao ciclo menstrual. O botão do ciclo agora navega diretamente para o diário."
+  "version": "V4.79",
+  "updatedAt": "2026-09-27T20:35:00Z",
+  "changes": "Ciclo menstrual contextual: o menu fica oculto quando o sexo do perfil não é Feminino e aparece automaticamente para perfil Feminino."
 }
