@@ -6,7 +6,7 @@
 'use strict';
 const K=window.K||{};
 const key=(name,fallback)=>K[name]||fallback;
-function g(k){try{const x=localStorage.getItem(k);return x?JSON.parse(x):[]}catch(e){return[]}}
+function g(k){try{const x=window.msaStorage.getItem(k);return x?JSON.parse(x):[]}catch(e){return[]}}
 function profile(){return g(key('p','msa2_perfil'))[0]||{}}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function download(name,text,type){
@@ -16,7 +16,7 @@ function download(name,text,type){
 window.exportarJSONCompleto=function(){
  const keys=['msa2_dores','msa2_consultas','msa2_meds','msa2_exames','msa2_perfil','msa2_vitais','msa2_lembretes','msa2_vacinas','msa2_familia','msa2_documentos','msa2_nutri','msa2_suplementos','msa2_reacoes_alimentares','msa2_hidratacao','msa2_sono','msa2_bemestar','msa2_gatilhos','msa2_medicamentos_rotina','msa2_medicamentos_tomados'];
  const data={app:'Minha Saúde IA',formatVersion:'1.0',exportedAt:new Date().toISOString(),data:{}};
- keys.forEach(k=>{try{data.data[k]=JSON.parse(localStorage.getItem(k)||'[]')}catch(e){data.data[k]=[]}}); 
+ keys.forEach(k=>{try{data.data[k]=JSON.parse(window.msaStorage.getItem(k)||'[]')}catch(e){data.data[k]=[]}}); 
  download('minha-saude-ia-backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(data,null,2),'application/json');
 };
 window.abrirModoEmergencia=function(){
@@ -49,7 +49,7 @@ window.processarDocumentoSaude=function(ev){
  reader.onload=function(){
   const arr=g('msa2_documentos');
   arr.push({id:Date.now(),nome:file.name,tipo:file.type||'arquivo',tamanho:file.size,data:new Date().toISOString(),arquivo:reader.result});
-  try{localStorage.setItem('msa2_documentos',JSON.stringify(arr));renderDocumentosSaude();alert('📄 Documento adicionado ao seu cofre local.')}catch(e){arr.pop();alert('⚠️ Não foi possível salvar. O armazenamento do navegador pode estar cheio.')}
+  try{window.msaStorage.setItem('msa2_documentos',JSON.stringify(arr));renderDocumentosSaude();alert('📄 Documento adicionado ao seu cofre local.')}catch(e){arr.pop();alert('⚠️ Não foi possível salvar. O armazenamento do navegador pode estar cheio.')}
  };
  reader.readAsDataURL(file);
  ev.target.value='';
@@ -65,7 +65,7 @@ window.abrirDocumentoSaude=function(id){
 };
 window.removerDocumentoSaude=function(id){
  if(!confirm('Remover este documento do armazenamento local?'))return;
- const arr=g('msa2_documentos').filter(x=>x.id!==id);localStorage.setItem('msa2_documentos',JSON.stringify(arr));renderDocumentosSaude();
+ const arr=g('msa2_documentos').filter(x=>x.id!==id);window.msaStorage.setItem('msa2_documentos',JSON.stringify(arr));renderDocumentosSaude();
 };
 window.inicializarRecursosV461=function(){renderDocumentosSaude()};
 document.addEventListener('DOMContentLoaded',window.inicializarRecursosV461);
