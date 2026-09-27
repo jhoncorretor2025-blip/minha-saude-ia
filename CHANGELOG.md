@@ -1,5 +1,20 @@
 # Changelog — Minha Saúde IA
 
+## V4.65 — Saúde reprodutiva ampliada
+- Adicionado campo de **duração média do ciclo**.
+- Adicionado campo de **duração média do sangramento**.
+- Adicionado **regularidade do ciclo: regular ou irregular**.
+- Anticoncepcional agora registra o **método utilizado**.
+- Para pílula combinada, permite registrar regime de **21, 24 ou 28 dias**.
+- Para minipílula, permite registrar o tipo quando conhecido, incluindo **tradicional** ou **drospirenona**.
+- Mantidos nome, horário habitual e data de início.
+- Adicionado botão **🚨 Esqueci uma dose**, com orientação de segurança baseada no método cadastrado e aviso para confirmar a bula específica.
+- Adicionado acesso ao **Bulário Eletrônico da Anvisa**.
+- A completude do sistema passa a considerar informações reprodutivas quando o perfil é feminino.
+- Importação por IA atualizada com todos os novos campos.
+- O aplicativo não usa uma regra única para todos os anticoncepcionais, porque as orientações de esquecimento podem variar conforme o método e o produto.
+- Versão atualizada para V4.65.
+
 ## V4.64 — Controle diário de anticoncepcional
 - Para perfil **Feminino**, o bloco de saúde reprodutiva agora pergunta se há uso de anticoncepcional diário.
 - Permite registrar **nome, horário habitual e data de início**.
