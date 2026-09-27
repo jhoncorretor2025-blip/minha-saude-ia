@@ -4,9 +4,10 @@
  */
 (function(){
 'use strict';
-const K=window.K||{};
+const K=window.MSA_K||window.K||{};
+const storage=window.MSAStorage;
 const key=(name,fallback)=>K[name]||fallback;
-function g(k){try{const x=window.msaStorage.getItem(k);return x?JSON.parse(x):[]}catch(e){return[]}}
+function g(k){return storage.get(k)}
 function profile(){return g(key('p','msa2_perfil'))[0]||{}}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function download(name,text,type){
@@ -49,7 +50,7 @@ window.processarDocumentoSaude=function(ev){
  reader.onload=function(){
   const arr=g('msa2_documentos');
   arr.push({id:Date.now(),nome:file.name,tipo:file.type||'arquivo',tamanho:file.size,data:new Date().toISOString(),arquivo:reader.result});
-  try{window.msaStorage.setItem('msa2_documentos',JSON.stringify(arr));renderDocumentosSaude();alert('📄 Documento adicionado ao seu cofre local.')}catch(e){arr.pop();alert('⚠️ Não foi possível salvar. O armazenamento do navegador pode estar cheio.')}
+  try{storage.set(K.doc,arr);renderDocumentosSaude();alert('📄 Documento adicionado ao seu cofre local.')}catch(e){arr.pop();alert('⚠️ Não foi possível salvar. O armazenamento do navegador pode estar cheio.')}
  };
  reader.readAsDataURL(file);
  ev.target.value='';
@@ -65,7 +66,7 @@ window.abrirDocumentoSaude=function(id){
 };
 window.removerDocumentoSaude=function(id){
  if(!confirm('Remover este documento do armazenamento local?'))return;
- const arr=g('msa2_documentos').filter(x=>x.id!==id);window.msaStorage.setItem('msa2_documentos',JSON.stringify(arr));renderDocumentosSaude();
+ const arr=g('msa2_documentos').filter(x=>x.id!==id);storage.set(K.doc,arr);renderDocumentosSaude();
 };
 window.inicializarRecursosV461=function(){renderDocumentosSaude()};
 document.addEventListener('DOMContentLoaded',window.inicializarRecursosV461);
