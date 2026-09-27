@@ -68,3 +68,7 @@ O módulo `js/melhorias.js` concentra busca, avisos, calendário e perguntas par
 
 ## V4.71 — PWA e offline
 O aplicativo possui manifesto e service worker. O cache é usado para a interface e arquivos estáticos; dados pessoais continuam no armazenamento local do perfil e não são incluídos no cache como conteúdo remoto.
+
+
+## V4.74 — Diário do sono
+O registro principal de sono usa horários de início/fim e calcula a duração. Campos de despertares por urina e dor são armazenados como contagem, sem interpretação clínica automática.
