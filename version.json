@@ -1,5 +1,5 @@
 {
-  "version": "V4.6",
+  "version": "V4.7",
   "updatedAt": "2026-09-27T00:00:00Z",
-  "changes": "Auditoria do fluxo IA → importação, limpeza de funções duplicadas e abertura das IAs com cópia robusta"
+  "changes": "Módulo de importação IA separado em importacao.js para facilitar manutenção e correção da tela de carregamento"
 }
