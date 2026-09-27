@@ -1,5 +1,5 @@
 {
-  "version": "V4.84",
-  "updatedAt": "2026-09-27T21:50:00Z",
-  "changes": "Melhorias de manutenção e navegação: versão/cache sincronizados, Ciclo menstrual reposicionado, navegação móvel refinada e foco de teclado reforçado."
+  "version": "V4.85",
+  "updatedAt": "2026-09-27T22:10:00Z"
+  "changes": "Primeira etapa de reorganização segura: constantes, armazenamento e utilidades compartilhados; app, melhorias e recursos passam a reutilizar a camada central."
 }
