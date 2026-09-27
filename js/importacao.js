@@ -55,9 +55,9 @@ function importarNormalizado(n){
  var pk=['nome','nasc','idade','sexo','altura','peso','cond','alerg','circ','supl','info'],has=function(k){var v=String(n.p[k]||'').trim();return v&&v.toLowerCase()!=='não informado'};
  if(n.dores.length)set(K.d,get(K.d).concat(n.dores));if(n.consultas.length)set(K.c,get(K.c).concat(n.consultas));if(n.meds.length)set(K.m,get(K.m).concat(n.meds));if(n.exames.length)set(K.e,get(K.e).concat(n.exames));
  if(pk.some(has)){var old=get(K.p)[0]||{},merged=Object.assign({},old),novos=0,ignorados=0;pk.forEach(function(k){if(has(k)){if(String(merged[k]||'').trim())ignorados++;else{merged[k]=n.p[k];novos++}}});set(K.p,[merged]);window._importPerfilNovos=novos;window._importPerfilIgnorados=ignorados}
- render();
+ try{render()}catch(renderError){console.error('[Minha Saúde IA] render após importação',renderError);window._importRenderWarning=String(renderError&&renderError.message||renderError)}
  var ns=Number(window._importPerfilNovos||0),ig=Number(window._importPerfilIgnorados||0),hist=n.dores.length+n.consultas.length+n.meds.length+n.exames.length;
- $('resultadoImport').innerHTML='<div class="alert safe">✅ <b>Importação concluída!</b> '+ns+' campo(s) novo(s) do perfil e '+hist+' registro(s) de histórico foram salvos. '+(ig?ig+' campo(s) já preenchido(s) foram preservados. ':'')+'</div>';
+ $('resultadoImport').innerHTML='<div class="alert safe">✅ <b>Importação concluída!</b> '+ns+' campo(s) novo(s) do perfil e '+hist+' registro(s) de histórico foram salvos. '+(ig?ig+' campo(s) já preenchido(s) foram preservados. ':'')+aviso+'</div>';
 }
 async function processarImportacao(){
  var btn=$('importBtn'),loading=$('importLoading'),campo=$('importIA'),raw=campo?campo.value.trim():'';
@@ -73,8 +73,8 @@ async function processarImportacao(){
   atualizarProgresso(55,'Organizando histórico','Preparando sintomas, consultas, medicamentos e exames…');await esperar(250);
   atualizarProgresso(75,'Salvando informações','Gravando os dados no seu histórico…');await esperar(250);
   importarNormalizado(n);atualizarProgresso(90,'Atualizando aplicativo','Atualizando seu perfil e seus registros…');await esperar(200);atualizarProgresso(100,'Concluído','Importação concluída com sucesso! ✅');await esperar(500);
- }catch(e){if(loading)loading.style.display='none';if(btn){btn.disabled=false;btn.textContent='✨ Importar e salvar'}criarDiagnosticoImportacao('IMPORT_RUNTIME_001','Processando importação',e,raw);$('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui importar. O diagnóstico foi registrado abaixo.</div>';return}
+ }catch(e){if(loading)loading.style.display='none';if(btn){btn.disabled=false;btn.textContent='✨ Importar e salvar'}criarDiagnosticoImportacao('IMPORT_RUNTIME_001','Processando importação',e,raw);$('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui importar. Veja o diagnóstico detalhado logo acima.</div>';return}
  if(loading)loading.style.display='none';if(btn){btn.disabled=false;btn.textContent='✨ Importar e salvar'}
 }
-function limparImportacao(){if($('importIA'))$('importIA').value='';if($('resultadoImport'))$('resultadoImport').innerHTML=''}
+function limparImportacao(){if($('importIA'))$('importIA').value='';if($('resultadoImport'))$('resultadoImport').innerHTML='';if($('importDiagnostic')){$('importDiagnostic').style.display='none';$('importDiagnostic').innerHTML=''}}
 window._importacaoModuloV414=true;
