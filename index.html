@@ -386,8 +386,12 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
     <div class="card-identity"><div class="card-label">MINHA SAÚDE IA</div><h1 id="cardName">Seu nome</h1><p id="cardBasic">Preencha seu perfil para montar a carteirinha.</p></div>
    </div>
    <div class="health-card-grid">
-    <div><span>🚨 Alergias</span><b id="cardAllergy">Não informado</b></div>
-    <div><span>🩺 Condições</span><b id="cardConditions">Não informado</b></div>
+    <div><span>🩸 Tipo sanguíneo</span><b id="cardBlood">Não informado</b></div>
+    <div><span>🎂 Data de nascimento</span><b id="cardBirth">Não informado</b></div>
+    <div><span>📏 Altura</span><b id="cardHeight">Não informado</b></div>
+    <div><span>⚖️ Peso</span><b id="cardWeight">Não informado</b></div>
+    <div><span>🚨 Alergias conhecidas</span><b id="cardAllergy">Não informado</b></div>
+    <div><span>🩺 Condições/diagnósticos contínuos</span><b id="cardConditions">Não informado</b></div>
     <div><span>💊 Medicamentos</span><b id="cardMeds">Nenhum registrado</b></div>
     <div><span>📞 Emergência</span><b id="cardEmergency">Não informado</b></div>
    </div>
@@ -423,8 +427,8 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 
 <section id="exames"><div class="card"><h2>🧪 Exame</h2><form id="eForm"><div class="grid2"><label>Nome do exame<input id="eNome" required></label><label>Data<input id="eData" type="date" required></label></div><label>Resultado / valores importantes<textarea id="eRes"></textarea></label><label>Observações<textarea id="eObs"></textarea></label><button class="btn">💾 Salvar exame</button></form></div><div class="card" style="margin-top:13px"><h2>Exames registrados</h2><div id="listE" class="list"></div></div></section>
 
-<section id="perfil"><div class="card"><h2>👤 Perfil de saúde</h2><div class="muted">Informações que podem ser úteis em uma consulta.</div><form id="pForm" style="margin-top:13px"><div class="profile-photo-row"><div class="profile-photo-preview" id="profilePhotoPreview"><span>👤</span></div><div><label>📸 Sua foto<input id="pFoto" type="file" accept="image/*"></label><div class="muted" style="margin-top:6px">Use uma foto frontal. Ela fica armazenada apenas neste navegador.</div></div></div><div class="grid2"><label>Nome<input id="pNome"></label><label>Idade<input id="pIdade" type="number" min="0" max="130" placeholder="Ex.: 37"></label></div>
-<div class="grid2"><label>Peso aproximado (kg)<input id="pPeso" type="number" min="0" max="500" step="0.1" placeholder="Ex.: 80"></label><label>Altura (cm)<input id="pAltura" type="number" min="0" max="250" step="0.1" placeholder="Ex.: 184"></label></div><div class="grid2"><label>Sexo<input id="pSexo" placeholder="Se quiser informar"></label><label>Tipo sanguíneo<select id="pSangue"><option value="">Não informado</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></label></div><label>💊 Suplementos<textarea id="pSupl" placeholder="Nome, dose e frequência, se souber..."></textarea></label><label>🚨 Alergias<textarea id="pAlerg" placeholder="Medicamentos, alimentos, outras alergias..."></textarea></label><label>🩺 Condições já diagnosticadas<textarea id="pCond"></textarea></label><label>🏥 Cirurgias / internações anteriores<textarea id="pCirc"></textarea></label><label>📌 Informações importantes<textarea id="pInfo"></textarea></label>
+<section id="perfil"><div class="card"><h2>👤 Perfil de saúde</h2><div class="muted">Informações que podem ser úteis em uma consulta.</div><form id="pForm" style="margin-top:13px"><div class="profile-photo-row"><div class="profile-photo-preview" id="profilePhotoPreview"><span>👤</span></div><div><label>📸 Sua foto<input id="pFoto" type="file" accept="image/*"></label><div class="muted" style="margin-top:6px">Use uma foto frontal. Ela fica armazenada apenas neste navegador.</div></div></div><div class="grid2"><label>Nome<input id="pNome"></label><label>Data de nascimento<input id="pNasc" type="date"></label></div>
+<div class="grid2"><label>Idade<input id="pIdade" type="number" min="0" max="130" placeholder="Ex.: 37"></label><label>Peso aproximado (kg)<input id="pPeso" type="number" min="0" max="500" step="0.1" placeholder="Ex.: 80"></label></div><div class="grid2"><label>Sexo<input id="pSexo" placeholder="Se quiser informar"></label><label>Tipo sanguíneo<select id="pSangue"><option value="">Não informado</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></label></div><div class="grid2"><label>Altura (cm)<input id="pAltura" type="number" min="0" max="250" step="0.1" placeholder="Ex.: 184"></label><label>Tipo sanguíneo confirmado?<small class="muted" style="display:block;margin-top:6px">Informe apenas se souber com segurança.</small></label></div><label>💊 Suplementos<textarea id="pSupl" placeholder="Nome, dose e frequência, se souber..."></textarea></label><label>🚨 Alergias<textarea id="pAlerg" placeholder="Medicamentos, alimentos, outras alergias..."></textarea></label><label>🩺 Condições já diagnosticadas<textarea id="pCond"></textarea></label><label>🏥 Cirurgias / internações anteriores<textarea id="pCirc"></textarea></label><label>📌 Informações importantes<textarea id="pInfo"></textarea></label>
 <div class="card" style="margin-top:13px;background:#fffaf0;border-color:#fde7b2">
 <h3 style="margin-top:0">💊 Uso frequente de remédios para dor</h3>
 <div class="muted">Registre apenas o que costuma usar. Isso é histórico para consultas, não uma orientação de tratamento.</div>
@@ -610,6 +614,9 @@ valor
 valor
 
 [SEXO]
+valor
+
+[TIPO_SANGUINEO]
 valor
 
 [ALTURA]
