@@ -1,5 +1,5 @@
 {
-  "version": "V4.38",
-  "updatedAt": "2026-09-27T21:05:00Z",
-  "changes": "Corrige o fluxo da tela-guia da IA: fecha o modal ao abrir ChatGPT ou Gemini e adiciona opção explícita para fechar e voltar ao aplicativo"
+  "version": "V4.39",
+  "updatedAt": "2026-09-27T21:20:00Z",
+  "changes": "Transforma a Home em painel de acompanhamento com próximos cuidados, resumo inteligente, preparação para consulta, timeline visual e prévias de histórico"
 }
