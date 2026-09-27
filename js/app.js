@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V4.67 */
+/* Minha Saúde IA — aplicação principal V4.68 */
 
 const K={d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',p:'msa2_perfil',v:'msa2_vitais',r:'msa2_lembretes',vax:'msa2_vacinas',fam:'msa2_familia',doc:'msa2_documentos',nutri:'msa2_nutri',suplReg:'msa2_suplementos',food:'msa2_reacoes_alimentares',agua:'msa2_hidratacao',sono:'msa2_sono',bem:'msa2_bemestar',gat:'msa2_gatilhos',medRot:'msa2_medicamentos_rotina',medTaken:'msa2_medicamentos_tomados',anticoncepcional:'msa2_anticoncepcional'};
 const LEGACY_KEYS={msa_dores:'msa2_dores',msa_consultas:'msa2_consultas',msa_meds:'msa2_meds',msa_exames:'msa2_exames',msa_perfil:'msa2_perfil',msa_vitais:'msa2_vitais',msa_lembretes:'msa2_lembretes',msa_vacinas:'msa2_vacinas',msa_familia:'msa2_familia',msa_documentos:'msa2_documentos'};
@@ -28,12 +28,36 @@ const set=(k,v)=>{
 };
 const $=x=>document.getElementById(x);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-function go(id){
+function atualizarURLPagina(id,modo){
+ try{
+  const u=new URL(window.location.href);
+  const pagina=id||'home';
+  u.searchParams.set('pagina',pagina);
+  const state={pagina:pagina};
+  if(modo==='replace') history.replaceState(state,'',u.toString());
+  else history.pushState(state,'',u.toString());
+ }catch(e){console.warn('[Minha Saúde IA] URL da página indisponível:',e)}
+}
+function paginaDaURL(){
+ try{return new URL(window.location.href).searchParams.get('pagina')||'home'}catch(e){return 'home'}
+}
+function mostrarPaginaDaURL(){
+ const id=paginaDaURL();
+ const alvo=document.getElementById(id);
+ if(!alvo){atualizarURLPagina('home','replace');return}
  document.querySelectorAll('nav button[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
  document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===id));
  fecharMenus();
+ try{render()}catch(e){console.error('[Minha Saúde IA] render da URL',e)}
+}
+function go(id){
+ document.querySelectorAll('nav button[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+ document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===id));
+ atualizarURLPagina(id,'push');
+ fecharMenus();
  try{render()}catch(e){console.error('[Minha Saúde IA] render ao navegar',e)}
 }
+window.addEventListener('popstate',function(){mostrarPaginaDaURL()});
 function fecharMenus(){
  document.querySelectorAll('#nav .nav-group').forEach(g=>g.classList.remove('open'));
  document.querySelectorAll('#nav .nav-toggle').forEach(b=>{b.classList.remove('open');b.setAttribute('aria-expanded','false')});
