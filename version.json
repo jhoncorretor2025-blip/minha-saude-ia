@@ -1,5 +1,5 @@
 {
-  "version": "V4.61",
-  "updatedAt": "2026-09-27T21:30:00Z",
-  "changes": "Pacote de recursos complementares: modo emergência, cofre local de documentos, exportação JSON e integração modular."
+  "version": "V4.62",
+  "updatedAt": "2026-09-27T21:45:00Z",
+  "changes": "Completude geral do cadastro: percentual de preenchimento, pendências visíveis e checklist copiável para compartilhamento."
 }
