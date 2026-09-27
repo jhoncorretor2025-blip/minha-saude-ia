@@ -1,15 +1,13 @@
 # Changelog — Minha Saúde IA
 
-## V4.61 — Pacote de recursos complementares
-- Criado módulo independente `js/recursos.js` para novas funcionalidades.
-- Adicionado **Modo Emergência** com nome, tipo sanguíneo, alergias, condições, medicamentos e contato de emergência.
-- Adicionada opção de imprimir/salvar o resumo de emergência.
-- Adicionado **Cofre de Documentos** para armazenar localmente PDFs, imagens e arquivos pequenos.
-- Adicionada abertura e remoção de documentos armazenados localmente.
-- Adicionada exportação completa em **JSON estruturado**, facilitando migração para outra IA ou aplicação.
-- Mantidos os recursos existentes de backup, PIN, relatórios, timeline, carteira, lembretes e importação IA.
-- Corrigido o texto do prompt para não solicitar informações que o usuário não possui.
-- Versão atualizada para V4.61 em toda a interface principal.
+## V4.62 — Completude do cadastro
+- O percentual de preenchimento agora considera o **sistema inteiro**, não apenas os campos básicos do perfil.
+- A tela mostra quantos itens estão preenchidos e quantos ainda estão pendentes.
+- As pendências são exibidas diretamente na área de progresso.
+- Adicionado botão **“Copiar lista do que falta”** para enviar um checklist a outra pessoa.
+- O cálculo considera perfil, rotina, histórico clínico e organização.
+- Mantida a regra de não inventar informações; campos sem informação ficam pendentes.
+- Versão atualizada para V4.62.
 
 ## V4.60 — Importação de IA mais tolerante
 - O importador agora reconhece marcadores com ou sem acentos e pequenas variações de nomes.
@@ -30,3 +28,4 @@
 - Redesign visual mobile-first.
 - Menus agrupados.
 - Correções no carregamento do aplicativo e no fluxo de importação.
+
