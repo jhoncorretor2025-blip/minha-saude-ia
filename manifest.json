@@ -1,0 +1,14 @@
+{
+  "name": "Minha Saúde IA",
+  "short_name": "Minha Saúde IA",
+  "description": "Organizador pessoal de informações de saúde com armazenamento local.",
+  "lang": "pt-BR",
+  "start_url": "./?pagina=home",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6fb",
+  "theme_color": "#2563eb",
+  "icons": [
+    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
