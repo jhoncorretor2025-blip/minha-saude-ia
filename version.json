@@ -1,5 +1,5 @@
 {
-  "version": "V4.22",
-  "updatedAt": "2026-09-27T18:40:00Z",
-  "changes": "Corrige definitivamente os menus removendo regras antigas conflitantes e mantendo cada menu fechado até o botão correspondente ser acionado"
+  "version": "V4.23",
+  "updatedAt": "2026-09-27T18:43:00Z",
+  "changes": "Limpa todas as regras antigas dos menus e mantém apenas a navegação robusta por botões JavaScript, evitando menus abertos, sobrepostos ou travados"
 }
