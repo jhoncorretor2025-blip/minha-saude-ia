@@ -111,39 +111,54 @@ function registrarHumor(valor){
  const st=$('moodStatus');if(st)st.textContent='Registrado hoje: '+valor;
  const done=$('moodDone');if(done){done.textContent='✓ Feito';done.style.background='#ecfdf3';done.style.color='#059669'}
 }
+function calcularCompletudeSaude(){
+ const p=get(K.p)[0]||{};
+ const itens=[
+  ['Perfil','Nome',p.nome],['Perfil','Data de nascimento',p.nasc],['Perfil','Sexo',p.sexo],['Perfil','Altura',p.altura],['Perfil','Peso',p.peso],
+  ['Perfil','Tipo sanguíneo',p.sangue],['Perfil','Alergias',p.alerg],['Perfil','Condições de saúde',p.cond],['Perfil','Cirurgias/internações',p.circ],
+  ['Perfil','Contato de emergência',p.emerg],['Rotina','Atividade física',p.academia||p.atividade],['Rotina','Tipo de trabalho',p.trabalhoTipo],
+  ['Rotina','Consumo de água',p.aguaDia],['Rotina','Alimentação',p.alimentacao],
+  ['Histórico','Medicamentos',get(K.m).length],['Histórico','Sintomas',get(K.d).length],['Histórico','Consultas',get(K.c).length],
+  ['Histórico','Exames',get(K.e).length],['Histórico','Sinais vitais',get(K.v).length],['Histórico','Vacinas',get(K.vax).length],
+  ['Histórico','Histórico familiar',get(K.fam).length],['Organização','Lembretes',get(K.r).length],['Organização','Documentos',get(K.doc).length]
+ ];
+ const ok=v=>Array.isArray(v)?v.length>0:!!v&&String(v).trim()!==''&&!/^não informado$/i.test(String(v).trim());
+ const preenchidos=itens.filter(x=>ok(x[2])).length;
+ return {percentual:Math.round(preenchidos/itens.length*100),total:itens.length,preenchidos,itens,pendentes:itens.filter(x=>!ok(x[2]))};
+}
+function gerarChecklistCompartilhamento(){
+ const c=calcularCompletudeSaude();
+ const linhas=['MINHA SAÚDE IA — CHECKLIST DE PREENCHIMENTO','Completude atual: '+c.percentual+'% ('+c.preenchidos+'/'+c.total+')','','INFORMAÇÕES QUE AINDA FALTAM:'];
+ c.pendentes.forEach(x=>linhas.push('• ['+x[0]+'] '+x[1]));
+ if(!c.pendentes.length)linhas.push('• Nenhuma informação pendente 🎉');
+ linhas.push('','Observação: alguns campos podem não se aplicar à pessoa. Preencha apenas informações realmente conhecidas.');
+ const txt=linhas.join('\n');
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>alert('📋 Checklist copiado! Agora você pode enviar para a pessoa preencher o que falta.')).catch(()=>prompt('Copie o checklist:',txt));}
+ else prompt('Copie o checklist:',txt);
+}
 function atualizarEngajamento(){
  const hoje=new Date().toISOString().slice(0,10);
  const h=JSON.parse(localStorage.getItem('msa2_humor')||'null');
  if(h&&h.data===hoje){const st=$('moodStatus');if(st)st.textContent='Registrado hoje: '+h.valor;const d=$('moodDone');if(d){d.textContent='✓ Feito';d.style.background='#ecfdf3';d.style.color='#059669'}}
- const p=get(K.p)[0]||{}, fields=[p.nome,p.nasc,p.sexo,p.altura,p.peso,p.cond,p.alerg,p.circ,p.supl,p.info];
- const filled=fields.filter(x=>x&&String(x).trim()&&!/^não informado$/i.test(String(x))).length;
- const pct=Math.round(filled/fields.length*100);
+ const c=calcularCompletudeSaude(),pct=c.percentual;
  const pe=$('profilePercent'),pf=$('profileProgress');if(pe)pe.textContent=pct+'%';if(pf)pf.style.width=pct+'%';
- const missing=[];if(!p.nome)missing.push('nome');if(!p.nasc)missing.push('data de nascimento');if(!p.cond)missing.push('condições');if(!p.alerg)missing.push('alergias');
- const pm=$('profileMissing');if(pm)pm.textContent=missing.length?'Falta: '+missing.slice(0,2).join(' e ')+(missing.length>2?'…':''):'Perfil muito bem preenchido! 🎉';
+ const pm=$('profileMissing');
+ if(pm)pm.innerHTML=c.pendentes.length
+   ? '<b>📌 Ainda faltam '+c.pendentes.length+' informações:</b> '+c.pendentes.slice(0,4).map(x=>esc(x[1])).join(' · ')+(c.pendentes.length>4?' · …':'')
+   : '<b>🎉 Cadastro completo!</b> Não há informações pendentes nos campos avaliados.';
+ const level=$('healthLevel');if(level)level.textContent=pct>=90?'🏆 Muito completo':pct>=70?'🌳 Bem organizado':pct>=40?'🌿 Em construção':'🌱 Começando';
+ const sd=$('streakDays');
  const all=[...get(K.d),...get(K.c),...get(K.m),...get(K.e),...get(K.v),...get(K.vax)].map(x=>x.data||x.inicio).filter(Boolean);
  const days=[...new Set(all.map(x=>String(x).slice(0,10)))].sort().reverse();let streak=0;
  for(let i=0;i<days.length;i++){const target=new Date();target.setDate(target.getDate()-i);if(days[i]===target.toISOString().slice(0,10))streak++;else break}
- const sd=$('streakDays');if(sd)sd.textContent=streak;
- const level=$('healthLevel');if(level)level.textContent=pct>=85?'🏆 Muito completo':pct>=60?'🌳 Bem organizado':pct>=30?'🌿 Organizado':'🌱 Começando';
- const goals=[
-  ['perfil',pct>=85,'Completar meu perfil'],
-  ['consulta',get(K.c).length>0,'Registrar uma consulta'],
-  ['vital',get(K.v).length>0,'Registrar um sinal vital'],
-  ['med',get(K.m).length>0,'Organizar medicamentos']
- ];
- const gl=$('goalList');if(gl)gl.innerHTML=goals.map((g,i)=>'<label class="goal '+(g[1]?'done':'')+'"><input type="checkbox" '+(g[1]?'checked':'')+' disabled><span>'+(g[1]?'✅ ':'⬜ ')+g[2]+'</span></label>').join('');
+ if(sd)sd.textContent=streak;
+ const goals=[['perfil',pct>=90,'Completar meu cadastro'],['consulta',get(K.c).length>0,'Registrar uma consulta'],['vital',get(K.v).length>0,'Registrar um sinal vital'],['med',get(K.m).length>0,'Organizar medicamentos']];
+ const gl=$('goalList');if(gl)gl.innerHTML=goals.map(g=>'<label class="goal '+(g[1]?'done':'')+'"><input type="checkbox" '+(g[1]?'checked':'')+' disabled><span>'+(g[1]?'✅ ':'⬜ ')+g[2]+'</span></label>').join('');
  const d=get(K.d),m=get(K.m),co=get(K.c),e=get(K.e);
- const disc=[
-  ['😣',d.length,d.length===1?'sintoma registrado':'sintomas registrados'],
-  ['👨‍⚕️',co.length,co.length===1?'consulta registrada':'consultas registradas'],
-  ['💊',m.length,m.length===1?'medicamento registrado':'medicamentos registrados'],
-  ['🧪',e.length,e.length===1?'exame registrado':'exames registrados'],
-  ['📈',get(K.v).length,get(K.v).length===1?'sinal vital registrado':'sinais vitais registrados'],
-  ['🔥',streak,streak===1?'dia acompanhado':'dias acompanhados']
- ];
+ const disc=[['😣',d.length,d.length===1?'sintoma registrado':'sintomas registrados'],['👨‍⚕️',co.length,co.length===1?'consulta registrada':'consultas registradas'],['💊',m.length,m.length===1?'medicamento registrado':'medicamentos registrados'],['🧪',e.length,e.length===1?'exame registrado':'exames registrados'],['📈',get(K.v).length,get(K.v).length===1?'sinal vital registrado':'sinais vitais registrados'],['🔥',streak,streak===1?'dia acompanhado':'dias acompanhados']];
  const dc=$('healthDiscoveries');if(dc)dc.innerHTML=disc.map(x=>'<div class="discovery"><b>'+x[0]+' '+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
 }
+
 function atualizarDashboard(){
  const d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e),v=get(K.v),vax=get(K.vax),p=get(K.p)[0]||{};
  const condTxt=String(p.cond||'').trim();
