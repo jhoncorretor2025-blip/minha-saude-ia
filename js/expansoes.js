@@ -360,4 +360,29 @@ function renderPatterns(){
 document.addEventListener('DOMContentLoaded',()=>setTimeout(ensurePatternsUI,600));
 
 
+
+/* ===== V5.01 — painel avançado de medicamentos ===== */
+function renderMedicationAdherence(){
+ const box=byId('msaMedicationAdherence');if(!box)return;
+ const meds=storage.get(K.medRot),taken=storage.get(K.medTaken),now=new Date(),from=new Date(now.getFullYear(),now.getMonth(),now.getDate()-29);
+ if(!meds.length){box.innerHTML='<div class="empty">Crie uma rotina de medicamento para acompanhar os registros aqui.</div>';return}
+ const totalAll=taken.filter(x=>new Date(x.data)>=from).length;
+ box.innerHTML='<div class="grid2" style="margin-bottom:13px"><div class="card stat"><span>💊 Rotinas</span><b>'+meds.length+'</b></div><div class="card stat"><span>✅ Registros nos últimos 30 dias</span><b>'+totalAll+'</b></div></div>'+
+  '<div class="list">'+meds.map(m=>{
+    const logs=taken.filter(x=>String(x.medId)===String(m.id)&&new Date(x.data)>=from).sort((a,b)=>String(b.data).localeCompare(String(a.data)));
+    const unique=[...new Set(logs.map(x=>String(x.data).slice(0,10)))],pct=Math.round(unique.length/30*100);
+    return '<div class="item"><div class="itemtop"><b>💊 '+esc(m.nome)+'</b><span class="tag">'+unique.length+'/30 dias com registro</span></div><p>'+esc(m.dose||'Dose não informada')+' · horário '+esc(m.hora||'não informado')+' · estoque '+esc(m.estoque??0)+'</p><div style="height:9px;background:#e8edf5;border-radius:99px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#2563eb,#059669)"></div></div><small class="muted" style="display:block;margin-top:7px">'+(unique.length?('Último registro: '+new Date(logs[0].data).toLocaleString('pt-BR')):'Nenhum registro nos últimos 30 dias')+'</small></div>';
+  }).join('')+'</div><div class="alert warn" style="margin-top:12px">ℹ️ Este painel conta somente as doses que foram registradas no aplicativo. Como a frequência prescrita não é armazenada nesta rotina, o percentual mostrado não deve ser interpretado como adesão ao tratamento.</div>';
+}
+function ensureMedicationAdherenceUI(){
+ if(byId('med-adherence')){renderMedicationAdherence();return}
+ const toolsGroup=[...document.querySelectorAll('#nav .nav-group')].find(g=>g.querySelector('.nav-toggle[data-menu="tools"]')),menu=toolsGroup?.querySelector('.nav-menu');
+ if(menu&&!menu.querySelector('[data-tab="med-adherence"]')){const b=document.createElement('button');b.type='button';b.setAttribute('data-tab','med-adherence');b.textContent='💊 Acompanhamento de medicamentos';menu.appendChild(b)}
+ const host=byId('main-content')||document.querySelector('.wrap')||document.body,sec=document.createElement('section');sec.id='med-adherence';
+ sec.innerHTML='<div class="card"><div class="dash-section-title"><div><h2>💊 Acompanhamento de medicamentos</h2><div class="muted">Veja quantos dias houve registro de dose nos últimos 30 dias.</div></div><button class="btn green" type="button" id="msaMedRefresh">🔄 Atualizar</button></div><div id="msaMedicationAdherence"></div></div>';
+ host.appendChild(sec);sec.querySelector('#msaMedRefresh').addEventListener('click',renderMedicationAdherence);renderMedicationAdherence();
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(ensureMedicationAdherenceUI,650));
+
+
 })();
