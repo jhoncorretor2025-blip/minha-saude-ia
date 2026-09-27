@@ -75,9 +75,16 @@ function buildTimeline(){
  get(K.c).forEach(x=>push(x.data,'👨‍⚕️','Consulta',vazio(x.esp)?(vazio(x.med)?(vazio(x.mot)?'':x.mot):x.med):x.esp));
  get(K.m).forEach(x=>push(x.inicio||x.data,'💊','Medicamento',vazio(x.nome)?'':x.nome));
  get(K.e).forEach(x=>push(x.data,'🧪','Exame',vazio(x.nome)?'':x.nome));
+ // Sinais vitais aparecem na timeline apenas como evento.
+ // Valores como peso, pressão, FC, temperatura, glicemia e saturação
+ // permanecem somente na área de Acompanhamento, evitando exposição
+ // de dados sensíveis no resumo cronológico.
+ const diasVitais={};
  get(K.v).forEach(x=>{
-  const sub=x.peso?'Peso '+x.peso+' kg':(x.pressao||'');
-  push(x.data,'📈','Sinal vital',vazio(sub)?'':sub);
+  const dia=String(x.data||'').slice(0,10);
+  if(!dia || diasVitais[dia])return;
+  diasVitais[dia]=true;
+  push(x.data,'📈','Sinal vital','');
  });
  get(K.vax).forEach(x=>push(x.data,'💉','Vacina',vazio(x.nome)?'':x.nome));
  return out.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
