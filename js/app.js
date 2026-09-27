@@ -1,14 +1,38 @@
-/* Minha Saúde IA — aplicação principal V4.52 */
+/* Minha Saúde IA — aplicação principal V4.53 */
 
 const K={d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',p:'msa2_perfil',v:'msa2_vitais',r:'msa2_lembretes',vax:'msa2_vacinas',fam:'msa2_familia',doc:'msa2_documentos',nutri:'msa2_nutri',suplReg:'msa2_suplementos',food:'msa2_reacoes_alimentares',agua:'msa2_hidratacao',sono:'msa2_sono',bem:'msa2_bemestar',gat:'msa2_gatilhos',medRot:'msa2_medicamentos_rotina',medTaken:'msa2_medicamentos_tomados'};
-const get=k=>JSON.parse(localStorage.getItem(k)||'[]'), set=(k,v)=>localStorage.setItem(k,JSON.stringify(v)), $=x=>document.getElementById(x);
+const LEGACY_KEYS={msa_dores:'msa2_dores',msa_consultas:'msa2_consultas',msa_meds:'msa2_meds',msa_exames:'msa2_exames',msa_perfil:'msa2_perfil',msa_vitais:'msa2_vitais',msa_lembretes:'msa2_lembretes',msa_vacinas:'msa2_vacinas',msa_familia:'msa2_familia',msa_documentos:'msa2_documentos'};
+function lerStorage(k){
+ try{
+  let raw=localStorage.getItem(k);
+  if(!raw){
+   const legacy=Object.keys(LEGACY_KEYS).find(x=>LEGACY_KEYS[x]===k&&localStorage.getItem(x));
+   if(legacy){raw=localStorage.getItem(legacy);try{localStorage.setItem(k,raw)}catch(e){}}
+  }
+  if(!raw)return [];
+  const parsed=JSON.parse(raw);
+  if(Array.isArray(parsed))return parsed;
+  if(k===K.p&&parsed&&typeof parsed==='object')return [parsed];
+  return [];
+ }catch(e){console.warn('[Minha Saúde IA] leitura protegida:',k,e);return []}
+}
+const get=k=>lerStorage(k);
+const set=(k,v)=>{
+ const json=JSON.stringify(v);
+ try{
+  const old=localStorage.getItem(k);
+  if(old&&old!==json&&old.length<=300000&&!k.startsWith('msa2_backup_'))localStorage.setItem('msa2_backup_'+k,old);
+  localStorage.setItem(k,json);
+  return true;
+ }catch(e){console.error('[Minha Saúde IA] falha ao salvar',k,e);return false}
+};
+const $=x=>document.getElementById(x);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 function go(id){
- if(id!=='perfil'&&id!=='importar'&&id!=='backup'){const p0=get(K.p)[0]||{};if(Object.keys(p0).length&&!p0.sexo){setTimeout(exigirSexoObrigatorio,50);return;}}
  document.querySelectorAll('nav button[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
  document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===id));
  fecharMenus();
- render();
+ try{render()}catch(e){console.error('[Minha Saúde IA] render ao navegar',e)}
 }
 function fecharMenus(){
  document.querySelectorAll('#nav .nav-group').forEach(g=>g.classList.remove('open'));
@@ -284,7 +308,6 @@ function goSemBloqueio(id){document.querySelectorAll('nav button[data-tab]').for
 function atualizarSaudeReprodutiva(){const s=String($('pSexo')?.value||'').trim().toLowerCase();const box=$('reproSection');if(box)box.style.display=/femin|mulher|female/.test(s)?'block':'none'}
 function loadProfile(){let p=get(K.p)[0]||{};[['Nome','nome'],['Nasc','nasc'],['Idade','idade'],['Peso','peso'],['Sexo','sexo'],['Sangue','sangue'],['Altura','altura'],['Supl','supl'],['Alerg','alerg'],['Cond','cond'],['Circ','circ'],['Info','info'],['Emerg','emerg'],['Tel','tel'],['Menstruacao','menstruacao'],['Ciclo','ciclo'],['DuracaoMenstr','duracaoMenstr'],['SexoFreq','sexoFreq'],['Camisinha','camisinha'],['Engravidou','engravidou'],['Mae','mae'],['Gestacoes','gestacoes'],['ReproObs','reproObs'],['PrevColo','prevColo'],['Mamografia','mamografia'],['IST','ist'],['HPV','hpv'],['PrevProx','prevProx'],['PrevObs','prevObs'],['DorcelaxFreq','dorcelaxFreq'],['ParacetamolFreq','paracetamolFreq'],['OutrosDor','outrosDor'],['Catapora','catapora'],['CataporaQuando','cataporaQuando'],['Academia','academia'],['AcademiaFreq','academiaFreq'],['TrabalhoTipo','trabalhoTipo'],['HorasSentado','horasSentado'],['HorasPe','horasPe'],['AguaDia','aguaDia'],['UrinaDia','urinaDia'],['EvacuacaoDia','evacuacaoDia'],['CalorSuor','calorSuor']].forEach(([id,key])=>{if($('p'+id))$('p'+id).value=p[key]||''});atualizarSaudeReprodutiva()}
 $('pSexo').addEventListener('input',atualizarSaudeReprodutiva);
-$('pForm').onsubmit=e=>{e.preventDefault();set(K.p,[{nome:$('pNome').value,nasc:$('pNasc').value,idade:$('pIdade').value,peso:$('pPeso').value,sexo:$('pSexo').value,altura:$('pAltura').value,supl:$('pSupl').value,alerg:$('pAlerg').value,cond:$('pCond').value,circ:$('pCirc').value,info:$('pInfo').value,emerg:$('pEmerg').value,tel:$('pTel').value,menstruacao:$('pMenstruacao').value,ciclo:$('pCiclo').value,duracaoMenstr:$('pDuracaoMenstr').value,sexoFreq:$('pSexoFreq').value,camisinha:$('pCamisinha').value,engravidou:$('pEngravidou').value,mae:$('pMae').value,gestacoes:$('pGestacoes').value,reproObs:$('pReproObs').value,prevColo:$('pPrevColo').value,mamografia:$('pMamografia').value,ist:$('pIST').value,hpv:$('pHPV').value,prevProx:$('pPrevProx').value,prevObs:$('pPrevObs').value,dorcelaxFreq:$('pDorcelaxFreq').value,paracetamolFreq:$('pParacetamolFreq').value,outrosDor:$('pOutrosDor').value,catapora:$('pCatapora').value,cataporaQuando:$('pCataporaQuando').value,foto:(get(K.p)[0]||{}).foto||'',academia:$('pAcademia').value,academiaFreq:$('pAcademiaFreq').value,trabalhoTipo:$('pTrabalhoTipo').value,horasSentado:$('pHorasSentado').value,horasPe:$('pHorasPe').value,aguaDia:$('pAguaDia').value,urinaDia:$('pUrinaDia').value,evacuacaoDia:$('pEvacuacaoDia').value,calorSuor:$('pCalorSuor').value}]);render();alert('Perfil salvo!')};
 function processarFotoPerfil(ev){const file=ev.target.files&&ev.target.files[0];if(!file)return;if(!file.type.startsWith('image/')){alert('Selecione uma imagem.');return;}const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{const max=700,scale=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);c.getContext('2d').drawImage(img,0,0,c.width,c.height);const data=c.toDataURL('image/jpeg',.82);let p=get(K.p)[0]||{};p.foto=data;set(K.p,[p]);loadProfile();renderCarteirinha();};img.src=reader.result};reader.readAsDataURL(file)}
 function renderCarteirinha(){const p=get(K.p)[0]||{},m=get(K.m),foto=p.foto||'';const img=foto?'<img src="'+esc(foto)+'" alt="Foto do perfil">':'<span>👤</span>';if($('profilePhotoPreview'))$('profilePhotoPreview').innerHTML=img;if($('cardPhoto'))$('cardPhoto').innerHTML=img;if($('cardName'))$('cardName').textContent=p.nome||'Seu nome';if($('cardBasic')){let bits=[];if(p.nasc)bits.push('Nascimento: '+formatDateBR(p.nasc));if(p.idade)bits.push('Idade: '+p.idade);if(p.sexo)bits.push('Sexo: '+p.sexo);$('cardBasic').textContent=bits.join(' • ')||'Preencha seu perfil para montar a carteirinha.'}if($('cardBlood'))$('cardBlood').textContent=p.sangue||'Não informado';if($('cardBirth'))$('cardBirth').textContent=p.nasc?formatDateBR(p.nasc):'Não informado';if($('cardHeight'))$('cardHeight').textContent=p.altura?(p.altura+' cm'):'Não informado';if($('cardWeight'))$('cardWeight').textContent=p.peso?(p.peso+' kg'):'Não informado';if($('cardAllergy'))$('cardAllergy').textContent=p.alerg||'Não informado';if($('cardConditions'))$('cardConditions').textContent=p.cond||'Não informado';if($('cardMeds'))$('cardMeds').textContent=m.length?m.slice(-4).map(x=>x.nome+(x.dose?' — '+x.dose:'')).join(' • '):'Nenhum registrado';if($('cardEmergency'))$('cardEmergency').textContent=p.emerg?(p.emerg+(p.tel?' — '+p.tel:'')):'Não informado';if($('cardUpdated'))$('cardUpdated').textContent=new Date().toLocaleDateString('pt-BR')}
 function gerarCarteirinhaPDF(){renderCarteirinha();const oldTitle=document.title;document.title='Carteirinha de Saúde - '+((get(K.p)[0]||{}).nome||'Minha Saúde IA');setTimeout(()=>{window.print();setTimeout(()=>{document.title=oldTitle},500)},120)}
@@ -305,30 +328,51 @@ function gerarRelatorio(){
  <h2>Exames</h2><ul>${e.length?e.map(x=>`<li>${x.data} — ${esc(x.nome)}: ${esc(x.res||'')}</li>`).join(''):'<li>Nenhum registrado.</li>'}</ul>`;
  openReport('Resumo de Saúde',body);
 }
-// V4.52 — comportamento dos menus robustos
-(function(){
+// V4.53 — menus e inicialização protegidos
+function inicializarMenus(){
  const nav=document.getElementById('nav');
  if(!nav)return;
- const groups=Array.from(nav.querySelectorAll('.nav-group'));
- const toggles=Array.from(nav.querySelectorAll('.nav-toggle'));
- toggles.forEach(toggle=>{
-   toggle.setAttribute('aria-expanded','false');
-   toggle.addEventListener('click',function(ev){
-     ev.stopPropagation();
-     const group=toggle.closest('.nav-group');
-     const abrir=!group.classList.contains('open');
-     fecharMenus();
-     if(abrir){
-       group.classList.add('open');
-       toggle.classList.add('open');
-       toggle.setAttribute('aria-expanded','true');
-     }
-   });
+ nav.querySelectorAll('.nav-toggle').forEach(toggle=>{
+  if(toggle.dataset.bound==='1')return;
+  toggle.dataset.bound='1';
+  toggle.setAttribute('aria-expanded','false');
+  toggle.addEventListener('click',function(ev){
+   ev.preventDefault();ev.stopPropagation();
+   const group=toggle.closest('.nav-group');if(!group)return;
+   const abrir=!group.classList.contains('open');
+   fecharMenus();
+   if(abrir){
+    group.classList.add('open');
+    toggle.classList.add('open');
+    toggle.setAttribute('aria-expanded','true');
+   }
+  });
  });
- document.addEventListener('click',function(ev){
-   if(!nav.contains(ev.target))fecharMenus();
+ nav.querySelectorAll('button[data-tab]').forEach(btn=>{
+  if(btn.dataset.bound==='1')return;
+  btn.dataset.bound='1';
+  btn.addEventListener('click',function(ev){
+   ev.preventDefault();ev.stopPropagation();
+   go(btn.dataset.tab);
+  });
  });
- document.addEventListener('keydown',function(ev){
-   if(ev.key==='Escape')fecharMenus();
- });
-})();
+ if(!document.body.dataset.menuOutsideBound){
+  document.body.dataset.menuOutsideBound='1';
+  document.addEventListener('click',function(ev){if(!nav.contains(ev.target))fecharMenus()});
+  document.addEventListener('keydown',function(ev){if(ev.key==='Escape')fecharMenus()});
+ }
+}
+function iniciarAplicativo(){
+ try{
+  inicializarMenus();
+  loadProfile();
+  renderCarteirinha();
+  renderNovosModulos();
+  render();
+ }catch(e){
+  console.error('[Minha Saúde IA] falha na inicialização',e);
+  try{inicializarMenus()}catch(err){}
+ }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',iniciarAplicativo);
+else iniciarAplicativo();
