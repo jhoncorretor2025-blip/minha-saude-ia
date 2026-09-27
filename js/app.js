@@ -1,10 +1,19 @@
-/* Minha Saúde IA — aplicação principal V4.20 */
+/* Minha Saúde IA — aplicação principal V4.21 */
 
 const K={d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',p:'msa2_perfil',v:'msa2_vitais',r:'msa2_lembretes',vax:'msa2_vacinas',fam:'msa2_familia',doc:'msa2_documentos'};
 const get=k=>JSON.parse(localStorage.getItem(k)||'[]'), set=(k,v)=>localStorage.setItem(k,JSON.stringify(v)), $=x=>document.getElementById(x);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-function go(id){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===id));document.querySelectorAll('#nav .nav-group').forEach(g=>g.open=false);render()}
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.tab));
+function go(id){
+ document.querySelectorAll('nav button[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+ document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===id));
+ fecharMenus();
+ render();
+}
+function fecharMenus(){
+ document.querySelectorAll('#nav .nav-group').forEach(g=>g.classList.remove('open'));
+ document.querySelectorAll('#nav .nav-toggle').forEach(b=>{b.classList.remove('open');b.setAttribute('aria-expanded','false')});
+}
+document.querySelectorAll('nav button[data-tab]').forEach(b=>b.onclick=()=>go(b.dataset.tab));
 function bodyPick(el,v){$('dLocal').value=v;document.querySelectorAll('.bodymap button').forEach(x=>x.classList.remove('sel'));el.classList.add('sel')}
 function fmt(d){if(!d)return '—';let x=new Date(d);return isNaN(x)?d:x.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}
 function list(id,a,fn){$(id).innerHTML=a.length?a.slice().reverse().map(fn).join(''):'<div class="empty">Nenhum registro ainda.</div>'}
@@ -128,16 +137,30 @@ function gerarRelatorio(){
  <h2>Exames</h2><ul>${e.length?e.map(x=>`<li>${x.data} — ${esc(x.nome)}: ${esc(x.res||'')}</li>`).join(''):'<li>Nenhum registrado.</li>'}</ul>`;
  openReport('Resumo de Saúde',body);
 }
-// V4.20 — comportamento dos menus agrupados
+// V4.21 — comportamento dos menus robustos
 (function(){
  const nav=document.getElementById('nav');
  if(!nav)return;
  const groups=Array.from(nav.querySelectorAll('.nav-group'));
- groups.forEach(group=>group.addEventListener('toggle',function(){
-   if(!group.open)return;
-   groups.forEach(other=>{if(other!==group)other.open=false;});
- }));
+ const toggles=Array.from(nav.querySelectorAll('.nav-toggle'));
+ toggles.forEach(toggle=>{
+   toggle.setAttribute('aria-expanded','false');
+   toggle.addEventListener('click',function(ev){
+     ev.stopPropagation();
+     const group=toggle.closest('.nav-group');
+     const abrir=!group.classList.contains('open');
+     fecharMenus();
+     if(abrir){
+       group.classList.add('open');
+       toggle.classList.add('open');
+       toggle.setAttribute('aria-expanded','true');
+     }
+   });
+ });
  document.addEventListener('click',function(ev){
-   if(!nav.contains(ev.target))groups.forEach(group=>group.open=false);
+   if(!nav.contains(ev.target))fecharMenus();
+ });
+ document.addEventListener('keydown',function(ev){
+   if(ev.key==='Escape')fecharMenus();
  });
 })();
