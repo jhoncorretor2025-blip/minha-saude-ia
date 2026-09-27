@@ -91,4 +91,62 @@ function renderDocumentosWithOCR(){
 }
 function startOCR(){ensureOverlay();setTimeout(renderDocumentosWithOCR,250)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startOCR);else startOCR();
+document.addEventListener('DOMContentLoaded',()=>setTimeout(startDocumentTags,420));
+
+/* ===== V4.95 — categorias e etiquetas de documentos ===== */
+function ensureDocumentTagsUI(){
+ const host=byId('documentosSaudeList');if(!host||byId('msaDocTagTools'))return;
+ const toolsBox=document.createElement('div');toolsBox.id='msaDocTagTools';toolsBox.className='msa-filter-bar';toolsBox.innerHTML=
+  '<div class="msa-filter-group msa-form-group"><label class="msa-form-label" for="msaDocTagFilter">🏷️ Filtrar por etiqueta</label><select id="msaDocTagFilter" class="msa-form-control"><option value="">Todas as etiquetas</option></select></div>'+
+  '<div class="msa-filter-actions"><button type="button" class="btn secondary" id="msaDocTagClear">Limpar</button></div>';
+ host.parentNode.insertBefore(toolsBox,host);
+ byId('msaDocTagFilter').addEventListener('change',renderDocumentTags);
+ byId('msaDocTagClear').addEventListener('click',()=>{byId('msaDocTagFilter').value='';renderDocumentTags()});
+}
+function normalizeTags(v){return [...new Set(String(v||'').split(/[,;]+/).map(x=>x.trim()).filter(Boolean).slice(0,8))]}
+function saveDocumentTags(id,tags){
+ const a=storage.get(K.doc),doc=a.find(x=>String(x.id)===String(id));if(!doc)return;
+ doc.tags=normalizeTags(tags);storage.set(K.doc,a);
+}
+function renderDocumentTags(){
+ const arr=storage.get(K.doc),filter=String(byId('msaDocTagFilter')?.value||'').trim().toLowerCase();
+ const select=byId('msaDocTagFilter');
+ const tags=[...new Set(arr.flatMap(x=>Array.isArray(x.tags)?x.tags:[]))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+ if(select){
+  const current=select.value;
+  select.innerHTML='<option value="">Todas as etiquetas</option>'+tags.map(t=>'<option value="'+esc(t)+'">'+esc(t)+'</option>').join('');
+  select.value=tags.some(t=>t===current)?current:'';
+ }
+ const box=byId('documentosSaudeList');if(!box)return;
+ box.querySelectorAll('.item').forEach((item,index)=>{
+  const doc=arr.slice().reverse()[index];if(!doc)return;
+  const docTags=Array.isArray(doc.tags)?doc.tags:[];
+  const visible=!filter||docTags.some(t=>String(t).toLowerCase()===filter);
+  item.style.display=visible?'':'none';
+  if(docTags.length&&!item.querySelector('[data-msa-doc-tags]')){
+   const tagsBox=document.createElement('div');tagsBox.setAttribute('data-msa-doc-tags','1');tagsBox.style.cssText='display:flex;flex-wrap:wrap;gap:5px;margin:7px 0';
+   docTags.forEach(t=>{const tag=document.createElement('span');tag.className='msa-badge';tag.textContent='🏷️ '+t;tagsBox.appendChild(tag)});
+   item.insertBefore(tagsBox,item.querySelector('.row')||null);
+  }
+ });
+}
+function wrapDocumentUploadForTags(){
+ if(typeof window.processarDocumentoSaude!=='function'||window.processarDocumentoSaude.__msaTagsWrapped)return;
+ const original=window.processarDocumentoSaude;
+ const wrapped=function(ev){
+   const input=ev?.target,file=input?.files?.[0];
+   const tags=normalizeTags(prompt('🏷️ Etiquetas opcionais\nSepare por vírgula. Ex.: exame, sangue, 2026',''));
+   const before=storage.get(K.doc).map(x=>String(x.id)).join('|');
+   original.apply(this,arguments);
+   setTimeout(()=>{
+     const arr=storage.get(K.doc),created=arr.find(x=>!before.split('|').includes(String(x.id)));
+     if(created){created.tags=tags;storage.set(K.doc,arr);renderDocumentosSaude()}
+   },80);
+ };
+ wrapped.__msaTagsWrapped=true;
+ window.processarDocumentoSaude=wrapped;
+}
+function startDocumentTags(){ensureDocumentTagsUI();wrapDocumentUploadForTags();setTimeout(renderDocumentTags,320)}
+
+
 })();
