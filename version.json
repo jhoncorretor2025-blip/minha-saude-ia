@@ -1,5 +1,5 @@
 {
-  "version": "V4.26",
-  "updatedAt": "2026-09-27T19:00:00Z",
-  "changes": "Torna a tela de Importação com IA a porta de entrada principal e mantém a mensagem até o usuário marcar Não mostrar mais esta mensagem"
+  "version": "V4.27",
+  "updatedAt": "2026-09-27T19:10:00Z",
+  "changes": "Atualiza o prompt de importação com IA para os novos módulos e amplia o importador para sinais vitais, vacinas, histórico familiar, lembretes, documentos e dados de emergência"
 }
