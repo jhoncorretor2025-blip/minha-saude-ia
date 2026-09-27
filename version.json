@@ -1,5 +1,5 @@
 {
-  "version": "V4.19",
+  "version": "V4.20",
   "updatedAt": "2026-09-27T00:00:00Z",
-  "changes": "Nova área de acompanhamento com sinais vitais, lembretes, vacinas, histórico familiar, cartão de emergência, documentos/fotos, resumo inteligente e exportação em PDF/TXT/cópia para IA"
+  "changes": "Completa a nova área de acompanhamento com agenda de consultas, evolução de sinais vitais, resumo inteligente visível, notificações e compartilhamento de resumo"
 }
