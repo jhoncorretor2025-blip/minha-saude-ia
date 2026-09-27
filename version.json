@@ -1,5 +1,5 @@
 {
-  "version": "V4.14",
+  "version": "V4.15",
   "updatedAt": "2026-09-27T00:00:00Z",
-  "changes": "Importação da ficha IA mais robusta, suporte a respostas longas e diagnóstico detalhado de falhas"
+  "changes": "Correção do erro na conclusão da importação da ficha IA e alinhamento completo da versão"
 }
