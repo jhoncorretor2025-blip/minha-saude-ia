@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Saúde IA — V4.84</title>
+<title>Minha Saúde IA — V4.92</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -164,7 +164,7 @@ footer{padding-bottom:20px}
 @media(max-width:430px){#cicloMenuBtn{font-size:11px}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V4.87">
+  <link rel="stylesheet" href="css/design-system.css?v=V4.92">
 </head>
 <body>
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
@@ -1017,7 +1017,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V4.84. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V4.92. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -1038,12 +1038,12 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V4.85" defer></script>
-<script src="js/core/storage.js?v=V4.85" defer></script>
-<script src="js/core/utils.js?v=V4.85" defer></script>
-<script src="js/menu.js?v=V4.84" defer></script>
-<script src="js/app.js?v=V4.84" defer></script>
-<script src="js/recursos.js?v=V4.84" defer></script>
+<script src="js/core/constants.js?v=V4.92" defer></script>
+<script src="js/core/storage.js?v=V4.92" defer></script>
+<script src="js/core/utils.js?v=V4.92" defer></script>
+<script src="js/menu.js?v=V4.92" defer></script>
+<script src="js/app.js?v=V4.92" defer></script>
+<script src="js/recursos.js?v=V4.92" defer></script>
 
 
 <script>
@@ -1060,7 +1060,7 @@ function iniciarImportacao(){
  },80);
 }
 </script>
-<script src="js/importacao.js?v=V4.84" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/importacao.js?v=V4.92" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
 
 
 <script>
@@ -1223,7 +1223,7 @@ async function verificarNovaVersao(){
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
   const data=await r.json();
-  if(data.version && data.version!=='V4.84'){
+  if(data.version && data.version!=='V4.92'){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
