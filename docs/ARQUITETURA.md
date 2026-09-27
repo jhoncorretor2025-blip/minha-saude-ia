@@ -74,6 +74,11 @@ O aplicativo possui manifesto e service worker. O cache é usado para a interfac
 O registro principal de sono usa horários de início/fim e calcula a duração. Campos de despertares por urina e dor são armazenados como contagem, sem interpretação clínica automática.
 
 
+## V4.87 — UX e acessibilidade
+- Melhorias aditivas de navegação por teclado, alvos de toque, formulários responsivos e `prefers-reduced-motion`.
+- `#main-content` é o ponto de salto acessível da aplicação.
+- Sem alteração de regras de negócio ou formato de dados.
+
 ## V4.86 — Design System visual
 - `css/design-system.css` é a fundação visual para novos componentes e futuras migrações.
 - A folha define tokens (`--msa-*`) e componentes prefixados com `.msa-*`.
