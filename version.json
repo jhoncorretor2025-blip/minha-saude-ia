@@ -1,5 +1,5 @@
 {
-  "version": "V4.34",
-  "updatedAt": "2026-09-27T20:35:00Z",
-  "changes": "Adiciona uma tela-guia antes de abrir a IA, mostrando o prompt, como copiá-lo, onde colá-lo e como trazer a ficha de volta para importação"
+  "version": "V4.35",
+  "updatedAt": "2026-09-27T20:40:00Z",
+  "changes": "Melhora o guia da importação por IA com escolha explícita entre ChatGPT e Gemini, mantendo o prompt visível e o passo a passo antes de abrir a IA"
 }
