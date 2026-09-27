@@ -1,5 +1,14 @@
 # Changelog — Minha Saúde IA
 
+## V4.69 — Busca, avisos, calendário e perguntas
+- Criado módulo `js/melhorias.js` para funcionalidades complementares de navegação e acompanhamento.
+- 🔎 **Busca geral** em registros de saúde salvos localmente.
+- 🔔 **Central de avisos** para próximos cuidados e registros recentes relevantes.
+- 📅 **Calendário de saúde** com consultas, exames, vacinas, lembretes e sintomas registrados.
+- ❓ **Perguntas para consulta**, com status pendente/respondida.
+- Todas as novas informações permanecem no armazenamento local do perfil atual.
+- Versão atualizada para V4.69.
+
 ## V4.68 — URL individual por página
 - Cada seção navegável agora recebe `pagina=...` na URL.
 - O botão de navegação atualiza a URL sem recarregar a aplicação.
