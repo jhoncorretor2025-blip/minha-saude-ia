@@ -125,6 +125,50 @@ function abrirEdicaoRotina(campo){
  },80);
 }
 function atualizarPerfilHome(){const p=get(K.p)[0]||{},foto=p.foto||'';if($('homeProfileName'))$('homeProfileName').textContent=p.nome||'Seu nome';if($('homeProfileAge'))$('homeProfileAge').textContent=p.idade||'—';if($('homeProfileWeight'))$('homeProfileWeight').textContent=p.peso||'—';if($('homeProfileHeight'))$('homeProfileHeight').textContent=p.altura?formatarAltura(p.altura):'—';if($('homeProfileBlood'))$('homeProfileBlood').textContent=p.sangue||'—';if($('homeAvatar'))$('homeAvatar').innerHTML=foto?'<img src="'+esc(foto)+'" alt="Foto do perfil">':'<span>👤</span>'}
+const RECURSOS_PERSONALIZAVEIS=[
+ {key:'academia',icon:'🏋️',label:'Academia e medidas corporais',desc:'Atividades de academia e medidas de bíceps, cintura, quadril, panturrilha etc.',targets:['fitness']},
+ {key:'nutricao',icon:'🥗',label:'Nutrição',desc:'Diário de alimentação, hidratação e suplementos.',targets:['nutricao']},
+ {key:'sonoBem',icon:'😴',label:'Sono e bem-estar',desc:'Registros de sono, humor, ansiedade, estresse e bem-estar.',targets:['sonoBem']},
+ {key:'ciclo',icon:'🌸',label:'Ciclo menstrual',desc:'Recursos de ciclo menstrual e acompanhamento reprodutivo.',targets:['ciclo']}
+];
+function preferenciasPadrao(){
+ const p=get(K.p)[0]||{},saved=get(K.preferencias)[0];
+ if(saved&&typeof saved==='object')return Object.assign({academia:'on',nutricao:'on',sonoBem:'on',ciclo:'on'},saved);
+ return {academia:p.academia==='Não'?'off':'on',nutricao:'on',sonoBem:'on',ciclo:'on'};
+}
+function salvarPreferenciasObjeto(pref){
+ set(K.preferencias,[Object.assign({},preferenciasPadrao(),pref)]);
+ aplicarPreferencias();
+ renderConfiguracoes();
+}
+function salvarPreferenciasPerfil(){
+ const pref={academia:$('prefAcademia')?.value||'on',nutricao:$('prefNutricao')?.value||'on',sonoBem:$('prefSonoBem')?.value||'on',ciclo:$('prefCiclo')?.value||'on'};
+ salvarPreferenciasObjeto(pref);
+ alert('⚙️ Preferências salvas! O aplicativo foi personalizado.');
+}
+function renderConfiguracoes(){
+ const pref=preferenciasPadrao(),box=$('settingsPreferences');
+ if(box){
+  box.innerHTML=RECURSOS_PERSONALIZAVEIS.map(r=>'<label style="display:flex;flex-direction:column;gap:6px;border:1px solid #dbe4f0;border-radius:14px;padding:12px;background:#fff"><span style="font-weight:900">'+r.icon+' '+r.label+'</span><small class="muted">'+r.desc+'</small><select data-pref-key="'+r.key+'"><option value="on" '+(pref[r.key]==='on'?'selected':'')+'>Ativado</option><option value="off" '+(pref[r.key]==='off'?'selected':'')+'>Desativado</option></select></label>').join('');
+  box.querySelectorAll('[data-pref-key]').forEach(s=>s.addEventListener('change',function(){
+   salvarPreferenciasObjeto({[this.dataset.prefKey]:this.value});
+  }));
+ }
+ ['academia','nutricao','sonoBem','ciclo'].forEach(k=>{const el=$('pref'+k.charAt(0).toUpperCase()+k.slice(1));if(el)el.value=pref[k]});
+}
+function aplicarPreferencias(){
+ const pref=preferenciasPadrao();
+ document.querySelectorAll('[data-feature]').forEach(el=>el.classList.toggle('msa-feature-off',pref[el.dataset.feature]==='off'));
+ const fitNav=document.querySelectorAll('[data-feature-nav="academia"]');
+ fitNav.forEach(el=>el.classList.toggle('msa-feature-off',pref.academia==='off'));
+ document.querySelectorAll('[data-feature-nav="nutricao"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.nutricao==='off'));
+ document.querySelectorAll('[data-feature-nav="sonoBem"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.sonoBem==='off'));
+ document.querySelectorAll('[data-feature-nav="ciclo"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.ciclo==='off'));
+ if(pref.academia==='off'){
+  document.querySelectorAll('#dashActivityEdit,#dashActivity').forEach(el=>el.closest('.metric-kpi')?.classList.add('msa-feature-off'));
+  $('medidasCorporaisCard')?.classList.add('msa-feature-off');
+ }
+}
 function render(){
 let d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
 $('nD').textContent=d.length;$('nC').textContent=c.length;$('nM').textContent=m.length;$('nE').textContent=e.length;
@@ -144,6 +188,8 @@ if($('homeSummary')){
  $('homeSummary').innerHTML='<b>'+esc(nome)+'</b><br>'+d.length+' sintomas · '+c.length+' consultas · '+m.length+' medicamentos · '+e.length+' exames<br><span class="muted">Último registro: '+esc(ultima)+'</span>';
 }
 loadProfile();
+renderConfiguracoes();
+aplicarPreferencias();
 atualizarPerfilHome();
 renderCarteirinha();
 atualizarDashboard();
