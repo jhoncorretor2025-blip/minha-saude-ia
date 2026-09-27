@@ -81,10 +81,10 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V4.12</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V4.13</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap">
 <nav id="nav">
-<button class="active" data-tab="home">🏠 Início</button><button data-tab="timeline">🕐 Linha do tempo</button><button data-tab="dor">😣 Sintomas</button><button data-tab="consultas">👨‍⚕️ Consultas</button><button data-tab="meds">💊 Medicamentos</button><button data-tab="exames">🧪 Exames</button><button data-tab="perfil">👤 Perfil</button><button data-tab="relatorios">📊 Relatórios</button><button data-tab="backup">💾 Backup</button><button data-tab="importar">⚡ Importar com IA</button><button data-tab="ia">🤖 IA</button>
+<button class="active" data-tab="home">🏠 Início</button><button data-tab="timeline">🕐 Linha do tempo</button><button data-tab="dor">😣 Sintomas</button><button data-tab="consultas">👨‍⚕️ Consultas</button><button data-tab="meds">💊 Medicamentos</button><button data-tab="exames">🧪 Exames</button><button data-tab="perfil">👤 Perfil</button><button data-tab="relatorios">📊 Relatórios</button><button data-tab="backup">🔐 Segurança</button><button data-tab="importar">⚡ Importar com IA</button><button data-tab="ia">🤖 IA</button>
 </nav>
 
 <section id="home" class="active">
@@ -100,6 +100,15 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <button class="action" onclick="go('ia')"><strong>🤖</strong>Assistente<small>Organize suas dúvidas</small></button>
 <button class="action" onclick="gerarRelatorio()"><strong>📄</strong>Relatório médico<small>Prepare um resumo para levar à consulta</small></button>
 </div></div>
+<div class="card" style="margin-top:13px">
+<h2>🩺 Meu resumo</h2>
+<div id="homeSummary" class="muted">Carregando seu resumo…</div>
+<div class="row" style="margin-top:12px">
+<button class="btn secondary" onclick="go('perfil')">👤 Ver meu perfil</button>
+<button class="btn secondary" onclick="go('timeline')">📋 Ver histórico</button>
+<button class="btn green" onclick="prepararContextoIA()">🤖 Preparar resumo para IA</button>
+</div>
+</div>
 <div class="grid2" style="margin-top:13px"><div class="card"><h2>🚨 Atenção</h2><div id="alertaHome" class="safe">Nenhum alerta automático com os dados registrados.</div></div><div class="card"><h2>🧠 Último registro</h2><div id="ultimo" class="muted">Ainda não há registros.</div></div></div>
 </section>
 
@@ -155,6 +164,11 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 
 <section id="backup">
 <div class="card">
+<h2>🔐 Segurança, privacidade e backup</h2>
+<div class="alert safe"><b>🔒 Seus dados ficam neste navegador.</b><br>O aplicativo usa armazenamento local para guardar seus registros. Eles não são enviados automaticamente para uma IA ou servidor pelo aplicativo.</div>
+<div class="muted" style="margin-top:10px">O PIN bloqueia a interface, mas não é criptografia dos dados. Proteja também o dispositivo e o navegador.</div>
+</div>
+<div class="card" style="margin-top:13px">
 <h2>💾 Backup e restauração</h2>
 <div class="muted">Faça uma cópia dos seus dados antes de limpar o navegador, trocar de celular ou fazer alterações importantes.</div>
 <div class="row" style="margin-top:13px">
@@ -298,14 +312,14 @@ REGRAS:
 <div id="resultadoImport" style="margin-top:12px"></div>
 </div>
 </section>
-<section id="ia"><div class="card"><h2>🤖 Assistente de Saúde</h2><div class="muted">Ajuda a organizar informações e preparar perguntas. Não substitui diagnóstico ou atendimento médico.</div><div id="chat" class="chat"><div class="bubble bot">Olá! 👋 Conte o que está acontecendo. Posso ajudar a organizar seus sintomas, sugerir perguntas para o médico e lembrar sinais de alerta.</div></div><div class="row"><input id="iaInput" style="flex:1" placeholder="Ex.: Estou com dor abdominal há 2 dias..."><button class="btn" onclick="ask()">Enviar</button></div><div class="alert danger" style="margin-top:12px">🚨 Em uma emergência ou diante de sintomas graves, procure atendimento presencial imediatamente.</div></div>
+<section id="ia"><div class="card"><h2>🤖 Assistente de Saúde</h2><div class="muted">Ajuda a organizar informações e preparar perguntas. Não substitui diagnóstico ou atendimento médico.</div><div class="alert safe" style="margin-top:12px"><b>📌 Seus registros podem ser usados como contexto somente quando você pedir.</b> O resumo é preparado no seu navegador para você revisar antes de copiar para uma IA.</div><div class="row" style="margin-top:10px"><button class="btn green" onclick="prepararContextoIA()">📋 Preparar contexto dos meus registros</button></div><div id="chat" class="chat"><div class="bubble bot">Olá! 👋 Conte o que está acontecendo. Posso ajudar a organizar seus sintomas, sugerir perguntas para o médico e lembrar sinais de alerta.</div></div><div class="row"><input id="iaInput" style="flex:1" placeholder="Ex.: Estou com dor abdominal há 2 dias..."><button class="btn" onclick="ask()">Enviar</button></div><div class="alert danger" style="margin-top:12px">🚨 Em uma emergência ou diante de sintomas graves, procure atendimento presencial imediatamente.</div></div>
 <div class="card" style="margin-top:13px"><h2>🩺 Preparar minha consulta</h2><div class="muted">A partir dos seus registros, gere um conjunto de perguntas para conversar com o profissional.</div><button class="btn green" style="margin-top:10px" onclick="perguntasConsulta()">✨ Gerar perguntas</button><div id="perguntas" style="margin-top:12px"></div></div></section>
 
 <div id="updateNotice" class="alert safe" style="display:none;margin-top:12px"></div>
-<footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V4.12. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V4.13. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
-<script src="js/app.js?v=V4.12" defer></script>
+<script src="js/app.js?v=V4.13" defer></script>
 >
 
 
@@ -323,7 +337,7 @@ function iniciarImportacao(){
  },80);
 }
 </script>
-<script src="js/importacao.js?v=V4.12" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/importacao.js?v=V4.13" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
 
 
 <script>
@@ -430,7 +444,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 /* V4.4: auto-update and force-refresh */
 function forcarAtualizacao(){
  const u=new URL(window.location.href);
- u.searchParams.set('appv','V4.12');
+ u.searchParams.set('appv','V4.13');
  u.searchParams.set('cb',Date.now());
  window.location.replace(u.toString());
 }
@@ -439,7 +453,7 @@ async function verificarNovaVersao(){
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
   const data=await r.json();
-  if(data.version && data.version!=='V4.12'){
+  if(data.version && data.version!=='V4.13'){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
