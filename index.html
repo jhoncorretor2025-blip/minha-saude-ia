@@ -395,6 +395,10 @@ body.msa-dark .metric-edit-btn{background:#0f172a;color:#93c5fd;border-color:#33
  });
 })();
 </script>
+<style id="v530-preferences-css">
+.msa-feature-off{display:none!important}
+body.msa-dark #settingsPreferences label{background:#111827!important;color:#e5e7eb;border-color:#263244!important}
+</style>
 </head>
 <body>
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
@@ -527,10 +531,10 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
   <button type="button" class="nav-toggle" data-menu="followup">📊 Acompanhamento ▾</button>
   <div class="nav-menu">
    <button type="button" data-tab="timeline">🕐 Linha do tempo</button>
-   <button type="button" data-tab="nutricao">🥗 Nutrição</button>
-   <button type="button" data-tab="sono">😴 Sono e bem-estar</button>
+   <button type="button" data-tab="nutricao" data-feature-nav="nutricao">🥗 Nutrição</button>
+   <button type="button" data-tab="sono" data-feature-nav="sonoBem">😴 Sono e bem-estar</button>
    <button type="button" data-tab="familia">🧬 Histórico familiar</button>
-   <button type="button" data-tab="acompanhamento">📏 Medidas corporais</button>
+   <button type="button" data-tab="acompanhamento" data-feature-nav="academia">📏 Medidas corporais</button>
   </div>
  </div>
  <div class="nav-group">
@@ -554,7 +558,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
    <button type="button" data-tab="perguntas">❓ Perguntas para consulta</button>
    <button type="button" data-tab="avisos">🔔 Central de avisos</button>
    <button type="button" onclick="abrirModoEmergencia()" style="color:#b91c1c">🚨 Emergência</button>
-   <button type="button" id="cicloMenuBtn" data-tab="perfil" onclick="setTimeout(function(){var f=document.getElementById('cicloForm');if(f){f.scrollIntoView({behavior:'smooth',block:'start');}},120)">🌸 Ciclo menstrual</button>
+   <button type="button" id="cicloMenuBtn" data-tab="perfil" data-feature-nav="ciclo" onclick="setTimeout(function(){var f=document.getElementById('cicloForm');if(f){f.scrollIntoView({behavior:'smooth',block:'start');}},120)">🌸 Ciclo menstrual</button>
    <button type="button" data-tab="carteirinha">🪪 Carteirinha</button>
   </div>
  </div>
