@@ -272,4 +272,51 @@ function ensureGoalsUI(){
 document.addEventListener('DOMContentLoaded',()=>setTimeout(ensureGoalsUI,500));
 
 
+
+/* ===== V4.99 — painel inicial personalizável ===== */
+const DASH_PREF_KEY='msa2_dashboard_preferencias';
+const DASH_WIDGETS=[
+ {id:'homeProfileHero',label:'👤 Meu perfil'},
+ {selector:'#home > .metric-panel',label:'📊 Indicadores rápidos'},
+ {selector:'#home > .grid4',label:'🔢 Contadores'},
+ {selector:'#home .smart-care-card:nth-of-type(1)',label:'🎯 Próximos cuidados'},
+ {selector:'#home .smart-care-card:nth-of-type(2)',label:'🧠 Resumo inteligente'},
+ {selector:'#home .smart-care-card:nth-of-type(3)',label:'🩺 Preparar consulta'},
+ {selector:'#home .smart-care-card:nth-of-type(4)',label:'🕐 Linha do tempo'},
+ {selector:'#home .engagement-card:nth-of-type(1)',label:'👋 Como você está hoje'},
+ {selector:'#home .engagement-card:nth-of-type(2)',label:'🏆 Seu progresso'},
+ {selector:'#home .quick-register',label:'➕ Registrar agora'},
+ {selector:'#home .engagement-card:nth-of-type(3)',label:'🎯 Objetivos'},
+ {selector:'#home .health-dashboard',label:'📈 Painel de saúde'},
+ {selector:'#home > .actions',label:'⚡ Ações rápidas'},
+ {id:'homeSummary',label:'📋 Visão geral'}
+];
+function readDashPrefs(){try{return JSON.parse(rawStorage.getItem(DASH_PREF_KEY)||'{}')}catch(e){return{}}}
+function applyDashPrefs(){
+ const prefs=readDashPrefs();
+ DASH_WIDGETS.forEach(w=>{const el=w.id?byId(w.id):document.querySelector(w.selector);if(el)el.style.display=prefs[w.id||w.selector]===false?'none':''});
+}
+function ensureDashboardUI(){
+ const toolsGroup=[...document.querySelectorAll('#nav .nav-group')].find(g=>g.querySelector('.nav-toggle[data-menu="tools"]')),menu=toolsGroup?.querySelector('.nav-menu');
+ if(menu&&!menu.querySelector('[data-tab="personalizar-inicio"]')){
+  const b=document.createElement('button');b.type='button';b.setAttribute('data-tab','personalizar-inicio');b.textContent='⚙️ Personalizar início';menu.appendChild(b);
+ }
+ if(byId('personalizar-inicio'))return;
+ const host=byId('main-content')||document.querySelector('.wrap')||document.body,sec=document.createElement('section');sec.id='personalizar-inicio';
+ sec.innerHTML='<div class="card"><div class="dash-section-title"><div><h2>⚙️ Personalizar início</h2><div class="muted">Escolha os blocos que você quer ver na página inicial. Isso não altera seus dados.</div></div><button class="btn secondary" type="button" id="msaDashReset">Restaurar padrão</button></div><div id="msaDashOptions" class="grid2"></div></div>';
+ host.appendChild(sec);
+ const opts=byId('msaDashOptions'),prefs=readDashPrefs();
+ DASH_WIDGETS.forEach((w,i)=>{
+  const key=w.id||w.selector,label=document.createElement('label');label.className='item';label.style.cursor='pointer';label.innerHTML='<input type="checkbox" data-dash-pref="'+esc(key)+'" '+(prefs[key]===false?'':'checked')+'> <b>'+esc(w.label)+'</b>';
+  opts.appendChild(label);
+ });
+ opts.addEventListener('change',e=>{
+  const input=e.target.closest('[data-dash-pref]');if(!input)return;
+  const p=readDashPrefs();p[input.getAttribute('data-dash-pref')]=input.checked;rawStorage.setItem(DASH_PREF_KEY,JSON.stringify(p));applyDashPrefs();
+ });
+ sec.querySelector('#msaDashReset').addEventListener('click',()=>{rawStorage.removeItem(DASH_PREF_KEY);opts.querySelectorAll('input').forEach(x=>x.checked=true);applyDashPrefs()});
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{ensureDashboardUI();applyDashPrefs()},550));
+
+
 })();
