@@ -1,5 +1,5 @@
 {
-  "version": "V4.39",
-  "updatedAt": "2026-09-27T21:20:00Z",
-  "changes": "Transforma a Home em painel de acompanhamento com próximos cuidados, resumo inteligente, preparação para consulta, timeline visual e prévias de histórico"
+  "version": "V4.40",
+  "updatedAt": "2026-09-27T21:40:00Z",
+  "changes": "Adiciona Carteirinha de Saúde digital com foto do perfil, cartão visual e geração de PDF pela impressão do navegador"
 }
