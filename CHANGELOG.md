@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V4.99 — Painel inicial personalizável
+- ⚙️ Blocos da página inicial podem ser mostrados/ocultados.
+- 🔄 Preferência fica armazenada localmente.
+- 🛡️ Nenhum dado de saúde é removido.
+
+
 ## V4.98 — Metas pessoais
 - 🎯 Criação de metas locais.
 - 📊 Indicadores de completude, água, registros e peso.
