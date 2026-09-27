@@ -1,5 +1,15 @@
 # Changelog — Minha Saúde IA
 
+## V4.80 — Importação por IA mais fácil para iniciantes
+- 🧭 Adicionado guia visual passo a passo para quem nunca usou IA.
+- 📋 Explicado como copiar o prompt e onde colar no ChatGPT/Gemini.
+- 💬 Explicado como copiar a resposta completa da IA e colar no aplicativo.
+- 🔎 Explicado que a importação mostra uma prévia antes de salvar.
+- 🔒 Adicionado aviso claro sobre privacidade e envio voluntário dos dados.
+- 🆘 Adicionadas orientações para problemas de colagem/importação.
+- Versão atualizada para V4.80.
+
+
 ## V4.79 — Ciclo menstrual contextual por sexo do perfil
 - 🌸 O menu **Ciclo menstrual** fica oculto quando o perfil está como **Masculino**.
 - 👩 Quando o perfil está como **Feminino**, o menu aparece normalmente.
