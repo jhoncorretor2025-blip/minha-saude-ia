@@ -1,5 +1,14 @@
 # Changelog — Minha Saúde IA
 
+## V4.86 — Fundação visual do Design System
+- 🎨 Criado `css/design-system.css` como fonte oficial para novos componentes visuais.
+- 🎯 Definidos tokens de cores, tipografia, espaçamentos, raios, sombras e dimensões de controles.
+- 🧱 Criados padrões para cabeçalhos, cards, botões, formulários, filtros, listas, estados, feedbacks e modais.
+- ♿ Incluído padrão de foco visível para teclado.
+- 📱 Incluída base responsiva para telas pequenas.
+- 🛡️ Etapa aditiva: os estilos existentes não foram removidos nem substituídos nesta versão.
+
+
 ## V4.85 — Núcleo compartilhado e reorganização segura
 - 🧱 Criada a pasta `js/core/` com `constants.js`, `storage.js` e `utils.js`.
 - 🔑 Centralizados os nomes das chaves de armazenamento em uma única fonte.
