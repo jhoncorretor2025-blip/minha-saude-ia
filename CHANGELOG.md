@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V5.08.2 — Estabilidade final
+- 🛠️ Corrigido o regex do importador para aceitar `N/A` corretamente.
+- 🔎 Corrigidos os fluxos de revisão/conflitos da importação.
+- 📦 Exportador FHIR reorganizado para sintaxe e estrutura mais claras.
+- 🔄 Versão visual e cache PWA sincronizados.
+
 ## V5.08 — Exportação FHIR R4
 - 📦 Exporta um Bundle FHIR R4 em JSON.
 - 👤 Mapeia perfil e dados pessoais disponíveis.
