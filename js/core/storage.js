@@ -27,5 +27,9 @@ function set(k,v){
  }catch(e){console.error('[Minha Saúde IA] falha ao salvar',k,e);return false}
 }
 function remove(k){try{window.msaStorage.removeItem(k);return true}catch(e){return false}}
-window.MSAStorage={get,set,remove,has:k=>{try{return window.msaStorage.getItem(k)!==null}catch(e){return false}}};
+function has(k){try{return window.msaStorage.getItem(k)!==null}catch(e){return false}}
+function clear(k){return remove(k)}
+function raw(k){try{return window.msaStorage.getItem(k)}catch(e){return null}}
+function setJSON(k,v){return set(k,v)}
+window.MSAStorage={get,set,remove,has,clear,raw,setJSON};
 })();
