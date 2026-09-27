@@ -36,8 +36,51 @@ if($('homeSummary')){
  $('homeSummary').innerHTML='<b>'+esc(nome)+'</b><br>'+d.length+' sintomas · '+c.length+' consultas · '+m.length+' medicamentos · '+e.length+' exames<br><span class="muted">Último registro: '+esc(ultima)+'</span>';
 }
 loadProfile();
+atualizarDashboard();
 }
 
+function atualizarDashboard(){
+ const d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e),v=get(K.v),vax=get(K.vax),p=get(K.p)[0]||{};
+ const condTxt=String(p.cond||'').trim();
+ const conds=condTxt&& !/^não informado$/i.test(condTxt) ? condTxt.split(/[;,|]+/).map(x=>x.trim()).filter(Boolean) : [];
+ const uniq=[...new Set(conds.map(x=>x.toLowerCase()))];
+ const set=(id,val)=>{const el=$(id);if(el)el.textContent=val};
+ set('dashCond',uniq.length);
+ set('dashCondTxt',uniq.length?uniq.slice(0,2).join(' · ')+(uniq.length>2?'…':''):'Nenhuma informada');
+ set('dashConsultas',c.length);set('dashMeds',m.length);set('dashExames',e.length);set('dashVacinas',vax.length);
+ set('dashConsultasTxt',c.length?(c.length===1?'1 consulta registrada':'histórico de consultas'):'Nenhuma consulta');
+ set('dashMedsTxt',m.length?(m.length===1?'1 medicamento':'medicamentos registrados'):'Nenhum registrado');
+ set('dashExamesTxt',e.length?(e.length===1?'1 exame':'exames registrados'):'Nenhum registrado');
+ const consultas=c.filter(x=>x.data).sort((a,b)=>new Date(b.data)-new Date(a.data));
+ const ultima=consultas[0];
+ if(ultima){
+   set('dashUltConsulta',fmt(ultima.data));
+   const days=Math.max(0,Math.floor((Date.now()-new Date(ultima.data).getTime())/86400000));
+   set('dashTempoConsulta',days===0?'Hoje':days===1?'Ontem':days+' dias atrás');
+ }else{set('dashUltConsulta','—');set('dashTempoConsulta','Ainda não')}
+ set('dashTotal',d.length+c.length+m.length+e.length+v.length+vax.length);
+ const eventos=[
+   {label:'Sint.',n:d.length},{label:'Cons.',n:c.length},{label:'Med.',n:m.length},{label:'Exames',n:e.length},{label:'Vitais',n:v.length},{label:'Vac.',n:vax.length}
+ ];
+ const max=Math.max(1,...eventos.map(x=>x.n));
+ const chart=$('dashChart');
+ if(chart)chart.innerHTML=eventos.map(x=>'<div class="dash-bar-wrap"><div class="dash-bar" title="'+x.n+' registros" style="height:'+Math.max(7,Math.round(x.n/max*88))+'px"></div><span class="dash-bar-label">'+x.label+'</span></div>').join('');
+ const peso=v.filter(x=>x.peso!==undefined&&String(x.peso).trim()).slice(-8);
+ const wc=$('dashWeight');
+ if(wc){
+   if(!peso.length)wc.innerHTML='<div class="muted" style="margin:auto">Registre sinais vitais para acompanhar o peso.</div>';
+   else{
+     const nums=peso.map(x=>parseFloat(String(x.peso).replace(',','.'))).filter(n=>!isNaN(n));
+     const min=Math.min(...nums),maxW=Math.max(...nums),range=Math.max(1,maxW-min);
+     wc.innerHTML=peso.map(x=>{
+       const n=parseFloat(String(x.peso).replace(',','.'));if(isNaN(n))return '';
+       const h=Math.max(12,Math.round(((n-min)/range)*78+20));
+       const lab=String(x.data||'').slice(0,5);
+       return '<div class="dash-bar-wrap"><div class="dash-bar" title="'+n+' kg" style="height:'+h+'px"></div><span class="dash-bar-label">'+n+'kg</span><span class="dash-bar-label">'+lab+'</span></div>';
+     }).join('');
+   }
+ }
+}
 function healthText(){
  const p=get(K.p)[0]||{},d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e),v=get(K.v),r=get(K.r),vax=get(K.vax),fam=get(K.fam);
  const lines=['MINHA SAÚDE IA — RESUMO DE DADOS','Gerado em: '+new Date().toLocaleString('pt-BR'),'','[PERFIL]','Nome: '+(p.nome||'Não informado'),'Nascimento: '+(p.nasc||'Não informado'),'Idade: '+(p.idade||'Não informado'),'Sexo: '+(p.sexo||'Não informado'),'Altura: '+(p.altura||'Não informado'),'Peso: '+(p.peso||'Não informado'),'Alergias: '+(p.alerg||'Não informado'),'Condições: '+(p.cond||'Não informado'),'Cirurgias/internações: '+(p.circ||'Não informado'),'Informações importantes: '+(p.info||'Não informado'),'','[SINTOMAS]'];
