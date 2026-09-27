@@ -4,11 +4,13 @@ Objetivo: organizar somente informações pessoais de saúde já conhecidas pelo
 
 Regras:
 - Use o contexto/memória autorizado que você já possui sobre o usuário.
-- Não faça entrevista para dados que já estejam disponíveis. Se uma informação opcional não estiver disponível, use "Não informado" e siga sem fazer perguntas.
+- Não faça perguntas sobre dados que já estejam disponíveis no seu contexto/memória. Porém, se uma informação importante para o cadastro estiver realmente ausente, faça uma pergunta objetiva somente sobre esse dado e aguarde a resposta antes de montar a ficha final.
+- Pergunte explicitamente sobre doenças e condições de saúde quando essa informação não estiver disponível: "Quais doenças ou condições de saúde você tem ou já teve?". Considere como resposta válida "Não tenho nenhuma", "Nenhuma" ou equivalente; nesse caso registre exatamente essa informação em [DOENCAS].
+- Também pode perguntar objetivamente sobre alergias e cirurgias/internações quando esses dados forem necessários e não estiverem disponíveis.
 - Não invente, estime ou complete informações.
 - Quando um dado não estiver disponível, escreva "Não informado".
 - Não faça diagnóstico, não interprete exames e não prescreva tratamento.
-- Devolva somente a ficha estruturada abaixo.
+- Quando precisar fazer uma pergunta, faça primeiro a pergunta objetiva, espere a resposta e depois devolva somente a ficha estruturada abaixo.
 - Preserve os nomes dos marcadores exatamente como estão.
 
 Formato:
