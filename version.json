@@ -1,5 +1,5 @@
 {
-  "version": "V4.71",
-  "updatedAt": "2026-09-28T00:50:00Z",
-  "changes": "Aplicativo instalável (PWA) e modo offline para a interface, mantendo os dados no armazenamento local."
+  "version": "V4.73",
+  "updatedAt": "2026-09-28T01:10:00Z",
+  "changes": "Compartilhamento seguro por níveis: completude, resumo sem dados clínicos detalhados ou ficha completa com confirmação explícita."
 }
