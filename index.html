@@ -111,13 +111,13 @@ footer{padding-bottom:20px}
 <h1 style="margin:8px 0;font-size:26px">Vamos começar?</h1>
 <p style="color:#687386;margin:0">Antes de entrar no seu histórico, escolha a forma mais fácil de alimentar o Minha Saúde IA.</p>
 </div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:22px">
-<button onclick="onboardProfile()" style="border:1px solid #cfe0ff;background:#eef4ff;border-radius:18px;padding:20px;text-align:left;cursor:pointer">
+<div class="onb-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:22px">
+<button onclick="onboardProfile()" class="onboarding-action" style="border:1px solid #cfe0ff;background:#eef4ff;border-radius:18px;padding:20px;text-align:left;cursor:pointer">
 <div style="font-size:32px">👤</div><h3 style="margin:8px 0">Preencher manualmente</h3>
 <p style="color:#687386;font-size:13px">Cadastre seus dados de saúde diretamente no aplicativo, passo a passo.</p>
 <b style="color:#2563eb">Começar cadastro →</b>
 </button>
-<button onclick="onboardIA()" style="border:1px solid #d9e8df;background:#effbf4;border-radius:18px;padding:20px;text-align:left;cursor:pointer">
+<button onclick="onboardIA()" class="onboarding-action" style="border:1px solid #d9e8df;background:#effbf4;border-radius:18px;padding:20px;text-align:left;cursor:pointer">
 <div style="font-size:32px">🤖</div><h3 style="margin:8px 0">Perguntar para IA</h3>
 <p style="color:#687386;font-size:13px">O aplicativo copia o roteiro para você e tenta abrir o Gemini. A IA fará uma pergunta por vez; depois você traz o resumo para cá.</p>
 <b style="color:#059669">Quero perguntar para a IA →</b>
@@ -185,6 +185,14 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <div class="card stat"><span>😣 Sintomas</span><b id="nD">0</b></div><div class="card stat"><span>👨‍⚕️ Consultas</span><b id="nC">0</b></div><div class="card stat"><span>💊 Medicamentos</span><b id="nM">0</b></div><div class="card stat"><span>🧪 Exames</span><b id="nE">0</b></div>
 </div>
 <div class="card" style="margin-top:13px"><h2>Como você está hoje?</h2><div class="muted">Registre uma informação ou prepare-se para uma consulta.</div>
+<div class="card" style="margin-top:13px;background:linear-gradient(135deg,#eef4ff,#f7f2ff);border-color:#dbe5ff">
+<h2 style="margin-bottom:5px">🤖 Minha Saúde IA</h2>
+<div class="muted">Organize seu histórico de saúde com ajuda da IA e depois mantenha tudo aqui.</div>
+<div class="row" style="margin-top:12px">
+<button class="btn green" onclick="go('importar')">✨ Importar com IA</button>
+<button class="btn secondary" onclick="go('perfil')">👤 Preencher manualmente</button>
+</div>
+</div>
 <div class="actions">
 <button class="action" onclick="go('dor')"><strong>😣</strong>Registrar sintoma<small>Dor, intensidade, local e sinais associados</small></button>
 <button class="action" onclick="go('consultas')"><strong>👨‍⚕️</strong>Nova consulta<small>Guarde orientações e próximo retorno</small></button>
@@ -194,7 +202,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <button class="action" onclick="gerarRelatorio()"><strong>📄</strong>Relatório médico<small>Prepare um resumo para levar à consulta</small></button>
 </div></div>
 <div class="card" style="margin-top:13px">
-<h2>🩺 Meu resumo</h2>
+<h2>🩺 Visão geral</h2>
 <div id="homeSummary" class="muted">Carregando seu resumo…</div>
 <div class="row" style="margin-top:12px">
 <button class="btn secondary" onclick="go('perfil')">👤 Ver meu perfil</button>
@@ -202,7 +210,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <button class="btn green" onclick="prepararContextoIA()">🤖 Preparar resumo para IA</button>
 </div>
 </div>
-<div class="grid2" style="margin-top:13px"><div class="card"><h2>🚨 Atenção</h2><div id="alertaHome" class="safe">Nenhum alerta automático com os dados registrados.</div></div><div class="card"><h2>🧠 Último registro</h2><div id="ultimo" class="muted">Ainda não há registros.</div></div></div>
+<div class="grid2" style="margin-top:13px"><div class="card"><h2>🛡️ Atenção</h2><div id="alertaHome" class="safe">Nenhum alerta automático com os dados registrados.</div></div><div class="card"><h2>🕒 Último registro</h2><div id="ultimo" class="muted">Ainda não há registros.</div></div></div>
 </section>
 
 <section id="timeline"><div class="card"><h2>🕐 Linha do tempo da saúde</h2><div class="muted">Todos os seus registros organizados por data.</div><div id="tl" class="timeline" style="margin-top:17px"></div></div></section>
