@@ -148,7 +148,7 @@ atualizarPerfilHome();
 renderCarteirinha();
 atualizarDashboard();
 atualizarMetricasCorporais();
-atualizarEngajamento();atualizarSmartHome();
+atualizarEngajamento();atualizarSmartHome();renderMedidasCorporais();
 }
 
 function registrarHumor(valor){
@@ -271,6 +271,26 @@ function exportarPDF(){openReport('Minha Saúde IA — Exportação', '<pre styl
 function abrirCartaoEmergencia(){const p=get(K.p)[0]||{},m=get(K.m);const body='<div class="box"><h2>🚨 Informações de emergência</h2><b>Nome:</b> '+esc(p.nome||'Não informado')+'<br><b>Nascimento:</b> '+esc(p.nasc||'Não informado')+'<br><b>Alergias:</b> '+esc(p.alerg||'Não informado')+'<br><b>Condições:</b> '+esc(p.cond||'Não informado')+'<br><b>Medicamentos registrados:</b> '+esc(m.map(x=>x.nome+(x.dose?' — '+x.dose:'')).join('; ')||'Não informado')+'<br><b>Contato:</b> '+esc(p.emerg||'Não informado')+' — '+esc(p.tel||'')+'<br><b>Informações:</b> '+esc(p.info||'Não informado')+'</div>';openReport('Cartão de emergência',body)}
 function copiarCartaoEmergencia(){const p=get(K.p)[0]||{},m=get(K.m);const text='CARTÃO DE EMERGÊNCIA\nNome: '+(p.nome||'Não informado')+'\nNascimento: '+(p.nasc||'Não informado')+'\nAlergias: '+(p.alerg||'Não informado')+'\nCondições: '+(p.cond||'Não informado')+'\nMedicamentos: '+(m.map(x=>x.nome+(x.dose?' — '+x.dose:'')).join('; ')||'Não informado')+'\nContato: '+(p.emerg||'Não informado')+' — '+(p.tel||'');if(navigator.clipboard)navigator.clipboard.writeText(text).then(()=>alert('✅ Cartão copiado.'));else copiarTextoFallback(text)}
 
+function renderMedidasCorporais(){
+ const a=get(K.medidas).slice().sort((x,y)=>String(y.data).localeCompare(String(x.data)));
+ const box=$('medidasList');if(!box)return;
+ box.innerHTML=a.length?a.map(x=>{
+  const vals=[
+   x.biceps?'💪 Bíceps: '+esc(x.biceps)+' cm':'',
+   x.barriga?'🟠 Barriga/cintura: '+esc(x.barriga)+' cm':'',
+   x.gluteos?'🍑 Glúteos/quadril: '+esc(x.gluteos)+' cm':'',
+   x.panturrilha?'🦵 Panturrilha: '+esc(x.panturrilha)+' cm':'',
+   x.coxa?'🦵 Coxa: '+esc(x.coxa)+' cm':'',
+   x.peito?'🫁 Peito/tórax: '+esc(x.peito)+' cm':''
+  ].filter(Boolean).join(' · ');
+  return '<div class="item"><div class="itemtop"><b>📏 '+esc(formatDateBR(x.data))+'</b><button class="btn red small" type="button" onclick="removerMedidaCorporal(\''+esc(String(x.id))+'\')">Excluir</button></div><p>'+vals+(x.obs?'<br>📝 '+esc(x.obs):'')+'</p></div>';
+ }).join(''):'<div class="empty">Nenhuma medida corporal registrada ainda.</div>';
+}
+function removerMedidaCorporal(id){
+ if(!confirm('Excluir esta medição corporal?'))return;
+ set(K.medidas,get(K.medidas).filter(x=>String(x.id)!==String(id)));
+ render();
+}
 function renderAcompanhamento(){
  const v=get(K.v),r=get(K.r),vax=get(K.vax),fam=get(K.fam),docs=get(K.doc),p=get(K.p)[0]||{};
  if($('vList'))list('vList',v,x=>'<div class="item"><b>❤️ '+fmt(x.data)+'</b><p>Peso: '+esc(x.peso||'—')+' · Pressão: '+esc(x.pressao||'—')+' · FC: '+esc(x.fc||'—')+' · Temp: '+esc(x.temp||'—')+' · Glicemia: '+esc(x.glic||'—')+' · Sat.: '+esc(x.sat||'—')+'<br>'+esc(x.obs||'')+'</p></div>');
@@ -324,6 +344,12 @@ function prepararContextoIA(){
  try{navigator.clipboard.writeText(ficha);alert('✅ Contexto preparado e copiado. Revise antes de colar na IA.');go('ia');}catch(e){go('ia');const t=$('iaInput');if(t){t.value=ficha;t.focus();}alert('O contexto foi preparado. Se a cópia automática não funcionar, ele ficou no campo da IA.');}
 }
 function findAlerts(d){for(let x of d){let s=(x.sint||'').toLowerCase();if(x.int>=9)return '🔴 Há registro de dor muito intensa (9–10/10). Se for atual, súbita, piorando ou acompanhada de outros sinais importantes, procure avaliação médica.';if(/falta de ar|desmaio|convuls|confusão|fraqueza de um lado|sangramento importante/.test(s))return '🔴 Foi registrado um possível sinal de alerta. Se estiver acontecendo agora, procure atendimento médico rapidamente.'}return ''}
+$('medidasForm')?.addEventListener('submit',e=>{
+ e.preventDefault();
+ const item={id:Date.now(),data:$('medidasData').value,biceps:$('medidasBiceps').value,barriga:$('medidasBarriga').value,gluteos:$('medidasGluteos').value,panturrilha:$('medidasPanturrilha').value,coxa:$('medidasCoxa').value,peito:$('medidasPeito').value,obs:$('medidasObs').value};
+ if(!item.biceps&&!item.barriga&&!item.gluteos&&!item.panturrilha&&!item.coxa&&!item.peito){alert('Informe pelo menos uma medida corporal.');return}
+ const a=get(K.medidas);a.push(item);set(K.medidas,a);e.target.reset();$('medidasData').value=hojeLocal();render();alert('📏 Medidas corporais salvas!');
+});
 $('dData').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
 $('dorForm')?.addEventListener('submit',()=>{});
 $('pForm').onsubmit=e=>{
