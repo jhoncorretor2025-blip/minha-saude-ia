@@ -1,5 +1,13 @@
 # Changelog — Minha Saúde IA
 
+## V4.81 — Guia de importação mais compacto
+- 📐 Cards do guia reduzidos para ocupar menos espaço vertical.
+- 🖥️ Passos organizados em duas colunas no computador.
+- 📱 No celular, os cards voltam automaticamente para uma coluna.
+- ✂️ Mantidas as instruções essenciais para usuários iniciantes.
+- Versão atualizada para V4.81.
+
+
 ## V4.80 — Importação por IA mais fácil para iniciantes
 - 🧭 Adicionado guia visual passo a passo para quem nunca usou IA.
 - 📋 Explicado como copiar o prompt e onde colar no ChatGPT/Gemini.
