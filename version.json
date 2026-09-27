@@ -1,5 +1,5 @@
 {
-  "version": "V5.13",
-  "updatedAt": "2026-09-28T00:10:00Z",
-  "changes": "Novos recursos: continuidade conversacional na importação IA, validação prévia da resposta, ficha de saúde resumida e preparação de consulta."
+  "version": "V5.14",
+  "updatedAt": "2026-09-28T00:30:00Z",
+  "changes": "Fluxo de importação IA redesenhado com etapas visuais, estados claros, recuperação automática de rascunho e preservação do texto após cancelamento da revisão."
 }
