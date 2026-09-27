@@ -1,5 +1,5 @@
 {
-  "version": "V5.25",
-  "updatedAt": "2026-09-28T00:45:00Z",
-  "changes": "Privacidade na Linha do tempo: sinais vitais continuam registrados como evento, mas seus valores (peso, pressão, frequência cardíaca, temperatura, glicemia e saturação) não aparecem mais no resumo cronológico. Registros do mesmo dia são agrupados em um único evento."
+  "version": "V5.26",
+  "updatedAt": "2026-09-28T01:05:00Z",
+  "changes": "Reorganização UX completa: Home simplificada com 4 ações principais, atalhos úteis, 'Mais opções' e assistente 'Não sei por onde começar'; onboarding inicial opcional; navegação agrupada por objetivo; recursos avançados continuam disponíveis sem poluir a primeira tela; menu mobile alinhado à nova organização."
 }
