@@ -1614,7 +1614,7 @@ function updateReportSummary(){
  $('rResumo').innerHTML=`<div class="grid4"><div><b>${d.length}</b><br><span class="muted">Sintomas</span></div><div><b>${c.length}</b><br><span class="muted">Consultas</span></div><div><b>${m.length}</b><br><span class="muted">Medicamentos</span></div><div><b>${e.length}</b><br><span class="muted">Exames</span></div></div><p style="margin-top:12px"><b>Intensidade média registrada:</b> ${avg}/10</p><p class="muted">Período: ${start} → ${end}</p>`;
 }
 function baixarBackup(){
- const data={version:3,createdAt:new Date().toISOString(),dores:get(K.d),consultas:get(K.c),medicamentos:get(K.m),exames:get(K.e),perfil:get(K.p)};
+ const data={version:4,createdAt:new Date().toISOString(),dores:get(K.d),consultas:get(K.c),medicamentos:get(K.m),exames:get(K.e),perfil:get(K.p),medidasCorporais:get(K.medidas)};
  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='minha-saude-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);
 }
@@ -1625,7 +1625,7 @@ function restaurarBackup(ev){
   const x=JSON.parse(reader.result);
   if(!x||!Array.isArray(x.dores)||!Array.isArray(x.consultas)||!Array.isArray(x.medicamentos)||!Array.isArray(x.exames))throw new Error();
   if(!confirm('Restaurar este backup substituirá os dados atuais. Você fez um backup atual antes de continuar?'))return;
-  set(K.d,x.dores);set(K.c,x.consultas);set(K.m,x.medicamentos);set(K.e,x.exames);set(K.p,Array.isArray(x.perfil)?x.perfil:[]);
+  set(K.d,x.dores);set(K.c,x.consultas);set(K.m,x.medicamentos);set(K.e,x.exames);set(K.p,Array.isArray(x.perfil)?x.perfil:[]);if(Array.isArray(x.medidasCorporais))set(K.medidas,x.medidasCorporais);
   render();alert('Backup restaurado com sucesso!');
  }catch(e){alert('Arquivo inválido ou incompatível.');}};
  reader.readAsText(f);ev.target.value='';
