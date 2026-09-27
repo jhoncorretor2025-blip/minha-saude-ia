@@ -10,7 +10,7 @@ const get=k=>store.get(k)||[];
 function profile(){return get(K.p)[0]||{}}
 function formatDate(v){if(!v)return '—';const s=String(v),m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);return m?m[3]+'/'+m[2]+'/'+m[1]:s}
 function addNav(){
- const group=[...document.querySelectorAll('#nav .nav-group')].find(g=>g.querySelector('.nav-toggle[data-menu="tools"]'));
+ const group=[...document.querySelectorAll('#nav .nav-group')].find(g=>g.querySelector('.nav-toggle[data-menu="resources"]'));
  const menu=group?.querySelector('.nav-menu');
  if(menu){
   [['msaResumo','🩺 Ficha de saúde'],['msaConsulta2','👨‍⚕️ Preparar consulta']].forEach(([tab,label])=>{
