@@ -1,5 +1,12 @@
 # Changelog — Minha Saúde IA
 
+## V4.78 — Ciclo menstrual com acesso direto
+- 🌸 Corrigido o botão principal **Ciclo menstrual**.
+- 👉 O botão agora navega diretamente para a área de saúde reprodutiva e posiciona a tela no diário do ciclo.
+- 🧩 O ciclo continua separado de Ferramentas e permanece em destaque no menu principal.
+- Versão atualizada para V4.78.
+
+
 ## V4.77 — Correção da página de importação/relatórios
 - 🛠️ Corrigido um fechamento indevido de `<script>` dentro do gerador de relatórios.
 - 🧹 O navegador deixava de interpretar o restante do JavaScript e passava a mostrar código como texto na página.
