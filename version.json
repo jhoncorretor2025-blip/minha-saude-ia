@@ -1,5 +1,5 @@
 {
-  "version": "V4.57",
-  "updatedAt": "2026-09-28T01:45:00Z",
-  "changes": "Auditoria e correção do fluxo IA: exportação global de processarImportacao, gravação da frequência de evacuação e atualização imediata do perfil, Home, carteirinha e módulos após importação."
+  "version": "V4.58",
+  "updatedAt": "2026-09-28T02:05:00Z",
+  "changes": "Correção de erro de sintaxe no app.js que impedia o aplicativo principal de carregar e fazia a importação permanecer em 0%."
 }
