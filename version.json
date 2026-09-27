@@ -1,5 +1,5 @@
 {
-  "version": "V4.32",
-  "updatedAt": "2026-09-27T20:15:00Z",
-  "changes": "Adiciona acompanhamento preventivo feminino ao perfil, com registro de preventivo do colo do útero, mamografia/acompanhamento das mamas, testes de IST, HPV e próximos acompanhamentos; atualiza importação por IA"
+  "version": "V4.33",
+  "updatedAt": "2026-09-27T20:25:00Z",
+  "changes": "Torna o fluxo inicial de importacao com IA autoexplicativo, com passo a passo visual e chamada clara para copiar o prompt, usar ChatGPT ou Gemini, copiar a ficha e importar"
 }
