@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V4.63 — Menu Complementos
+- Criada a nova aba **🧩 Complementos** entre **🩺 Saúde** e **🛠️ Ferramentas**.
+- Movidos para Complementos: **🥗 Nutrição**, **😴 Sono e Bem-estar** e **🧬 Histórico familiar**.
+- O conteúdo e as funções dessas áreas permanecem os mesmos; foi alterada apenas a organização da navegação.
+- Versão atualizada para V4.63.
+
 ## V4.62 — Completude do cadastro
 - O percentual de preenchimento agora considera o **sistema inteiro**, não apenas os campos básicos do perfil.
 - A tela mostra quantos itens estão preenchidos e quantos ainda estão pendentes.
