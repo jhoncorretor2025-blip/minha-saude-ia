@@ -74,6 +74,7 @@
 
     window.fecharMenus=fechar;
     window.__msaMenuReady=true;
+    try{if(typeof window.aplicarPreferencias==='function')window.aplicarPreferencias()}catch(e){}
     prepararAcessibilidade();
     criarNavegacaoMobile();
 
