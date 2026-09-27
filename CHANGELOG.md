@@ -1,5 +1,13 @@
 # Changelog — Minha Saúde IA
 
+## V5.07 — Painel de acessibilidade
+- ♿ Tamanho do texto: 100%, 110%, 125% e 150%.
+- 🔆 Maior contraste.
+- 📏 Mais espaçamento de leitura.
+- 🧘 Redução de animações.
+- 💾 Preferências armazenadas neste navegador.
+
+
 ## V5.06 — Passkey local
 - 🔑 Cadastro de Passkey com WebAuthn.
 - 📱 Opção de usar Passkey para desbloqueio neste navegador.
