@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Saúde IA — V4.3</title>
+<title>Minha Saúde IA — V4.4</title>
 <style>
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
@@ -25,6 +25,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
 </style>
 </head>
 <body>
+<div id="importDiagnostic" style="display:none;margin-top:12px"></div>
 <div id="importLoading" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.84);z-index:100000;align-items:center;justify-content:center;padding:20px">
  <div style="background:#fff;border-radius:22px;padding:26px;max-width:390px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)">
   <div style="text-align:center;font-size:42px">⏳</div>
@@ -80,7 +81,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V4.3</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V4.4</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap">
 <nav id="nav">
 <button class="active" data-tab="home">🏠 Início</button><button data-tab="timeline">🕐 Linha do tempo</button><button data-tab="dor">😣 Sintomas</button><button data-tab="consultas">👨‍⚕️ Consultas</button><button data-tab="meds">💊 Medicamentos</button><button data-tab="exames">🧪 Exames</button><button data-tab="perfil">👤 Perfil</button><button data-tab="relatorios">📊 Relatórios</button><button data-tab="backup">💾 Backup</button><button data-tab="importar">⚡ Importar com IA</button><button data-tab="ia">🤖 IA</button>
@@ -301,7 +302,7 @@ REGRAS:
 <div class="card" style="margin-top:13px"><h2>🩺 Preparar minha consulta</h2><div class="muted">A partir dos seus registros, gere um conjunto de perguntas para conversar com o profissional.</div><button class="btn green" style="margin-top:10px" onclick="perguntasConsulta()">✨ Gerar perguntas</button><div id="perguntas" style="margin-top:12px"></div></div></section>
 
 <div id="updateNotice" class="alert safe" style="display:none;margin-top:12px"></div>
-<footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V4.3 de demonstração. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V4.4 de demonstração. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -450,7 +451,6 @@ function atualizarProgresso(p,step,status){
  if(st)st.textContent=step;
  if(msg)msg.textContent=status;
 }
-function atualizarProgresso(p,step,status){
  const bar=$('importProgress'),pct=$('importPercent'),st=$('importStep'),msg=$('importStatus');
  if(bar)bar.style.width=p+'%';
  if(pct)pct.textContent=p+'%';
@@ -458,11 +458,25 @@ function atualizarProgresso(p,step,status){
  if(msg)msg.textContent=status;
 }
 const esperar=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-async function processarImportacao(){
+async function criarDiagnosticoImportacao(code,step,error,raw){
+ const box=$('importDiagnostic');
+ const diag={versao:'V4.4',codigo:code,etapa:step,mensagem:String(error?.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error?.stack||'').split('\n').slice(0,4).join('\n')};
+ if(box){
+  box.style.display='block';
+  box.innerHTML='<div class="alert danger"><b>🔎 Diagnóstico da falha</b><br>Versão: '+esc(diag.versao)+' · Etapa: '+esc(diag.etapa)+'<br>Código: <b>'+esc(diag.codigo)+'</b><pre id="importDiagnosticText" style="white-space:pre-wrap;word-break:break-word;background:#fff;margin-top:10px;padding:10px;border-radius:10px;color:#7f1d1d;font-size:11px">'+esc(JSON.stringify(diag,null,2))+'</pre><button class="btn secondary small" type="button" onclick="copiarDiagnosticoImportacao()">📋 Copiar diagnóstico</button></div>';
+ }
+ console.error('[Minha Saúde IA]',diag);
+}
+function copiarDiagnosticoImportacao(){
+ const el=$('importDiagnosticText');if(!el)return;
+ const text=el.textContent;
+ navigator.clipboard?.writeText(text).then(()=>{const b=document.querySelector('#importDiagnostic .alert');if(b)b.insertAdjacentHTML('beforeend','<div class="muted" style="margin-top:7px">✅ Diagnóstico copiado.</div>')}).catch(()=>{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();alert('Diagnóstico copiado!')});
+}
+function processarImportacao(){
  const btn=document.querySelector('button[onclick="processarImportacao()"]');
  const loading=$('importLoading');
  let raw=$('importIA').value.trim();
- if(!raw){alert('Cole primeiro a resposta da IA.');return}
+ if(!raw){criarDiagnosticoImportacao('IMPORT_INPUT_001','Leitura da resposta',new Error('Campo de importação vazio'),raw);alert('Cole primeiro a resposta da IA.');return}
  if(/Prepare meus dados pessoais de saúde para importação/i.test(raw) && !/\[NOME\]/i.test(raw)){
    $('resultadoImport').innerHTML='<div class="alert warn">💡 Você colou o <b>prompt</b>, não a resposta da IA. Primeiro envie o prompt ao ChatGPT/Gemini e depois cole aqui a resposta.</div>';
    return;
@@ -498,7 +512,10 @@ async function processarImportacao(){
    console.error('Importação:',e);
    if(loading)loading.style.display='none';
    if(btn){btn.disabled=false;btn.textContent='✨ Importar e salvar';btn.style.opacity='1'}
-   $('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui importar os dados. Verifique se a resposta contém os campos [NOME], [IDADE], [PESO], [MEDICAMENTOS] etc. Detalhe: '+esc(e.message||'erro desconhecido')+'</div>';
+   const etapa=String(e?.message||'').includes('Nenhuma informação')?'Organizando perfil':'Processando importação';
+   const codigo=String(e?.message||'').includes('JSON')?'IMPORT_JSON_001':String(e?.message||'').includes('Nenhuma informação')?'IMPORT_PARSE_001':'IMPORT_RUNTIME_001';
+   criarDiagnosticoImportacao(codigo,etapa,e,raw);
+   $('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui importar os dados. O diagnóstico da falha foi registrado logo abaixo. <b>Me mande um print dessa área.</b></div>';
    return;
  }
  if(loading)loading.style.display='none';
@@ -613,7 +630,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 /* V4.3: auto-update and force-refresh */
 function forcarAtualizacao(){
  const u=new URL(window.location.href);
- u.searchParams.set('appv','V4.3');
+ u.searchParams.set('appv','V4.4');
  u.searchParams.set('cb',Date.now());
  window.location.replace(u.toString());
 }
@@ -622,7 +639,7 @@ async function verificarNovaVersao(){
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
   const data=await r.json();
-  if(data.version && data.version!=='V4.3'){
+  if(data.version && data.version!=='V4.4'){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
