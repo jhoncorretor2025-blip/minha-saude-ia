@@ -125,7 +125,7 @@ function atualizarProgresso(p,step,status){
 const esperar=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function criarDiagnosticoImportacao(code,step,error,raw){
  const box=$('importDiagnostic');
- const diag={versao:'V4.7',codigo:code,etapa:step,mensagem:String(error?.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error?.stack||'').split('\n').slice(0,4).join('\n')};
+ const diag={versao:'V4.8',codigo:code,etapa:step,mensagem:String(error?.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error?.stack||'').split('\n').slice(0,4).join('\n')};
  if(box){
   box.style.display='block';
   box.innerHTML='<div class="alert danger"><b>🔎 Diagnóstico da falha</b><br>Versão: '+esc(diag.versao)+' · Etapa: '+esc(diag.etapa)+'<br>Código: <b>'+esc(diag.codigo)+'</b><pre id="importDiagnosticText" style="white-space:pre-wrap;word-break:break-word;background:#fff;margin-top:10px;padding:10px;border-radius:10px;color:#7f1d1d;font-size:11px">'+esc(JSON.stringify(diag,null,2))+'</pre><button class="btn secondary small" type="button" onclick="copiarDiagnosticoImportacao()">📋 Copiar diagnóstico</button></div>';
@@ -137,7 +137,7 @@ function copiarDiagnosticoImportacao(){
  const text=el.textContent;
  navigator.clipboard?.writeText(text).then(()=>{const b=document.querySelector('#importDiagnostic .alert');if(b)b.insertAdjacentHTML('beforeend','<div class="muted" style="margin-top:7px">✅ Diagnóstico copiado.</div>')}).catch(()=>{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();alert('Diagnóstico copiado!')});
 }
-function processarImportacao(){
+async function processarImportacao(){
  const btn=document.querySelector('button[onclick="processarImportacao()"]');
  const loading=$('importLoading');
  let raw=$('importIA').value.trim();
