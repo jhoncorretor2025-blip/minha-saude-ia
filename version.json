@@ -1,5 +1,5 @@
 {
-  "version": "V5.05",
-  "updatedAt": "2026-09-28T03:20:00Z",
-  "changes": "Backup criptografado local usando Web Crypto (AES-GCM + PBKDF2), com senha não armazenada."
+  "version": "V5.06",
+  "updatedAt": "2026-09-28T03:45:00Z",
+  "changes": "Passkey local opcional para desbloqueio neste navegador, com WebAuthn e sem login em nuvem."
 }
