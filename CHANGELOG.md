@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V4.77 — Correção da página de importação/relatórios
+- 🛠️ Corrigido um fechamento indevido de `<script>` dentro do gerador de relatórios.
+- 🧹 O navegador deixava de interpretar o restante do JavaScript e passava a mostrar código como texto na página.
+- 📄 Corrigido o comportamento dos relatórios sem alterar os dados armazenados.
+- 🔄 Referências visíveis e cache atualizados para V4.77.
+
 ## V4.76 — Ciclo menstrual em destaque
 - 🌸 Criado acesso principal e separado para **Ciclo menstrual**.
 - 📍 O menu fica ao lado de **Ferramentas**, sem ficar escondido dentro de Perfil.
