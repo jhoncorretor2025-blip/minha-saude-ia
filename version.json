@@ -1,5 +1,5 @@
 {
-  "version": "V5.27",
-  "updatedAt": "2026-09-28T01:25:00Z",
-  "changes": "Melhoria no painel inicial: Atividade física e Urina agora exibem botão para informar ou editar. O botão leva diretamente ao campo correspondente em Perfil de saúde, onde o dado pode ser salvo e depois volta a aparecer automaticamente no painel."
+  "version": "V5.28",
+  "updatedAt": "2026-09-28T01:40:00Z",
+  "changes": "Correção do IMC: a altura agora é interpretada corretamente tanto em centímetros quanto em metros (ex.: 184 ou 1,84). A exibição da altura também usa a unidade correta, evitando valores de IMC absurdos."
 }
