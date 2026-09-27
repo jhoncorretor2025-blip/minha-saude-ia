@@ -1,5 +1,5 @@
 {
-  "version": "V4.49",
-  "updatedAt": "2026-09-27T23:05:00Z",
-  "changes": "Amplia a Home e a Carteirinha com tipo sanguíneo, alergias conhecidas, condições/diagnósticos contínuos, altura, peso e data de nascimento; adiciona tipo sanguíneo ao perfil e à importação por IA"
+  "version": "V4.50",
+  "updatedAt": "2026-09-27T23:25:00Z",
+  "changes": "Torna o sexo obrigatório no perfil, com opções Masculino, Feminino e Outro, bloqueia o salvamento sem seleção e direciona automaticamente para completar o dado quando uma ficha importada não o possui"
 }
