@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V5.11 — API central de armazenamento
+- 🧩 `MSAStorage` ganhou `has`, `clear`, `raw` e `setJSON`.
+- 💾 `get`, `set` e `remove` continuam compatíveis.
+- 🛡️ Nenhuma chave ou formato de dado foi alterado.
+
+
 ## V5.10 — Chaves centralizadas
 - 🧩 `melhorias.js` e `recursos.js` usam `MSA_K`.
 - 💾 Chaves `msa2_*` existentes foram preservadas.
