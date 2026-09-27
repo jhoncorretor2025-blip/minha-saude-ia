@@ -1,5 +1,5 @@
 {
-  "version": "V4.42",
-  "updatedAt": "2026-09-27T22:00:00Z",
-  "changes": "Adiciona IMC e faixa de peso de referência, rotina de academia e trabalho, horas sentado/em pé, consumo de água, frequência urinária e estimativa de hidratação ajustada por atividade e calor"
+  "version": "V4.43",
+  "updatedAt": "2026-09-27T22:05:00Z",
+  "changes": "Corrige a rotina de cálculo das métricas corporais e mantém IMC, faixa de peso de referência, atividade, rotina de trabalho, hidratação e frequência urinária"
 }
