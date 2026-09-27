@@ -1,5 +1,5 @@
 {
-  "version": "V4.16",
+  "version": "V4.17",
   "updatedAt": "2026-09-27T00:00:00Z",
-  "changes": "Correção da atualização do perfil na importação: substitui valores provisórios e preserva Não informado corretamente"
+  "changes": "Navegação reorganizada em três categorias para reduzir a barra horizontal e facilitar o acesso às funções"
 }
