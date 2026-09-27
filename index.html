@@ -448,12 +448,14 @@ function hasAnyHealthData(){
  return [K.d,K.c,K.m,K.e,K.p].some(k=>get(k).length>0);
 }
 function showOnboarding(){
- if(localStorage.getItem('msa2_onboarding_done')!=='1' && !hasAnyHealthData()){
+ // Mostra a nova escolha de início uma vez nesta versão, mesmo para quem já abriu versões anteriores.
+ if(localStorage.getItem('msa2_onboarding_v6_done')!=='1' && !hasAnyHealthData()){
    const o=document.getElementById('onboarding'); if(o)o.style.display='block';
  }
 }
 function finishOnboarding(mode){
  localStorage.setItem('msa2_onboarding_done','1');
+ localStorage.setItem('msa2_onboarding_v6_done','1');
  const o=document.getElementById('onboarding');if(o)o.style.display='none';
  if(mode==='import')go('importar');
  if(mode==='profile')go('perfil');
