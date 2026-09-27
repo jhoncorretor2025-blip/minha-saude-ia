@@ -1,4 +1,5 @@
 /* Minha Saúde IA - módulo de importação V4.27 */
+function copiarPromptIA(){copiarPrompt()}
 function copiarPrompt(){
  const t=$('promptIA');
  if(!t)return;
