@@ -1,5 +1,14 @@
 # Changelog — Minha Saúde IA
 
+## V5.14 — Assistente visual de importação IA
+- 🧭 Criado fluxo visual em 5 etapas: Preparar → Conversar → Colar → Revisar → Salvar.
+- 📝 O texto colado é salvo como rascunho local durante a importação.
+- 🔄 Rascunho é recuperado automaticamente após retorno à tela.
+- ⚠️ Estados de falta de resposta, análise, revisão e conclusão ficaram mais claros.
+- ↩️ Cancelar a revisão não apaga o texto da importação, permitindo tentar novamente.
+- 🛡️ A confirmação continua sendo necessária antes de salvar os dados importados.
+
+
 ## V5.13 — Importação inteligente, ficha resumida e preparação de consulta
 - 💬 Adicionada continuidade conversacional quando a IA faz uma pergunta durante a importação.
 - 🔎 Adicionada validação prévia da resposta da IA antes de salvar.
