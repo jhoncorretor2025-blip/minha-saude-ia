@@ -1,0 +1,15 @@
+/* Minha Saúde IA — constantes compartilhadas V4.85
+ * Fonte única dos nomes de armazenamento.
+ */
+(function(){
+'use strict';
+const K={
+ ciclo:'msa2_ciclo_menstrual',d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',
+ p:'msa2_perfil',v:'msa2_vitais',r:'msa2_lembretes',vax:'msa2_vacinas',fam:'msa2_familia',
+ doc:'msa2_documentos',nutri:'msa2_nutri',suplReg:'msa2_suplementos',food:'msa2_reacoes_alimentares',
+ agua:'msa2_hidratacao',sono:'msa2_sono',bem:'msa2_bemestar',gat:'msa2_gatilhos',
+ medRot:'msa2_medicamentos_rotina',medTaken:'msa2_medicamentos_tomados',anticoncepcional:'msa2_anticoncepcional'
+};
+window.MSA_K=K;
+window.K=window.K||K;
+})();
