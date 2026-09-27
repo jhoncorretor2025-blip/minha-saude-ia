@@ -1,5 +1,5 @@
 {
-  "version": "V4.25",
-  "updatedAt": "2026-09-27T18:52:00Z",
-  "changes": "Corrige a inicialização da tela Vamos começar para aparecer automaticamente quando o aplicativo ainda não possui dados de saúde"
+  "version": "V4.26",
+  "updatedAt": "2026-09-27T19:00:00Z",
+  "changes": "Torna a tela de Importação com IA a porta de entrada principal e mantém a mensagem até o usuário marcar Não mostrar mais esta mensagem"
 }
