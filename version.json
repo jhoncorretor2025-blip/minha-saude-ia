@@ -1,5 +1,5 @@
 {
-  "version": "V4.12",
+  "version": "V4.13",
   "updatedAt": "2026-09-27T00:00:00Z",
-  "changes": "Reorganização do JavaScript em módulos separados e remoção do módulo duplicado de importação"
+  "changes": "Dashboard aprimorado, contexto da IA integrado aos registros e área de segurança e privacidade"
 }
