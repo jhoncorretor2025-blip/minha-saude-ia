@@ -1,5 +1,5 @@
 {
-  "version": "V4.70",
-  "updatedAt": "2026-09-28T00:30:00Z",
-  "changes": "Controle avançado de medicamentos: registro diário de tomadas sem duplicação, ajuste de estoque e resumo de adesão."
+  "version": "V4.71",
+  "updatedAt": "2026-09-28T00:50:00Z",
+  "changes": "Aplicativo instalável (PWA) e modo offline para a interface, mantendo os dados no armazenamento local."
 }
