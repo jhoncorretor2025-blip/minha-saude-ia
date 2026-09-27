@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V4.12 */
+/* Minha Saúde IA — aplicação principal V4.13 */
 
 const K={d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',p:'msa2_perfil'};
 const get=k=>JSON.parse(localStorage.getItem(k)||'[]'), set=(k,v)=>localStorage.setItem(k,JSON.stringify(v)), $=x=>document.getElementById(x);
@@ -20,7 +20,42 @@ $('tl').innerHTML=all.length?all.map(x=>`<div class="tl"><b>${x.type}</b> <span 
 let last=all[0];$('ultimo').innerHTML=last?`<b>${last.type}</b><br>${esc(last.text)}<br><span class="muted">${last.date}</span>`:'Ainda não há registros.';
 let alert=findAlerts(d);$('alertaHome').className=alert?'danger':'safe';$('alertaHome').innerHTML=alert?alert:'Nenhum sinal de alerta automático encontrado nos registros.';
 let vals=d.slice(-10);$('chart').innerHTML=vals.length?vals.map(x=>`<div class="bar" style="height:${Math.max(8,x.int*10)}%"><span>${x.int}</span><small>${String(x.local).slice(0,7)}</small></div>`).join(''):'<div class="muted" style="margin:auto">Registre sintomas para ver a evolução.</div>';
+if($('homeSummary')){
+ const p=get(K.p)[0]||{}, all=[...d,...c,...m,...e].map(x=>x.data||x.inicio||x.fim).filter(Boolean).sort().reverse();
+ const nome=p.nome||'Seu perfil ainda não foi preenchido';
+ const ultima=all[0]||'Nenhum registro ainda';
+ $('homeSummary').innerHTML='<b>'+esc(nome)+'</b><br>'+d.length+' sintomas · '+c.length+' consultas · '+m.length+' medicamentos · '+e.length+' exames<br><span class="muted">Último registro: '+esc(ultima)+'</span>';
+}
 loadProfile();
+}
+function prepararContextoIA(){
+ const p=get(K.p)[0]||{},d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
+ const recent=[...d.map(x=>({data:x.data,tipo:'Sintoma',texto:x.local+' — intensidade '+x.int+'/10 — '+(x.sint||'')})),...c.map(x=>({data:x.data,tipo:'Consulta',texto:x.esp+' — '+(x.mot||'')})),...m.map(x=>({data:x.inicio||x.fim,tipo:'Medicamento',texto:x.nome+' — '+(x.dose||'') })),...e.map(x=>({data:x.data,tipo:'Exame',texto:x.nome+' — '+(x.res||'')}))].filter(x=>x.data).sort((a,b)=>String(b.data).localeCompare(String(a.data))).slice(0,15);
+ const ficha=[
+ 'Contexto de saúde pessoal para análise e organização — Minha Saúde IA.',
+ 'IMPORTANTE: use somente as informações abaixo. Não invente, não complete lacunas e não faça diagnóstico. Se algo exigir avaliação, sinalize como assunto para discutir com profissional de saúde.',
+ '',
+ '[PERFIL]',
+ 'Nome: '+(p.nome||'Não informado'),
+ 'Data de nascimento: '+(p.nasc||'Não informado'),
+ 'Idade: '+(p.idade||'Não informado'),
+ 'Peso: '+(p.peso||'Não informado'),
+ 'Altura: '+(p.altura||'Não informado'),
+ 'Sexo: '+(p.sexo||'Não informado'),
+ 'Alergias: '+(p.alerg||'Não informado'),
+ 'Condições: '+(p.cond||'Não informado'),
+ 'Cirurgias/internações: '+(p.circ||'Não informado'),
+ 'Informações importantes: '+(p.info||'Não informado'),
+ '',
+ '[REGISTROS RECENTES]',
+ ...(recent.length?recent.map(x=>x.data+' — '+x.tipo+': '+x.texto):['Nenhum registro recente.']),
+ '',
+ '[MEDICAMENTOS REGISTRADOS]',
+ ...(m.length?m.slice(-15).map(x=>x.nome+' — '+(x.dose||'dose não informada')+' — '+(x.freq||'frequência não informada')):['Nenhum registrado.']),
+ '',
+ 'TAREFA: organize ou responda à pergunta do usuário usando somente este contexto. Não altere os fatos.'
+ ].join('\n');
+ try{navigator.clipboard.writeText(ficha);alert('✅ Contexto preparado e copiado. Revise antes de colar na IA.');go('ia');}catch(e){go('ia');const t=$('iaInput');if(t){t.value=ficha;t.focus();}alert('O contexto foi preparado. Se a cópia automática não funcionar, ele ficou no campo da IA.');}
 }
 function findAlerts(d){for(let x of d){let s=(x.sint||'').toLowerCase();if(x.int>=9)return '🔴 Há registro de dor muito intensa (9–10/10). Se for atual, súbita, piorando ou acompanhada de outros sinais importantes, procure avaliação médica.';if(/falta de ar|desmaio|convuls|confusão|fraqueza de um lado|sangramento importante/.test(s))return '🔴 Foi registrado um possível sinal de alerta. Se estiver acontecendo agora, procure atendimento médico rapidamente.'}return ''}
 $('dData').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
