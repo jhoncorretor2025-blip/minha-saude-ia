@@ -1,5 +1,5 @@
 {
-  "version": "V4.55",
-  "updatedAt": "2026-09-28T00:55:00Z",
-  "changes": "Limpeza final do HTML, remoção de caractere solto e consolidação do sistema de menus independente."
+  "version": "V4.56",
+  "updatedAt": "2026-09-28T01:20:00Z",
+  "changes": "Correção do copiar prompt e abertura do ChatGPT/Gemini por links reais em nova aba, com fallback de cópia."
 }
