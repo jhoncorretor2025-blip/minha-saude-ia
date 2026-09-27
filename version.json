@@ -1,5 +1,5 @@
 {
-  "version": "V4.33",
-  "updatedAt": "2026-09-27T20:25:00Z",
-  "changes": "Torna o fluxo inicial de importacao com IA autoexplicativo, com passo a passo visual e chamada clara para copiar o prompt, usar ChatGPT ou Gemini, copiar a ficha e importar"
+  "version": "V4.34",
+  "updatedAt": "2026-09-27T20:35:00Z",
+  "changes": "Adiciona uma tela-guia antes de abrir a IA, mostrando o prompt, como copiá-lo, onde colá-lo e como trazer a ficha de volta para importação"
 }
