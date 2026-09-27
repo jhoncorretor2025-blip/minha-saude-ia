@@ -6,6 +6,7 @@
 
 const K=window.MSA_K||window.K||{};
 const storage=window.MSAStorage;
+const rawStorage=window.msaStorage;
 const DRAFT_KEY='msa2_rascunhos_formularios';
 
 const FORMS={
@@ -33,8 +34,8 @@ const FORMS={
 
 const byId=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const readDrafts=()=>{try{return JSON.parse(storage.getItem(DRAFT_KEY)||'{}')}catch(e){return{}}};
-const writeDrafts=o=>{try{storage.setItem(DRAFT_KEY,JSON.stringify(o));return true}catch(e){return false}};
+const readDrafts=()=>{try{return JSON.parse(rawStorage.getItem(DRAFT_KEY)||'{}')}catch(e){return{}}};
+const writeDrafts=o=>{try{rawStorage.setItem(DRAFT_KEY,JSON.stringify(o));return true}catch(e){return false}};
 const controlValue=el=>{
   if(el.type==='checkbox')return !!el.checked;
   if(el.type==='radio')return el.checked?el.value:null;
@@ -183,8 +184,8 @@ const LIST_CONFIG=[
   {container:'listM',key:K.m,label:'Medicamento'},
   {container:'listE',key:K.e,label:'Exame'}
 ];
-const readTrash=()=>{try{return storage.getItem(TRASH_KEY)?JSON.parse(storage.getItem(TRASH_KEY)):[]}catch(e){return[]}};
-const writeTrash=a=>{try{storage.setItem(TRASH_KEY,JSON.stringify(a.slice(-200)));return true}catch(e){return false}};
+const readTrash=()=>{try{return rawStorage.getItem(TRASH_KEY)?JSON.parse(rawStorage.getItem(TRASH_KEY)):[]}catch(e){return[]}};
+const writeTrash=a=>{try{rawStorage.setItem(TRASH_KEY,JSON.stringify(a.slice(-200)));return true}catch(e){return false}};
 function ensureTrashUI(){
   const nav=document.querySelector('#nav .nav-group .nav-menu');
   const toolsGroup=[...document.querySelectorAll('#nav .nav-group')].find(g=>g.querySelector('.nav-toggle[data-menu="tools"]'));
