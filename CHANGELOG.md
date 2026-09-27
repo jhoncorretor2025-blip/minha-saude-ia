@@ -1,5 +1,13 @@
 # Changelog — Minha Saúde IA
 
+## V5.12 — Perguntas e doenças na importação IA
+- 🩺 A IA agora verifica explicitamente doenças/condições quando essa informação estiver ausente.
+- ❓ Pode perguntar: “Quais doenças ou condições de saúde você tem ou já teve?”.
+- 🧠 Respostas como “nenhuma” também são preservadas em `[DOENCAS]`.
+- 🔎 Parser passou a aceitar várias formas do campo de doenças/condições.
+- 🖥️ Guia da tela corrigido para não contradizer o novo fluxo de perguntas.
+
+
 ## V5.11 — API central de armazenamento
 - 🧩 `MSAStorage` ganhou `has`, `clear`, `raw` e `setJSON`.
 - 💾 `get`, `set` e `remove` continuam compatíveis.
