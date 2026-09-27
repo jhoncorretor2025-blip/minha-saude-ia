@@ -1,5 +1,5 @@
 {
-  "version": "V4.24",
-  "updatedAt": "2026-09-27T18:48:00Z",
-  "changes": "Substitui definitivamente o bloco antigo de estilos dos menus por uma única implementação controlada por JavaScript"
+  "version": "V4.25",
+  "updatedAt": "2026-09-27T18:52:00Z",
+  "changes": "Corrige a inicialização da tela Vamos começar para aparecer automaticamente quando o aplicativo ainda não possui dados de saúde"
 }
