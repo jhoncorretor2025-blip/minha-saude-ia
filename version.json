@@ -1,5 +1,5 @@
 {
-  "version": "V4.91",
-  "updatedAt": "2026-09-27T23:05:00Z"
-  "changes": "Verificador de consistência estrutural: datas inválidas, períodos invertidos, possíveis duplicados e referências quebradas."
+  "version": "V4.92",
+  "updatedAt": "2026-09-27T23:35:00Z"
+  "changes": "Filtros avançados na linha do tempo por texto, tipo de registro e período, com limpeza rápida dos filtros."
 }
