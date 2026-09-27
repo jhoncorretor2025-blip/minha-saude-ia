@@ -1,5 +1,5 @@
 {
-  "version": "V4.46",
-  "updatedAt": "2026-09-27T22:30:00Z",
-  "changes": "Corrige e completa o fluxo IA: o prompt passa a solicitar dados corporais, atividade, trabalho, hidratação, frequência urinária, calor/suor e alimentação; o importador e o contexto da IA passam a reconhecer esses campos"
+  "version": "V4.47",
+  "updatedAt": "2026-09-27T22:45:00Z",
+  "changes": "Adiciona na tela inicial o perfil visual com foto, nome, idade e peso, com acesso rápido para editar o perfil"
 }
