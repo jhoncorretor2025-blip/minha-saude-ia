@@ -1,5 +1,5 @@
 {
-  "version": "V5.17",
-  "updatedAt": "2026-09-27T22:45:00Z",
-  "changes": "Novo menu Recursos separado de Ferramentas. Relatórios, exportação, documentos, segurança, importação com IA, IA, ficha de saúde e preparação de consulta foram movidos para Recursos; Ferramentas ficou com busca, avisos, calendário, perguntas, lembretes e emergência."
+  "version": "V5.18",
+  "updatedAt": "2026-09-27T23:05:00Z",
+  "changes": "Ações rápidas globais: novo botão flutuante no desktop para registrar sintoma, medicamento, consulta, exame ou sinal vital com poucos toques. Mantida a experiência mobile dedicada e atualizado o cache da aplicação para V5.18."
 }
