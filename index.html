@@ -38,10 +38,10 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
 <p style="color:#687386;font-size:13px">Cadastre seus dados de saúde diretamente no aplicativo, passo a passo.</p>
 <b style="color:#2563eb">Começar cadastro →</b>
 </button>
-<button onclick="onboardYara()" style="border:1px solid #d9e8df;background:#effbf4;border-radius:18px;padding:20px;text-align:left;cursor:pointer">
-<div style="font-size:32px">🤖</div><h3 style="margin:8px 0">Perguntar para Yara</h3>
-<p style="color:#687386;font-size:13px">Converse com uma IA que você já usa, responda às perguntas e depois cole o resumo aqui.</p>
-<b style="color:#059669">Quero usar a Yara →</b>
+<button onclick="onboardIA()" style="border:1px solid #d9e8df;background:#effbf4;border-radius:18px;padding:20px;text-align:left;cursor:pointer">
+<div style="font-size:32px">🤖</div><h3 style="margin:8px 0">Perguntar para IA</h3>
+<p style="color:#687386;font-size:13px">O aplicativo copia o roteiro para você e tenta abrir o Gemini. A IA fará uma pergunta por vez; depois você traz o resumo para cá.</p>
+<b style="color:#059669">Quero perguntar para a IA →</b>
 </button>
 </div>
 <div style="margin-top:16px;padding:14px;background:#f8fafc;border-radius:14px;font-size:13px;color:#687386">
@@ -462,7 +462,19 @@ function finishOnboarding(mode){
 }
 function onboardImport(){finishOnboarding('import')}
 function onboardProfile(){finishOnboarding('profile')}
-function onboardYara(){finishOnboarding('import');setTimeout(()=>{go('importar');$('promptIA')?.scrollIntoView({behavior:'smooth',block:'center'});},250)}
+async function onboardIA(){
+ finishOnboarding('import');
+ setTimeout(async()=>{
+  go('importar');
+  const prompt=$('promptIA')?.value||'';
+  try{await navigator.clipboard.writeText(prompt)}catch(e){}
+  const msg=$('resultadoImport');
+  if(msg)msg.innerHTML='<div class="alert safe">✅ Prompt copiado! Agora a IA fará as perguntas uma por vez. Se o Gemini não abrir automaticamente, toque em “Abrir Gemini” abaixo e cole o prompt.</div><div style="margin-top:9px"><button class="btn" onclick="abrirGemini()">🤖 Abrir Gemini</button></div>';
+  try{window.open('https://gemini.google.com/app','_blank')}catch(e){}
+  $('promptIA')?.scrollIntoView({behavior:'smooth',block:'center'});
+ },250);
+}
+function abrirGemini(){window.open('https://gemini.google.com/app','_blank')}
 function resetWelcome(){
  localStorage.removeItem('msa2_onboarding_done');
  alert('A tela inicial aparecerá novamente quando você recarregar o site.');
