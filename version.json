@@ -1,5 +1,5 @@
 {
-  "version": "V4.68",
-  "updatedAt": "2026-09-27T23:45:00Z",
-  "changes": "Navegação por URL: cada página possui o parâmetro pagina, com suporte a copiar links, atualizar a página e usar voltar/avançar do navegador."
+  "version": "V4.69",
+  "updatedAt": "2026-09-28T00:10:00Z",
+  "changes": "Primeira rodada de melhorias de navegação: busca geral, central de avisos, calendário de saúde e perguntas para consulta."
 }
