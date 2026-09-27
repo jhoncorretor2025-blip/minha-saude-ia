@@ -325,4 +325,39 @@ function ensureDashboardUI(){
 document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{ensureDashboardUI();applyDashPrefs()},550));
 
 
+
+/* ===== V5.00 — padrões dos registros ===== */
+function patternRows(){
+ const d=storage.get(K.d),local={},tipo={},gatilho={},weekday={},hour={};
+ d.forEach(x=>{
+  const add=(obj,k)=>{k=String(k||'').trim();if(k)obj[k]=(obj[k]||0)+1};
+  add(local,x.local);add(tipo,x.tipo);add(gatilho,x.gatilho);
+  const dt=new Date(String(x.data||'').replace(' ','T'));if(!isNaN(dt)){add(weekday,dt.toLocaleDateString('pt-BR',{weekday:'long'}));add(hour,String(dt.getHours()).padStart(2,'0')+'h')}
+ });
+ const top=obj=>Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,5);
+ return {d,local:top(local),tipo:top(tipo),gatilho:top(gatilho),weekday:top(weekday),hour:top(hour)};
+}
+function ensurePatternsUI(){
+ if(byId('padroes'))return;
+ const toolsGroup=[...document.querySelectorAll('#nav .nav-group')].find(g=>g.querySelector('.nav-toggle[data-menu="tools"]')),menu=toolsGroup?.querySelector('.nav-menu');
+ if(menu&&!menu.querySelector('[data-tab="padroes"]')){const b=document.createElement('button');b.type='button';b.setAttribute('data-tab','padroes');b.textContent='📈 Padrões dos registros';menu.appendChild(b)}
+ const host=byId('main-content')||document.querySelector('.wrap')||document.body,sec=document.createElement('section');sec.id='padroes';
+ sec.innerHTML='<div class="card"><div class="dash-section-title"><div><h2>📈 Padrões dos registros</h2><div class="muted">Mostra repetições encontradas nos sintomas que você registrou. Não é diagnóstico e não determina a causa de um sintoma.</div></div><button class="btn green" type="button" id="msaPatternsRefresh">🔄 Atualizar</button></div><div id="msaPatternsResult"></div></div>';
+ host.appendChild(sec);sec.querySelector('#msaPatternsRefresh').addEventListener('click',renderPatterns);renderPatterns();
+}
+function patternCard(title,arr){
+ return '<div class="card compact" style="padding:14px"><h3>'+esc(title)+'</h3>'+ (arr.length?'<div class="list">'+arr.map(x=>'<div class="item"><b>'+esc(x[0])+'</b><span class="tag">'+x[1]+' ocorrência(s)</span></div>').join('')+'</div>':'<div class="empty">Sem dados suficientes.</div>')+'</div>';
+}
+function renderPatterns(){
+ const box=byId('msaPatternsResult');if(!box)return;const p=patternRows();
+ if(!p.d.length){box.innerHTML='<div class="empty">Registre sintomas para começar a identificar repetições nos seus próprios dados.</div>';return}
+ box.innerHTML='<div class="grid2" style="margin-top:14px">'+
+ patternCard('📍 Locais mais registrados',p.local)+patternCard('🔧 Tipos de sintoma',p.tipo)+
+ patternCard('🎯 Gatilhos informados',p.gatilho)+patternCard('📅 Dias com mais registros',p.weekday)+
+ patternCard('🕐 Horários com mais registros',p.hour)+'</div>'+
+ '<div class="alert safe" style="margin-top:14px">💡 Este painel descreve somente a frequência dos seus próprios registros. Repetição não significa que exista uma causa específica.</div>';
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(ensurePatternsUI,600));
+
+
 })();
