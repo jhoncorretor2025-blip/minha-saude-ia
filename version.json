@@ -1,5 +1,5 @@
 {
-  "version": "V4.13",
+  "version": "V4.14",
   "updatedAt": "2026-09-27T00:00:00Z",
-  "changes": "Dashboard aprimorado, contexto da IA integrado aos registros e área de segurança e privacidade"
+  "changes": "Importação da ficha IA mais robusta, suporte a respostas longas e diagnóstico detalhado de falhas"
 }
