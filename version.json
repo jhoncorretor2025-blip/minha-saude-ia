@@ -1,5 +1,5 @@
 {
-  "version": "V4.54",
-  "updatedAt": "2026-09-28T00:45:00Z",
-  "changes": "Revisão estrutural: menu independente, navegação por delegação de eventos, inicialização separada da aplicação e correção da estrutura CSS."
+  "version": "V4.55",
+  "updatedAt": "2026-09-28T00:55:00Z",
+  "changes": "Limpeza final do HTML, remoção de caractere solto e consolidação do sistema de menus independente."
 }
