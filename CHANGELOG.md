@@ -1,5 +1,12 @@
 # Changelog — Minha Saúde IA
 
+## V4.76 — Ciclo menstrual em destaque
+- 🌸 Criado acesso principal e separado para **Ciclo menstrual**.
+- 📍 O menu fica ao lado de **Ferramentas**, sem ficar escondido dentro de Perfil.
+- 🩸 Acesso direto ao diário, histórico e acompanhamento do ciclo.
+- Versão atualizada para V4.76.
+
+
 ## V4.75 — Diário do ciclo menstrual
 - 🩸 Adicionado acompanhamento específico do ciclo menstrual.
 - 📅 Registro do início e fim de cada menstruação.
