@@ -500,4 +500,47 @@ document.addEventListener('click',e=>{
 document.addEventListener('DOMContentLoaded',()=>setTimeout(ensureFamilyProfilesUI,700));
 
 
+
+/* ===== V5.04 — pacote de transferência / base para sincronização ===== */
+const SYNC_KEYS=[['d','Sintomas'],['c','Consultas'],['m','Medicamentos'],['e','Exames'],['p','Perfil'],['v','Sinais vitais'],['r','Lembretes'],['vax','Vacinas'],['fam','Histórico familiar'],['doc','Documentos'],['nutri','Nutrição'],['suplReg','Suplementos'],['food','Reações alimentares'],['agua','Hidratação'],['sono','Sono'],['bem','Bem-estar'],['gat','Gatilhos'],['medRot','Rotinas de medicamentos'],['medTaken','Doses de medicamentos'],['ciclo','Ciclo menstrual'],['anticoncepcional','Anticoncepcional']];
+function buildSyncPackage(){
+ const data={app:'Minha Saúde IA',formatVersion:'2.0',exportedAt:new Date().toISOString(),profileId:currentProfileId(),data:{}};
+ SYNC_KEYS.forEach(([name])=>{data.data[name]=storage.get(K[name])});
+ return data;
+}
+window.msaExportSyncPackage=function(){
+ const pkg=buildSyncPackage();
+ downloadLocal('minha-saude-ia-pacote-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(pkg,null,2),'application/json');
+};
+function downloadLocal(name,text,type){
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function mergeSyncArray(current,incoming){
+ const out=current.slice(),seen=new Set(out.map(x=>JSON.stringify(x)));
+ incoming.forEach(x=>{const s=JSON.stringify(x);if(!seen.has(s)){out.push(x);seen.add(s)}});
+ return out;
+}
+async function importSyncPackage(file){
+ const text=await file.text(),pkg=JSON.parse(text);
+ if(!pkg||pkg.app!=='Minha Saúde IA'||!pkg.data||typeof pkg.data!=='object')throw new Error('Pacote inválido ou incompatível.');
+ const counts=[];for(const [name] of SYNC_KEYS){const inc=Array.isArray(pkg.data[name])?pkg.data[name]:[];if(inc.length)counts.push(name+': '+inc.length)}
+ if(!confirm('📦 Pacote encontrado ('+counts.join(', ')+').\n\nA importação vai MESCLAR os registros locais, sem apagar o histórico atual. Continuar?'))return;
+ let merged=0;
+ SYNC_KEYS.forEach(([name])=>{const key=K[name],inc=Array.isArray(pkg.data[name])?pkg.data[name]:[];if(!inc.length)return;const before=storage.get(key);let after;if(name==='p'){const cur=before[0]||{},src=inc[0]||{};after=[Object.assign({},cur,Object.keys(cur).length?{}:src)];}else after=mergeSyncArray(before,inc);if(JSON.stringify(before)!==JSON.stringify(after)){storage.set(key,after);merged+=inc.length}});
+ try{render();if(typeof renderNovosModulos==='function')renderNovosModulos();if(typeof renderDocumentosSaude==='function')renderDocumentosSaude()}catch(e){}
+ alert('✅ Pacote importado. '+merged+' registro(s)/item(ns) novos foram mesclados.');
+}
+function ensureSyncUI(){
+ const toolsGroup=[...document.querySelectorAll('#nav .nav-group')].find(g=>g.querySelector('.nav-toggle[data-menu="tools"]')),menu=toolsGroup?.querySelector('.nav-menu');
+ if(menu&&!menu.querySelector('[data-tab="sincronizacao"]')){const b=document.createElement('button');b.type='button';b.setAttribute('data-tab','sincronizacao');b.textContent='📦 Transferir entre dispositivos';menu.appendChild(b)}
+ if(byId('sincronizacao'))return;
+ const host=byId('main-content')||document.querySelector('.wrap')||document.body,sec=document.createElement('section');sec.id='sincronizacao';
+ sec.innerHTML='<div class="card"><div class="dash-section-title"><div><h2>📦 Transferir entre dispositivos</h2><div class="muted">Exporte um pacote completo para levar seus dados a outro celular ou computador.</div></div></div><div class="grid2"><div class="card"><h3>📤 Exportar pacote</h3><p class="muted">Baixe um arquivo JSON com os registros do perfil atual.</p><button class="btn green" type="button" id="msaSyncExport">📦 Baixar pacote</button></div><div class="card"><h3>📥 Importar pacote</h3><p class="muted">O pacote será mesclado ao histórico atual; nada será apagado automaticamente.</p><input id="msaSyncFile" type="file" accept=".json,application/json"><button class="btn secondary" type="button" id="msaSyncImport" style="margin-top:10px">📥 Importar pacote</button></div></div><div class="alert info" style="margin-top:13px">☁️ Sincronização automática entre aparelhos ainda requer uma conta e um servidor. Esta etapa cria a ponte local segura para transferência.</div></div>';
+ host.appendChild(sec);
+ sec.querySelector('#msaSyncExport').addEventListener('click',window.msaExportSyncPackage);
+ sec.querySelector('#msaSyncImport').addEventListener('click',async()=>{const f=sec.querySelector('#msaSyncFile').files[0];if(!f)return alert('Escolha um pacote JSON antes de importar.');try{await importSyncPackage(f)}catch(e){alert('❌ Não foi possível importar: '+(e.message||e))}});
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(ensureSyncUI,750));
+
+
 })();
