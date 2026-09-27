@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V4.64 */
+/* Minha Saúde IA — aplicação principal V4.65 */
 
 const K={d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',p:'msa2_perfil',v:'msa2_vitais',r:'msa2_lembretes',vax:'msa2_vacinas',fam:'msa2_familia',doc:'msa2_documentos',nutri:'msa2_nutri',suplReg:'msa2_suplementos',food:'msa2_reacoes_alimentares',agua:'msa2_hidratacao',sono:'msa2_sono',bem:'msa2_bemestar',gat:'msa2_gatilhos',medRot:'msa2_medicamentos_rotina',medTaken:'msa2_medicamentos_tomados',anticoncepcional:'msa2_anticoncepcional'};
 const LEGACY_KEYS={msa_dores:'msa2_dores',msa_consultas:'msa2_consultas',msa_meds:'msa2_meds',msa_exames:'msa2_exames',msa_perfil:'msa2_perfil',msa_vitais:'msa2_vitais',msa_lembretes:'msa2_lembretes',msa_vacinas:'msa2_vacinas',msa_familia:'msa2_familia',msa_documentos:'msa2_documentos'};
@@ -285,9 +285,9 @@ $('pForm').onsubmit=e=>{
   nome:$('pNome').value,nasc:$('pNasc').value,idade:$('pIdade').value,peso:$('pPeso').value,sexo:$('pSexo').value,
   sangue:$('pSangue').value,altura:$('pAltura').value,supl:$('pSupl').value,alerg:$('pAlerg').value,cond:$('pCond').value,
   circ:$('pCirc').value,info:$('pInfo').value,emerg:$('pEmerg').value,tel:$('pTel').value,
-  menstruacao:$('pMenstruacao').value,ciclo:$('pCiclo').value,duracaoMenstr:$('pDuracaoMenstr').value,sexoFreq:$('pSexoFreq').value,
+  menstruacao:$('pMenstruacao').value,ciclo:$('pCiclo').value,duracaoMenstr:$('pDuracaoMenstr').value,regularidade:$('pRegularidade').value,sexoFreq:$('pSexoFreq').value,
   camisinha:$('pCamisinha').value,engravidou:$('pEngravidou').value,mae:$('pMae').value,gestacoes:$('pGestacoes').value,
-  reproObs:$('pReproObs').value,usaAnticoncepcional:$('pUsaAnticoncepcional').value,anticoncepcionalNome:$('pAnticoncepcionalNome').value,anticoncepcionalHora:$('pAnticoncepcionalHora').value,anticoncepcionalInicio:$('pAnticoncepcionalInicio').value,prevColo:$('pPrevColo').value,mamografia:$('pMamografia').value,ist:$('pIST').value,hpv:$('pHPV').value,
+  reproObs:$('pReproObs').value,usaAnticoncepcional:$('pUsaAnticoncepcional').value,anticoncepcionalMetodo:$('pAnticoncepcionalMetodo').value,anticoncepcionalNome:$('pAnticoncepcionalNome').value,anticoncepcionalHora:$('pAnticoncepcionalHora').value,anticoncepcionalInicio:$('pAnticoncepcionalInicio').value,anticoncepcionalRegime:$('pAnticoncepcionalRegime').value,minipilulaTipo:$('pMinipilulaTipo').value,prevColo:$('pPrevColo').value,mamografia:$('pMamografia').value,ist:$('pIST').value,hpv:$('pHPV').value,
   prevProx:$('pPrevProx').value,prevObs:$('pPrevObs').value,dorcelaxFreq:$('pDorcelaxFreq').value,
   paracetamolFreq:$('pParacetamolFreq').value,outrosDor:$('pOutrosDor').value,catapora:$('pCatapora').value,cataporaQuando:$('pCataporaQuando').value,
   academia:$('pAcademia').value,academiaFreq:$('pAcademiaFreq').value,trabalhoTipo:$('pTrabalhoTipo').value,
@@ -345,7 +345,16 @@ function atualizarSaudeReprodutiva(){
  const feminino=/femin|mulher|female/.test(s);
  const box=$('reproSection');if(box)box.style.display=feminino?'block':'none';
  const cb=$('contraceptiveBox');if(cb)cb.style.display=feminino?'block':'none';
+ atualizarCamposMetodoAnticoncepcional();
  if(feminino) atualizarPainelAnticoncepcional();
+}
+function atualizarCamposMetodoAnticoncepcional(){
+ const metodo=String($('pAnticoncepcionalMetodo')?.value||'').toLowerCase();
+ const pill=/pílula combinada|pilula combinada/.test(metodo);
+ const mini=/minipílula|minipilula/.test(metodo);
+ const rb=$('pillRegimenBox');if(rb)rb.style.display=(pill||mini)?'grid':'none';
+ const rg=$('pAnticoncepcionalRegime')?.parentElement;if(rg)rg.style.display=pill?'':'none';
+ const mt=$('pMinipilulaTipo')?.parentElement;if(mt)mt.style.display=mini?'':'none';
 }
 function registrarAnticoncepcional(status,data){
  const p=get(K.p)[0]||{};
@@ -385,8 +394,37 @@ function checarAnticoncepcional(){
  if('Notification'in window&&Notification.permission==='granted')new Notification('💊 Hora do anticoncepcional',{body:(p.anticoncepcionalNome||'Anticoncepcional')+' — horário programado.'});
  else alert('💊 Hora do anticoncepcional: '+(p.anticoncepcionalNome||'Anticoncepcional')+' — horário programado.');
 }
-function loadProfile(){let p=get(K.p)[0]||{};[['Nome','nome'],['Nasc','nasc'],['Idade','idade'],['Peso','peso'],['Sexo','sexo'],['Sangue','sangue'],['Altura','altura'],['Supl','supl'],['Alerg','alerg'],['Cond','cond'],['Circ','circ'],['Info','info'],['Emerg','emerg'],['Tel','tel'],['Menstruacao','menstruacao'],['Ciclo','ciclo'],['DuracaoMenstr','duracaoMenstr'],['SexoFreq','sexoFreq'],['Camisinha','camisinha'],['Engravidou','engravidou'],['Mae','mae'],['Gestacoes','gestacoes'],['ReproObs','reproObs'],['UsaAnticoncepcional','usaAnticoncepcional'],['AnticoncepcionalNome','anticoncepcionalNome'],['AnticoncepcionalHora','anticoncepcionalHora'],['AnticoncepcionalInicio','anticoncepcionalInicio'],['PrevColo','prevColo'],['Mamografia','mamografia'],['IST','ist'],['HPV','hpv'],['PrevProx','prevProx'],['PrevObs','prevObs'],['DorcelaxFreq','dorcelaxFreq'],['ParacetamolFreq','paracetamolFreq'],['OutrosDor','outrosDor'],['Catapora','catapora'],['CataporaQuando','cataporaQuando'],['Academia','academia'],['AcademiaFreq','academiaFreq'],['TrabalhoTipo','trabalhoTipo'],['HorasSentado','horasSentado'],['HorasPe','horasPe'],['AguaDia','aguaDia'],['UrinaDia','urinaDia'],['EvacuacaoDia','evacuacaoDia'],['CalorSuor','calorSuor']].forEach(([id,key])=>{if($('p'+id))$('p'+id).value=p[key]||''});atualizarSaudeReprodutiva()}
+function orientarEsquecimentoAnticoncepcional(){
+ const p=get(K.p)[0]||{},metodo=String(p.anticoncepcionalMetodo||'').toLowerCase();
+ if(String(p.usaAnticoncepcional||'').toLowerCase()!=='sim'){alert('ℹ️ Primeiro registre que usa anticoncepcional no Perfil.');return}
+ if(!metodo){alert('💊 Informe o método utilizado no Perfil antes de usar esta orientação.');return}
+ const horasTxt=prompt('🚨 Há quanto tempo a dose ficou atrasada? Informe aproximadamente em horas.\n\nSe você perdeu mais de uma dose, informe a quantidade de horas desde a primeira dose que deveria ter sido tomada.','24');
+ if(horasTxt===null)return;
+ const horas=Number(String(horasTxt).replace(',','.'));
+ if(!Number.isFinite(horas)||horas<0){alert('Informe um número de horas válido.');return}
+ let msg='💊 Orientação de segurança\\n\\n';
+ if(/pílula combinada|pilula combinada/.test(metodo)){
+   if(horas<48) msg+='Para pílula combinada, referências clínicas consideram uma única pílula atrasada ou perdida quando ainda não se passaram 48 horas desde o horário previsto: a orientação geral é tomar a pílula assim que possível e continuar as próximas no horário habitual.\\n\\n';
+   else msg+='Se já passaram 48 horas ou mais, isso pode corresponder a duas ou mais pílulas hormonais consecutivas perdidas. A orientação geral é tomar a pílula perdida mais recente assim que possível, continuar a cartela no horário habitual e usar método de barreira até completar 7 dias consecutivos de uso correto.\\n\\n';
+   msg+='Se as perdas ocorreram na primeira semana e houve relação sexual sem proteção nos 5 dias anteriores, procure orientação profissional sobre contracepção de emergência.';
+ }else if(/minipílula|minipilula/.test(metodo)){
+   const tipo=String(p.minipilulaTipo||'').toLowerCase();
+   if(/drospirenona/.test(tipo)){
+     msg+=horas<48?'Para minipílula de drospirenona, menos de 48 horas desde o horário previsto é tratado nas recomendações gerais como atraso/perda de uma dose: tomar assim que possível e continuar diariamente.':'Para minipílula de drospirenona, 48 horas ou mais pode exigir medidas adicionais, incluindo método de barreira por 7 dias; confirme a bula do seu produto.';
+   }else if(/tradicional|noretisterona|norgestrel/.test(tipo)){
+     msg+=horas>3?'Para algumas minipílulas tradicionais, mais de 3 horas de atraso já é considerado uma dose perdida; a orientação geral é tomar assim que possível e usar método de barreira até 2 dias de uso correto.':'Para esse intervalo, siga o horário habitual e confirme a orientação da bula do produto.';
+   }else{
+     msg+='O intervalo permitido varia conforme o princípio ativo da minipílula. Confirme a bula específica antes de decidir o que fazer.';
+   }
+ }else{
+   msg+='Para '+(p.anticoncepcionalMetodo||'este método')+', a conduta após atraso/esquecimento depende do produto e do esquema utilizado. Consulte a bula específica ou um profissional de saúde antes de tomar uma decisão.';
+ }
+ msg+='\\n\\n⚠️ Esta tela é uma referência de segurança e não substitui a bula do medicamento nem orientação profissional. A Anvisa disponibiliza gratuitamente o Bulário Eletrônico.';
+ alert(msg);
+}
+function loadProfile(){let p=get(K.p)[0]||{};[['Nome','nome'],['Nasc','nasc'],['Idade','idade'],['Peso','peso'],['Sexo','sexo'],['Sangue','sangue'],['Altura','altura'],['Supl','supl'],['Alerg','alerg'],['Cond','cond'],['Circ','circ'],['Info','info'],['Emerg','emerg'],['Tel','tel'],['Menstruacao','menstruacao'],['Ciclo','ciclo'],['DuracaoMenstr','duracaoMenstr'],['Regularidade','regularidade'],['SexoFreq','sexoFreq'],['Camisinha','camisinha'],['Engravidou','engravidou'],['Mae','mae'],['Gestacoes','gestacoes'],['ReproObs','reproObs'],['UsaAnticoncepcional','usaAnticoncepcional'],['AnticoncepcionalMetodo','anticoncepcionalMetodo'],['AnticoncepcionalNome','anticoncepcionalNome'],['AnticoncepcionalHora','anticoncepcionalHora'],['AnticoncepcionalInicio','anticoncepcionalInicio'],['AnticoncepcionalRegime','anticoncepcionalRegime'],['MinipilulaTipo','minipilulaTipo'],['PrevColo','prevColo'],['Mamografia','mamografia'],['IST','ist'],['HPV','hpv'],['PrevProx','prevProx'],['PrevObs','prevObs'],['DorcelaxFreq','dorcelaxFreq'],['ParacetamolFreq','paracetamolFreq'],['OutrosDor','outrosDor'],['Catapora','catapora'],['CataporaQuando','cataporaQuando'],['Academia','academia'],['AcademiaFreq','academiaFreq'],['TrabalhoTipo','trabalhoTipo'],['HorasSentado','horasSentado'],['HorasPe','horasPe'],['AguaDia','aguaDia'],['UrinaDia','urinaDia'],['EvacuacaoDia','evacuacaoDia'],['CalorSuor','calorSuor']].forEach(([id,key])=>{if($('p'+id))$('p'+id).value=p[key]||''});atualizarSaudeReprodutiva()}
 $('pSexo').addEventListener('input',atualizarSaudeReprodutiva);
+$('pAnticoncepcionalMetodo')?.addEventListener('change',atualizarCamposMetodoAnticoncepcional);
 function processarFotoPerfil(ev){const file=ev.target.files&&ev.target.files[0];if(!file)return;if(!file.type.startsWith('image/')){alert('Selecione uma imagem.');return;}const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{const max=700,scale=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);c.getContext('2d').drawImage(img,0,0,c.width,c.height);const data=c.toDataURL('image/jpeg',.82);let p=get(K.p)[0]||{};p.foto=data;set(K.p,[p]);loadProfile();renderCarteirinha();};img.src=reader.result};reader.readAsDataURL(file)}
 function renderCarteirinha(){const p=get(K.p)[0]||{},m=get(K.m),foto=p.foto||'';const img=foto?'<img src="'+esc(foto)+'" alt="Foto do perfil">':'<span>👤</span>';if($('profilePhotoPreview'))$('profilePhotoPreview').innerHTML=img;if($('cardPhoto'))$('cardPhoto').innerHTML=img;if($('cardName'))$('cardName').textContent=p.nome||'Seu nome';if($('cardBasic')){let bits=[];if(p.nasc)bits.push('Nascimento: '+formatDateBR(p.nasc));if(p.idade)bits.push('Idade: '+p.idade);if(p.sexo)bits.push('Sexo: '+p.sexo);$('cardBasic').textContent=bits.join(' • ')||'Preencha seu perfil para montar a carteirinha.'}if($('cardBlood'))$('cardBlood').textContent=p.sangue||'Não informado';if($('cardBirth'))$('cardBirth').textContent=p.nasc?formatDateBR(p.nasc):'Não informado';if($('cardHeight'))$('cardHeight').textContent=p.altura?(p.altura+' cm'):'Não informado';if($('cardWeight'))$('cardWeight').textContent=p.peso?(p.peso+' kg'):'Não informado';if($('cardAllergy'))$('cardAllergy').textContent=p.alerg||'Não informado';if($('cardConditions'))$('cardConditions').textContent=p.cond||'Não informado';if($('cardMeds'))$('cardMeds').textContent=m.length?m.slice(-4).map(x=>x.nome+(x.dose?' — '+x.dose:'')).join(' • '):'Nenhum registrado';if($('cardEmergency'))$('cardEmergency').textContent=p.emerg?(p.emerg+(p.tel?' — '+p.tel:'')):'Não informado';if($('cardUpdated'))$('cardUpdated').textContent=new Date().toLocaleDateString('pt-BR')}
 function gerarCarteirinhaPDF(){renderCarteirinha();const oldTitle=document.title;document.title='Carteirinha de Saúde - '+((get(K.p)[0]||{}).nome||'Minha Saúde IA');setTimeout(()=>{window.print();setTimeout(()=>{document.title=oldTitle},500)},120)}
