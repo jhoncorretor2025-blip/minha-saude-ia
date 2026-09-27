@@ -56,3 +56,7 @@ Esses recursos funcionam no navegador e não usam chave de API. O armazenamento 
 
 ## V4.67 — Perfis locais por URL
 O aplicativo pode receber `?perfil=IDENTIFICADOR` na URL. Esse identificador cria um namespace separado no armazenamento local do navegador. A função **Link zerado para outra pessoa** gera um identificador aleatório e não copia nenhum dado pessoal para a URL. O link apenas determina qual espaço local será usado.
+
+
+## V4.68 — Navegação por URL
+Cada tela principal pode ser aberta diretamente usando `?pagina=ID`. O parâmetro pode coexistir com `?perfil=IDENTIFICADOR`. A URL contém somente identificadores de navegação; dados pessoais continuam no armazenamento local e nunca devem ser colocados na URL.
