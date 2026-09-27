@@ -1,5 +1,5 @@
 {
-  "version": "V4.99",
-  "updatedAt": "2026-09-28T01:10:00Z",
-  "changes": "Painel inicial personalizável: o usuário pode mostrar ou ocultar blocos da página inicial sem alterar seus dados."
+  "version": "V4.99.1",
+  "updatedAt": "2026-09-28T01:20:00Z",
+  "changes": "Correção de seletores da personalização do painel inicial para apontar aos blocos corretos."
 }
