@@ -1,5 +1,5 @@
 {
-  "version": "V4.95",
-  "updatedAt": "2026-09-28T00:10:00Z",
-  "changes": "OCR local para imagens e categorias/etiquetas para documentos do cofre."
+  "version": "V4.96",
+  "updatedAt": "2026-09-28T00:25:00Z",
+  "changes": "QR Code local do cartão de emergência, com geração no navegador e salvamento opcional da imagem."
 }
