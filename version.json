@@ -1,5 +1,5 @@
 {
-  "version": "V4.37",
-  "updatedAt": "2026-09-27T20:55:00Z",
-  "changes": "Amplia o perfil e a importação por IA com frequência de uso de Dorcelax e paracetamol, outros remédios para dor/febre e histórico de catapora, incluindo esses dados nos resumos"
+  "version": "V4.38",
+  "updatedAt": "2026-09-27T21:05:00Z",
+  "changes": "Corrige o fluxo da tela-guia da IA: fecha o modal ao abrir ChatGPT ou Gemini e adiciona opção explícita para fechar e voltar ao aplicativo"
 }
