@@ -7,7 +7,7 @@ Aplicativo web pessoal para organizar informações de saúde no navegador.
 - `index.html` — interface, telas e estrutura visual principal.
 - `js/app.js` — estado, armazenamento local, renderização e regras gerais do aplicativo.
 - `js/importacao.js` — importação de dados vindos do ChatGPT/Gemini e normalização da ficha.
-- `js/menu.js` — navegação e menus.
+- `js/menu.js` — navegação e menus.\n- `js/melhorias.js` — busca geral, avisos, calendário, perguntas e compartilhamento controlado.\n- `js/recursos.js` — modo emergência, documentos locais e exportações estruturadas.\n- `manifest.json` + `sw.js` — instalação PWA e cache da interface.
 - `version.json` — versão oficial do aplicativo.
 - `docs/` — documentação para manutenção e continuidade por pessoas ou IAs.
 - `prompts/` — prompts oficiais usados pelo aplicativo.
@@ -72,3 +72,11 @@ O aplicativo possui manifesto e service worker. O cache é usado para a interfac
 
 ## V4.74 — Diário do sono
 O registro principal de sono usa horários de início/fim e calcula a duração. Campos de despertares por urina e dor são armazenados como contagem, sem interpretação clínica automática.
+
+
+## V4.84 — Manutenção e navegação
+- A **versão oficial** é definida em `version.json`; ao publicar uma alteração funcional, a interface e os parâmetros de cache devem acompanhar essa versão.
+- O service worker usa um nome de cache versionado para evitar que arquivos antigos permaneçam ativos após uma atualização.
+- O menu **🌸 Ciclo menstrual** é um acesso principal separado e deve continuar condicionado ao perfil feminino pelo comportamento existente.
+- A navegação por teclado deve manter foco visível nos controles principais.
+- Ao melhorar a interface, priorizar ajustes incrementais em vez de reescrever o aplicativo inteiro.
