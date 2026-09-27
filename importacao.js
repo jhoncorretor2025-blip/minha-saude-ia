@@ -125,7 +125,7 @@ function atualizarProgresso(p,step,status){
 const esperar=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function criarDiagnosticoImportacao(code,step,error,raw){
  const box=$('importDiagnostic');
- const diag={versao:'V4.8',codigo:code,etapa:step,mensagem:String(error?.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error?.stack||'').split('\n').slice(0,4).join('\n')};
+ const diag={versao:'V4.10',codigo:code,etapa:step,mensagem:String(error?.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error?.stack||'').split('\n').slice(0,4).join('\n')};
  if(box){
   box.style.display='block';
   box.innerHTML='<div class="alert danger"><b>🔎 Diagnóstico da falha</b><br>Versão: '+esc(diag.versao)+' · Etapa: '+esc(diag.etapa)+'<br>Código: <b>'+esc(diag.codigo)+'</b><pre id="importDiagnosticText" style="white-space:pre-wrap;word-break:break-word;background:#fff;margin-top:10px;padding:10px;border-radius:10px;color:#7f1d1d;font-size:11px">'+esc(JSON.stringify(diag,null,2))+'</pre><button class="btn secondary small" type="button" onclick="copiarDiagnosticoImportacao()">📋 Copiar diagnóstico</button></div>';
