@@ -118,26 +118,25 @@
           '<button type="button" data-mobile-tab="acompanhamento">❤️<span>Sinal vital</span></button>'+
           '<button type="button" data-mobile-tab="buscar">🔎<span>Buscar</span></button>'+
         '</div>'+
-        mobileSection('Visão geral',[
-          ['home','🏠 Início'],['timeline','🕐 Linha do tempo']
+        mobileSection('Início',[
+          ['home','🏠 Visão geral']
         ])+
-        mobileSection('Saúde',[
-          ['dor','😣 Sintomas'],['consultas','👨‍⚕️ Consultas'],['meds','💊 Medicamentos'],
-          ['exames','🧪 Exames'],['perfil','👤 Perfil'],['carteirinha','🪪 Carteirinha'],
-          ['acompanhamento','📊 Acompanhamento']
+        mobileSection('Minha saúde',[
+          ['dor','😣 Sintomas'],['meds','💊 Medicamentos'],['consultas','👨‍⚕️ Consultas'],
+          ['exames','🧪 Exames'],['acompanhamento','📈 Sinais vitais'],['perfil','👤 Meu perfil']
         ])+
-        mobileSection('Complementos',[
-          ['nutricao','🥗 Nutrição'],['sono','😴 Sono e Bem-estar'],['familia','🧬 Histórico familiar']
+        mobileSection('Acompanhamento',[
+          ['timeline','🕐 Linha do tempo'],['nutricao','🥗 Nutrição'],['sono','😴 Sono e bem-estar'],
+          ['familia','🧬 Histórico familiar']
         ])+
-        mobileSection('Recursos',[
-          ['relatorios','📊 Relatórios'],['exportar','📤 Exportar'],['documentos','📄 Documentos'],
-          ['backup','🔐 Segurança'],['importar','⚡ Importar com IA'],['ia','🤖 IA'],
-          ['msaResumo','🩺 Ficha de saúde'],['msaConsulta2','👨‍⚕️ Preparar consulta']
+        mobileSection('Organização',[
+          ['relatorios','📊 Relatórios'],['documentos','📄 Documentos'],['calendario','📅 Calendário'],
+          ['lembretes','⏰ Lembretes'],['exportar','📤 Exportar'],['backup','🔐 Segurança']
         ])+
-        mobileSection('Ferramentas',[
-          ['buscar','🔎 Buscar em tudo'],['avisos','🔔 Central de avisos'],
-          ['calendario','📅 Calendário'],['perguntas','❓ Perguntas para consulta'],
-          ['lembretes','⏰ Lembretes e rotina']
+        mobileSection('IA e ferramentas',[
+          ['ia','🤖 IA'],['importar','⚡ Importar com IA'],['buscar','🔎 Buscar'],
+          ['perguntas','❓ Perguntas para consulta'],['avisos','🔔 Central de avisos'],
+          ['carteirinha','🪪 Carteirinha']
         ])+
         '<div class="msa-mobile-section"><div class="msa-mobile-section-title">Ações especiais</div>'+
           '<div class="msa-mobile-links"><button type="button" class="danger" data-mobile-emergency="1">🚨 Modo emergência</button>'+
