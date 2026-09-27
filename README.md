@@ -7,11 +7,18 @@ Aplicativo web pessoal para organizar informações de saúde de forma simples.
 ```
 minha-saude-ia/
 ├── index.html
+├── css/
+│   └── design-system.css
 ├── js/
+│   ├── core/
+│   │   ├── constants.js
+│   │   ├── storage.js
+│   │   └── utils.js
 │   ├── app.js
 │   ├── importacao.js
 │   ├── menu.js
 │   ├── melhorias.js
+│   ├── melhorias-primeiras.js
 │   └── recursos.js
 ├── prompts/
 │   └── importacao-saude.txt
@@ -84,3 +91,12 @@ O projeto possui suporte PWA. Em navegadores compatíveis, a opção de instalar
 - O menu **🌸 Ciclo menstrual** permanece independente e agora aparece antes de **🛠️ Ferramentas**.
 - A navegação móvel ganhou foco visual mais claro e suporte melhor à área segura de celulares.
 - A documentação acompanha os módulos atuais do projeto para facilitar continuidade por outras IAs.
+
+
+## V4.93 — Primeiras melhorias de confiabilidade
+- 📝 Rascunhos automáticos para formulários.
+- 🔎 Prevenção de duplicados com confirmação.
+- 🗑️ Lixeira reversível para registros principais.
+- ✅ Verificador de consistência estrutural.
+- 📅 Filtros avançados na linha do tempo.
+- 🛠️ Correção de compatibilidade do módulo de melhorias.
