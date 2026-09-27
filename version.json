@@ -1,5 +1,5 @@
 {
-  "version": "V4.65",
-  "updatedAt": "2026-09-27T22:55:00Z",
-  "changes": "Saúde reprodutiva ampliada: ciclo, regularidade, método contraceptivo, regime da pílula, controle diário e orientação de segurança para esquecimento."
+  "version": "V4.66",
+  "updatedAt": "2026-09-27T23:10:00Z",
+  "changes": "Reforço de privacidade: dados pessoais ficam somente no armazenamento local do navegador e não são embutidos na página publicada."
 }
