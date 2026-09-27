@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V4.55 */
+/* Minha Saúde IA — aplicação principal V4.57 */
 
 const K={d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',p:'msa2_perfil',v:'msa2_vitais',r:'msa2_lembretes',vax:'msa2_vacinas',fam:'msa2_familia',doc:'msa2_documentos',nutri:'msa2_nutri',suplReg:'msa2_suplementos',food:'msa2_reacoes_alimentares',agua:'msa2_hidratacao',sono:'msa2_sono',bem:'msa2_bemestar',gat:'msa2_gatilhos',medRot:'msa2_medicamentos_rotina',medTaken:'msa2_medicamentos_tomados'};
 const LEGACY_KEYS={msa_dores:'msa2_dores',msa_consultas:'msa2_consultas',msa_meds:'msa2_meds',msa_exames:'msa2_exames',msa_perfil:'msa2_perfil',msa_vitais:'msa2_vitais',msa_lembretes:'msa2_lembretes',msa_vacinas:'msa2_vacinas',msa_familia:'msa2_familia',msa_documentos:'msa2_documentos'};
