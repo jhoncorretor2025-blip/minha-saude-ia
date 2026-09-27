@@ -85,12 +85,24 @@ function atualizarSmartHome(){
 }
 function buildTimeline(){
  const out=[],push=(date,icon,title,sub)=>{if(date)out.push({date:String(date),icon:icon,title:title,sub:sub||''})};
- get(K.d).forEach(x=>push(x.data,'😣','Sintoma',x.local+' — intensidade '+x.int+'/10'));
- get(K.c).forEach(x=>push(x.data,'👨‍⚕️','Consulta',x.esp||x.med||x.mot));
- get(K.m).forEach(x=>push(x.inicio||x.data,'💊','Medicamento',x.nome));
- get(K.e).forEach(x=>push(x.data,'🧪','Exame',x.nome));
- get(K.v).forEach(x=>push(x.data,'📈','Sinal vital',x.peso?'Peso '+x.peso+' kg':x.pressao||'Registro'));
- get(K.vax).forEach(x=>push(x.data,'💉','Vacina',x.nome));
+ const vazio=v=>!v||/^(valor|não informado|nao informado|n\/a|-)$/i.test(String(v).trim());
+ get(K.d).forEach(x=>{
+  const local=vazio(x.local)?'':String(x.local).trim();
+  const intensidade=Number(x.int);
+  let sub='';
+  if(local && intensidade>0)sub=local+' — intensidade '+intensidade+'/10';
+  else if(local)sub=local;
+  else if(intensidade>0)sub='Intensidade '+intensidade+'/10';
+  push(x.data,'😣','Sintoma',sub);
+ });
+ get(K.c).forEach(x=>push(x.data,'👨‍⚕️','Consulta',vazio(x.esp)?(vazio(x.med)?(vazio(x.mot)?'':x.mot):x.med):x.esp));
+ get(K.m).forEach(x=>push(x.inicio||x.data,'💊','Medicamento',vazio(x.nome)?'':x.nome));
+ get(K.e).forEach(x=>push(x.data,'🧪','Exame',vazio(x.nome)?'':x.nome));
+ get(K.v).forEach(x=>{
+  const sub=x.peso?'Peso '+x.peso+' kg':(x.pressao||'');
+  push(x.data,'📈','Sinal vital',vazio(sub)?'':sub);
+ });
+ get(K.vax).forEach(x=>push(x.data,'💉','Vacina',vazio(x.nome)?'':x.nome));
  return out.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
 }
 function timelineHTML(x){return '<div class="timeline-row"><div class="timeline-date">'+esc(formatDateBR(x.date))+'</div><div class="timeline-dot"></div><div class="timeline-content"><b>'+x.icon+' '+esc(x.title)+'</b><small>'+esc(x.sub)+'</small></div></div>'}
