@@ -95,6 +95,35 @@ window.renderPerguntasSaude=function(){
 };
 window.alternarPerguntaSaude=function(id){const a=read('msa2_perguntas_consulta'),x=a.find(x=>x.id===id);if(x)x.respondida=!x.respondida;S().setItem('msa2_perguntas_consulta',JSON.stringify(a));renderPerguntasSaude()};
 window.removerPerguntaSaude=function(id){if(!confirm('Remover esta pergunta?'))return;S().setItem('msa2_perguntas_consulta',JSON.stringify(read('msa2_perguntas_consulta').filter(x=>x.id!==id)));renderPerguntasSaude()};
+window.abrirCompartilhamentoSeguro=function(){const m=document.getElementById('shareSafeOverlay');if(m)m.style.display='flex'};
+window.fecharCompartilhamentoSeguro=function(){const m=document.getElementById('shareSafeOverlay');if(m)m.style.display='none'};
+function shareText(text){
+ if(navigator.share){navigator.share({title:'Minha Saúde IA',text:text}).catch(function(){})}
+ else if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){alert('📋 Conteúdo copiado para a área de transferência.')}).catch(function(){prompt('Copie o conteúdo:',text)})}
+ else prompt('Copie o conteúdo:',text);
+}
+window.executarCompartilhamentoSeguro=function(){
+ const level=document.querySelector('input[name="shareLevel"]:checked')?.value||'completude';
+ let text='MINHA SAÚDE IA\n\n';
+ if(level==='completude'){
+  const p=read('msa2_perfil')[0]||{},fields=['nome','nasc','sexo','altura','peso','sangue','alerg','cond','circ','emerg'];
+  const ok=v=>Array.isArray(v)?v.length>0:String(v||'').trim()&&String(v).toLowerCase()!=='não informado';
+  const filled=fields.filter(k=>ok(p[k])).length,total=fields.length;
+  text+='Completude do perfil principal: '+Math.round(filled/total*100)+'% ('+filled+'/'+total+')\n';
+  text+='Este compartilhamento não contém a ficha de saúde.\n';
+ }else if(level==='resumo'){
+  const p=read('msa2_perfil')[0]||{};
+  const counts=[['Sintomas','msa2_dores'],['Consultas','msa2_consultas'],['Medicamentos','msa2_meds'],['Exames','msa2_exames'],['Vacinas','msa2_vacinas'],['Lembretes','msa2_lembretes']];
+  text+='Resumo de organização — sem dados clínicos detalhados\n\n';
+  text+='Perfil preenchido: '+(p.nome?'Sim':'Não')+'\n';
+  counts.forEach(x=>text+=x[0]+': '+read(x[1]).length+'\n');
+  const avis=avisosData().slice(0,5);text+='\nPróximos cuidados registrados: '+avis.length+'\n';
+ }else{
+  if(!confirm('⚠️ A ficha completa pode conter informações sensíveis. Você confirma que deseja compartilhá-la?'))return;
+  text=typeof window.healthText==='function'?window.healthText():'Ficha completa indisponível.';
+ }
+ fecharCompartilhamentoSeguro();shareText(text);
+};
 window.renderMelhorias=function(){renderAvisos();renderCalendario();renderPerguntasSaude()};
 document.addEventListener('DOMContentLoaded',function(){setTimeout(renderMelhorias,160)});
 })();
