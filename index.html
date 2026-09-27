@@ -406,9 +406,25 @@ function normalizarFichaIA(raw){
    const v=String(values[name]||'').trim();
    return /^não informado$/i.test(v)?'':v;
  };
+ const normalizarData=v=>{
+   const m=String(v||'').trim().match(/^(\d{1,2})[\\/-](\d{1,2})[\\/-](\d{4})$/);
+   return m?\`\${m[3]}-\${String(m[2]).padStart(2,'0')}-\${String(m[1]).padStart(2,'0')}\`:String(v||'').trim();
+ };
+ const normalizarNumero=v=>{
+   const m=String(v||'').replace(',','.').match(/-?\\d+(?:\\.\\d+)?/);
+   return m?m[0]:'';
+ };
+ const normalizarAltura=v=>{
+   const n=normalizarNumero(v);
+   if(!n)return '';
+   const x=Number(n);
+   return /m\\b/i.test(String(v))&&x<3?String(Math.round(x*100)):String(x);
+ };
  const p={
-  nome:field('NOME'),nasc:field('DATA_NASCIMENTO'),idade:field('IDADE'),sexo:field('SEXO'),
-  altura:field('ALTURA'),peso:field('PESO'),cond:field('DOENCAS'),alerg:field('ALERGIAS'),
+  nome:field('NOME'),nasc:normalizarData(field('DATA_NASCIMENTO')),
+  idade:normalizarNumero(field('IDADE')),sexo:field('SEXO'),
+  altura:normalizarAltura(field('ALTURA')),peso:normalizarNumero(field('PESO')),
+  cond:field('DOENCAS'),alerg:field('ALERGIAS'),
   circ:field('CIRURGIAS_INTERNACOES'),supl:field('SUPLEMENTOS'),info:field('INFORMACOES_IMPORTANTES')
  };
  const med=field('MEDICAMENTOS'),sint=field('ULTIMO_SINTOMA'),local=field('LOCAL_SINTOMA'),
@@ -441,7 +457,9 @@ function importarNormalizado(n){
    set(K.p,[merged]);
  }
  render();
- $('resultadoImport').innerHTML='<div class="alert safe">✅ <b>Importação concluída!</b> As informações já foram salvas no seu histórico e perfil.</div>';
+ const perfilSalvo=pk.filter(has).length;
+ const historicoSalvo=n.dores.length+n.consultas.length+n.meds.length+n.exames.length;
+ $('resultadoImport').innerHTML='<div class="alert safe">✅ <b>Importação concluída!</b> '+perfilSalvo+' campo(s) do perfil e '+historicoSalvo+' registro(s) de histórico foram salvos. Os formatos de data, idade e altura foram ajustados automaticamente para os campos do aplicativo.</div>';
  setTimeout(()=>window.scrollTo({top:0,behavior:'smooth'}),100);
 }
 function atualizarProgresso(p,step,status){
@@ -627,7 +645,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 
 <script>
-/* V4.3: auto-update and force-refresh */
+/* V4.4: auto-update and force-refresh */
 function forcarAtualizacao(){
  const u=new URL(window.location.href);
  u.searchParams.set('appv','V4.4');
