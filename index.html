@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Saúde IA — V4.4</title>
+<title>Minha Saúde IA — V4.5</title>
 <style>
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
@@ -81,7 +81,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V4.4</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V4.5</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap">
 <nav id="nav">
 <button class="active" data-tab="home">🏠 Início</button><button data-tab="timeline">🕐 Linha do tempo</button><button data-tab="dor">😣 Sintomas</button><button data-tab="consultas">👨‍⚕️ Consultas</button><button data-tab="meds">💊 Medicamentos</button><button data-tab="exames">🧪 Exames</button><button data-tab="perfil">👤 Perfil</button><button data-tab="relatorios">📊 Relatórios</button><button data-tab="backup">💾 Backup</button><button data-tab="importar">⚡ Importar com IA</button><button data-tab="ia">🤖 IA</button>
@@ -453,13 +453,26 @@ function importarNormalizado(n){
  if(pk.some(has)){
    const old=get(K.p)[0]||{};
    const merged=Object.assign({},old);
-   pk.forEach(k=>{if(has(k))merged[k]=n.p[k]});
+   let novos=0,ignorados=0;
+   pk.forEach(k=>{
+     if(has(k)){
+       if(String(merged[k]||'').trim()){
+         ignorados++;
+       }else{
+         merged[k]=n.p[k];
+         novos++;
+       }
+     }
+   });
    set(K.p,[merged]);
+   window._importPerfilNovos=novos;
+   window._importPerfilIgnorados=ignorados;
  }
  render();
- const perfilSalvo=pk.filter(has).length;
+ const perfilSalvo=Number(window._importPerfilNovos||0);
+ const perfilIgnorado=Number(window._importPerfilIgnorados||0);
  const historicoSalvo=n.dores.length+n.consultas.length+n.meds.length+n.exames.length;
- $('resultadoImport').innerHTML='<div class="alert safe">✅ <b>Importação concluída!</b> '+perfilSalvo+' campo(s) do perfil e '+historicoSalvo+' registro(s) de histórico foram salvos. Os formatos de data, idade e altura foram ajustados automaticamente para os campos do aplicativo.</div>';
+ $('resultadoImport').innerHTML='<div class="alert safe">✅ <b>Importação concluída!</b> '+perfilSalvo+' campo(s) novo(s) do perfil e '+historicoSalvo+' registro(s) de histórico foram salvos. '+(perfilIgnorado?perfilIgnorado+' campo(s) já preenchido(s) foram preservados. ':'')+'Os formatos de data, idade e altura foram ajustados automaticamente para os campos do aplicativo.</div>';
  setTimeout(()=>window.scrollTo({top:0,behavior:'smooth'}),100);
 }
 function atualizarProgresso(p,step,status){
@@ -469,16 +482,10 @@ function atualizarProgresso(p,step,status){
  if(st)st.textContent=step;
  if(msg)msg.textContent=status;
 }
- const bar=$('importProgress'),pct=$('importPercent'),st=$('importStep'),msg=$('importStatus');
- if(bar)bar.style.width=p+'%';
- if(pct)pct.textContent=p+'%';
- if(st)st.textContent=step;
- if(msg)msg.textContent=status;
-}
 const esperar=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function criarDiagnosticoImportacao(code,step,error,raw){
  const box=$('importDiagnostic');
- const diag={versao:'V4.4',codigo:code,etapa:step,mensagem:String(error?.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error?.stack||'').split('\n').slice(0,4).join('\n')};
+ const diag={versao:'V4.5',codigo:code,etapa:step,mensagem:String(error?.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error?.stack||'').split('\n').slice(0,4).join('\n')};
  if(box){
   box.style.display='block';
   box.innerHTML='<div class="alert danger"><b>🔎 Diagnóstico da falha</b><br>Versão: '+esc(diag.versao)+' · Etapa: '+esc(diag.etapa)+'<br>Código: <b>'+esc(diag.codigo)+'</b><pre id="importDiagnosticText" style="white-space:pre-wrap;word-break:break-word;background:#fff;margin-top:10px;padding:10px;border-radius:10px;color:#7f1d1d;font-size:11px">'+esc(JSON.stringify(diag,null,2))+'</pre><button class="btn secondary small" type="button" onclick="copiarDiagnosticoImportacao()">📋 Copiar diagnóstico</button></div>';
@@ -648,7 +655,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 /* V4.4: auto-update and force-refresh */
 function forcarAtualizacao(){
  const u=new URL(window.location.href);
- u.searchParams.set('appv','V4.4');
+ u.searchParams.set('appv','V4.5');
  u.searchParams.set('cb',Date.now());
  window.location.replace(u.toString());
 }
@@ -657,7 +664,7 @@ async function verificarNovaVersao(){
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
   const data=await r.json();
-  if(data.version && data.version!=='V4.4'){
+  if(data.version && data.version!=='V4.5'){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
