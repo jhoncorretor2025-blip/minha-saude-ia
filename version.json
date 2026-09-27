@@ -1,5 +1,5 @@
 {
-  "version": "V5.15",
-  "updatedAt": "2026-09-27T22:00:00Z",
-  "changes": "Menu Ferramentas reorganizado em 2 colunas para reduzir a altura do dropdown e melhorar a visualização."
+  "version": "V5.16",
+  "updatedAt": "2026-09-27T22:30:00Z",
+  "changes": "Experiência mobile dedicada: barra inferior para uso com uma mão, menu móvel organizado, ações rápidas, formulários mais confortáveis, modais adaptados e tabelas de relatórios com rolagem horizontal no celular."
 }
