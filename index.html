@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Saúde IA — V2.1</title>
+<title>Minha Saúde IA — V3</title>
 <style>
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
@@ -63,7 +63,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V2.1</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V3</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap">
 <nav id="nav">
 <button class="active" data-tab="home">🏠 Início</button><button data-tab="timeline">🕐 Linha do tempo</button><button data-tab="dor">😣 Sintomas</button><button data-tab="consultas">👨‍⚕️ Consultas</button><button data-tab="meds">💊 Medicamentos</button><button data-tab="exames">🧪 Exames</button><button data-tab="perfil">👤 Perfil</button><button data-tab="relatorios">📊 Relatórios</button><button data-tab="backup">💾 Backup</button><button data-tab="importar">⚡ Importar com IA</button><button data-tab="ia">🤖 IA</button>
@@ -177,127 +177,107 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 
 <section id="importar">
 <div class="card">
-<h2>🤖 Perguntar para Yara e importar</h2>
-<div class="muted">Você não precisa ficar digitando tudo no aplicativo. Converse com a Yara, responda às perguntas e depois copie o resumo para cá. O sistema tenta separar as informações automaticamente.</div>
-
+<h2>🤖 Preparar meus dados com IA</h2>
+<div class="muted">A IA deve recuperar as informações que já conhece sobre você e devolver uma ficha pronta para copiar e colar aqui. <b>Ela não deve começar uma entrevista perguntando seu nome.</b></div>
 <div class="alert safe" style="margin-top:13px">
-<b>Como funciona:</b><br>
-1️⃣ Copie o prompt abaixo.<br>
-2️⃣ Cole na Yara, ChatGPT, Gemini ou outra IA que você já usa.<br>
-3️⃣ Responda às perguntas com calma — não precisa digitar tudo no aplicativo.<br>
-4️⃣ No final, copie o resumo que a IA gerar.<br>
-5️⃣ Cole aqui embaixo e toque em <b>Importar informações</b>.
+<b>🔄 Novo fluxo — V3:</b><br>
+1️⃣ O prompt é copiado automaticamente.<br>
+2️⃣ Abra o ChatGPT ou Gemini.<br>
+3️⃣ A IA deve usar o contexto/memória que já possui e <b>não fazer perguntas</b> para dados que já conhece.<br>
+4️⃣ Copie a ficha que ela devolver.<br>
+5️⃣ Volte para cá, cole e toque em <b>Importar informações</b>.
 </div>
-
 <h3 style="margin-top:20px">📋 Prompt pronto</h3>
-<textarea id="promptIA" readonly style="min-height:420px">Você é um assistente de organização de informações pessoais de saúde.
-
-OBJETIVO:
-Conduza uma entrevista simples para coletar informações que a própria pessoa quiser registrar no aplicativo "Minha Saúde IA". Você NÃO deve diagnosticar doenças, interpretar exames, prescrever medicamentos ou inventar informações.
-
-COMO CONVERSAR:
-- Faça apenas UMA pergunta por vez.
-- Espere a resposta antes de fazer a próxima pergunta.
-- Use linguagem simples e amigável.
-- Se a pessoa não souber ou não quiser responder, aceite e continue.
-- Não peça informações que não sejam necessárias para organizar o histórico.
-- Não diga que você enviou os dados para o aplicativo: a pessoa fará isso manualmente copiando o resultado final.
-
-PERGUNTAS:
-1. Qual é o seu nome?
-2. Qual é a sua idade?
-3. Qual é o seu peso aproximado, se quiser informar?
-4. Você tem alguma doença ou condição de saúde já diagnosticada?
-5. Você tem alguma alergia conhecida?
-6. Usa algum medicamento atualmente? Se souber, informe nome, dose e frequência.
-7. Qual foi o último sintoma ou problema de saúde que você gostaria de registrar?
-8. Onde esse sintoma aconteceu?
-9. Quando começou?
-10. Qual foi a intensidade de 0 a 10?
-11. Teve outros sintomas junto?
-12. Fez alguma consulta ou exame relacionado?
-13. Recebeu alguma orientação importante de um profissional de saúde?
-14. Existe outra informação de saúde que gostaria de guardar?
+<textarea id="promptIA" readonly style="min-height:360px">Prepare meus dados pessoais de saúde para importação no aplicativo "Minha Saúde IA".
 
 IMPORTANTE:
-Não faça todas as perguntas de uma vez. Comece perguntando somente:
-"Qual é o seu nome?"
+- Use as informações que você já possui sobre mim nesta conversa e, se estiver disponível, sua memória/contexto autorizado.
+- NÃO faça uma entrevista.
+- NÃO me pergunte meu nome, idade, peso ou outros dados que já estejam disponíveis para você.
+- NÃO invente, estime ou complete informações.
+- Se um dado não estiver disponível, escreva "Não informado".
+- Não faça diagnóstico, não interprete exames, não prescreva tratamento e não altere os fatos.
+- Quero somente organizar informações já conhecidas.
 
-FINALIZAÇÃO:
-Quando a pessoa responder todas as informações ou disser que terminou, gere um RESUMO PARA IMPORTAÇÃO.
-
-O resumo final deve seguir EXATAMENTE este formato. Não coloque explicações antes ou depois:
+DEVOLVA SOMENTE ESTA FICHA, SEM INTRODUÇÃO E SEM PERGUNTAS:
 
 [NOME]
-resposta
+valor
+
+[DATA_NASCIMENTO]
+valor
 
 [IDADE]
-resposta
+valor
+
+[SEXO]
+valor
+
+[ALTURA]
+valor
 
 [PESO]
-resposta
+valor
 
 [DOENCAS]
-resposta
+valor
 
 [ALERGIAS]
-resposta
+valor
+
+[CIRURGIAS_INTERNACOES]
+valor
 
 [MEDICAMENTOS]
-resposta
+valor
+
+[SUPLEMENTOS]
+valor
 
 [ULTIMO_SINTOMA]
-resposta
+valor
 
 [LOCAL_SINTOMA]
-resposta
+valor
 
 [DATA_INICIO_SINTOMA]
-resposta
+valor
 
 [INTENSIDADE]
-resposta
+valor
 
 [OUTROS_SINTOMAS]
-resposta
+valor
 
 [CONSULTAS]
-resposta
+valor
 
 [EXAMES]
-resposta
+valor
 
 [INFORMACOES_IMPORTANTES]
-resposta
+valor
 
-REGRAS DO RESUMO:
-- Use somente informações fornecidas pela pessoa.
-- Se alguma informação não foi fornecida, deixe o campo vazio.
-- Não invente datas, doenças, medicamentos, diagnósticos ou resultados.
-- Não altere o significado do que a pessoa informou.
-- O objetivo do resumo é apenas permitir que o Minha Saúde IA organize os dados.
-- No final, escreva somente os campos acima, sem Markdown, sem JSON e sem comentários adicionais.</textarea>
-<div class="row" style="margin-top:9px"><button class="btn" onclick="copiarPrompt()">📋 Copiar prompt</button><span id="copiado" class="muted"></span></div>
-
-<h3 style="margin-top:22px">📥 Cole aqui a resposta da IA</h3>
-<textarea id="importIA" style="min-height:190px" placeholder='Cole o JSON que a IA devolveu aqui...'></textarea>
+REGRAS:
+- Preserve somente informações realmente disponíveis.
+- Se houver mais de uma informação relevante, coloque todas no campo correspondente.
+- Se houver conflito entre informações, mantenha a mais recente e indique a divergência em [INFORMACOES_IMPORTANTES].
+- Não faça perguntas.
+- Não acrescente explicações, Markdown ou comentários fora dos campos acima.</textarea>
+<div class="row" style="margin-top:9px">
+<button class="btn" onclick="copiarPrompt()">📋 Copiar prompt</button>
+<button class="btn green" onclick="abrirChatGPT()">🤖 Abrir ChatGPT</button>
+<button class="btn secondary" onclick="abrirGemini()">✨ Abrir Gemini</button>
+<span id="copiado" class="muted"></span>
+</div>
+<div class="muted" style="margin-top:8px">💡 Ao abrir uma IA, o prompt também é copiado para a área de transferência. Se ele não aparecer automaticamente, toque no campo da IA e escolha <b>Colar</b>.</div>
+<h3 style="margin-top:22px">📥 Cole aqui a ficha que a IA devolveu</h3>
+<textarea id="importIA" style="min-height:220px" placeholder="Cole aqui a ficha organizada pela IA..."></textarea>
 <div class="row" style="margin-top:9px">
 <button class="btn green" onclick="processarImportacao()">✨ Importar informações</button>
 <button class="btn secondary" onclick="limparImportacao()">Limpar</button>
 </div>
 <div id="resultadoImport" style="margin-top:12px"></div>
-</div>
-
-<div class="card" style="margin-top:13px">
-<h2>🧠 Também aceitamos texto simples</h2>
-<div class="muted">Se a IA não devolver JSON, cole um texto organizado aqui. O sistema tentará reconhecer padrões básicos como nome, dores, medicamentos e exames. Para maior precisão, prefira o prompt acima.</div>
-<textarea id="textoLivre" style="margin-top:10px;min-height:140px" placeholder="Ex.: Meu nome é João. Tenho dor de cabeça há 3 dias, intensidade 6/10. Uso dipirona 500 mg..."></textarea>
-<button class="btn secondary" style="margin-top:9px" onclick="processarTextoLivre()">🪄 Tentar organizar texto</button>
-<div id="resultadoLivre" style="margin-top:12px"></div>
-</div>
-
-<div class="alert warn" style="margin-top:13px">
-🔐 <b>Privacidade:</b> não cole em serviços de IA informações que você não queira compartilhar. A Yara/IA não recebe os dados automaticamente pelo aplicativo; você decide o que informar, copiar e colar.
 </div>
 </section>
 <section id="ia"><div class="card"><h2>🤖 Assistente de Saúde</h2><div class="muted">Ajuda a organizar informações e preparar perguntas. Não substitui diagnóstico ou atendimento médico.</div><div id="chat" class="chat"><div class="bubble bot">Olá! 👋 Conte o que está acontecendo. Posso ajudar a organizar seus sintomas, sugerir perguntas para o médico e lembrar sinais de alerta.</div></div><div class="row"><input id="iaInput" style="flex:1" placeholder="Ex.: Estou com dor abdominal há 2 dias..."><button class="btn" onclick="ask()">Enviar</button></div><div class="alert danger" style="margin-top:12px">🚨 Em uma emergência ou diante de sintomas graves, procure atendimento presencial imediatamente.</div></div>
@@ -448,8 +428,8 @@ function hasAnyHealthData(){
  return [K.d,K.c,K.m,K.e,K.p].some(k=>get(k).length>0);
 }
 function showOnboarding(){
- // Mostra a nova escolha de início uma vez nesta versão, mesmo para quem já abriu versões anteriores.
- if(localStorage.getItem('msa2_onboarding_v6_done')!=='1' && !hasAnyHealthData()){
+ // V3: mostra a nova escolha de início uma vez nesta versão.
+ if(localStorage.getItem('msa2_onboarding_v3_done')!=='1' && !hasAnyHealthData()){
    const o=document.getElementById('onboarding'); if(o)o.style.display='block';
  }
 }
@@ -469,15 +449,26 @@ async function onboardIA(){
   const prompt=$('promptIA')?.value||'';
   try{await navigator.clipboard.writeText(prompt)}catch(e){}
   const msg=$('resultadoImport');
-  if(msg)msg.innerHTML='<div class="alert safe">✅ Prompt copiado! Agora a IA fará as perguntas uma por vez. Se o Gemini não abrir automaticamente, toque em “Abrir Gemini” abaixo e cole o prompt.</div><div style="margin-top:9px"><button class="btn" onclick="abrirGemini()">🤖 Abrir Gemini</button></div>';
-  try{window.open('https://gemini.google.com/app','_blank')}catch(e){}
+  if(msg)msg.innerHTML='<div class="alert safe">✅ Prompt preparado e copiado. A IA deve usar as informações que já conhece e <b>não perguntar seu nome</b>. Se necessário, use os botões ChatGPT ou Gemini abaixo.</div>';
+  try{window.open('https://gemini.google.com/app?text='+encodeURIComponent(prompt),'_blank')}catch(e){}
   $('promptIA')?.scrollIntoView({behavior:'smooth',block:'center'});
  },250);
 }
-function abrirGemini(){window.open('https://gemini.google.com/app','_blank')}
+function abrirIA(url){
+ const prompt=$('promptIA')?.value||'';
+ const open=()=>window.open(url,'_blank');
+ navigator.clipboard?.writeText(prompt).then(open).catch(()=>{if($('promptIA')){$('promptIA').select();document.execCommand('copy')}open()});
+}
+function abrirChatGPT(){
+ abrirIA('https://chatgpt.com/?q='+encodeURIComponent($('promptIA')?.value||''));
+}
+function abrirGemini(){
+ abrirIA('https://gemini.google.com/app?text='+encodeURIComponent($('promptIA')?.value||''));
+}
+
 function resetWelcome(){
  localStorage.removeItem('msa2_onboarding_done');
- localStorage.removeItem('msa2_onboarding_v2_done');
+ localStorage.removeItem('msa2_onboarding_v3_done');
  alert('A tela inicial aparecerá novamente quando você recarregar o site.');
  location.reload();
 }
@@ -678,7 +669,7 @@ function hasAnyHealthData(){
  return [K.d,K.c,K.m,K.e,K.p].some(k=>get(k).length>0);
 }
 function showOnboarding(){
- // V2: a nova tela de escolha deve aparecer mesmo para quem já usou a versão anterior.
+ // V3: a nova tela de escolha deve aparecer uma vez nesta versão.
  // Depois que a escolha for feita, ela não volta a aparecer a cada abertura.
  if(localStorage.getItem('msa2_onboarding_v2_done')!=='1' && !hasAnyHealthData()){
    const o=document.getElementById('onboarding'); if(o)o.style.display='block';
