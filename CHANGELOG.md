@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V4.93 — Correção de compatibilidade
+- 🛠️ Restaurada a função de armazenamento usada pelo módulo `js/melhorias.js` no fluxo de perguntas para consulta.
+- ✅ Mantidas as funcionalidades adicionadas entre V4.88 e V4.92.
+- 🔄 Referências e cache do aplicativo sincronizados para V4.93.
+
+
 ## V4.92 — Filtros da linha do tempo
 - 🔎 Busca por texto na visão completa da timeline.
 - 🏷️ Filtro por tipo de registro.
