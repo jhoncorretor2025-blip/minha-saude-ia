@@ -127,7 +127,7 @@
         ])+
         mobileSection('Acompanhamento',[
           ['timeline','🕐 Linha do tempo'],['nutricao','🥗 Nutrição'],['sono','😴 Sono e bem-estar'],
-          ['familia','🧬 Histórico familiar']
+          ['familia','🧬 Histórico familiar'],['acompanhamento','📏 Medidas corporais']
         ])+
         mobileSection('Organização',[
           ['relatorios','📊 Relatórios'],['documentos','📄 Documentos'],['calendario','📅 Calendário'],
