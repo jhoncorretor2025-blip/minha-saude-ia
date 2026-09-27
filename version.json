@@ -1,5 +1,5 @@
 {
-  "version": "V4.97",
-  "updatedAt": "2026-09-28T00:40:00Z",
-  "changes": "Histórico local de alterações: registra quando e qual categoria de dado foi salva, sem duplicar o conteúdo sensível."
+  "version": "V4.98",
+  "updatedAt": "2026-09-28T00:55:00Z",
+  "changes": "Metas pessoais locais com indicadores de completude, água, registros e peso."
 }
