@@ -1,5 +1,5 @@
 {
-  "version": "V4.41",
-  "updatedAt": "2026-09-27T21:45:00Z",
-  "changes": "Corrige a preservação da foto ao salvar o perfil e mantém a Carteirinha de Saúde integrada ao perfil"
+  "version": "V4.42",
+  "updatedAt": "2026-09-27T22:00:00Z",
+  "changes": "Adiciona IMC e faixa de peso de referência, rotina de academia e trabalho, horas sentado/em pé, consumo de água, frequência urinária e estimativa de hidratação ajustada por atividade e calor"
 }
