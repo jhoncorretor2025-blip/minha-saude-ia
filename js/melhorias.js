@@ -2,6 +2,7 @@
 (function(){
 'use strict';
 const K=window.MSA_K||window.K||{};
+const S=()=>window.msaStorage;
 const read=k=>window.MSAStorage.get(k);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const br=d=>{if(!d)return '—';const s=String(d).slice(0,10),m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?m[3]+'/'+m[2]+'/'+m[1]:s};
