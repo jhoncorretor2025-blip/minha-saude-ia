@@ -68,3 +68,7 @@ O Minha Saúde IA é uma ferramenta de organização de informações. Não subs
 - 🧩 módulo separado `js/recursos.js`
 
 Para manutenção, prefira adicionar funcionalidades novas em módulos separados quando isso evitar alterações desnecessárias em `app.js`.
+
+
+## V4.71 — Instalação
+O projeto possui suporte PWA. Em navegadores compatíveis, a opção de instalar o Minha Saúde IA pode aparecer no menu do navegador. O modo offline é destinado à continuidade da interface e dos registros locais.
