@@ -17,6 +17,40 @@ document.querySelectorAll('nav button[data-tab]').forEach(b=>b.onclick=()=>go(b.
 function bodyPick(el,v){$('dLocal').value=v;document.querySelectorAll('.bodymap button').forEach(x=>x.classList.remove('sel'));el.classList.add('sel')}
 function fmt(d){if(!d)return '—';let x=new Date(d);return isNaN(x)?d:x.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}
 function list(id,a,fn){$(id).innerHTML=a.length?a.slice().reverse().map(fn).join(''):'<div class="empty">Nenhum registro ainda.</div>'}
+function formatDateBR(v){if(!v)return 'Data não informada';var s=String(v);var m=s.match(/^(\\d{4})-(\\d{2})-(\\d{2})/);return m?m[3]+'/'+m[2]+'/'+m[1]:s}
+function getNextCare(){
+ const p=get(K.p)[0]||{},c=get(K.c),e=get(K.e),m=get(K.m),vax=get(K.vax),r=get(K.r),items=[];
+ c.forEach(x=>{if(x.ret)items.push({date:x.ret,icon:'👨‍⚕️',title:'Retorno de consulta',sub:x.esp||x.med||'Consulta'});});
+ e.forEach(x=>{if(x.data)items.push({date:x.data,icon:'🧪',title:x.nome||'Exame',sub:'Exame registrado'});});
+ vax.forEach(x=>{if(x.data)items.push({date:x.data,icon:'💉',title:x.nome||'Vacina',sub:x.obs||'Vacinação registrada'});});
+ r.forEach(x=>{if(x.data)items.push({date:x.data,icon:'📌',title:x.nome||'Lembrete',sub:x.tipo||'Lembrete'});});
+ if(p.prevProx)items.push({date:p.prevProx,icon:'🌸',title:'Acompanhamento preventivo',sub:'Data registrada no perfil'});
+ return items.sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(0,6);
+}
+function atualizarSmartHome(){
+ const p=get(K.p)[0]||{},d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e),v=get(K.v),vax=get(K.vax),r=get(K.r);
+ const next=getNextCare(),box=$('nextCareList');
+ if(box)box.innerHTML=next.length?next.map(x=>'<div class="smart-item"><div class="smart-item-main"><span class="smart-icon">'+x.icon+'</span><div><b>'+esc(x.title)+'</b><small>'+esc(x.sub)+'</small></div></div><span class="smart-date">'+esc(formatDateBR(x.date))+'</span></div>').join(''):'<div class="muted">Nenhum próximo cuidado registrado. Você pode adicionar consultas, lembretes ou acompanhamentos.</div>';
+ const s=$('smartSummary');if(s)s.innerHTML='<div class="smart-kpi"><b>'+d.length+'</b><span>😣 Sintomas</span></div><div class="smart-kpi"><b>'+c.length+'</b><span>👨‍⚕️ Consultas</span></div><div class="smart-kpi"><b>'+m.length+'</b><span>💊 Medicamentos</span></div><div class="smart-kpi"><b>'+e.length+'</b><span>🧪 Exames</span></div><div class="smart-kpi"><b>'+v.length+'</b><span>📈 Sinais vitais</span></div><div class="smart-kpi"><b>'+vax.length+'</b><span>💉 Vacinas</span></div><div class="smart-kpi"><b>'+r.length+'</b><span>📌 Lembretes</span></div><div class="smart-kpi"><b>'+Object.keys(p).filter(k=>String(p[k]||'').trim()).length+'</b><span>👤 Dados do perfil</span></div>';
+ const tp=$('timelinePreview');if(tp)tp.innerHTML=buildTimeline().slice(0,5).map(timelineHTML).join('')||'<div class="muted">Ainda não há registros suficientes para mostrar a timeline.</div>';
+ const tf=$('timelineFull');if(tf)tf.innerHTML=buildTimeline().map(timelineHTML).join('')||'<div class="muted">Nenhum registro ainda.</div>';
+}
+function buildTimeline(){
+ const out=[],push=(date,icon,title,sub)=>{if(date)out.push({date:String(date),icon:icon,title:title,sub:sub||''})};
+ get(K.d).forEach(x=>push(x.data,'😣','Sintoma',x.local+' — intensidade '+x.int+'/10'));
+ get(K.c).forEach(x=>push(x.data,'👨‍⚕️','Consulta',x.esp||x.med||x.mot));
+ get(K.m).forEach(x=>push(x.inicio||x.data,'💊','Medicamento',x.nome));
+ get(K.e).forEach(x=>push(x.data,'🧪','Exame',x.nome));
+ get(K.v).forEach(x=>push(x.data,'📈','Sinal vital',x.peso?'Peso '+x.peso+' kg':x.pressao||'Registro'));
+ get(K.vax).forEach(x=>push(x.data,'💉','Vacina',x.nome));
+ return out.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+}
+function timelineHTML(x){return '<div class="timeline-row"><div class="timeline-date">'+esc(formatDateBR(x.date))+'</div><div class="timeline-dot"></div><div class="timeline-content"><b>'+x.icon+' '+esc(x.title)+'</b><small>'+esc(x.sub)+'</small></div></div>'}
+function prepararConsulta(){
+ const p=get(K.p)[0]||{},d=get(K.d),m=get(K.m),e=get(K.e),c=get(K.c);
+ const preview=$('consultPrepPreview');
+ if(preview)preview.innerHTML='<div class="prep-box"><b>📄 Resumo para consulta</b><br><br>Perfil: '+esc(p.nome||'Não informado')+'<br>Sintomas registrados: '+d.length+'<br>Medicamentos: '+m.length+'<br>Exames: '+e.length+'<br>Consultas: '+c.length+'<br><br><button class="btn green" onclick="copiarParaIA()">📋 Copiar resumo para IA</button> <button class="btn secondary" onclick="go(\'relatorios\')">📄 Abrir relatórios</button></div>';
+}
 function render(){
 let d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
 $('nD').textContent=d.length;$('nC').textContent=c.length;$('nM').textContent=m.length;$('nE').textContent=e.length;
@@ -37,7 +71,7 @@ if($('homeSummary')){
 }
 loadProfile();
 atualizarDashboard();
-atualizarEngajamento();
+atualizarEngajamento();atualizarSmartHome();
 }
 
 function registrarHumor(valor){
