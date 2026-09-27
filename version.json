@@ -1,5 +1,5 @@
 {
-  "version": "V4.18",
+  "version": "V4.19",
   "updatedAt": "2026-09-27T00:00:00Z",
-  "changes": "Correção dos menus agrupados: apenas um menu aberto por vez, fechamento ao selecionar e ao clicar fora, com camadas ajustadas para não sobrepor o conteúdo"
+  "changes": "Nova área de acompanhamento com sinais vitais, lembretes, vacinas, histórico familiar, cartão de emergência, documentos/fotos, resumo inteligente e exportação em PDF/TXT/cópia para IA"
 }
