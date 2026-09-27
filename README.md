@@ -59,3 +59,12 @@ A função de importação com IA não envia dados automaticamente para uma IA: 
 ## Aviso
 
 O Minha Saúde IA é uma ferramenta de organização de informações. Não substitui avaliação, diagnóstico, prescrição ou orientação de profissionais de saúde.
+
+
+## V4.61 — Novos recursos
+- 🚨 Modo Emergência
+- 📄 Cofre local de documentos
+- 💾 Exportação JSON estruturada
+- 🧩 módulo separado `js/recursos.js`
+
+Para manutenção, prefira adicionar funcionalidades novas em módulos separados quando isso evitar alterações desnecessárias em `app.js`.
