@@ -1,5 +1,5 @@
 {
-  "version": "V4.11",
+  "version": "V4.12",
   "updatedAt": "2026-09-27T00:00:00Z",
-  "changes": "Correção estrutural do módulo de importação e diagnóstico de carregamento"
+  "changes": "Reorganização do JavaScript em módulos separados e remoção do módulo duplicado de importação"
 }
