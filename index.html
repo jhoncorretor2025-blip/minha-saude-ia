@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Saúde IA — V4.23</title>
+<title>Minha Saúde IA — V4.24</title>
 <style>
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
@@ -23,27 +23,20 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
 @media(max-width:760px){.grid4{grid-template-columns:1fr 1fr}.actions{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
 @media(max-width:430px){.actions{grid-template-columns:1fr}.wrap{padding:0 9px}.card{padding:15px}}
 
-/* V4.23 — navegação agrupada */
-.grouped-nav{display:flex;gap:8px;align-items:flex-start;overflow:visible;background:#fff;padding:8px;border-radius:18px;box-shadow:var(--shadow);position:relative;z-index:20}
+/* V4.24 — menus definitivos */
+.grouped-nav{display:flex;gap:8px;align-items:flex-start;overflow:visible;background:#fff;padding:8px;border-radius:18px;box-shadow:var(--shadow);position:relative;z-index:1000}
 .nav-group{position:relative;min-width:0}
-.nav-group summary{list-style:none;cursor:pointer;border:0;background:#f7f9fc;padding:10px 13px;border-radius:11px;color:var(--muted);font-weight:900;white-space:nowrap;user-select:none}
-.nav-group summary::-webkit-details-marker{display:none}
-.nav-group[open] summary{background:#eaf1ff;color:var(--blue)}
-.nav-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:220px;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 12px 30px rgba(20,35,70,.14);padding:6px;display:grid;gap:3px}
+.nav-toggle{border:0;background:#f7f9fc;padding:10px 13px;border-radius:11px;color:var(--muted);font-weight:900;white-space:nowrap;user-select:none;cursor:pointer;font:inherit}
+.nav-toggle.open{background:#eaf1ff;color:var(--blue)}
+.nav-menu{display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:220px;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 12px 30px rgba(20,35,70,.14);padding:6px;gap:3px;z-index:10000}
+.nav-group.open>.nav-menu{display:grid}
 .nav-menu button{border:0;background:transparent;padding:10px 12px;border-radius:9px;color:var(--muted);font-weight:800;white-space:nowrap;cursor:pointer;text-align:left;width:100%}
 .nav-menu button:hover{background:#f3f6fb;color:var(--blue)}
 .nav-menu button.active{background:#eaf1ff;color:var(--blue)}
-@media(max-width:760px){.grouped-nav{gap:5px;overflow-x:auto}.nav-menu{position:fixed;top:auto;margin-top:6px}.nav-group summary{padding:9px 10px;font-size:12px}}
-
-/* V4.23 — menus corrigidos: um grupo por vez e camada superior */
-.grouped-nav{position:relative;z-index:1000;overflow:visible}
-.nav-group{position:relative;z-index:1}
-.nav-group[open]{z-index:50}
-.nav-menu{z-index:1000;position:absolute;top:calc(100% + 6px);left:0;overflow:visible}
-section{position:relative;z-index:1}
 @media(max-width:760px){
- .grouped-nav{overflow:visible;flex-wrap:wrap}
- .nav-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:210px;max-width:calc(100vw - 24px)}
+ .grouped-nav{gap:5px;flex-wrap:wrap}
+ .nav-toggle{padding:9px 10px;font-size:12px}
+ .nav-menu{min-width:210px;max-width:calc(100vw - 24px)}
 }
 </style>
 </head>
@@ -104,7 +97,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V4.23</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V4.24</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap">
 <nav id="nav" class="grouped-nav">
  <div class="nav-group">
@@ -377,10 +370,10 @@ REGRAS:
 <div class="card" style="margin-top:13px"><h2>🩺 Preparar minha consulta</h2><div class="muted">A partir dos seus registros, gere um conjunto de perguntas para conversar com o profissional.</div><button class="btn green" style="margin-top:10px" onclick="perguntasConsulta()">✨ Gerar perguntas</button><div id="perguntas" style="margin-top:12px"></div></div></section>
 
 <div id="updateNotice" class="alert safe" style="display:none;margin-top:12px"></div>
-<footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V4.23. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V4.24. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
-<script src="js/app.js?v=V4.23" defer></script>
+<script src="js/app.js?v=V4.24" defer></script>
 >
 
 
@@ -398,7 +391,7 @@ function iniciarImportacao(){
  },80);
 }
 </script>
-<script src="js/importacao.js?v=V4.23" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/importacao.js?v=V4.24" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
 
 
 <script>
@@ -505,7 +498,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 /* V4.4: auto-update and force-refresh */
 function forcarAtualizacao(){
  const u=new URL(window.location.href);
- u.searchParams.set('appv','V4.23');
+ u.searchParams.set('appv','V4.24');
  u.searchParams.set('cb',Date.now());
  window.location.replace(u.toString());
 }
@@ -514,7 +507,7 @@ async function verificarNovaVersao(){
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
   const data=await r.json();
-  if(data.version && data.version!=='V4.23'){
+  if(data.version && data.version!=='V4.24'){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
