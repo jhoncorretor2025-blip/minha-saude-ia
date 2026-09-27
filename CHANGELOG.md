@@ -1,5 +1,18 @@
 # Changelog — Minha Saúde IA
 
+## V4.75 — Diário do ciclo menstrual
+- 🩸 Adicionado acompanhamento específico do ciclo menstrual.
+- 📅 Registro do início e fim de cada menstruação.
+- 🩸 Registro opcional de intensidade do fluxo.
+- 😣 Registro de cólicas/dor de 0 a 10.
+- 📊 Cálculo da média dos intervalos entre os inícios registrados.
+- 📅 Estimativa simples do próximo início baseada somente na média dos registros.
+- 📝 Observação opcional por ciclo.
+- 🔒 Dados permanecem no armazenamento local do navegador.
+- A estimativa não é usada para indicar ovulação ou fertilidade.
+- Versão atualizada para V4.75.
+
+
 ## V4.74 — Diário do sono simplificado
 - Formulário reduzido para registro rápido do sono.
 - 🌙 Horário que dormiu.
