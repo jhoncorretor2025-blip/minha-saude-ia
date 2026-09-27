@@ -52,3 +52,7 @@ Esses recursos funcionam no navegador e não usam chave de API. O armazenamento 
 - O site publicado contém somente código/interface; cada navegador cria e lê seu próprio armazenamento local (localStorage).
 - Nunca adicionar dados pessoais reais, perfis de exemplo identificáveis ou fichas de usuário aos arquivos do repositório.
 - Se outra pessoa abrir a mesma URL em outro dispositivo/navegador e enxergar dados pessoais, verificar primeiro se ela está usando o mesmo perfil de navegador/dispositivo ou algum mecanismo de compartilhamento do navegador; o GitHub Pages, por si só, não compartilha localStorage entre dispositivos.
+
+
+## V4.67 — Perfis locais por URL
+O aplicativo pode receber `?perfil=IDENTIFICADOR` na URL. Esse identificador cria um namespace separado no armazenamento local do navegador. A função **Link zerado para outra pessoa** gera um identificador aleatório e não copia nenhum dado pessoal para a URL. O link apenas determina qual espaço local será usado.
