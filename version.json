@@ -1,5 +1,5 @@
 {
-  "version": "V5.12",
-  "updatedAt": "2026-09-27T23:10:00Z",
-  "changes": "Fluxo de importação IA corrigido: perguntas objetivas para doenças/condições ausentes, aliases ampliados e instruções da tela alinhadas ao novo comportamento."
+  "version": "V5.13",
+  "updatedAt": "2026-09-28T00:10:00Z",
+  "changes": "Novos recursos: continuidade conversacional na importação IA, validação prévia da resposta, ficha de saúde resumida e preparação de consulta."
 }
