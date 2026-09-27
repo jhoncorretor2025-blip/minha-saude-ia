@@ -1,5 +1,5 @@
 {
-  "version": "V5.08.2",
-  "updatedAt": "2026-09-27T22:05:00Z",
-  "changes": "Correções de estabilidade finais: importador IA, revisão de conflitos, exportador FHIR e sincronização das referências visuais/cache."
+  "version": "V5.09.1",
+  "updatedAt": "2026-09-27T22:20:00Z",
+  "changes": "Integração dos módulos principais com os utilitários compartilhados do core, reduzindo duplicação sem alterar o formato dos dados."
 }
