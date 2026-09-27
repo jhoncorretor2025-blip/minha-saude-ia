@@ -1,5 +1,5 @@
 {
-  "version": "V4.40",
-  "updatedAt": "2026-09-27T21:40:00Z",
-  "changes": "Adiciona Carteirinha de Saúde digital com foto do perfil, cartão visual e geração de PDF pela impressão do navegador"
+  "version": "V4.41",
+  "updatedAt": "2026-09-27T21:45:00Z",
+  "changes": "Corrige a preservação da foto ao salvar o perfil e mantém a Carteirinha de Saúde integrada ao perfil"
 }
