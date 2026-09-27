@@ -1,5 +1,13 @@
 # Changelog — Minha Saúde IA
 
+## V4.83 — Linha do tempo mais limpa
+- 🧹 Removidos da exibição os placeholders **“valor”**, **“Não informado”**, **“N/A”** e equivalentes.
+- 😣 Sintomas com intensidade **0/10** não mostram mais “0/10” como se fosse uma informação relevante.
+- 📅 O registro continua aparecendo pela data, mas sem texto artificial quando não há detalhe informado.
+- 📈 Sinais vitais e outros registros também evitam mostrar placeholders vazios.
+- Versão atualizada para V4.83.
+
+
 ## V4.82 — Guia para iniciantes minimizado
 - 🧭 O **Guia para quem nunca usou IA** agora começa minimizado.
 - 👆 Um clique expande o passo a passo completo.
