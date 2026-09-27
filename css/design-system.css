@@ -339,3 +339,13 @@ textarea.msa-form-control{min-height:96px;resize:vertical}
   .msa-modal-header,.msa-modal-body{padding:var(--msa-space-4)}
   .msa-modal-footer{padding:var(--msa-space-3) var(--msa-space-4)}
 }
+
+
+/* ===== V4.87 — melhorias rápidas de UX ===== */
+.msa-skip-link{position:fixed;top:8px;left:8px;z-index:100000;transform:translateY(-150%);background:var(--msa-color-primary);color:#fff;border-radius:var(--msa-radius-control);padding:10px 14px;font-weight:800;text-decoration:none;box-shadow:var(--msa-shadow-card)}
+.msa-skip-link:focus{transform:translateY(0);outline:none;box-shadow:var(--msa-focus),var(--msa-shadow-card)}
+#main-content:focus{outline:none}
+@media(max-width:760px){button,input[type="button"],input[type="submit"],input[type="reset"],select{min-height:44px}.btn.small,.msa-btn-sm{min-height:40px}}
+.msa-form-control,input:not([type="radio"]):not([type="checkbox"]):not([type="file"]),select,textarea{font-size:max(14px,1rem)}
+@media(max-width:430px){.row,.card-actions,.modal-actions{flex-wrap:wrap}.row>.btn,.card-actions>.btn{min-height:44px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
