@@ -106,3 +106,4 @@ function copiarDiagnosticoImportacao(){
           git diff --cached --quiet && exit 0
           git commit -m "V4.4: diagnóstico detalhado de importação [skip v44]"
           git push
+
