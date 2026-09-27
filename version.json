@@ -1,5 +1,5 @@
 {
-  "version": "V4.28",
-  "updatedAt": "2026-09-27T19:25:00Z",
-  "changes": "Reforma visual mobile-first com dashboard mais moderno, destaque para IA, cards refinados, melhor hierarquia, foco e responsividade"
+  "version": "V4.29",
+  "updatedAt": "2026-09-27T19:35:00Z",
+  "changes": "Adiciona painel de saúde com indicadores de condições, consultas, medicamentos, exames, tempo desde consulta, total de registros, vacinas e gráficos de atividade e peso"
 }
