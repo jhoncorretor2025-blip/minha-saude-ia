@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V4.95 — OCR e etiquetas de documentos
+- 🔎 OCR opcional para imagens usando processamento no navegador.
+- 🏷️ Documentos podem receber etiquetas para organização e filtro.
+- 🛡️ Nenhum envio automático do documento para uma IA.
+
+
 ## V4.93 — Correção de compatibilidade
 - 🛠️ Restaurada a função de armazenamento usada pelo módulo `js/melhorias.js` no fluxo de perguntas para consulta.
 - ✅ Mantidas as funcionalidades adicionadas entre V4.88 e V4.92.
