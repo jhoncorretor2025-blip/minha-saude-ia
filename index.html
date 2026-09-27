@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Saúde IA — V3.4</title>
+<title>Minha Saúde IA — V3.5</title>
 <style>
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
@@ -47,7 +47,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
 <div style="margin-top:16px;padding:14px;background:#f8fafc;border-radius:14px;font-size:13px;color:#687386">
 💡 <b>Dica:</b> se você já usa IA e tem bastante informação sobre sua saúde, a importação costuma ser o caminho mais rápido.
 </div>
-<button onclick="finishOnboarding('skip')" style="display:block;margin:16px auto 0;border:0;background:none;color:#687386;text-decoration:underline;cursor:pointer">Pular por enquanto</button>
+<div style="margin-top:16px;padding:12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;color:#9a3412;font-size:13px;text-align:center">⚠️ Para começar, escolha uma das duas opções acima: <b>preencher manualmente</b> ou <b>perguntar para a IA</b>.</div>
 </div></div>
 
 <div id="pinGate" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.88);z-index:99999;align-items:center;justify-content:center;padding:20px">
@@ -63,7 +63,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V3.4</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V3.5</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap">
 <nav id="nav">
 <button class="active" data-tab="home">🏠 Início</button><button data-tab="timeline">🕐 Linha do tempo</button><button data-tab="dor">😣 Sintomas</button><button data-tab="consultas">👨‍⚕️ Consultas</button><button data-tab="meds">💊 Medicamentos</button><button data-tab="exames">🧪 Exames</button><button data-tab="perfil">👤 Perfil</button><button data-tab="relatorios">📊 Relatórios</button><button data-tab="backup">💾 Backup</button><button data-tab="importar">⚡ Importar com IA</button><button data-tab="ia">🤖 IA</button>
@@ -283,7 +283,8 @@ REGRAS:
 <section id="ia"><div class="card"><h2>🤖 Assistente de Saúde</h2><div class="muted">Ajuda a organizar informações e preparar perguntas. Não substitui diagnóstico ou atendimento médico.</div><div id="chat" class="chat"><div class="bubble bot">Olá! 👋 Conte o que está acontecendo. Posso ajudar a organizar seus sintomas, sugerir perguntas para o médico e lembrar sinais de alerta.</div></div><div class="row"><input id="iaInput" style="flex:1" placeholder="Ex.: Estou com dor abdominal há 2 dias..."><button class="btn" onclick="ask()">Enviar</button></div><div class="alert danger" style="margin-top:12px">🚨 Em uma emergência ou diante de sintomas graves, procure atendimento presencial imediatamente.</div></div>
 <div class="card" style="margin-top:13px"><h2>🩺 Preparar minha consulta</h2><div class="muted">A partir dos seus registros, gere um conjunto de perguntas para conversar com o profissional.</div><button class="btn green" style="margin-top:10px" onclick="perguntasConsulta()">✨ Gerar perguntas</button><div id="perguntas" style="margin-top:12px"></div></div></section>
 
-<footer>🔒 V3.4 de demonstração. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div id="updateNotice" class="alert safe" style="display:none;margin-top:12px"></div>
+<footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V3.5 de demonstração. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -427,8 +428,9 @@ function hasAnyHealthData(){
  return [K.d,K.c,K.m,K.e,K.p].some(k=>get(k).length>0);
 }
 function showOnboarding(){
- // V3.3: mostra a nova escolha de início uma vez nesta versão.
- if(localStorage.getItem('msa2_onboarding_v3_done')!=='1' && !hasAnyHealthData()){
+ // V3.5: se não houver nenhum dado de saúde, a escolha inicial volta a ser obrigatória.
+ // O app só deixa de mostrar esta tela quando já existe informação registrada.
+ if(!hasAnyHealthData()){
    const o=document.getElementById('onboarding'); if(o)o.style.display='block';
  }
 }
@@ -473,15 +475,12 @@ function resetWelcome(){
 }
 document.addEventListener('DOMContentLoaded',()=>setTimeout(showOnboarding,150));
 </script>
-</body></html>`);w.document.close()}
-render();
-</script>
 
 <script>
-/* V3.4: auto-update and force-refresh */
+/* V3.5: auto-update and force-refresh */
 function forcarAtualizacao(){
  const u=new URL(window.location.href);
- u.searchParams.set('appv','V3.4');
+ u.searchParams.set('appv','V3.5');
  u.searchParams.set('cb',Date.now());
  window.location.replace(u.toString());
 }
@@ -490,7 +489,7 @@ async function verificarNovaVersao(){
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
   const data=await r.json();
-  if(data.version && data.version!=='V3.4'){
+  if(data.version && data.version!=='V3.5'){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
