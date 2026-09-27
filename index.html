@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Saúde IA — V3</title>
+<title>Minha Saúde IA — V3.1</title>
 <style>
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
@@ -63,7 +63,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V3</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V3.1</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap">
 <nav id="nav">
 <button class="active" data-tab="home">🏠 Início</button><button data-tab="timeline">🕐 Linha do tempo</button><button data-tab="dor">😣 Sintomas</button><button data-tab="consultas">👨‍⚕️ Consultas</button><button data-tab="meds">💊 Medicamentos</button><button data-tab="exames">🧪 Exames</button><button data-tab="perfil">👤 Perfil</button><button data-tab="relatorios">📊 Relatórios</button><button data-tab="backup">💾 Backup</button><button data-tab="importar">⚡ Importar com IA</button><button data-tab="ia">🤖 IA</button>
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <section id="exames"><div class="card"><h2>🧪 Exame</h2><form id="eForm"><div class="grid2"><label>Nome do exame<input id="eNome" required></label><label>Data<input id="eData" type="date" required></label></div><label>Resultado / valores importantes<textarea id="eRes"></textarea></label><label>Observações<textarea id="eObs"></textarea></label><button class="btn">💾 Salvar exame</button></form></div><div class="card" style="margin-top:13px"><h2>Exames registrados</h2><div id="listE" class="list"></div></div></section>
 
 <section id="perfil"><div class="card"><h2>👤 Perfil de saúde</h2><div class="muted">Informações que podem ser úteis em uma consulta.</div><form id="pForm" style="margin-top:13px"><div class="grid2"><label>Nome<input id="pNome"></label><label>Data de nascimento<input id="pNasc" type="date"></label></div>
-<div class="grid2"><label>Idade<input id="pIdade" type="number" min="0" max="130" placeholder="Ex.: 37"></label><label>Peso aproximado (kg)<input id="pPeso" type="number" min="0" max="500" step="0.1" placeholder="Ex.: 80"></label></div><label>🚨 Alergias<textarea id="pAlerg" placeholder="Medicamentos, alimentos, outras alergias..."></textarea></label><label>🩺 Condições já diagnosticadas<textarea id="pCond"></textarea></label><label>🏥 Cirurgias / internações anteriores<textarea id="pCirc"></textarea></label><label>📌 Informações importantes<textarea id="pInfo"></textarea></label><div class="grid2"><label>Contato de emergência<input id="pEmerg"></label><label>Telefone<input id="pTel"></label></div><button class="btn">💾 Salvar perfil</button></form></div></section>
+<div class="grid2"><label>Idade<input id="pIdade" type="number" min="0" max="130" placeholder="Ex.: 37"></label><label>Peso aproximado (kg)<input id="pPeso" type="number" min="0" max="500" step="0.1" placeholder="Ex.: 80"></label></div><div class="grid2"><label>Sexo<input id="pSexo" placeholder="Se quiser informar"></label><label>Altura (cm)<input id="pAltura" type="number" min="0" max="250" step="0.1" placeholder="Ex.: 184"></label></div><label>💊 Suplementos<textarea id="pSupl" placeholder="Nome, dose e frequência, se souber..."></textarea></label><label>🚨 Alergias<textarea id="pAlerg" placeholder="Medicamentos, alimentos, outras alergias..."></textarea></label><label>🩺 Condições já diagnosticadas<textarea id="pCond"></textarea></label><label>🏥 Cirurgias / internações anteriores<textarea id="pCirc"></textarea></label><label>📌 Informações importantes<textarea id="pInfo"></textarea></label><div class="grid2"><label>Contato de emergência<input id="pEmerg"></label><label>Telefone<input id="pTel"></label></div><button class="btn">💾 Salvar perfil</button></form></div></section>
 
 
 <section id="relatorios">
@@ -283,7 +283,7 @@ REGRAS:
 <section id="ia"><div class="card"><h2>🤖 Assistente de Saúde</h2><div class="muted">Ajuda a organizar informações e preparar perguntas. Não substitui diagnóstico ou atendimento médico.</div><div id="chat" class="chat"><div class="bubble bot">Olá! 👋 Conte o que está acontecendo. Posso ajudar a organizar seus sintomas, sugerir perguntas para o médico e lembrar sinais de alerta.</div></div><div class="row"><input id="iaInput" style="flex:1" placeholder="Ex.: Estou com dor abdominal há 2 dias..."><button class="btn" onclick="ask()">Enviar</button></div><div class="alert danger" style="margin-top:12px">🚨 Em uma emergência ou diante de sintomas graves, procure atendimento presencial imediatamente.</div></div>
 <div class="card" style="margin-top:13px"><h2>🩺 Preparar minha consulta</h2><div class="muted">A partir dos seus registros, gere um conjunto de perguntas para conversar com o profissional.</div><button class="btn green" style="margin-top:10px" onclick="perguntasConsulta()">✨ Gerar perguntas</button><div id="perguntas" style="margin-top:12px"></div></div></section>
 
-<footer>🔒 V2 de demonstração. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<footer>🔒 V3.1 de demonstração. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -312,12 +312,12 @@ loadProfile();
 function findAlerts(d){for(let x of d){let s=(x.sint||'').toLowerCase();if(x.int>=9)return '🔴 Há registro de dor muito intensa (9–10/10). Se for atual, súbita, piorando ou acompanhada de outros sinais importantes, procure avaliação médica.';if(/falta de ar|desmaio|convuls|confusão|fraqueza de um lado|sangramento importante/.test(s))return '🔴 Foi registrado um possível sinal de alerta. Se estiver acontecendo agora, procure atendimento médico rapidamente.'}return ''}
 $('dData').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
 $('dorForm')?.addEventListener('submit',()=>{});
-$('pForm').onsubmit=e=>{e.preventDefault();set(K.p,[{nome:$('pNome').value,nasc:$('pNasc').value,idade:$('pIdade').value,peso:$('pPeso').value,alerg:$('pAlerg').value,cond:$('pCond').value,circ:$('pCirc').value,info:$('pInfo').value,emerg:$('pEmerg').value,tel:$('pTel').value}]);render();alert('Perfil salvo!')};
+$('pForm').onsubmit=e=>{e.preventDefault();set(K.p,[{nome:$('pNome').value,nasc:$('pNasc').value,idade:$('pIdade').value,peso:$('pPeso').value,sexo:$('pSexo').value,altura:$('pAltura').value,supl:$('pSupl').value,alerg:$('pAlerg').value,cond:$('pCond').value,circ:$('pCirc').value,info:$('pInfo').value,emerg:$('pEmerg').value,tel:$('pTel').value}]);render();alert('Perfil salvo!')};
 $('dorForm').onsubmit=e=>{e.preventDefault();let a=get(K.d);a.push({data:$('dData').value,local:$('dLocal').value,int:+$('dInt').value,tipo:$('dTipo').value,freq:$('dFreq').value,gatilho:$('dGatilho').value,sint:$('dSint').value,obs:$('dObs').value});set(K.d,a);e.target.reset();$('dInt').value=5;$('dScore').textContent=5;render();alert('Sintoma salvo!')};
 $('cForm').onsubmit=e=>{e.preventDefault();let a=get(K.c);a.push({data:$('cData').value,esp:$('cEsp').value,med:$('cMed').value,mot:$('cMot').value,perg:$('cPerg').value,obs:$('cObs').value,ret:$('cRet').value});set(K.c,a);e.target.reset();render();alert('Consulta salva!')};
 $('mForm').onsubmit=e=>{e.preventDefault();let a=get(K.m);a.push({nome:$('mNome').value,dose:$('mDose').value,freq:$('mFreq').value,inicio:$('mInicio').value,fim:$('mFim').value,pres:$('mPres').value,obs:$('mObs').value});set(K.m,a);e.target.reset();render();alert('Medicamento salvo!')};
 $('eForm').onsubmit=e=>{e.preventDefault();let a=get(K.e);a.push({nome:$('eNome').value,data:$('eData').value,res:$('eRes').value,obs:$('eObs').value});set(K.e,a);e.target.reset();render();alert('Exame salvo!')};
-function loadProfile(){let p=get(K.p)[0]||{};[['Nome','nome'],['Nasc','nasc'],['Idade','idade'],['Peso','peso'],['Alerg','alerg'],['Cond','cond'],['Circ','circ'],['Info','info'],['Emerg','emerg'],['Tel','tel']].forEach(([id,key])=>{if($('p'+id))$('p'+id).value=p[key]||''})}
+function loadProfile(){let p=get(K.p)[0]||{};[['Nome','nome'],['Nasc','nasc'],['Idade','idade'],['Peso','peso'],['Sexo','sexo'],['Altura','altura'],['Supl','supl'],['Alerg','alerg'],['Cond','cond'],['Circ','circ'],['Info','info'],['Emerg','emerg'],['Tel','tel']].forEach(([id,key])=>{if($('p'+id))$('p'+id).value=p[key]||''})}
 $('pForm').onsubmit=e=>{e.preventDefault();set(K.p,[{nome:$('pNome').value,nasc:$('pNasc').value,idade:$('pIdade').value,peso:$('pPeso').value,alerg:$('pAlerg').value,cond:$('pCond').value,circ:$('pCirc').value,info:$('pInfo').value,emerg:$('pEmerg').value,tel:$('pTel').value}]);render();alert('Perfil salvo!')};
 function ask(){let q=$('iaInput').value.trim();if(!q)return;let chat=$('chat');chat.innerHTML+=`<div class="bubble user">${esc(q)}</div>`;let l=q.toLowerCase(),ans;
 if(/falta de ar|desmaio|convuls|confus|avc|fraqueza de um lado|sangramento intenso/.test(l))ans='🚨 Esse relato pode envolver um sinal de alerta. Se estiver acontecendo agora, for intenso ou súbito, procure atendimento médico imediatamente.';
@@ -372,38 +372,37 @@ function normalizarImport(d){
  }));
  return {p,dores,consultas,meds,exames};
 }
-function processarImportacao(){
- let raw=$('importIA').value.trim();
- if(!raw){alert('Cole primeiro a resposta da Yara/IA.');return}
- raw=raw.replace(/^\`\`\`(?:json|text)?\s*/i,'').replace(/\s*\`\`\`$/,'').trim();
- try{
-  if(raw.startsWith('{')) return importarNormalizado(normalizarImport(JSON.parse(raw)));
-  return importarNormalizado(normalizarTextoYara(raw));
- }catch(e){
-  $('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui organizar esse conteúdo. Confira se a Yara gerou os campos entre colchetes, como [NOME], [IDADE], [PESO] e [ULTIMO_SINTOMA].</div>';
- }
-}
-function normalizarTextoYara(raw){
- const field=(name)=>{const re=new RegExp('\\['+name+'\\]\\s*([\\s\\S]*?)(?=\\n\\s*\\[[A-Z_]+\\]|$)','i');const m=raw.match(re);return m?m[1].trim():''};
- const p={nome:field('NOME'),idade:field('IDADE'),peso:field('PESO'),cond:field('DOENCAS'),alerg:field('ALERGIAS'),info:field('INFORMACOES_IMPORTANTES')};
- const med=field('MEDICAMENTOS'), sint=field('ULTIMO_SINTOMA'), local=field('LOCAL_SINTOMA'), data=field('DATA_INICIO_SINTOMA'), inten=field('INTENSIDADE'), outros=field('OUTROS_SINTOMAS');
- const n=parseInt((inten.match(/\d+/)||['0'])[0]); const dores=sint?[{data:data||new Date().toISOString().slice(0,16),local:local||'Não informado',int:Math.max(0,Math.min(10,n)),tipo:'',freq:'',gatilho:'',sint:outros?sint+' — '+outros:sint,obs:'Importado da Yara'}]:[];
- const ct=field('CONSULTAS'), et=field('EXAMES');
- const consultas=ct?[{data:'',esp:'',med:'',mot:ct,perg:'',obs:'Importado da Yara',ret:''}]:[];
- const exames=et?[{nome:'Exame informado',data:'',res:et,obs:'Importado da Yara'}]:[];
- const meds=med?[{nome:med,dose:'',freq:'',inicio:'',fim:'',pres:'',obs:'Importado da Yara'}]:[];
+function normalizarFichaIA(raw){
+ const field=(name)=>{const re=new RegExp('\\\\['+name+'\\\\]\\\\s*([\\\\s\\\\S]*?)(?=\\\\n\\\\s*\\\\[[A-Z0-9_]+\\\\]|$)','i');const m=raw.match(re);return m?m[1].trim():''};
+ const p={nome:field('NOME'),nasc:field('DATA_NASCIMENTO'),idade:field('IDADE'),sexo:field('SEXO'),altura:field('ALTURA'),peso:field('PESO'),cond:field('DOENCAS'),alerg:field('ALERGIAS'),circ:field('CIRURGIAS_INTERNACOES'),supl:field('SUPLEMENTOS'),info:field('INFORMACOES_IMPORTANTES')};
+ const med=field('MEDICAMENTOS'),sint=field('ULTIMO_SINTOMA'),local=field('LOCAL_SINTOMA'),data=field('DATA_INICIO_SINTOMA'),inten=field('INTENSIDADE'),outros=field('OUTROS_SINTOMAS');
+ const n=parseInt((inten.match(/\\d+/)||['0'])[0]);
+ const dores=sint&&sint!=='Não informado'?[{data:data||new Date().toISOString().slice(0,16),local:local||'Não informado',int:Math.max(0,Math.min(10,n)),tipo:'',freq:'',gatilho:'',sint:outros?sint+' — '+outros:sint,obs:'Importado da IA'}]:[];
+ const ct=field('CONSULTAS'),et=field('EXAMES');
+ const consultas=ct&&ct!=='Não informado'?[{data:'',esp:'',med:'',mot:ct,perg:'',obs:'Importado da IA',ret:''}]:[];
+ const exames=et&&et!=='Não informado'?[{nome:'Exame informado',data:'',res:et,obs:'Importado da IA'}]:[];
+ const meds=med&&med!=='Não informado'?[{nome:med,dose:'',freq:'',inicio:'',fim:'',pres:'',obs:'Importado da IA'}]:[];
  return {p,dores,consultas,meds,exames};
 }
 function importarNormalizado(n){
- const pk=['nome','idade','peso','cond','alerg','info']; const count=n.dores.length+n.consultas.length+n.meds.length+n.exames.length+pk.filter(k=>String(n.p[k]||'').trim()).length;
+ const pk=['nome','nasc','idade','sexo','altura','peso','cond','alerg','circ','supl','info'];
+ const has=k=>{const v=String(n.p[k]||'').trim();return v&&v.toLowerCase()!=='não informado'};
+ const count=n.dores.length+n.consultas.length+n.meds.length+n.exames.length+pk.filter(has).length;
  if(!count)throw new Error('Nenhum dado reconhecido');
- if(!confirm(`Foram encontradas informações do perfil, ${n.dores.length} sintoma(s), ${n.consultas.length} consulta(s), ${n.meds.length} medicamento(s) e ${n.exames.length} exame(s). Adicionar aos registros atuais?`))return;
+ if(!confirm('Foram encontradas informações do perfil e do histórico. Adicionar aos registros atuais?'))return;
  if(n.dores.length)set(K.d,get(K.d).concat(n.dores));
  if(n.consultas.length)set(K.c,get(K.c).concat(n.consultas));
  if(n.meds.length)set(K.m,get(K.m).concat(n.meds));
  if(n.exames.length)set(K.e,get(K.e).concat(n.exames));
- if(pk.some(k=>String(n.p[k]||'').trim())){const old=get(K.p)[0]||{};set(K.p,[Object.assign({},old,n.p)]);}
- render(); $('resultadoImport').innerHTML='<div class="alert safe">✅ Informações importadas! Confira seu perfil e histórico. Você pode corrigir qualquer campo antes de usar os relatórios.</div>';
+ if(pk.some(has)){const old=get(K.p)[0]||{};const merged=Object.assign({},old);pk.forEach(k=>{if(has(k))merged[k]=n.p[k]});set(K.p,[merged]);}
+ render();$('resultadoImport').innerHTML='<div class="alert safe">✅ Informações importadas! Confira seu perfil e histórico.</div>';
+}
+function processarImportacao(){
+ let raw=$('importIA').value.trim();
+ if(!raw){alert('Cole primeiro a resposta da IA.');return}
+ raw=raw.replace(/^```(?:json|text)?\\s*/i,'').replace(/\\s*```$/,'').trim();
+ try{if(raw.startsWith('{'))return importarNormalizado(normalizarImport(JSON.parse(raw)));return importarNormalizado(normalizarFichaIA(raw));}
+ catch(e){$('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui organizar essa ficha. Verifique se a IA devolveu os campos [NOME], [IDADE], [PESO] etc.</div>';}
 }
 function limparImportacao(){$('importIA').value='';$('resultadoImport').innerHTML=''}
 function processarTextoLivre(){
