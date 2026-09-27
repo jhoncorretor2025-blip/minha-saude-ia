@@ -1,5 +1,14 @@
 # Changelog — Minha Saúde IA
 
+## V4.85 — Núcleo compartilhado e reorganização segura
+- 🧱 Criada a pasta `js/core/` com `constants.js`, `storage.js` e `utils.js`.
+- 🔑 Centralizados os nomes das chaves de armazenamento em uma única fonte.
+- 💾 Centralizada a leitura, gravação e remoção do armazenamento, preservando a migração de chaves antigas e os backups locais.
+- 🧩 `app.js`, `melhorias.js` e `recursos.js` passaram a reutilizar a camada compartilhada.
+- 🛡️ Nenhuma mudança no formato dos registros foi feita nesta etapa.
+- 🚫 A funcionalidade de importação foi mantida sem refatoração estrutural para reduzir risco.
+
+
 ## V4.84 — Organização e navegação refinadas
 - 🧭 **Ciclo menstrual** reposicionado antes de **Ferramentas**, mantendo acesso separado e mais fácil de encontrar.
 - 📱 Navegação móvel refinada com melhor destaque do ciclo e respeito à área segura do celular.
