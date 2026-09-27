@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V4.19 */
+/* Minha Saúde IA — aplicação principal V4.20 */
 
 const K={d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',p:'msa2_perfil',v:'msa2_vitais',r:'msa2_lembretes',vax:'msa2_vacinas',fam:'msa2_familia',doc:'msa2_documentos'};
 const get=k=>JSON.parse(localStorage.getItem(k)||'[]'), set=(k,v)=>localStorage.setItem(k,JSON.stringify(v)), $=x=>document.getElementById(x);
@@ -49,6 +49,7 @@ function copiarTextoFallback(text){const t=document.createElement('textarea');t.
 function exportarPDF(){openReport('Minha Saúde IA — Exportação', '<pre style="white-space:pre-wrap;font-family:Arial,sans-serif;line-height:1.5">'+esc(healthText())+'</pre>')}
 function abrirCartaoEmergencia(){const p=get(K.p)[0]||{},m=get(K.m);const body='<div class="box"><h2>🚨 Informações de emergência</h2><b>Nome:</b> '+esc(p.nome||'Não informado')+'<br><b>Nascimento:</b> '+esc(p.nasc||'Não informado')+'<br><b>Alergias:</b> '+esc(p.alerg||'Não informado')+'<br><b>Condições:</b> '+esc(p.cond||'Não informado')+'<br><b>Medicamentos registrados:</b> '+esc(m.map(x=>x.nome+(x.dose?' — '+x.dose:'')).join('; ')||'Não informado')+'<br><b>Contato:</b> '+esc(p.emerg||'Não informado')+' — '+esc(p.tel||'')+'<br><b>Informações:</b> '+esc(p.info||'Não informado')+'</div>';openReport('Cartão de emergência',body)}
 function copiarCartaoEmergencia(){const p=get(K.p)[0]||{},m=get(K.m);const text='CARTÃO DE EMERGÊNCIA\nNome: '+(p.nome||'Não informado')+'\nNascimento: '+(p.nasc||'Não informado')+'\nAlergias: '+(p.alerg||'Não informado')+'\nCondições: '+(p.cond||'Não informado')+'\nMedicamentos: '+(m.map(x=>x.nome+(x.dose?' — '+x.dose:'')).join('; ')||'Não informado')+'\nContato: '+(p.emerg||'Não informado')+' — '+(p.tel||'');if(navigator.clipboard)navigator.clipboard.writeText(text).then(()=>alert('✅ Cartão copiado.'));else copiarTextoFallback(text)}
+
 function renderAcompanhamento(){
  const v=get(K.v),r=get(K.r),vax=get(K.vax),fam=get(K.fam),docs=get(K.doc),p=get(K.p)[0]||{};
  if($('vList'))list('vList',v,x=>'<div class="item"><b>❤️ '+fmt(x.data)+'</b><p>Peso: '+esc(x.peso||'—')+' · Pressão: '+esc(x.pressao||'—')+' · FC: '+esc(x.fc||'—')+' · Temp: '+esc(x.temp||'—')+' · Glicemia: '+esc(x.glic||'—')+' · Sat.: '+esc(x.sat||'—')+'<br>'+esc(x.obs||'')+'</p></div>');
@@ -56,6 +57,12 @@ function renderAcompanhamento(){
  if($('vaxList'))list('vaxList',vax,x=>'<div class="item"><b>💉 '+esc(x.nome)+'</b><p>'+(x.data||'Data não informada')+' · '+esc(x.obs||'')+'</p></div>');
  if($('famList'))list('famList',fam,x=>'<div class="item"><b>🧬 '+esc(x.parente)+'</b><p>'+esc(x.info)+'</p></div>');
  if($('docList'))list('docList',docs,x=>'<div class="item"><b>📎 '+esc(x.nome)+'</b><p>'+esc(x.tipo)+' · '+esc(x.tamanho||'')+' · '+esc(x.data||'')+'</p></div>');
+ const consultas=get(K.c).filter(x=>x.ret&&x.ret>=new Date().toISOString().slice(0,10)).sort((a,b)=>a.ret.localeCompare(b.ret));
+ if($('agendaList'))$('agendaList').innerHTML=consultas.length?consultas.map(x=>'<div class="item"><div class="itemtop"><b>👨‍⚕️ '+esc(x.esp)+'</b><span class="tag">'+esc(x.ret)+'</span></div><p>'+esc(x.med||'Médico não informado')+' · '+esc(x.mot||'')+'</p></div>').join(''):'<div class="empty">Nenhuma consulta futura com data de retorno registrada.</div>';
+ if($('vChart')){
+   const dados=v.filter(x=>x.peso!==''&&x.peso!=null).slice(-10);
+   $('vChart').innerHTML=dados.length?dados.map(x=>'<div class="bar" style="height:'+Math.max(8,Math.min(100,Number(x.peso)))+'%"><span>'+esc(x.peso)+'</span><small>'+String(x.data).slice(0,10)+'</small></div>').join(''):'<div class="muted" style="margin:auto">Registre peso para visualizar a evolução.</div>';
+ }
  if($('emergencyCard'))$('emergencyCard').innerHTML='<b>'+esc(p.nome||'Nome não informado')+'</b><br>⚠️ Alergias: '+esc(p.alerg||'Não informado')+'<br>🩺 Condições: '+esc(p.cond||'Não informado')+'<br>💊 Medicamentos: '+esc(vitalMeds())+'<br>📞 Emergência: '+esc(p.emerg||'Não informado')+' '+esc(p.tel||'');
 }
 function vitalMeds(){return get(K.m).map(x=>x.nome+(x.dose?' — '+x.dose:'')).join('; ')||'Não informado'}
@@ -63,6 +70,7 @@ function removerLembrete(id){set(K.r,get(K.r).filter(x=>x.id!==id));render()}
 function salvarDocumento(){const f=$('docFile')?.files?.[0];if(!f)return alert('Escolha um arquivo.');if(f.size>2*1024*1024)return alert('Para manter o armazenamento local estável, use arquivos de até 2 MB.');const reader=new FileReader();reader.onload=()=>{let a=get(K.doc);a.push({id:String(Date.now()),nome:$('docNome').value||f.name,tipo:f.type||'arquivo',tamanho:Math.round(f.size/1024)+' KB',data:new Date().toLocaleDateString('pt-BR'),conteudo:reader.result});set(K.doc,a);$('docFile').value='';$('docNome').value='';render();alert('📎 Documento salvo neste navegador.')};reader.readAsDataURL(f)}
 function verificarLembretes(){const now=Date.now();const a=get(K.r);a.forEach(x=>{if(x.alertado)return;const t=new Date(x.data).getTime();if(t&&t<=now+30000&&t>=now-60000){x.alertado=true;set(K.r,a);if('Notification' in window&&Notification.permission==='granted')new Notification('🩺 Minha Saúde IA',{body:x.nome});else alert('🔔 Lembrete: '+x.nome)}})}
 async function pedirNotificacao(){if('Notification' in window){try{await Notification.requestPermission();alert(Notification.permission==='granted'?'🔔 Notificações ativadas.':'Notificações não ativadas.')}catch(e){}}}
+function compartilharResumo(){const text=healthText();if(navigator.share){navigator.share({title:'Minha Saúde IA — Resumo',text:text}).catch(()=>{})}else copiarParaIA()}
 function resumoInteligente(){const p=get(K.p)[0]||{},d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e),v=get(K.v);const txt='RESUMO INTELIGENTE\nNome: '+(p.nome||'Não informado')+'\nRegistros: '+d.length+' sintomas, '+c.length+' consultas, '+m.length+' medicamentos, '+e.length+' exames, '+v.length+' sinais vitais.\nCondições: '+(p.cond||'Não informado')+'\nAlergias: '+(p.alerg||'Não informado')+'\nÚltimos sintomas: '+d.slice(-5).map(x=>x.data+' — '+x.local+' — '+x.int+'/10').join(' | ')+'\nÚltimos exames: '+e.slice(-5).map(x=>x.data+' — '+x.nome).join(' | ')+'\n\nEste resumo é baseado apenas nos registros locais e não é diagnóstico.';const box=$('resumoIA');if(box)box.textContent=txt}
 
 function prepararContextoIA(){
@@ -120,7 +128,7 @@ function gerarRelatorio(){
  <h2>Exames</h2><ul>${e.length?e.map(x=>`<li>${x.data} — ${esc(x.nome)}: ${esc(x.res||'')}</li>`).join(''):'<li>Nenhum registrado.</li>'}</ul>`;
  openReport('Resumo de Saúde',body);
 }
-// V4.19 — comportamento dos menus agrupados
+// V4.20 — comportamento dos menus agrupados
 (function(){
  const nav=document.getElementById('nav');
  if(!nav)return;
