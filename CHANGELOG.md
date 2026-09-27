@@ -1,5 +1,13 @@
 # Changelog — Minha Saúde IA
 
+## V4.70 — Medicamentos avançados
+- Registro diário de dose para rotinas de medicamentos.
+- Evita duplicar a mesma dose no mesmo dia.
+- Permite desfazer o registro do dia e repõe o estoque correspondente.
+- Indicador de rotinas ativas, doses registradas hoje, registros dos últimos 7 dias e estoque baixo.
+- Mantido o caráter de registro: o sistema não avalia se a pessoa tomou corretamente segundo prescrição.
+- Versão atualizada para V4.70.
+
 ## V4.69 — Busca, avisos, calendário e perguntas
 - Criado módulo `js/melhorias.js` para funcionalidades complementares de navegação e acompanhamento.
 - 🔎 **Busca geral** em registros de saúde salvos localmente.
