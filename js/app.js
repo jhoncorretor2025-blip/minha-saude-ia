@@ -338,7 +338,12 @@ function renderNovosModulos(){
  if($('aguaList'))$('aguaList').innerHTML=rev(K.agua,x=>'<div class="item"><b>💧 '+esc(x.data)+'</b><p>'+esc(x.qtd)+' ml'+(x.meta?' · meta '+esc(x.meta)+' ml':'')+'</p></div>');
  const ag=get(K.agua),today=hojeLocal(),sum=ag.filter(x=>x.data===today).reduce((n,x)=>n+(+x.qtd||0),0),meta=ag.find(x=>x.data===today)?.meta||'';
  if($('aguaResumo'))$('aguaResumo').textContent='Hoje: '+sum+' ml'+(meta?' de '+meta+' ml ('+Math.round(sum/+meta*100)+'%)':'');
- if($('sonoList'))$('sonoList').innerHTML=rev(K.sono,x=>'<div class="item"><b>🌙 '+esc(x.data)+'</b><p>'+esc(x.horas)+' h · qualidade '+esc(x.qual||'—')+'/10 · despertares '+esc(x.despert||'0')+(x.obs?' · '+esc(x.obs):'')+'</p></div>');
+ if($('sonoList'))$('sonoList').innerHTML=rev(K.sono,x=>{
+ const detalhes=x.dormiu&&x.acordou
+  ? '🌙 '+esc(x.dormiu)+' → ☀️ '+esc(x.acordou)+' · '+esc(x.horas||'—')+' h · 🚽 xixi: '+esc(x.xixi??0)+' · 😣 dor: '+esc(x.dor??0)
+  : '⏱️ '+esc(x.horas||'—')+' h · qualidade '+esc(x.qual||'—')+'/10 · despertares '+esc(x.despert||'0');
+ return '<div class="item"><b>😴 '+esc(x.data)+'</b><p>'+detalhes+(x.obs?' · 📝 '+esc(x.obs):'')+'</p></div>';
+});
  if($('bemList'))$('bemList').innerHTML=rev(K.bem,x=>'<div class="item"><b>🧠 '+esc(x.data)+'</b><p>Estresse: '+esc(x.estresse||'—')+'/10 · ansiedade: '+esc(x.ansiedade||'—')+'/10'+(x.obs?' · '+esc(x.obs):'')+'</p></div>');
  if($('gatList'))$('gatList').innerHTML=rev(K.gat,x=>'<div class="item"><b>🎯 '+esc(x.gatilho)+'</b><p>'+esc(x.data)+' · sintoma: '+esc(x.sintoma||'—')+(x.obs?' · '+esc(x.obs):'')+'</p></div>');
  if($('famListPage'))$('famListPage').innerHTML=rev(K.fam,x=>'<div class="item"><b>🧬 '+esc(x.parente)+'</b><p>'+esc(x.info||x.cond||'')+(x.idade?' · diagnóstico aos '+esc(x.idade)+' anos':'')+(x.obs?' · '+esc(x.obs):'')+'</p></div>');
@@ -358,7 +363,17 @@ $('nutriForm')?.addEventListener('submit',e=>{e.preventDefault();arquivoDataURL(
 $('suplForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.suplReg);a.push({nome:$('suplNome').value,dose:$('suplDose').value,hora:$('suplHora').value,estoque:$('suplEstoque').value,obs:$('suplObs').value});set(K.suplReg,a);e.target.reset();renderNovosModulos();alert('💊 Suplemento salvo!')});
 $('foodForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.food);a.push({nome:$('foodNome').value,reacao:$('foodReacao').value,data:$('foodData').value,obs:$('foodObs').value});set(K.food,a);e.target.reset();renderNovosModulos();alert('⚠️ Reação registrada!')});
 $('aguaForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.agua);a.push({data:$('aguaData').value,qtd:$('aguaQtd').value,meta:$('aguaMeta').value});set(K.agua,a);e.target.reset();renderNovosModulos();alert('💧 Hidratação registrada!')});
-$('sonoForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.sono);a.push({data:$('sonoData').value,horas:$('sonoHoras').value,qual:$('sonoQual').value,despert:$('sonoDespert').value,obs:$('sonoObs').value});set(K.sono,a);e.target.reset();renderNovosModulos();alert('🌙 Sono registrado!')});
+$('sonoForm')?.addEventListener('submit',e=>{
+ e.preventDefault();
+ const inicio=$('sonoDormiu').value,fim=$('sonoAcordou').value;
+ if(!inicio||!fim){alert('Informe o horário que dormiu e o horário que acordou.');return}
+ const [ih,im]=inicio.split(':').map(Number),[fh,fm]=fim.split(':').map(Number);
+ let mins=(fh*60+fm)-(ih*60+im);if(mins<=0)mins+=1440;
+ const horas=(mins/60).toFixed(1);
+ let a=get(K.sono);
+ a.push({id:Date.now(),data:$('sonoData').value,dormiu:inicio,acordou:fim,horas:horas,xixi:$('sonoXixi').value||0,dor:$('sonoDor').value||0,obs:$('sonoObs').value});
+ set(K.sono,a);e.target.reset();$('sonoXixi').value=0;$('sonoDor').value=0;renderNovosModulos();alert('🌙 Sono registrado! Você dormiu cerca de '+horas.replace('.',',')+' horas.');
+});
 $('bemForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.bem);a.push({data:$('bemData').value,estresse:$('bemEstresse').value,ansiedade:$('bemAnsiedade').value,obs:$('bemObs').value});set(K.bem,a);e.target.reset();renderNovosModulos();alert('🧠 Bem-estar registrado!')});
 $('gatilhoForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.gat);a.push({data:$('gatData').value,gatilho:$('gatNome').value,sintoma:$('gatSintoma').value,obs:$('gatObs').value});set(K.gat,a);e.target.reset();renderNovosModulos();alert('🎯 Gatilho registrado!')});
 $('famFormPage')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.fam);a.push({parente:$('famParentePage').value,cond:$('famCondPage').value,info:$('famCondPage').value,idade:$('famIdadePage').value,obs:$('famObsPage').value});set(K.fam,a);e.target.reset();renderNovosModulos();alert('🧬 Antecedente salvo!')});
