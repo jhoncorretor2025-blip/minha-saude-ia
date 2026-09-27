@@ -1,5 +1,5 @@
 {
-  "version": "V4.79",
-  "updatedAt": "2026-09-27T20:35:00Z",
-  "changes": "Ciclo menstrual contextual: o menu fica oculto quando o sexo do perfil não é Feminino e aparece automaticamente para perfil Feminino."
+  "version": "V4.80",
+  "updatedAt": "2026-09-27T20:50:00Z",
+  "changes": "Fluxo de importação por IA explicado para iniciantes, com passo a passo, instruções de copiar/colar, revisão antes de salvar, privacidade e solução de problemas."
 }
