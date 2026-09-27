@@ -18,7 +18,7 @@ function normalizarImport(d){
  return {p:p,dores:dores,consultas:consultas,meds:meds,exames:exames};
 }
 function normalizarFichaIA(raw){
- var names=['NOME','DATA_NASCIMENTO','IDADE','SEXO','ALTURA','PESO','DOENCAS','ALERGIAS','CIRURGIAS_INTERNACOES','CONTATO_EMERGENCIA','TELEFONE_EMERGENCIA','MEDICAMENTOS','SUPLEMENTOS','ULTIMO_SINTOMA','LOCAL_SINTOMA','DATA_INICIO_SINTOMA','INTENSIDADE','OUTROS_SINTOMAS','CONSULTAS','EXAMES','SINAIS_VITAIS','VACINAS','HISTORICO_FAMILIAR','LEMBRETES','DOCUMENTOS','INFORMACOES_IMPORTANTES'];
+ var names=['NOME','DATA_NASCIMENTO','IDADE','SEXO','ALTURA','PESO','DOENCAS','ALERGIAS','CIRURGIAS_INTERNACOES','CONTATO_EMERGENCIA','TELEFONE_EMERGENCIA','ULTIMA_MENSTRUACAO','CICLO_MENSTRUAL','DURACAO_MENSTRUACAO','FREQUENCIA_SEXUAL','USO_PRESERVATIVO','JA_ENGRAVIDOU','JA_FOI_MAE','NUMERO_GESTACOES','HISTORICO_REPRODUTIVO','MEDICAMENTOS','SUPLEMENTOS','ULTIMO_SINTOMA','LOCAL_SINTOMA','DATA_INICIO_SINTOMA','INTENSIDADE','OUTROS_SINTOMAS','CONSULTAS','EXAMES','SINAIS_VITAIS','VACINAS','HISTORICO_FAMILIAR','LEMBRETES','DOCUMENTOS','INFORMACOES_IMPORTANTES'];
  var values={},lines=String(raw||'').replace(/^\uFEFF/,'').replace(/\r/g,'').split('\n'),current='';
  lines.forEach(function(line){
   var clean=line.trim();
@@ -80,7 +80,7 @@ function normalizarFichaIA(raw){
   p.forEach(function(part,i){var m=part.match(/^([^:]+):\s*(.*)$/);if(m){var k=m[1].trim().toLowerCase(),v=m[2].trim();if(/nome|documento/.test(k))o.nome=v;else if(/tipo/.test(k))o.tipo=v;else if(/data/.test(k))o.data=date(v);}else if(i===0)o.nome=part;});
   return o;
  }
- var p={nome:field('NOME'),nasc:date(field('DATA_NASCIMENTO')),idade:num(field('IDADE')),sexo:field('SEXO'),altura:height(field('ALTURA')),peso:num(field('PESO')),cond:field('DOENCAS'),alerg:field('ALERGIAS'),circ:field('CIRURGIAS_INTERNACOES'),supl:field('SUPLEMENTOS'),info:field('INFORMACOES_IMPORTANTES'),emerg:field('CONTATO_EMERGENCIA'),tel:field('TELEFONE_EMERGENCIA')};
+ var p={nome:field('NOME'),nasc:date(field('DATA_NASCIMENTO')),idade:num(field('IDADE')),sexo:field('SEXO'),altura:height(field('ALTURA')),peso:num(field('PESO')),cond:field('DOENCAS'),alerg:field('ALERGIAS'),circ:field('CIRURGIAS_INTERNACOES'),supl:field('SUPLEMENTOS'),info:field('INFORMACOES_IMPORTANTES'),emerg:field('CONTATO_EMERGENCIA'),tel:field('TELEFONE_EMERGENCIA'),menstruacao:date(field('ULTIMA_MENSTRUACAO')),ciclo:field('CICLO_MENSTRUAL'),duracaoMenstr:field('DURACAO_MENSTRUACAO'),sexoFreq:field('FREQUENCIA_SEXUAL'),camisinha:field('USO_PRESERVATIVO'),engravidou:field('JA_ENGRAVIDOU'),mae:field('JA_FOI_MAE'),gestacoes:field('NUMERO_GESTACOES'),reproObs:field('HISTORICO_REPRODUTIVO')};
  var medText=field('MEDICAMENTOS'),sint=field('ULTIMO_SINTOMA'),local=field('LOCAL_SINTOMA'),data=field('DATA_INICIO_SINTOMA'),inten=field('INTENSIDADE'),outros=field('OUTROS_SINTOMAS');
  var n=parseInt((inten.match(/\d+/)||['0'])[0],10)||0;
  var dores=sint&&sint.toLowerCase()!=='não informado'?[{data:data||new Date().toISOString().slice(0,16),local:local||'Não informado',int:Math.max(0,Math.min(10,n)),tipo:'',freq:'',gatilho:'',sint:outros?sint+' — '+outros:sint,obs:'Importado da IA'}]:[];
