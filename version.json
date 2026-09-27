@@ -1,5 +1,5 @@
 {
-  "version": "V4.74",
-  "updatedAt": "2026-09-28T01:35:00Z",
-  "changes": "Diário do sono simplificado: horário de dormir, horário de acordar, cálculo automático das horas, despertares para urinar, despertares por dor e observação opcional."
+  "version": "V4.75",
+  "updatedAt": "2026-09-28T02:00:00Z",
+  "changes": "Adicionado diário do ciclo menstrual com início/fim, fluxo, cólicas, observações, histórico, média dos intervalos e próxima data estimada."
 }
