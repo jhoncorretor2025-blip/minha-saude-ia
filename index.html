@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minha Saúde IA — V2</title>
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:linear-gradient(135deg,#2563eb,#6d28d9);color:#fff;padding:23px 17px 31px;border-radius:0 0 28px 28px}.head{max-width:1100px;margin:auto}.brand{font-size:25px;font-weight:900}.sub{opacity:.9;font-size:14px;margin-top:4px}
+.wrap{max-width:1100px;margin:-18px auto 40px;padding:0 13px}nav{display:flex;gap:5px;overflow:auto;background:#fff;padding:8px;border-radius:18px;box-shadow:var(--shadow)}nav button{border:0;background:transparent;padding:10px 12px;border-radius:11px;color:var(--muted);font-weight:800;white-space:nowrap;cursor:pointer}nav button.active{background:#eaf1ff;color:var(--blue)}
+section{display:none;margin-top:18px}section.active{display:block}.card{background:#fff;border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:var(--shadow)}h2{font-size:20px;margin:0 0 12px}.muted{color:var(--muted);font-size:14px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat b{font-size:27px;display:block;margin-top:5px}.stat span{font-size:13px;color:var(--muted)}
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:14px}.action{background:#fff;border:1px solid var(--border);border-radius:15px;padding:16px;text-align:left;font-weight:800;cursor:pointer}.action strong{display:block;font-size:25px;margin-bottom:5px}.action small{display:block;color:var(--muted);font-weight:500}
+form{display:grid;gap:11px}label{font-size:13px;font-weight:800}input,select,textarea{width:100%;margin-top:6px;padding:11px;border:1px solid #d6deea;border-radius:11px;font:inherit;background:#fff}textarea{min-height:88px;resize:vertical}.btn{border:0;border-radius:11px;padding:12px 15px;background:var(--blue);color:white;font-weight:900;cursor:pointer}.btn.secondary{background:#edf1f7;color:var(--text)}.btn.green{background:var(--green)}.btn.red{background:#fee2e2;color:#991b1b}.btn.small{padding:8px 10px;font-size:12px}.row{display:flex;gap:8px;flex-wrap:wrap}
+.list{display:grid;gap:9px}.item{border:1px solid var(--border);border-radius:14px;padding:14px;background:#fff}.itemtop{display:flex;justify-content:space-between;gap:8px}.tag{display:inline-block;background:#edf3ff;color:#2457c5;border-radius:99px;padding:4px 8px;font-size:11px;font-weight:900}.item p{margin:8px 0 0;color:var(--muted);font-size:14px;line-height:1.5}.empty{padding:24px;text-align:center;border:1px dashed #cbd5e1;border-radius:14px;color:var(--muted)}
+.alert{padding:13px;border-radius:13px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:13px}.safe{background:#ecfdf5;border-color:#a7f3d0;color:#065f46}.warn{background:#fffbeb;border-color:#fde68a;color:#92400e}.danger{background:#fef2f2;border-color:#fecaca;color:#991b1b}
+.timeline{position:relative;padding-left:22px}.timeline:before{content:"";position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:#dbe3ef}.tl{position:relative;margin:0 0 13px}.tl:before{content:"";position:absolute;left:-20px;top:5px;width:9px;height:9px;border-radius:50%;background:var(--blue)}.tl b{font-size:14px}.tl p{margin:4px 0;color:var(--muted);font-size:13px}
+.bodymap{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.bodymap button{border:1px solid var(--border);background:#f8fafc;border-radius:13px;padding:13px 7px;cursor:pointer;font-weight:800}.bodymap button.sel{background:#eaf1ff;border-color:#93b4ff;color:#1d4ed8}
+.range{display:flex;align-items:center;gap:10px}.range input{margin:0}.score{font-size:22px;font-weight:900}
+.bars{display:flex;align-items:flex-end;gap:8px;height:150px;border-bottom:1px solid #dbe2ec;padding:10px}.bar{flex:1;background:#6d8de8;border-radius:7px 7px 0 0;min-width:10px;position:relative}.bar span{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted)}.bar small{position:absolute;top:100%;left:50%;transform:translateX(-50%);font-size:9px;margin-top:4px;white-space:nowrap}
+.chat{display:flex;flex-direction:column;gap:9px;max-height:390px;overflow:auto;margin:12px 0}.bubble{padding:11px 13px;border-radius:15px;max-width:88%;font-size:14px;line-height:1.45}.bot{background:#edf2ff}.user{background:#2563eb;color:#fff;align-self:flex-end}
+footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
+@media(max-width:760px){.grid4{grid-template-columns:1fr 1fr}.actions{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
+@media(max-width:430px){.actions{grid-template-columns:1fr}.wrap{padding:0 9px}.card{padding:15px}}
+</style>
+</head>
+<body>
+<div id="onboarding" style="display:none;position:fixed;inset:0;background:linear-gradient(135deg,#2563eb,#6d28d9);z-index:99998;padding:20px;overflow:auto">
+<div style="max-width:720px;margin:4vh auto;background:#fff;border-radius:25px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+<div style="text-align:center">
+<div style="font-size:48px">🩺</div>
+<h1 style="margin:8px 0;font-size:26px">Vamos começar?</h1>
+<p style="color:#687386;margin:0">Antes de entrar no seu histórico, escolha a forma mais fácil de alimentar o Minha Saúde IA.</p>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:22px">
+<button onclick="onboardImport()" style="border:1px solid #cfe0ff;background:#eef4ff;border-radius:18px;padding:20px;text-align:left;cursor:pointer">
+<div style="font-size:32px">⚡</div><h3 style="margin:8px 0">Já tenho informações</h3>
+<p style="color:#687386;font-size:13px">Use ChatGPT, Gemini ou outra IA para organizar seu histórico e importe tudo de uma vez.</p>
+<b style="color:#2563eb">Importar com IA →</b>
+</button>
+<button onclick="onboardProfile()" style="border:1px solid #d9e8df;background:#effbf4;border-radius:18px;padding:20px;text-align:left;cursor:pointer">
+<div style="font-size:32px">👤</div><h3 style="margin:8px 0">Quero completar meu cadastro</h3>
+<p style="color:#687386;font-size:13px">Preencha seu perfil básico e depois registre sintomas, consultas, medicamentos e exames.</p>
+<b style="color:#059669">Começar cadastro →</b>
+</button>
+</div>
+<div style="margin-top:16px;padding:14px;background:#f8fafc;border-radius:14px;font-size:13px;color:#687386">
+💡 <b>Dica:</b> se você já usa IA e tem bastante informação sobre sua saúde, a importação costuma ser o caminho mais rápido.
+</div>
+<button onclick="finishOnboarding('skip')" style="display:block;margin:16px auto 0;border:0;background:none;color:#687386;text-decoration:underline;cursor:pointer">Pular por enquanto</button>
+</div></div>
+
+<div id="pinGate" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.88);z-index:99999;align-items:center;justify-content:center;padding:20px">
+<div style="background:white;border-radius:20px;padding:25px;max-width:360px;width:100%;text-align:center">
+<div style="font-size:40px">🔐</div><h2>Acesso protegido</h2><p style="color:#687386">Digite seu PIN para acessar o Minha Saúde IA.</p>
+<input id="gatePin" inputmode="numeric" maxlength="8" type="password" placeholder="PIN" style="width:100%;padding:13px;border:1px solid #d6deea;border-radius:10px;font-size:20px;text-align:center">
+<button class="btn" style="margin-top:12px;width:100%" onclick="unlock()">Entrar</button>
+<div id="gateMsg" style="color:#dc2626;font-size:13px;margin-top:9px"></div>
+</div></div>
+<script>
+function checkPinGate(){let p=localStorage.getItem('msa2_pin');if(p){document.getElementById('pinGate').style.display='flex';setTimeout(()=>document.getElementById('gatePin').focus(),100)}}
+function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementById('gatePin').value===p){document.getElementById('pinGate').style.display='none'}else document.getElementById('gateMsg').textContent='PIN incorreto.'}
+document.addEventListener('DOMContentLoaded',checkPinGate);
+</script>
+
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V2</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<div class="wrap">
+<nav id="nav">
+<button class="active" data-tab="home">🏠 Início</button><button data-tab="timeline">🕐 Linha do tempo</button><button data-tab="dor">😣 Sintomas</button><button data-tab="consultas">👨‍⚕️ Consultas</button><button data-tab="meds">💊 Medicamentos</button><button data-tab="exames">🧪 Exames</button><button data-tab="perfil">👤 Perfil</button><button data-tab="relatorios">📊 Relatórios</button><button data-tab="backup">💾 Backup</button><button data-tab="importar">⚡ Importar com IA</button><button data-tab="ia">🤖 IA</button>
+</nav>
+
+<section id="home" class="active">
+<div class="grid4">
+<div class="card stat"><span>😣 Sintomas</span><b id="nD">0</b></div><div class="card stat"><span>👨‍⚕️ Consultas</span><b id="nC">0</b></div><div class="card stat"><span>💊 Medicamentos</span><b id="nM">0</b></div><div class="card stat"><span>🧪 Exames</span><b id="nE">0</b></div>
+</div>
+<div class="card" style="margin-top:13px"><h2>Como você está hoje?</h2><div class="muted">Registre uma informação ou prepare-se para uma consulta.</div>
+<div class="actions">
+<button class="action" onclick="go('dor')"><strong>😣</strong>Registrar sintoma<small>Dor, intensidade, local e sinais associados</small></button>
+<button class="action" onclick="go('consultas')"><strong>👨‍⚕️</strong>Nova consulta<small>Guarde orientações e próximo retorno</small></button>
+<button class="action" onclick="go('meds')"><strong>💊</strong>Medicamento<small>Monte seu histórico de uso</small></button>
+<button class="action" onclick="go('exames')"><strong>🧪</strong>Novo exame<small>Resultado e observações</small></button>
+<button class="action" onclick="go('ia')"><strong>🤖</strong>Assistente<small>Organize suas dúvidas</small></button>
+<button class="action" onclick="gerarRelatorio()"><strong>📄</strong>Relatório médico<small>Prepare um resumo para levar à consulta</small></button>
+</div></div>
+<div class="grid2" style="margin-top:13px"><div class="card"><h2>🚨 Atenção</h2><div id="alertaHome" class="safe">Nenhum alerta automático com os dados registrados.</div></div><div class="card"><h2>🧠 Último registro</h2><div id="ultimo" class="muted">Ainda não há registros.</div></div></div>
+</section>
+
+<section id="timeline"><div class="card"><h2>🕐 Linha do tempo da saúde</h2><div class="muted">Todos os seus registros organizados por data.</div><div id="tl" class="timeline" style="margin-top:17px"></div></div></section>
+
+<section id="dor"><div class="card"><h2>😣 Registrar sintoma ou dor</h2>
+<form id="dorForm">
+<label>Onde está o sintoma? <input id="dLocal" required placeholder="Escolha no mapa abaixo ou escreva"></label>
+<div class="bodymap">
+<button type="button" onclick="bodyPick(this,'Cabeça')">🧠 Cabeça</button><button type="button" onclick="bodyPick(this,'Pescoço')">🦴 Pescoço</button><button type="button" onclick="bodyPick(this,'Peito')">❤️ Peito</button>
+<button type="button" onclick="bodyPick(this,'Abdômen')">🫃 Abdômen</button><button type="button" onclick="bodyPick(this,'Costas')">🔙 Costas</button><button type="button" onclick="bodyPick(this,'Braço')">💪 Braço</button>
+<button type="button" onclick="bodyPick(this,'Mão')">✋ Mão</button><button type="button" onclick="bodyPick(this,'Perna')">🦵 Perna</button><button type="button" onclick="bodyPick(this,'Pé')">🦶 Pé</button>
+</div>
+<div class="grid2"><label>Quando começou?<input id="dData" type="datetime-local" required></label><label>Tipo<select id="dTipo"><option>Pontada</option><option>Queimação</option><option>Pressão</option><option>Latejante</option><option>Choque</option><option>Outro</option></select></label></div>
+<label>Intensidade <div class="range"><input id="dInt" type="range" min="0" max="10" value="5" oninput="dScore.textContent=this.value"><span class="score" id="dScore">5</span>/10</div></label>
+<div class="grid2"><label>Frequência<select id="dFreq"><option>Contínua</option><option>Vai e volta</option><option>Momentos específicos</option></select></label><label>O que melhora/piora?<input id="dGatilho" placeholder="Ex.: comer, caminhar, deitar"></label></div>
+<label>Outros sintomas<textarea id="dSint" placeholder="Febre, náusea, tontura, vômito, falta de ar..."></textarea></label><label>Observações<textarea id="dObs"></textarea></label>
+<button class="btn">💾 Salvar sintoma</button></form></div>
+<div class="card" style="margin-top:13px"><h2>📈 Evolução da intensidade</h2><div id="chart" class="bars"></div></div>
+<div class="card" style="margin-top:13px"><h2>Histórico</h2><div id="listD" class="list"></div></div></section>
+
+<section id="consultas"><div class="card"><h2>👨‍⚕️ Consulta</h2><form id="cForm"><div class="grid2"><label>Data<input id="cData" type="date" required></label><label>Especialidade<input id="cEsp" required placeholder="Ex.: dermatologia"></label></div><div class="grid2"><label>Médico<input id="cMed"></label><label>Motivo<input id="cMot"></label></div><label>📝 Perguntas que quero fazer<textarea id="cPerg" placeholder="O que quero lembrar de perguntar..."></textarea></label><label>📋 Orientações recebidas<textarea id="cObs"></textarea></label><label>Próximo retorno<input id="cRet" type="date"></label><button class="btn">💾 Salvar consulta</button></form></div><div class="card" style="margin-top:13px"><h2>Consultas</h2><div id="listC" class="list"></div></div></section>
+
+<section id="meds"><div class="card"><h2>💊 Medicamento</h2><form id="mForm"><div class="grid2"><label>Nome<input id="mNome" required></label><label>Dose<input id="mDose" placeholder="Ex.: 500 mg"></label></div><div class="grid2"><label>Frequência<input id="mFreq" placeholder="Ex.: 8 em 8 horas"></label><label>Início<input id="mInicio" type="date"></label></div><div class="grid2"><label>Fim<input id="mFim" type="date"></label><label>Prescrito por<input id="mPres" placeholder="Médico"></label></div><label>Observações<textarea id="mObs"></textarea></label><button class="btn">💾 Salvar medicamento</button></form></div><div class="card" style="margin-top:13px"><h2>Histórico de medicamentos</h2><div id="listM" class="list"></div></div></section>
+
+<section id="exames"><div class="card"><h2>🧪 Exame</h2><form id="eForm"><div class="grid2"><label>Nome do exame<input id="eNome" required></label><label>Data<input id="eData" type="date" required></label></div><label>Resultado / valores importantes<textarea id="eRes"></textarea></label><label>Observações<textarea id="eObs"></textarea></label><button class="btn">💾 Salvar exame</button></form></div><div class="card" style="margin-top:13px"><h2>Exames registrados</h2><div id="listE" class="list"></div></div></section>
+
+<section id="perfil"><div class="card"><h2>👤 Perfil de saúde</h2><div class="muted">Informações que podem ser úteis em uma consulta.</div><form id="pForm" style="margin-top:13px"><div class="grid2"><label>Nome<input id="pNome"></label><label>Data de nascimento<input id="pNasc" type="date"></label></div><label>🚨 Alergias<textarea id="pAlerg" placeholder="Medicamentos, alimentos, outras alergias..."></textarea></label><label>🩺 Condições já diagnosticadas<textarea id="pCond"></textarea></label><label>🏥 Cirurgias / internações anteriores<textarea id="pCirc"></textarea></label><label>📌 Informações importantes<textarea id="pInfo"></textarea></label><div class="grid2"><label>Contato de emergência<input id="pEmerg"></label><label>Telefone<input id="pTel"></label></div><button class="btn">💾 Salvar perfil</button></form></div></section>
+
+
+<section id="relatorios">
+<div class="card">
+<h2>📊 Central de Relatórios</h2>
+<div class="muted">Escolha o período e o tipo de relatório. Os relatórios usam somente o que você registrou no sistema.</div>
+<div class="grid2" style="margin-top:13px">
+<label>Data inicial<input id="rInicio" type="date"></label>
+<label>Data final<input id="rFim" type="date"></label>
+</div>
+<div class="row" style="margin-top:12px">
+<button class="btn" onclick="relatorioCompleto()">📄 Relatório completo</button>
+<button class="btn secondary" onclick="relatorioMedico()">👨‍⚕️ Resumo para médico</button>
+<button class="btn secondary" onclick="relatorioSintomas()">😣 Sintomas</button>
+<button class="btn secondary" onclick="relatorioMeds()">💊 Medicamentos</button>
+<button class="btn secondary" onclick="relatorioExames()">🧪 Exames</button>
+<button class="btn secondary" onclick="relatorioConsultas()">👨‍⚕️ Consultas</button>
+</div>
+</div>
+<div class="card" style="margin-top:13px">
+<h2>📈 Resumo do período</h2><div id="rResumo" class="muted">Selecione um período para visualizar.</div>
+</div>
+</section>
+
+<section id="backup">
+<div class="card">
+<h2>💾 Backup e restauração</h2>
+<div class="muted">Faça uma cópia dos seus dados antes de limpar o navegador, trocar de celular ou fazer alterações importantes.</div>
+<div class="row" style="margin-top:13px">
+<button class="btn green" onclick="baixarBackup()">⬇️ Fazer backup completo</button>
+<button class="btn secondary" onclick="document.getElementById('arquivoBackup').click()">♻️ Restaurar backup</button>
+<input id="arquivoBackup" type="file" accept=".json" style="display:none" onchange="restaurarBackup(event)">
+</div>
+<div class="alert warn" style="margin-top:13px">⚠️ O backup contém informações pessoais. Guarde o arquivo em local seguro e não o envie para pessoas ou serviços desconhecidos.</div>
+</div>
+
+<div class="card" style="margin-top:13px">
+<h2>📊 Exportação</h2><div class="muted">Exporte os registros em CSV para abrir em Excel, Google Sheets ou outro programa.</div>
+<div class="row" style="margin-top:12px">
+<button class="btn secondary" onclick="csv('d')">Sintomas CSV</button>
+<button class="btn secondary" onclick="csv('c')">Consultas CSV</button>
+<button class="btn secondary" onclick="csv('m')">Medicamentos CSV</button>
+<button class="btn secondary" onclick="csv('e')">Exames CSV</button>
+</div>
+</div>
+
+<div class="card" style="margin-top:13px">
+<h2>🔐 Proteção por PIN</h2>
+<div class="muted">Bloqueia o acesso ao site neste navegador. Isto é uma proteção local; não substitui criptografia de servidor.</div>
+<div class="grid2" style="margin-top:12px">
+<label>Novo PIN (4–8 números)<input id="pinNovo" inputmode="numeric" maxlength="8" type="password"></label>
+<label>Confirmar PIN<input id="pinConf" inputmode="numeric" maxlength="8" type="password"></label>
+</div>
+<div class="row" style="margin-top:10px"><button class="btn" onclick="salvarPin()">🔒 Ativar/alterar PIN</button><button class="btn red" onclick="removerPin()">Desativar PIN</button></div>
+<div id="pinStatus" class="muted" style="margin-top:10px"></div>
+</div>
+
+<div class="card" style="margin-top:13px">
+<h2>👋 Primeiros passos</h2><div class="muted">Quer ver novamente a tela inicial de escolha?</div><button class="btn secondary" style="margin-top:10px" onclick="resetWelcome()">🔄 Mostrar tela inicial novamente</button></div><div class="card" style="margin-top:13px"><h2>🗑️ Zona de segurança</h2>
+<div class="muted">Apagar todos os dados é irreversível se você não tiver um backup.</div>
+<button class="btn red" style="margin-top:10px" onclick="apagarTudo()">🗑️ Apagar todos os dados</button>
+</div>
+</section>
+
+<section id="importar">
+<div class="card">
+<h2>⚡ Importar informações com IA</h2>
+<div class="muted">Tem preguiça de preencher tudo? Use uma IA que você já conhece para organizar seu histórico e depois cole a resposta aqui.</div>
+
+<div class="alert safe" style="margin-top:13px">
+<b>Como funciona:</b><br>
+1️⃣ Copie o prompt abaixo.<br>
+2️⃣ Cole no ChatGPT, Gemini ou outra IA que você usa.<br>
+3️⃣ Peça para ela organizar suas informações de saúde.<br>
+4️⃣ Copie a resposta gerada e cole no campo abaixo.<br>
+5️⃣ O Minha Saúde IA tenta importar automaticamente os dados.
+</div>
+
+<h3 style="margin-top:20px">📋 Prompt pronto</h3>
+<textarea id="promptIA" readonly style="min-height:185px">Organize minhas informações de saúde para importar no aplicativo. Use APENAS informações que eu fornecer ou que estejam no histórico desta conversa. Não invente dados. Identifique: nome, data de nascimento, alergias, condições já diagnosticadas, cirurgias/internações, informações importantes, dores e sintomas (local, data/início, intensidade 0-10, tipo, frequência, gatilhos e outros sintomas), consultas (data, especialidade, médico, motivo, orientações e retorno), medicamentos (nome, dose, frequência, início, fim, prescritor) e exames (nome, data, resultado e observações). Retorne SOMENTE um JSON válido, sem explicações, neste formato: {"perfil":{},"dores":[],"consultas":[],"medicamentos":[],"exames":[]}. Se algo não for informado, deixe vazio. Não faça diagnóstico nem altere informações.</textarea>
+<div class="row" style="margin-top:9px"><button class="btn" onclick="copiarPrompt()">📋 Copiar prompt</button><span id="copiado" class="muted"></span></div>
+
+<h3 style="margin-top:22px">📥 Cole aqui a resposta da IA</h3>
+<textarea id="importIA" style="min-height:190px" placeholder='Cole o JSON que a IA devolveu aqui...'></textarea>
+<div class="row" style="margin-top:9px">
+<button class="btn green" onclick="processarImportacao()">✨ Importar informações</button>
+<button class="btn secondary" onclick="limparImportacao()">Limpar</button>
+</div>
+<div id="resultadoImport" style="margin-top:12px"></div>
+</div>
+
+<div class="card" style="margin-top:13px">
+<h2>🧠 Também aceitamos texto simples</h2>
+<div class="muted">Se a IA não devolver JSON, cole um texto organizado aqui. O sistema tentará reconhecer padrões básicos como nome, dores, medicamentos e exames. Para maior precisão, prefira o prompt acima.</div>
+<textarea id="textoLivre" style="margin-top:10px;min-height:140px" placeholder="Ex.: Meu nome é João. Tenho dor de cabeça há 3 dias, intensidade 6/10. Uso dipirona 500 mg..."></textarea>
+<button class="btn secondary" style="margin-top:9px" onclick="processarTextoLivre()">🪄 Tentar organizar texto</button>
+<div id="resultadoLivre" style="margin-top:12px"></div>
+</div>
+
+<div class="alert warn" style="margin-top:13px">
+🔐 <b>Privacidade:</b> não cole em serviços de IA informações que você não queira compartilhar. Esta versão local não envia os dados automaticamente para uma IA; você decide o que copiar e colar.
+</div>
+</section>
+<section id="ia"><div class="card"><h2>🤖 Assistente de Saúde</h2><div class="muted">Ajuda a organizar informações e preparar perguntas. Não substitui diagnóstico ou atendimento médico.</div><div id="chat" class="chat"><div class="bubble bot">Olá! 👋 Conte o que está acontecendo. Posso ajudar a organizar seus sintomas, sugerir perguntas para o médico e lembrar sinais de alerta.</div></div><div class="row"><input id="iaInput" style="flex:1" placeholder="Ex.: Estou com dor abdominal há 2 dias..."><button class="btn" onclick="ask()">Enviar</button></div><div class="alert danger" style="margin-top:12px">🚨 Em uma emergência ou diante de sintomas graves, procure atendimento presencial imediatamente.</div></div>
+<div class="card" style="margin-top:13px"><h2>🩺 Preparar minha consulta</h2><div class="muted">A partir dos seus registros, gere um conjunto de perguntas para conversar com o profissional.</div><button class="btn green" style="margin-top:10px" onclick="perguntasConsulta()">✨ Gerar perguntas</button><div id="perguntas" style="margin-top:12px"></div></div></section>
+
+<footer>🔒 V2 de demonstração. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+</div>
+
+<script>
+const K={d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',p:'msa2_perfil'};
+const get=k=>JSON.parse(localStorage.getItem(k)||'[]'), set=(k,v)=>localStorage.setItem(k,JSON.stringify(v)), $=x=>document.getElementById(x);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function go(id){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===id));render()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.tab));
+function bodyPick(el,v){$('dLocal').value=v;document.querySelectorAll('.bodymap button').forEach(x=>x.classList.remove('sel'));el.classList.add('sel')}
+function fmt(d){if(!d)return '—';let x=new Date(d);return isNaN(x)?d:x.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}
+function list(id,a,fn){$(id).innerHTML=a.length?a.slice().reverse().map(fn).join(''):'<div class="empty">Nenhum registro ainda.</div>'}
+function render(){
+let d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
+$('nD').textContent=d.length;$('nC').textContent=c.length;$('nM').textContent=m.length;$('nE').textContent=e.length;
+list('listD',d,x=>`<div class="item"><div class="itemtop"><b>😣 ${esc(x.local)}</b><span class="tag">${x.int}/10</span></div><p>${fmt(x.data)} · ${esc(x.tipo)} · ${esc(x.freq)}<br>${esc(x.sint||'Sem sintomas associados')}<br>${esc(x.gatilho||'')} ${esc(x.obs||'')}</p></div>`);
+list('listC',c,x=>`<div class="item"><div class="itemtop"><b>👨‍⚕️ ${esc(x.esp)}</b><span class="tag">${x.data}</span></div><p>${esc(x.med||'Médico não informado')} · ${esc(x.mot||'')}<br><b>Perguntas:</b> ${esc(x.perg||'—')}<br><b>Orientações:</b> ${esc(x.obs||'—')}<br>${x.ret?'Retorno: '+x.ret:''}</p></div>`);
+list('listM',m,x=>`<div class="item"><div class="itemtop"><b>💊 ${esc(x.nome)}</b><span class="tag">${esc(x.dose||'')}</span></div><p>${esc(x.freq||'Frequência não informada')} · ${x.inicio||'—'} até ${x.fim||'—'}<br>Prescrito por: ${esc(x.pres||'—')}<br>${esc(x.obs||'')}</p></div>`);
+list('listE',e,x=>`<div class="item"><div class="itemtop"><b>🧪 ${esc(x.nome)}</b><span class="tag">${x.data}</span></div><p><b>Resultado:</b> ${esc(x.res||'—')}<br>${esc(x.obs||'')}</p></div>`);
+let all=[...d.map(x=>({date:x.data,type:'😣 Sintoma',text:x.local+' — '+x.int+'/10'})),...c.map(x=>({date:x.data,type:'👨‍⚕️ Consulta',text:x.esp})),...m.map(x=>({date:x.inicio,type:'💊 Medicamento',text:x.nome})),...e.map(x=>({date:x.data,type:'🧪 Exame',text:x.nome}))].filter(x=>x.date).sort((a,b)=>new Date(b.date)-new Date(a.date));
+$('tl').innerHTML=all.length?all.map(x=>`<div class="tl"><b>${x.type}</b> <span class="tag">${x.date}</span><p>${esc(x.text)}</p></div>`).join(''):'<div class="empty">Nenhum evento registrado.</div>';
+let last=all[0];$('ultimo').innerHTML=last?`<b>${last.type}</b><br>${esc(last.text)}<br><span class="muted">${last.date}</span>`:'Ainda não há registros.';
+let alert=findAlerts(d);$('alertaHome').className=alert?'danger':'safe';$('alertaHome').innerHTML=alert?alert:'Nenhum sinal de alerta automático encontrado nos registros.';
+let vals=d.slice(-10);$('chart').innerHTML=vals.length?vals.map(x=>`<div class="bar" style="height:${Math.max(8,x.int*10)}%"><span>${x.int}</span><small>${String(x.local).slice(0,7)}</small></div>`).join(''):'<div class="muted" style="margin:auto">Registre sintomas para ver a evolução.</div>';
+loadProfile();
+}
+function findAlerts(d){for(let x of d){let s=(x.sint||'').toLowerCase();if(x.int>=9)return '🔴 Há registro de dor muito intensa (9–10/10). Se for atual, súbita, piorando ou acompanhada de outros sinais importantes, procure avaliação médica.';if(/falta de ar|desmaio|convuls|confusão|fraqueza de um lado|sangramento importante/.test(s))return '🔴 Foi registrado um possível sinal de alerta. Se estiver acontecendo agora, procure atendimento médico rapidamente.'}return ''}
+$('dData').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+$('dorForm')?.addEventListener('submit',()=>{});
+$('dorForm').onsubmit=e=>{e.preventDefault();let a=get(K.d);a.push({data:$('dData').value,local:$('dLocal').value,int:+$('dInt').value,tipo:$('dTipo').value,freq:$('dFreq').value,gatilho:$('dGatilho').value,sint:$('dSint').value,obs:$('dObs').value});set(K.d,a);e.target.reset();$('dInt').value=5;$('dScore').textContent=5;render();alert('Sintoma salvo!')};
+$('cForm').onsubmit=e=>{e.preventDefault();let a=get(K.c);a.push({data:$('cData').value,esp:$('cEsp').value,med:$('cMed').value,mot:$('cMot').value,perg:$('cPerg').value,obs:$('cObs').value,ret:$('cRet').value});set(K.c,a);e.target.reset();render();alert('Consulta salva!')};
+$('mForm').onsubmit=e=>{e.preventDefault();let a=get(K.m);a.push({nome:$('mNome').value,dose:$('mDose').value,freq:$('mFreq').value,inicio:$('mInicio').value,fim:$('mFim').value,pres:$('mPres').value,obs:$('mObs').value});set(K.m,a);e.target.reset();render();alert('Medicamento salvo!')};
+$('eForm').onsubmit=e=>{e.preventDefault();let a=get(K.e);a.push({nome:$('eNome').value,data:$('eData').value,res:$('eRes').value,obs:$('eObs').value});set(K.e,a);e.target.reset();render();alert('Exame salvo!')};
+function loadProfile(){let p=get(K.p)[0]||{};['Nome','Nasc','Alerg','Cond','Circ','Info','Emerg','Tel'].forEach(x=>{if($('p'+x))$('p'+x).value=p[x.toLowerCase()]||''})}
+$('pForm').onsubmit=e=>{e.preventDefault();set(K.p,[{nome:$('pNome').value,nasc:$('pNasc').value,alerg:$('pAlerg').value,cond:$('pCond').value,circ:$('pCirc').value,info:$('pInfo').value,emerg:$('pEmerg').value,tel:$('pTel').value}]);alert('Perfil salvo!')};
+function ask(){let q=$('iaInput').value.trim();if(!q)return;let chat=$('chat');chat.innerHTML+=`<div class="bubble user">${esc(q)}</div>`;let l=q.toLowerCase(),ans;
+if(/falta de ar|desmaio|convuls|confus|avc|fraqueza de um lado|sangramento intenso/.test(l))ans='🚨 Esse relato pode envolver um sinal de alerta. Se estiver acontecendo agora, for intenso ou súbito, procure atendimento médico imediatamente.';
+else if(/dor|do[ií]|pontada|queima/.test(l))ans='Para organizar melhor, registre local, início, intensidade (0–10), tipo, fatores que pioram/melhoram e sintomas associados. Posso também gerar perguntas para sua consulta.';
+else if(/rem[eé]dio|medicamento/.test(l))ans='Posso organizar nome, dose, frequência e período de uso. Não altere ou interrompa um medicamento prescrito sem orientação profissional.';
+else ans='Posso ajudar a estruturar a informação e preparar sua conversa com um profissional. Conte quando começou, intensidade, sintomas associados e o que mudou desde então.';
+chat.innerHTML+=`<div class="bubble bot">${ans}</div>`;$('iaInput').value='';chat.scrollTop=chat.scrollHeight}
+function perguntasConsulta(){let d=get(K.d),e=get(K.e),m=get(K.m);let q=[];if(d.length)q.push('Quais podem ser as causas possíveis dos sintomas que registrei e quais sinais devo observar?');if(e.length)q.push('Há algum resultado dos meus exames que devo discutir com mais atenção?');if(m.length)q.push('Os medicamentos que estou usando devem ser mantidos, ajustados ou revisados?');q.push('Quais exames ou acompanhamentos podem ser necessários?','Em quais situações devo procurar atendimento antes do retorno?');$('perguntas').innerHTML='<div class="alert safe"><b>Perguntas sugeridas:</b><ol>'+q.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol></div>'}
+function gerarRelatorio(){
+let p=get(K.p)[0]||{},d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
+let w=window.open('','_blank');if(!w){alert('Permita pop-ups para gerar o relatório.');return}
+w.document.write(`<html><head><title>Resumo de Saúde</title><style>body{font-family:Arial;max-width:800px;margin:35px auto;line-height:1.5;color:#172033}h1{color:#2563eb}h2{border-bottom:1px solid #ddd;padding-bottom:5px}li{margin:6px 0}.box{background:#f4f7fb;padding:12px;border-radius:10px}</style></head><body>
+<div id="onboarding" style="display:none;position:fixed;inset:0;background:linear-gradient(135deg,#2563eb,#6d28d9);z-index:99998;padding:20px;overflow:auto">
+<div style="max-width:720px;margin:4vh auto;background:#fff;border-radius:25px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+<div style="text-align:center">
+<div style="font-size:48px">🩺</div>
+<h1 style="margin:8px 0;font-size:26px">Vamos começar?</h1>
+<p style="color:#687386;margin:0">Antes de entrar no seu histórico, escolha a forma mais fácil de alimentar o Minha Saúde IA.</p>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:22px">
+<button onclick="onboardImport()" style="border:1px solid #cfe0ff;background:#eef4ff;border-radius:18px;padding:20px;text-align:left;cursor:pointer">
+<div style="font-size:32px">⚡</div><h3 style="margin:8px 0">Já tenho informações</h3>
+<p style="color:#687386;font-size:13px">Use ChatGPT, Gemini ou outra IA para organizar seu histórico e importe tudo de uma vez.</p>
+<b style="color:#2563eb">Importar com IA →</b>
+</button>
+<button onclick="onboardProfile()" style="border:1px solid #d9e8df;background:#effbf4;border-radius:18px;padding:20px;text-align:left;cursor:pointer">
+<div style="font-size:32px">👤</div><h3 style="margin:8px 0">Quero completar meu cadastro</h3>
+<p style="color:#687386;font-size:13px">Preencha seu perfil básico e depois registre sintomas, consultas, medicamentos e exames.</p>
+<b style="color:#059669">Começar cadastro →</b>
+</button>
+</div>
+<div style="margin-top:16px;padding:14px;background:#f8fafc;border-radius:14px;font-size:13px;color:#687386">
+💡 <b>Dica:</b> se você já usa IA e tem bastante informação sobre sua saúde, a importação costuma ser o caminho mais rápido.
+</div>
+<button onclick="finishOnboarding('skip')" style="display:block;margin:16px auto 0;border:0;background:none;color:#687386;text-decoration:underline;cursor:pointer">Pular por enquanto</button>
+</div></div>
+
+<div id="pinGate" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.88);z-index:99999;align-items:center;justify-content:center;padding:20px">
+<div style="background:white;border-radius:20px;padding:25px;max-width:360px;width:100%;text-align:center">
+<div style="font-size:40px">🔐</div><h2>Acesso protegido</h2><p style="color:#687386">Digite seu PIN para acessar o Minha Saúde IA.</p>
+<input id="gatePin" inputmode="numeric" maxlength="8" type="password" placeholder="PIN" style="width:100%;padding:13px;border:1px solid #d6deea;border-radius:10px;font-size:20px;text-align:center">
+<button class="btn" style="margin-top:12px;width:100%" onclick="unlock()">Entrar</button>
+<div id="gateMsg" style="color:#dc2626;font-size:13px;margin-top:9px"></div>
+</div></div>
+<script>
+function checkPinGate(){let p=localStorage.getItem('msa2_pin');if(p){document.getElementById('pinGate').style.display='flex';setTimeout(()=>document.getElementById('gatePin').focus(),100)}}
+function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementById('gatePin').value===p){document.getElementById('pinGate').style.display='none'}else document.getElementById('gateMsg').textContent='PIN incorreto.'}
+document.addEventListener('DOMContentLoaded',checkPinGate);
+</script>
+<h1>📄 Resumo de Saúde</h1><div class="box"><b>Nome:</b> ${esc(p.nome||'Não informado')}<br><b>Informações importantes:</b> ${esc(p.info||'—')}<br><b>Alergias:</b> ${esc(p.alerg||'—')}</div><h2>Sintomas</h2><ul>${d.length?d.map(x=>`<li>${x.data} — ${esc(x.local)}, intensidade ${x.int}/10, ${esc(x.tipo)}. ${esc(x.sint||'')}</li>`).join(''):'<li>Nenhum registrado.</li>'}</ul><h2>Consultas</h2><ul>${c.length?c.map(x=>`<li>${x.data} — ${esc(x.esp)}, ${esc(x.med||'')}. ${esc(x.obs||'')}</li>`).join(''):'<li>Nenhuma registrada.</li>'}</ul><h2>Medicamentos</h2><ul>${m.length?m.map(x=>`<li>${esc(x.nome)} — ${esc(x.dose||'')} — ${esc(x.freq||'')}</li>`).join(''):'<li>Nenhum registrado.</li>'}</ul><h2>Exames</h2><ul>${e.length?e.map(x=>`<li>${x.data} — ${esc(x.nome)}: ${esc(x.res||'')}</li>`).join(''):'<li>Nenhum registrado.</li>'}</ul><p style="font-size:12px;color:#777">Este documento é um resumo das informações registradas pelo usuário e não constitui diagnóstico ou laudo médico.</p><script>window.print()<\/script>
+<script>
+/* V3: reports, backup, CSV, local PIN and safer data handling */
+function getRange(){
+ const today=new Date(), end=today.toISOString().slice(0,10);
+ const start=new Date(today); start.setDate(start.getDate()-30);
+ return {start:start.toISOString().slice(0,10),end};
+}
+function initReports(){
+ const r=getRange();
+ if($('rInicio')) $('rInicio').value=r.start;
+ if($('rFim')) $('rFim').value=r.end;
+ updatePinStatus();
+}
+function inRange(date,start,end){
+ if(!date)return false;
+ const d=String(date).slice(0,10);
+ return d>=start && d<=end;
+}
+function rangeData(){
+ let start=$('rInicio').value,end=$('rFim').value;
+ if(!start||!end){let r=getRange();start=r.start;end=r.end}
+ return {start,end,d:get(K.d).filter(x=>inRange(x.data,start,end)),c:get(K.c).filter(x=>inRange(x.data,start,end)),m:get(K.m).filter(x=>inRange(x.inicio||x.fim,start,end)),e:get(K.e).filter(x=>inRange(x.data,start,end))};
+}
+function openReport(title,body){
+ let w=window.open('','_blank');
+ if(!w){alert('Permita pop-ups para gerar o relatório.');return}
+ w.document.write(`<html><head><meta charset="utf-8"><title>${esc(title)}</title><style>
+ body{font-family:Arial,sans-serif;max-width:850px;margin:30px auto;color:#172033;line-height:1.55}
+ h1{color:#2563eb}h2{border-bottom:1px solid #ddd;padding-bottom:5px;margin-top:25px}
+ .box{background:#f4f7fb;padding:13px;border-radius:10px;margin:10px 0}
+ table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:7px;text-align:left;font-size:13px}th{background:#f4f7fb}
+ .foot{color:#777;font-size:11px;margin-top:30px}
+ </style></head><body>
+<div id="onboarding" style="display:none;position:fixed;inset:0;background:linear-gradient(135deg,#2563eb,#6d28d9);z-index:99998;padding:20px;overflow:auto">
+<div style="max-width:720px;margin:4vh auto;background:#fff;border-radius:25px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+<div style="text-align:center">
+<div style="font-size:48px">🩺</div>
+<h1 style="margin:8px 0;font-size:26px">Vamos começar?</h1>
+<p style="color:#687386;margin:0">Antes de entrar no seu histórico, escolha a forma mais fácil de alimentar o Minha Saúde IA.</p>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:22px">
+<button onclick="onboardImport()" style="border:1px solid #cfe0ff;background:#eef4ff;border-radius:18px;padding:20px;text-align:left;cursor:pointer">
+<div style="font-size:32px">⚡</div><h3 style="margin:8px 0">Já tenho informações</h3>
+<p style="color:#687386;font-size:13px">Use ChatGPT, Gemini ou outra IA para organizar seu histórico e importe tudo de uma vez.</p>
+<b style="color:#2563eb">Importar com IA →</b>
+</button>
+<button onclick="onboardProfile()" style="border:1px solid #d9e8df;background:#effbf4;border-radius:18px;padding:20px;text-align:left;cursor:pointer">
+<div style="font-size:32px">👤</div><h3 style="margin:8px 0">Quero completar meu cadastro</h3>
+<p style="color:#687386;font-size:13px">Preencha seu perfil básico e depois registre sintomas, consultas, medicamentos e exames.</p>
+<b style="color:#059669">Começar cadastro →</b>
+</button>
+</div>
+<div style="margin-top:16px;padding:14px;background:#f8fafc;border-radius:14px;font-size:13px;color:#687386">
+💡 <b>Dica:</b> se você já usa IA e tem bastante informação sobre sua saúde, a importação costuma ser o caminho mais rápido.
+</div>
+<button onclick="finishOnboarding('skip')" style="display:block;margin:16px auto 0;border:0;background:none;color:#687386;text-decoration:underline;cursor:pointer">Pular por enquanto</button>
+</div></div>
+
+<div id="pinGate" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.88);z-index:99999;align-items:center;justify-content:center;padding:20px">
+<div style="background:white;border-radius:20px;padding:25px;max-width:360px;width:100%;text-align:center">
+<div style="font-size:40px">🔐</div><h2>Acesso protegido</h2><p style="color:#687386">Digite seu PIN para acessar o Minha Saúde IA.</p>
+<input id="gatePin" inputmode="numeric" maxlength="8" type="password" placeholder="PIN" style="width:100%;padding:13px;border:1px solid #d6deea;border-radius:10px;font-size:20px;text-align:center">
+<button class="btn" style="margin-top:12px;width:100%" onclick="unlock()">Entrar</button>
+<div id="gateMsg" style="color:#dc2626;font-size:13px;margin-top:9px"></div>
+</div></div>
+<script>
+function checkPinGate(){let p=localStorage.getItem('msa2_pin');if(p){document.getElementById('pinGate').style.display='flex';setTimeout(()=>document.getElementById('gatePin').focus(),100)}}
+function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementById('gatePin').value===p){document.getElementById('pinGate').style.display='none'}else document.getElementById('gateMsg').textContent='PIN incorreto.'}
+document.addEventListener('DOMContentLoaded',checkPinGate);
+</script>
+<h1>🩺 ${esc(title)}</h1>${body}<div class="foot">Gerado pelo Minha Saúde IA. Este documento organiza informações registradas pelo usuário e não constitui diagnóstico, prescrição ou laudo médico.</div><script>window.print()<\/script>
+<script>
+function copiarPrompt(){
+ const t=$('promptIA');
+ navigator.clipboard?.writeText(t.value).then(()=>{$('copiado').textContent='✅ Copiado! Agora cole no ChatGPT ou Gemini.'}).catch(()=>{t.select();document.execCommand('copy');$('copiado').textContent='✅ Copiado!'});
+}
+function normalObj(x){return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}
+function arr(x){return Array.isArray(x)?x:[]}
+function first(o,...keys){for(const k of keys)if(o&&o[k]!==undefined&&o[k]!==null&&String(o[k]).trim()!=='')return o[k];return ''}
+function normalizarImport(d){
+ const p=normalObj(d.perfil||d.profile);
+ const dores=arr(d.dores||d.dores_e_sintomas||d.sintomas).map(x=>({
+   data:first(x,'data','inicio','quando','datetime'),
+   local:first(x,'local','onde','regiao','região'),
+   int:Number(first(x,'int','intensidade','intensidade_0_10'))||0,
+   tipo:first(x,'tipo','caracteristica','característica'),
+   freq:first(x,'freq','frequencia','frequência'),
+   gatilho:first(x,'gatilho','gatilhos','piora_melhora'),
+   sint:first(x,'sint','sintomas','outros_sintomas'),
+   obs:first(x,'obs','observacoes','observações')
+ }));
+ const consultas=arr(d.consultas).map(x=>({
+   data:first(x,'data'),esp:first(x,'especialidade'),med:first(x,'med','medico','médico'),
+   mot:first(x,'motivo'),perg:first(x,'perguntas'),obs:first(x,'obs','orientacoes','orientações'),ret:first(x,'ret','retorno')
+ }));
+ const meds=arr(d.medicamentos||d.remedios||d.remédios).map(x=>({
+   nome:first(x,'nome','medicamento','remedio','remédio'),dose:first(x,'dose'),
+   freq:first(x,'freq','frequencia','frequência'),inicio:first(x,'inicio','início'),
+   fim:first(x,'fim'),pres:first(x,'pres','prescritor','prescrito_por'),obs:first(x,'obs','observacoes','observações')
+ }));
+ const exames=arr(d.exames).map(x=>({
+   nome:first(x,'nome','exame'),data:first(x,'data'),res:first(x,'res','resultado'),obs:first(x,'obs','observacoes','observações')
+ }));
+ return {p,dores,consultas,meds,exames};
+}
+function processarImportacao(){
+ let raw=$('importIA').value.trim();
+ if(!raw){alert('Cole primeiro a resposta da IA.');return}
+ raw=raw.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+ try{
+   const data=JSON.parse(raw), n=normalizarImport(data);
+   let count=n.dores.length+n.consultas.length+n.meds.length+n.exames.length+(Object.keys(n.p).length?1:0);
+   if(!count)throw new Error('Nenhum dado reconhecido');
+   if(!confirm(`Foram encontrados ${n.dores.length} sintomas, ${n.consultas.length} consultas, ${n.meds.length} medicamentos, ${n.exames.length} exames e ${Object.keys(n.p).length?1:0} perfil. Adicionar aos registros atuais?`))return;
+   if(n.dores.length)set(K.d,get(K.d).concat(n.dores));
+   if(n.consultas.length)set(K.c,get(K.c).concat(n.consultas));
+   if(n.meds.length)set(K.m,get(K.m).concat(n.meds));
+   if(n.exames.length)set(K.e,get(K.e).concat(n.exames));
+   if(Object.keys(n.p).length){
+      const old=get(K.p)[0]||{};
+      const merged=Object.assign({},old,{
+       nome:first(n.p,'nome')||old.nome||'',nasc:first(n.p,'nasc','data_nascimento','dataNascimento')||old.nasc||'',
+       alerg:first(n.p,'alerg','alergias')||old.alerg||'',cond:first(n.p,'cond','condicoes','condições')||old.cond||'',
+       circ:first(n.p,'circ','cirurgias')||old.circ||'',info:first(n.p,'info','informacoes','informações')||old.info||'',
+       emerg:first(n.p,'emerg','contato_emergencia','contato_emergência')||old.emerg||'',tel:first(n.p,'tel','telefone')||old.tel||''
+      });
+      set(K.p,[merged]);
+   }
+   render();
+   $('resultadoImport').innerHTML='<div class="alert safe">✅ Importação concluída! Os dados foram adicionados ao seu histórico. Confira a linha do tempo e os registros antes de usar o relatório médico.</div>';
+ }catch(e){
+   $('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui ler esse conteúdo como JSON. Volte à IA e peça: <b>“Retorne somente JSON válido, sem markdown ou explicações.”</b></div>';
+ }
+}
+function limparImportacao(){$('importIA').value='';$('resultadoImport').innerHTML=''}
+function processarTextoLivre(){
+ const t=$('textoLivre').value.trim();if(!t){alert('Cole algum texto primeiro.');return}
+ let added=0;
+ // Conservative pattern recognition: creates only records that have enough explicit information.
+ const name=t.match(/(?:meu nome é|me chamo)\s+([A-Za-zÀ-ÿ ]{2,60})/i);
+ const p=get(K.p)[0]||{};
+ if(name){p.nome=name[1].trim();set(K.p,[p]);added++}
+ const med=[...t.matchAll(/(?:uso|tomo|tomando|medicamento)\s+([A-Za-zÀ-ÿ0-9 +.-]{3,60})(?:\s+(\d+\s?(?:mg|g|ml|mcg)))?/gi)];
+ med.forEach(m=>{set(K.m,get(K.m).concat([{nome:m[1].trim(),dose:m[2]||'',freq:'',inicio:'',fim:'',pres:'',obs:'Importado de texto livre'}]));added++});
+ const pain=t.match(/(?:dor|dores)\s+(?:de|no|na|em)\s*([A-Za-zÀ-ÿ ]{2,40})(?:.{0,100}?(\d{1,2})\s*\/\s*10)?/i);
+ if(pain){set(K.d,get(K.d).concat([{data:new Date().toISOString().slice(0,16),local:pain[1].trim(),int:Math.min(Number(pain[2]||0),10),tipo:'',freq:'',gatilho:'',sint:t.slice(0,300),obs:'Importado de texto livre'}]));added++}
+ render();
+ $('resultadoLivre').innerHTML=added?`<div class="alert safe">🪄 Tentei organizar <b>${added}</b> informação(ões). Confira os registros porque o texto livre pode exigir correção manual.</div>`:'<div class="alert warn">Não encontrei informações com segurança suficiente. Use o prompt estruturado acima para obter uma importação mais completa.</div>';
+}
+</script>
+
+
+<script>
+function hasAnyHealthData(){
+ return [K.d,K.c,K.m,K.e,K.p].some(k=>get(k).length>0);
+}
+function showOnboarding(){
+ if(localStorage.getItem('msa2_onboarding_done')!=='1' && !hasAnyHealthData()){
+   const o=document.getElementById('onboarding'); if(o)o.style.display='block';
+ }
+}
+function finishOnboarding(mode){
+ localStorage.setItem('msa2_onboarding_done','1');
+ const o=document.getElementById('onboarding');if(o)o.style.display='none';
+ if(mode==='import')go('importar');
+ if(mode==='profile')go('perfil');
+}
+function onboardImport(){finishOnboarding('import')}
+function onboardProfile(){finishOnboarding('profile')}
+function resetWelcome(){
+ localStorage.removeItem('msa2_onboarding_done');
+ alert('A tela inicial aparecerá novamente quando você recarregar o site.');
+ location.reload();
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(showOnboarding,150));
+</script>
+</body></html>`);
+ w.document.close();
+}
+function relatorioCompleto(){
+ const {start,end,d,c,m,e}=rangeData(),p=get(K.p)[0]||{};
+ openReport('Relatório completo',`
+ <div class="box"><b>Período:</b> ${start} a ${end}<br><b>Nome:</b> ${esc(p.nome||'Não informado')}<br><b>Alergias:</b> ${esc(p.alerg||'Não informado')}<br><b>Condições:</b> ${esc(p.cond||'Não informado')}</div>
+ <h2>Resumo</h2><p>${d.length} sintomas · ${c.length} consultas · ${m.length} medicamentos · ${e.length} exames</p>
+ <h2>😣 Sintomas</h2>${d.length?'<ul>'+d.map(x=>`<li>${x.data} — <b>${esc(x.local)}</b> — ${x.int}/10 — ${esc(x.tipo)}. ${esc(x.sint||'')}</li>`).join('')+'</ul>':'<p>Nenhum registro.</p>'}
+ <h2>👨‍⚕️ Consultas</h2>${c.length?'<ul>'+c.map(x=>`<li>${x.data} — ${esc(x.esp)} — ${esc(x.med||'')}. ${esc(x.obs||'')}</li>`).join('')+'</ul>':'<p>Nenhuma.</p>'}
+ <h2>💊 Medicamentos</h2>${m.length?'<ul>'+m.map(x=>`<li>${esc(x.nome)} — ${esc(x.dose||'')} — ${esc(x.freq||'')} — ${x.inicio||'—'} até ${x.fim||'—'}</li>`).join('')+'</ul>':'<p>Nenhum.</p>'}
+ <h2>🧪 Exames</h2>${e.length?'<ul>'+e.map(x=>`<li>${x.data} — <b>${esc(x.nome)}</b>: ${esc(x.res||'')}</li>`).join('')+'</ul>':'<p>Nenhum.</p>'}`);
+}
+function relatorioMedico(){
+ const {start,end,d,c,m,e}=rangeData(),p=get(K.p)[0]||{};
+ openReport('Resumo para consulta médica',`
+ <div class="box"><b>Período:</b> ${start} a ${end}<br><b>Paciente:</b> ${esc(p.nome||'Não informado')}<br><b>Alergias:</b> ${esc(p.alerg||'Não informado')}<br><b>Condições já informadas:</b> ${esc(p.cond||'Não informado')}</div>
+ <h2>Queixas e evolução</h2>${d.length?'<ul>'+d.map(x=>`<li>${x.data}: ${esc(x.local)}, intensidade ${x.int}/10, ${esc(x.tipo)}. Sintomas: ${esc(x.sint||'—')}. Gatilhos: ${esc(x.gatilho||'—')}</li>`).join('')+'</ul>':'<p>Nenhum sintoma registrado no período.</p>'}
+ <h2>Medicamentos registrados</h2>${m.length?'<ul>'+m.map(x=>`<li>${esc(x.nome)} — ${esc(x.dose||'')} — ${esc(x.freq||'')}</li>`).join('')+'</ul>':'<p>Nenhum.</p>'}
+ <h2>Exames</h2>${e.length?'<ul>'+e.map(x=>`<li>${x.data}: ${esc(x.nome)} — ${esc(x.res||'')}</li>`).join('')+'</ul>':'<p>Nenhum.</p>'}
+ <h2>Perguntas para discutir</h2><ol><li>O que pode explicar a evolução dos sintomas registrados?</li><li>Há algum exame ou acompanhamento que deva ser considerado?</li><li>Quais sinais indicariam necessidade de retorno antes do previsto?</li></ol>`);
+}
+function relatorioSintomas(){let {start,end,d}=rangeData();openReport('Relatório de sintomas',`<p><b>Período:</b> ${start} a ${end}</p><table><tr><th>Data</th><th>Local</th><th>Intensidade</th><th>Tipo</th><th>Sintomas</th></tr>${d.map(x=>`<tr><td>${x.data}</td><td>${esc(x.local)}</td><td>${x.int}/10</td><td>${esc(x.tipo)}</td><td>${esc(x.sint||'')}</td></tr>`).join('')}</table>`) }
+function relatorioMeds(){let {start,end,m}=rangeData();openReport('Relatório de medicamentos',`<p><b>Período:</b> ${start} a ${end}</p><table><tr><th>Nome</th><th>Dose</th><th>Frequência</th><th>Início</th><th>Fim</th></tr>${m.map(x=>`<tr><td>${esc(x.nome)}</td><td>${esc(x.dose||'')}</td><td>${esc(x.freq||'')}</td><td>${x.inicio||''}</td><td>${x.fim||''}</td></tr>`).join('')}</table>`) }
+function relatorioExames(){let {start,end,e}=rangeData();openReport('Relatório de exames',`<p><b>Período:</b> ${start} a ${end}</p><table><tr><th>Data</th><th>Exame</th><th>Resultado</th><th>Observações</th></tr>${e.map(x=>`<tr><td>${x.data}</td><td>${esc(x.nome)}</td><td>${esc(x.res||'')}</td><td>${esc(x.obs||'')}</td></tr>`).join('')}</table>`) }
+function relatorioConsultas(){let {start,end,c}=rangeData();openReport('Relatório de consultas',`<p><b>Período:</b> ${start} a ${end}</p><table><tr><th>Data</th><th>Especialidade</th><th>Médico</th><th>Motivo</th><th>Orientações</th></tr>${c.map(x=>`<tr><td>${x.data}</td><td>${esc(x.esp)}</td><td>${esc(x.med||'')}</td><td>${esc(x.mot||'')}</td><td>${esc(x.obs||'')}</td></tr>`).join('')}</table>`) }
+function updateReportSummary(){
+ if(!$('rResumo'))return;
+ const {start,end,d,c,m,e}=rangeData();
+ const avg=d.length?(d.reduce((a,x)=>a+x.int,0)/d.length).toFixed(1):'—';
+ $('rResumo').innerHTML=`<div class="grid4"><div><b>${d.length}</b><br><span class="muted">Sintomas</span></div><div><b>${c.length}</b><br><span class="muted">Consultas</span></div><div><b>${m.length}</b><br><span class="muted">Medicamentos</span></div><div><b>${e.length}</b><br><span class="muted">Exames</span></div></div><p style="margin-top:12px"><b>Intensidade média registrada:</b> ${avg}/10</p><p class="muted">Período: ${start} → ${end}</p>`;
+}
+function baixarBackup(){
+ const data={version:3,createdAt:new Date().toISOString(),dores:get(K.d),consultas:get(K.c),medicamentos:get(K.m),exames:get(K.e),perfil:get(K.p)};
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='minha-saude-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);
+}
+function restaurarBackup(ev){
+ const f=ev.target.files[0];if(!f)return;
+ const reader=new FileReader();
+ reader.onload=()=>{try{
+  const x=JSON.parse(reader.result);
+  if(!x||!Array.isArray(x.dores)||!Array.isArray(x.consultas)||!Array.isArray(x.medicamentos)||!Array.isArray(x.exames))throw new Error();
+  if(!confirm('Restaurar este backup substituirá os dados atuais. Você fez um backup atual antes de continuar?'))return;
+  set(K.d,x.dores);set(K.c,x.consultas);set(K.m,x.medicamentos);set(K.e,x.exames);set(K.p,Array.isArray(x.perfil)?x.perfil:[]);
+  render();alert('Backup restaurado com sucesso!');
+ }catch(e){alert('Arquivo inválido ou incompatível.');}};
+ reader.readAsText(f);ev.target.value='';
+}
+function csv(type){
+ const maps={
+ d:{k:K.d,name:'sintomas',head:['Data','Local','Intensidade','Tipo','Frequência','Gatilho','Sintomas','Observações'],row:x=>[x.data,x.local,x.int,x.tipo,x.freq,x.gatilho,x.sint,x.obs]},
+ c:{k:K.c,name:'consultas',head:['Data','Especialidade','Médico','Motivo','Perguntas','Orientações','Retorno'],row:x=>[x.data,x.esp,x.med,x.mot,x.perg,x.obs,x.ret]},
+ m:{k:K.m,name:'medicamentos',head:['Nome','Dose','Frequência','Início','Fim','Prescrito por','Observações'],row:x=>[x.nome,x.dose,x.freq,x.inicio,x.fim,x.pres,x.obs]},
+ e:{k:K.e,name:'exames',head:['Data','Exame','Resultado','Observações'],row:x=>[x.data,x.nome,x.res,x.obs]}
+ }[type];
+ const rows=[maps.head,...get(maps.k).map(maps.row)];
+ const csv=rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')).join('\n');
+ const blob=new Blob(["\ufeff"+csv],{type:'text/csv;charset=utf-8'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=maps.name+'-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+function salvarPin(){
+ const a=$('pinNovo').value,b=$('pinConf').value;
+ if(!/^\d{4,8}$/.test(a)||a!==b){alert('Use um PIN de 4 a 8 números e confirme corretamente.');return}
+ localStorage.setItem('msa2_pin',a);alert('PIN ativado. Ao abrir novamente, o site solicitará o PIN.');updatePinStatus();
+}
+function removerPin(){if(!localStorage.getItem('msa2_pin'))return alert('Não há PIN ativo.');if(prompt('Digite o PIN atual para desativar:')===localStorage.getItem('msa2_pin')){localStorage.removeItem('msa2_pin');alert('PIN desativado.');updatePinStatus()}else alert('PIN incorreto.')}
+function updatePinStatus(){if($('pinStatus'))$('pinStatus').textContent=localStorage.getItem('msa2_pin')?'🔒 PIN ativo neste navegador.':'🔓 PIN não configurado.'}
+function apagarTudo(){
+ if(!confirm('ATENÇÃO: isso apagará todos os registros deste navegador. Faça um backup antes. Continuar?'))return;
+ if(prompt('Digite APAGAR para confirmar:')!=='APAGAR')return;
+ [K.d,K.c,K.m,K.e,K.p].forEach(k=>localStorage.removeItem(k));render();alert('Dados apagados.');
+}
+const oldRender=render;
+render=function(){oldRender();updateReportSummary();updatePinStatus();};
+initReports();render();
+</script>
+
+
+<script>
+function copiarPrompt(){
+ const t=$('promptIA');
+ navigator.clipboard?.writeText(t.value).then(()=>{$('copiado').textContent='✅ Copiado! Agora cole no ChatGPT ou Gemini.'}).catch(()=>{t.select();document.execCommand('copy');$('copiado').textContent='✅ Copiado!'});
+}
+function normalObj(x){return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}
+function arr(x){return Array.isArray(x)?x:[]}
+function first(o,...keys){for(const k of keys)if(o&&o[k]!==undefined&&o[k]!==null&&String(o[k]).trim()!=='')return o[k];return ''}
+function normalizarImport(d){
+ const p=normalObj(d.perfil||d.profile);
+ const dores=arr(d.dores||d.dores_e_sintomas||d.sintomas).map(x=>({
+   data:first(x,'data','inicio','quando','datetime'),
+   local:first(x,'local','onde','regiao','região'),
+   int:Number(first(x,'int','intensidade','intensidade_0_10'))||0,
+   tipo:first(x,'tipo','caracteristica','característica'),
+   freq:first(x,'freq','frequencia','frequência'),
+   gatilho:first(x,'gatilho','gatilhos','piora_melhora'),
+   sint:first(x,'sint','sintomas','outros_sintomas'),
+   obs:first(x,'obs','observacoes','observações')
+ }));
+ const consultas=arr(d.consultas).map(x=>({
+   data:first(x,'data'),esp:first(x,'especialidade'),med:first(x,'med','medico','médico'),
+   mot:first(x,'motivo'),perg:first(x,'perguntas'),obs:first(x,'obs','orientacoes','orientações'),ret:first(x,'ret','retorno')
+ }));
+ const meds=arr(d.medicamentos||d.remedios||d.remédios).map(x=>({
+   nome:first(x,'nome','medicamento','remedio','remédio'),dose:first(x,'dose'),
+   freq:first(x,'freq','frequencia','frequência'),inicio:first(x,'inicio','início'),
+   fim:first(x,'fim'),pres:first(x,'pres','prescritor','prescrito_por'),obs:first(x,'obs','observacoes','observações')
+ }));
+ const exames=arr(d.exames).map(x=>({
+   nome:first(x,'nome','exame'),data:first(x,'data'),res:first(x,'res','resultado'),obs:first(x,'obs','observacoes','observações')
+ }));
+ return {p,dores,consultas,meds,exames};
+}
+function processarImportacao(){
+ let raw=$('importIA').value.trim();
+ if(!raw){alert('Cole primeiro a resposta da IA.');return}
+ raw=raw.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+ try{
+   const data=JSON.parse(raw), n=normalizarImport(data);
+   let count=n.dores.length+n.consultas.length+n.meds.length+n.exames.length+(Object.keys(n.p).length?1:0);
+   if(!count)throw new Error('Nenhum dado reconhecido');
+   if(!confirm(`Foram encontrados ${n.dores.length} sintomas, ${n.consultas.length} consultas, ${n.meds.length} medicamentos, ${n.exames.length} exames e ${Object.keys(n.p).length?1:0} perfil. Adicionar aos registros atuais?`))return;
+   if(n.dores.length)set(K.d,get(K.d).concat(n.dores));
+   if(n.consultas.length)set(K.c,get(K.c).concat(n.consultas));
+   if(n.meds.length)set(K.m,get(K.m).concat(n.meds));
+   if(n.exames.length)set(K.e,get(K.e).concat(n.exames));
+   if(Object.keys(n.p).length){
+      const old=get(K.p)[0]||{};
+      const merged=Object.assign({},old,{
+       nome:first(n.p,'nome')||old.nome||'',nasc:first(n.p,'nasc','data_nascimento','dataNascimento')||old.nasc||'',
+       alerg:first(n.p,'alerg','alergias')||old.alerg||'',cond:first(n.p,'cond','condicoes','condições')||old.cond||'',
+       circ:first(n.p,'circ','cirurgias')||old.circ||'',info:first(n.p,'info','informacoes','informações')||old.info||'',
+       emerg:first(n.p,'emerg','contato_emergencia','contato_emergência')||old.emerg||'',tel:first(n.p,'tel','telefone')||old.tel||''
+      });
+      set(K.p,[merged]);
+   }
+   render();
+   $('resultadoImport').innerHTML='<div class="alert safe">✅ Importação concluída! Os dados foram adicionados ao seu histórico. Confira a linha do tempo e os registros antes de usar o relatório médico.</div>';
+ }catch(e){
+   $('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui ler esse conteúdo como JSON. Volte à IA e peça: <b>“Retorne somente JSON válido, sem markdown ou explicações.”</b></div>';
+ }
+}
+function limparImportacao(){$('importIA').value='';$('resultadoImport').innerHTML=''}
+function processarTextoLivre(){
+ const t=$('textoLivre').value.trim();if(!t){alert('Cole algum texto primeiro.');return}
+ let added=0;
+ // Conservative pattern recognition: creates only records that have enough explicit information.
+ const name=t.match(/(?:meu nome é|me chamo)\s+([A-Za-zÀ-ÿ ]{2,60})/i);
+ const p=get(K.p)[0]||{};
+ if(name){p.nome=name[1].trim();set(K.p,[p]);added++}
+ const med=[...t.matchAll(/(?:uso|tomo|tomando|medicamento)\s+([A-Za-zÀ-ÿ0-9 +.-]{3,60})(?:\s+(\d+\s?(?:mg|g|ml|mcg)))?/gi)];
+ med.forEach(m=>{set(K.m,get(K.m).concat([{nome:m[1].trim(),dose:m[2]||'',freq:'',inicio:'',fim:'',pres:'',obs:'Importado de texto livre'}]));added++});
+ const pain=t.match(/(?:dor|dores)\s+(?:de|no|na|em)\s*([A-Za-zÀ-ÿ ]{2,40})(?:.{0,100}?(\d{1,2})\s*\/\s*10)?/i);
+ if(pain){set(K.d,get(K.d).concat([{data:new Date().toISOString().slice(0,16),local:pain[1].trim(),int:Math.min(Number(pain[2]||0),10),tipo:'',freq:'',gatilho:'',sint:t.slice(0,300),obs:'Importado de texto livre'}]));added++}
+ render();
+ $('resultadoLivre').innerHTML=added?`<div class="alert safe">🪄 Tentei organizar <b>${added}</b> informação(ões). Confira os registros porque o texto livre pode exigir correção manual.</div>`:'<div class="alert warn">Não encontrei informações com segurança suficiente. Use o prompt estruturado acima para obter uma importação mais completa.</div>';
+}
+</script>
+
+
+<script>
+function hasAnyHealthData(){
+ return [K.d,K.c,K.m,K.e,K.p].some(k=>get(k).length>0);
+}
+function showOnboarding(){
+ if(localStorage.getItem('msa2_onboarding_done')!=='1' && !hasAnyHealthData()){
+   const o=document.getElementById('onboarding'); if(o)o.style.display='block';
+ }
+}
+function finishOnboarding(mode){
+ localStorage.setItem('msa2_onboarding_done','1');
+ const o=document.getElementById('onboarding');if(o)o.style.display='none';
+ if(mode==='import')go('importar');
+ if(mode==='profile')go('perfil');
+}
+function onboardImport(){finishOnboarding('import')}
+function onboardProfile(){finishOnboarding('profile')}
+function resetWelcome(){
+ localStorage.removeItem('msa2_onboarding_done');
+ alert('A tela inicial aparecerá novamente quando você recarregar o site.');
+ location.reload();
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(showOnboarding,150));
+</script>
+</body></html>`);w.document.close()}
+render();
+</script>
+
+<script>
+/* V3: reports, backup, CSV, local PIN and safer data handling */
+function getRange(){
+ const today=new Date(), end=today.toISOString().slice(0,10);
+ const start=new Date(today); start.setDate(start.getDate()-30);
+ return {start:start.toISOString().slice(0,10),end};
+}
+function initReports(){
+ const r=getRange();
+ if($('rInicio')) $('rInicio').value=r.start;
+ if($('rFim')) $('rFim').value=r.end;
+ updatePinStatus();
+}
+function inRange(date,start,end){
+ if(!date)return false;
+ const d=String(date).slice(0,10);
+ return d>=start && d<=end;
+}
+function rangeData(){
+ let start=$('rInicio').value,end=$('rFim').value;
+ if(!start||!end){let r=getRange();start=r.start;end=r.end}
+ return {start,end,d:get(K.d).filter(x=>inRange(x.data,start,end)),c:get(K.c).filter(x=>inRange(x.data,start,end)),m:get(K.m).filter(x=>inRange(x.inicio||x.fim,start,end)),e:get(K.e).filter(x=>inRange(x.data,start,end))};
+}
+function openReport(title,body){
+ let w=window.open('','_blank');
+ if(!w){alert('Permita pop-ups para gerar o relatório.');return}
+ w.document.write(`<html><head><meta charset="utf-8"><title>${esc(title)}</title><style>
+ body{font-family:Arial,sans-serif;max-width:850px;margin:30px auto;color:#172033;line-height:1.55}
+ h1{color:#2563eb}h2{border-bottom:1px solid #ddd;padding-bottom:5px;margin-top:25px}
+ .box{background:#f4f7fb;padding:13px;border-radius:10px;margin:10px 0}
+ table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:7px;text-align:left;font-size:13px}th{background:#f4f7fb}
+ .foot{color:#777;font-size:11px;margin-top:30px}
+ </style></head><body>
+<div id="onboarding" style="display:none;position:fixed;inset:0;background:linear-gradient(135deg,#2563eb,#6d28d9);z-index:99998;padding:20px;overflow:auto">
+<div style="max-width:720px;margin:4vh auto;background:#fff;border-radius:25px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+<div style="text-align:center">
+<div style="font-size:48px">🩺</div>
+<h1 style="margin:8px 0;font-size:26px">Vamos começar?</h1>
+<p style="color:#687386;margin:0">Antes de entrar no seu histórico, escolha a forma mais fácil de alimentar o Minha Saúde IA.</p>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:22px">
+<button onclick="onboardImport()" style="border:1px solid #cfe0ff;background:#eef4ff;border-radius:18px;padding:20px;text-align:left;cursor:pointer">
+<div style="font-size:32px">⚡</div><h3 style="margin:8px 0">Já tenho informações</h3>
+<p style="color:#687386;font-size:13px">Use ChatGPT, Gemini ou outra IA para organizar seu histórico e importe tudo de uma vez.</p>
+<b style="color:#2563eb">Importar com IA →</b>
+</button>
+<button onclick="onboardProfile()" style="border:1px solid #d9e8df;background:#effbf4;border-radius:18px;padding:20px;text-align:left;cursor:pointer">
+<div style="font-size:32px">👤</div><h3 style="margin:8px 0">Quero completar meu cadastro</h3>
+<p style="color:#687386;font-size:13px">Preencha seu perfil básico e depois registre sintomas, consultas, medicamentos e exames.</p>
+<b style="color:#059669">Começar cadastro →</b>
+</button>
+</div>
+<div style="margin-top:16px;padding:14px;background:#f8fafc;border-radius:14px;font-size:13px;color:#687386">
+💡 <b>Dica:</b> se você já usa IA e tem bastante informação sobre sua saúde, a importação costuma ser o caminho mais rápido.
+</div>
+<button onclick="finishOnboarding('skip')" style="display:block;margin:16px auto 0;border:0;background:none;color:#687386;text-decoration:underline;cursor:pointer">Pular por enquanto</button>
+</div></div>
+
+<div id="pinGate" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.88);z-index:99999;align-items:center;justify-content:center;padding:20px">
+<div style="background:white;border-radius:20px;padding:25px;max-width:360px;width:100%;text-align:center">
+<div style="font-size:40px">🔐</div><h2>Acesso protegido</h2><p style="color:#687386">Digite seu PIN para acessar o Minha Saúde IA.</p>
+<input id="gatePin" inputmode="numeric" maxlength="8" type="password" placeholder="PIN" style="width:100%;padding:13px;border:1px solid #d6deea;border-radius:10px;font-size:20px;text-align:center">
+<button class="btn" style="margin-top:12px;width:100%" onclick="unlock()">Entrar</button>
+<div id="gateMsg" style="color:#dc2626;font-size:13px;margin-top:9px"></div>
+</div></div>
+<script>
+function checkPinGate(){let p=localStorage.getItem('msa2_pin');if(p){document.getElementById('pinGate').style.display='flex';setTimeout(()=>document.getElementById('gatePin').focus(),100)}}
+function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementById('gatePin').value===p){document.getElementById('pinGate').style.display='none'}else document.getElementById('gateMsg').textContent='PIN incorreto.'}
+document.addEventListener('DOMContentLoaded',checkPinGate);
+</script>
+<h1>🩺 ${esc(title)}</h1>${body}<div class="foot">Gerado pelo Minha Saúde IA. Este documento organiza informações registradas pelo usuário e não constitui diagnóstico, prescrição ou laudo médico.</div><script>window.print()<\/script>
+<script>
+function copiarPrompt(){
+ const t=$('promptIA');
+ navigator.clipboard?.writeText(t.value).then(()=>{$('copiado').textContent='✅ Copiado! Agora cole no ChatGPT ou Gemini.'}).catch(()=>{t.select();document.execCommand('copy');$('copiado').textContent='✅ Copiado!'});
+}
+function normalObj(x){return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}
+function arr(x){return Array.isArray(x)?x:[]}
+function first(o,...keys){for(const k of keys)if(o&&o[k]!==undefined&&o[k]!==null&&String(o[k]).trim()!=='')return o[k];return ''}
+function normalizarImport(d){
+ const p=normalObj(d.perfil||d.profile);
+ const dores=arr(d.dores||d.dores_e_sintomas||d.sintomas).map(x=>({
+   data:first(x,'data','inicio','quando','datetime'),
+   local:first(x,'local','onde','regiao','região'),
+   int:Number(first(x,'int','intensidade','intensidade_0_10'))||0,
+   tipo:first(x,'tipo','caracteristica','característica'),
+   freq:first(x,'freq','frequencia','frequência'),
+   gatilho:first(x,'gatilho','gatilhos','piora_melhora'),
+   sint:first(x,'sint','sintomas','outros_sintomas'),
+   obs:first(x,'obs','observacoes','observações')
+ }));
+ const consultas=arr(d.consultas).map(x=>({
+   data:first(x,'data'),esp:first(x,'especialidade'),med:first(x,'med','medico','médico'),
+   mot:first(x,'motivo'),perg:first(x,'perguntas'),obs:first(x,'obs','orientacoes','orientações'),ret:first(x,'ret','retorno')
+ }));
+ const meds=arr(d.medicamentos||d.remedios||d.remédios).map(x=>({
+   nome:first(x,'nome','medicamento','remedio','remédio'),dose:first(x,'dose'),
+   freq:first(x,'freq','frequencia','frequência'),inicio:first(x,'inicio','início'),
+   fim:first(x,'fim'),pres:first(x,'pres','prescritor','prescrito_por'),obs:first(x,'obs','observacoes','observações')
+ }));
+ const exames=arr(d.exames).map(x=>({
+   nome:first(x,'nome','exame'),data:first(x,'data'),res:first(x,'res','resultado'),obs:first(x,'obs','observacoes','observações')
+ }));
+ return {p,dores,consultas,meds,exames};
+}
+function processarImportacao(){
+ let raw=$('importIA').value.trim();
+ if(!raw){alert('Cole primeiro a resposta da IA.');return}
+ raw=raw.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+ try{
+   const data=JSON.parse(raw), n=normalizarImport(data);
+   let count=n.dores.length+n.consultas.length+n.meds.length+n.exames.length+(Object.keys(n.p).length?1:0);
+   if(!count)throw new Error('Nenhum dado reconhecido');
+   if(!confirm(`Foram encontrados ${n.dores.length} sintomas, ${n.consultas.length} consultas, ${n.meds.length} medicamentos, ${n.exames.length} exames e ${Object.keys(n.p).length?1:0} perfil. Adicionar aos registros atuais?`))return;
+   if(n.dores.length)set(K.d,get(K.d).concat(n.dores));
+   if(n.consultas.length)set(K.c,get(K.c).concat(n.consultas));
+   if(n.meds.length)set(K.m,get(K.m).concat(n.meds));
+   if(n.exames.length)set(K.e,get(K.e).concat(n.exames));
+   if(Object.keys(n.p).length){
+      const old=get(K.p)[0]||{};
+      const merged=Object.assign({},old,{
+       nome:first(n.p,'nome')||old.nome||'',nasc:first(n.p,'nasc','data_nascimento','dataNascimento')||old.nasc||'',
+       alerg:first(n.p,'alerg','alergias')||old.alerg||'',cond:first(n.p,'cond','condicoes','condições')||old.cond||'',
+       circ:first(n.p,'circ','cirurgias')||old.circ||'',info:first(n.p,'info','informacoes','informações')||old.info||'',
+       emerg:first(n.p,'emerg','contato_emergencia','contato_emergência')||old.emerg||'',tel:first(n.p,'tel','telefone')||old.tel||''
+      });
+      set(K.p,[merged]);
+   }
+   render();
+   $('resultadoImport').innerHTML='<div class="alert safe">✅ Importação concluída! Os dados foram adicionados ao seu histórico. Confira a linha do tempo e os registros antes de usar o relatório médico.</div>';
+ }catch(e){
+   $('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui ler esse conteúdo como JSON. Volte à IA e peça: <b>“Retorne somente JSON válido, sem markdown ou explicações.”</b></div>';
+ }
+}
+function limparImportacao(){$('importIA').value='';$('resultadoImport').innerHTML=''}
+function processarTextoLivre(){
+ const t=$('textoLivre').value.trim();if(!t){alert('Cole algum texto primeiro.');return}
+ let added=0;
+ // Conservative pattern recognition: creates only records that have enough explicit information.
+ const name=t.match(/(?:meu nome é|me chamo)\s+([A-Za-zÀ-ÿ ]{2,60})/i);
+ const p=get(K.p)[0]||{};
+ if(name){p.nome=name[1].trim();set(K.p,[p]);added++}
+ const med=[...t.matchAll(/(?:uso|tomo|tomando|medicamento)\s+([A-Za-zÀ-ÿ0-9 +.-]{3,60})(?:\s+(\d+\s?(?:mg|g|ml|mcg)))?/gi)];
+ med.forEach(m=>{set(K.m,get(K.m).concat([{nome:m[1].trim(),dose:m[2]||'',freq:'',inicio:'',fim:'',pres:'',obs:'Importado de texto livre'}]));added++});
+ const pain=t.match(/(?:dor|dores)\s+(?:de|no|na|em)\s*([A-Za-zÀ-ÿ ]{2,40})(?:.{0,100}?(\d{1,2})\s*\/\s*10)?/i);
+ if(pain){set(K.d,get(K.d).concat([{data:new Date().toISOString().slice(0,16),local:pain[1].trim(),int:Math.min(Number(pain[2]||0),10),tipo:'',freq:'',gatilho:'',sint:t.slice(0,300),obs:'Importado de texto livre'}]));added++}
+ render();
+ $('resultadoLivre').innerHTML=added?`<div class="alert safe">🪄 Tentei organizar <b>${added}</b> informação(ões). Confira os registros porque o texto livre pode exigir correção manual.</div>`:'<div class="alert warn">Não encontrei informações com segurança suficiente. Use o prompt estruturado acima para obter uma importação mais completa.</div>';
+}
+</script>
+
+
+<script>
+function hasAnyHealthData(){
+ return [K.d,K.c,K.m,K.e,K.p].some(k=>get(k).length>0);
+}
+function showOnboarding(){
+ if(localStorage.getItem('msa2_onboarding_done')!=='1' && !hasAnyHealthData()){
+   const o=document.getElementById('onboarding'); if(o)o.style.display='block';
+ }
+}
+function finishOnboarding(mode){
+ localStorage.setItem('msa2_onboarding_done','1');
+ const o=document.getElementById('onboarding');if(o)o.style.display='none';
+ if(mode==='import')go('importar');
+ if(mode==='profile')go('perfil');
+}
+function onboardImport(){finishOnboarding('import')}
+function onboardProfile(){finishOnboarding('profile')}
+function resetWelcome(){
+ localStorage.removeItem('msa2_onboarding_done');
+ alert('A tela inicial aparecerá novamente quando você recarregar o site.');
+ location.reload();
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(showOnboarding,150));
+</script>
+</body></html>`);
+ w.document.close();
+}
+function relatorioCompleto(){
+ const {start,end,d,c,m,e}=rangeData(),p=get(K.p)[0]||{};
+ openReport('Relatório completo',`
+ <div class="box"><b>Período:</b> ${start} a ${end}<br><b>Nome:</b> ${esc(p.nome||'Não informado')}<br><b>Alergias:</b> ${esc(p.alerg||'Não informado')}<br><b>Condições:</b> ${esc(p.cond||'Não informado')}</div>
+ <h2>Resumo</h2><p>${d.length} sintomas · ${c.length} consultas · ${m.length} medicamentos · ${e.length} exames</p>
+ <h2>😣 Sintomas</h2>${d.length?'<ul>'+d.map(x=>`<li>${x.data} — <b>${esc(x.local)}</b> — ${x.int}/10 — ${esc(x.tipo)}. ${esc(x.sint||'')}</li>`).join('')+'</ul>':'<p>Nenhum registro.</p>'}
+ <h2>👨‍⚕️ Consultas</h2>${c.length?'<ul>'+c.map(x=>`<li>${x.data} — ${esc(x.esp)} — ${esc(x.med||'')}. ${esc(x.obs||'')}</li>`).join('')+'</ul>':'<p>Nenhuma.</p>'}
+ <h2>💊 Medicamentos</h2>${m.length?'<ul>'+m.map(x=>`<li>${esc(x.nome)} — ${esc(x.dose||'')} — ${esc(x.freq||'')} — ${x.inicio||'—'} até ${x.fim||'—'}</li>`).join('')+'</ul>':'<p>Nenhum.</p>'}
+ <h2>🧪 Exames</h2>${e.length?'<ul>'+e.map(x=>`<li>${x.data} — <b>${esc(x.nome)}</b>: ${esc(x.res||'')}</li>`).join('')+'</ul>':'<p>Nenhum.</p>'}`);
+}
+function relatorioMedico(){
+ const {start,end,d,c,m,e}=rangeData(),p=get(K.p)[0]||{};
+ openReport('Resumo para consulta médica',`
+ <div class="box"><b>Período:</b> ${start} a ${end}<br><b>Paciente:</b> ${esc(p.nome||'Não informado')}<br><b>Alergias:</b> ${esc(p.alerg||'Não informado')}<br><b>Condições já informadas:</b> ${esc(p.cond||'Não informado')}</div>
+ <h2>Queixas e evolução</h2>${d.length?'<ul>'+d.map(x=>`<li>${x.data}: ${esc(x.local)}, intensidade ${x.int}/10, ${esc(x.tipo)}. Sintomas: ${esc(x.sint||'—')}. Gatilhos: ${esc(x.gatilho||'—')}</li>`).join('')+'</ul>':'<p>Nenhum sintoma registrado no período.</p>'}
+ <h2>Medicamentos registrados</h2>${m.length?'<ul>'+m.map(x=>`<li>${esc(x.nome)} — ${esc(x.dose||'')} — ${esc(x.freq||'')}</li>`).join('')+'</ul>':'<p>Nenhum.</p>'}
+ <h2>Exames</h2>${e.length?'<ul>'+e.map(x=>`<li>${x.data}: ${esc(x.nome)} — ${esc(x.res||'')}</li>`).join('')+'</ul>':'<p>Nenhum.</p>'}
+ <h2>Perguntas para discutir</h2><ol><li>O que pode explicar a evolução dos sintomas registrados?</li><li>Há algum exame ou acompanhamento que deva ser considerado?</li><li>Quais sinais indicariam necessidade de retorno antes do previsto?</li></ol>`);
+}
+function relatorioSintomas(){let {start,end,d}=rangeData();openReport('Relatório de sintomas',`<p><b>Período:</b> ${start} a ${end}</p><table><tr><th>Data</th><th>Local</th><th>Intensidade</th><th>Tipo</th><th>Sintomas</th></tr>${d.map(x=>`<tr><td>${x.data}</td><td>${esc(x.local)}</td><td>${x.int}/10</td><td>${esc(x.tipo)}</td><td>${esc(x.sint||'')}</td></tr>`).join('')}</table>`) }
+function relatorioMeds(){let {start,end,m}=rangeData();openReport('Relatório de medicamentos',`<p><b>Período:</b> ${start} a ${end}</p><table><tr><th>Nome</th><th>Dose</th><th>Frequência</th><th>Início</th><th>Fim</th></tr>${m.map(x=>`<tr><td>${esc(x.nome)}</td><td>${esc(x.dose||'')}</td><td>${esc(x.freq||'')}</td><td>${x.inicio||''}</td><td>${x.fim||''}</td></tr>`).join('')}</table>`) }
+function relatorioExames(){let {start,end,e}=rangeData();openReport('Relatório de exames',`<p><b>Período:</b> ${start} a ${end}</p><table><tr><th>Data</th><th>Exame</th><th>Resultado</th><th>Observações</th></tr>${e.map(x=>`<tr><td>${x.data}</td><td>${esc(x.nome)}</td><td>${esc(x.res||'')}</td><td>${esc(x.obs||'')}</td></tr>`).join('')}</table>`) }
+function relatorioConsultas(){let {start,end,c}=rangeData();openReport('Relatório de consultas',`<p><b>Período:</b> ${start} a ${end}</p><table><tr><th>Data</th><th>Especialidade</th><th>Médico</th><th>Motivo</th><th>Orientações</th></tr>${c.map(x=>`<tr><td>${x.data}</td><td>${esc(x.esp)}</td><td>${esc(x.med||'')}</td><td>${esc(x.mot||'')}</td><td>${esc(x.obs||'')}</td></tr>`).join('')}</table>`) }
+function updateReportSummary(){
+ if(!$('rResumo'))return;
+ const {start,end,d,c,m,e}=rangeData();
+ const avg=d.length?(d.reduce((a,x)=>a+x.int,0)/d.length).toFixed(1):'—';
+ $('rResumo').innerHTML=`<div class="grid4"><div><b>${d.length}</b><br><span class="muted">Sintomas</span></div><div><b>${c.length}</b><br><span class="muted">Consultas</span></div><div><b>${m.length}</b><br><span class="muted">Medicamentos</span></div><div><b>${e.length}</b><br><span class="muted">Exames</span></div></div><p style="margin-top:12px"><b>Intensidade média registrada:</b> ${avg}/10</p><p class="muted">Período: ${start} → ${end}</p>`;
+}
+function baixarBackup(){
+ const data={version:3,createdAt:new Date().toISOString(),dores:get(K.d),consultas:get(K.c),medicamentos:get(K.m),exames:get(K.e),perfil:get(K.p)};
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='minha-saude-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);
+}
+function restaurarBackup(ev){
+ const f=ev.target.files[0];if(!f)return;
+ const reader=new FileReader();
+ reader.onload=()=>{try{
+  const x=JSON.parse(reader.result);
+  if(!x||!Array.isArray(x.dores)||!Array.isArray(x.consultas)||!Array.isArray(x.medicamentos)||!Array.isArray(x.exames))throw new Error();
+  if(!confirm('Restaurar este backup substituirá os dados atuais. Você fez um backup atual antes de continuar?'))return;
+  set(K.d,x.dores);set(K.c,x.consultas);set(K.m,x.medicamentos);set(K.e,x.exames);set(K.p,Array.isArray(x.perfil)?x.perfil:[]);
+  render();alert('Backup restaurado com sucesso!');
+ }catch(e){alert('Arquivo inválido ou incompatível.');}};
+ reader.readAsText(f);ev.target.value='';
+}
+function csv(type){
+ const maps={
+ d:{k:K.d,name:'sintomas',head:['Data','Local','Intensidade','Tipo','Frequência','Gatilho','Sintomas','Observações'],row:x=>[x.data,x.local,x.int,x.tipo,x.freq,x.gatilho,x.sint,x.obs]},
+ c:{k:K.c,name:'consultas',head:['Data','Especialidade','Médico','Motivo','Perguntas','Orientações','Retorno'],row:x=>[x.data,x.esp,x.med,x.mot,x.perg,x.obs,x.ret]},
+ m:{k:K.m,name:'medicamentos',head:['Nome','Dose','Frequência','Início','Fim','Prescrito por','Observações'],row:x=>[x.nome,x.dose,x.freq,x.inicio,x.fim,x.pres,x.obs]},
+ e:{k:K.e,name:'exames',head:['Data','Exame','Resultado','Observações'],row:x=>[x.data,x.nome,x.res,x.obs]}
+ }[type];
+ const rows=[maps.head,...get(maps.k).map(maps.row)];
+ const csv=rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')).join('\n');
+ const blob=new Blob(["\ufeff"+csv],{type:'text/csv;charset=utf-8'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=maps.name+'-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+function salvarPin(){
+ const a=$('pinNovo').value,b=$('pinConf').value;
+ if(!/^\d{4,8}$/.test(a)||a!==b){alert('Use um PIN de 4 a 8 números e confirme corretamente.');return}
+ localStorage.setItem('msa2_pin',a);alert('PIN ativado. Ao abrir novamente, o site solicitará o PIN.');updatePinStatus();
+}
+function removerPin(){if(!localStorage.getItem('msa2_pin'))return alert('Não há PIN ativo.');if(prompt('Digite o PIN atual para desativar:')===localStorage.getItem('msa2_pin')){localStorage.removeItem('msa2_pin');alert('PIN desativado.');updatePinStatus()}else alert('PIN incorreto.')}
+function updatePinStatus(){if($('pinStatus'))$('pinStatus').textContent=localStorage.getItem('msa2_pin')?'🔒 PIN ativo neste navegador.':'🔓 PIN não configurado.'}
+function apagarTudo(){
+ if(!confirm('ATENÇÃO: isso apagará todos os registros deste navegador. Faça um backup antes. Continuar?'))return;
+ if(prompt('Digite APAGAR para confirmar:')!=='APAGAR')return;
+ [K.d,K.c,K.m,K.e,K.p].forEach(k=>localStorage.removeItem(k));render();alert('Dados apagados.');
+}
+const oldRender=render;
+render=function(){oldRender();updateReportSummary();updatePinStatus();};
+initReports();render();
+</script>
+
+
+<script>
+function copiarPrompt(){
+ const t=$('promptIA');
+ navigator.clipboard?.writeText(t.value).then(()=>{$('copiado').textContent='✅ Copiado! Agora cole no ChatGPT ou Gemini.'}).catch(()=>{t.select();document.execCommand('copy');$('copiado').textContent='✅ Copiado!'});
+}
+function normalObj(x){return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}
+function arr(x){return Array.isArray(x)?x:[]}
+function first(o,...keys){for(const k of keys)if(o&&o[k]!==undefined&&o[k]!==null&&String(o[k]).trim()!=='')return o[k];return ''}
+function normalizarImport(d){
+ const p=normalObj(d.perfil||d.profile);
+ const dores=arr(d.dores||d.dores_e_sintomas||d.sintomas).map(x=>({
+   data:first(x,'data','inicio','quando','datetime'),
+   local:first(x,'local','onde','regiao','região'),
+   int:Number(first(x,'int','intensidade','intensidade_0_10'))||0,
+   tipo:first(x,'tipo','caracteristica','característica'),
+   freq:first(x,'freq','frequencia','frequência'),
+   gatilho:first(x,'gatilho','gatilhos','piora_melhora'),
+   sint:first(x,'sint','sintomas','outros_sintomas'),
+   obs:first(x,'obs','observacoes','observações')
+ }));
+ const consultas=arr(d.consultas).map(x=>({
+   data:first(x,'data'),esp:first(x,'especialidade'),med:first(x,'med','medico','médico'),
+   mot:first(x,'motivo'),perg:first(x,'perguntas'),obs:first(x,'obs','orientacoes','orientações'),ret:first(x,'ret','retorno')
+ }));
+ const meds=arr(d.medicamentos||d.remedios||d.remédios).map(x=>({
+   nome:first(x,'nome','medicamento','remedio','remédio'),dose:first(x,'dose'),
+   freq:first(x,'freq','frequencia','frequência'),inicio:first(x,'inicio','início'),
+   fim:first(x,'fim'),pres:first(x,'pres','prescritor','prescrito_por'),obs:first(x,'obs','observacoes','observações')
+ }));
+ const exames=arr(d.exames).map(x=>({
+   nome:first(x,'nome','exame'),data:first(x,'data'),res:first(x,'res','resultado'),obs:first(x,'obs','observacoes','observações')
+ }));
+ return {p,dores,consultas,meds,exames};
+}
+function processarImportacao(){
+ let raw=$('importIA').value.trim();
+ if(!raw){alert('Cole primeiro a resposta da IA.');return}
+ raw=raw.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+ try{
+   const data=JSON.parse(raw), n=normalizarImport(data);
+   let count=n.dores.length+n.consultas.length+n.meds.length+n.exames.length+(Object.keys(n.p).length?1:0);
+   if(!count)throw new Error('Nenhum dado reconhecido');
+   if(!confirm(`Foram encontrados ${n.dores.length} sintomas, ${n.consultas.length} consultas, ${n.meds.length} medicamentos, ${n.exames.length} exames e ${Object.keys(n.p).length?1:0} perfil. Adicionar aos registros atuais?`))return;
+   if(n.dores.length)set(K.d,get(K.d).concat(n.dores));
+   if(n.consultas.length)set(K.c,get(K.c).concat(n.consultas));
+   if(n.meds.length)set(K.m,get(K.m).concat(n.meds));
+   if(n.exames.length)set(K.e,get(K.e).concat(n.exames));
+   if(Object.keys(n.p).length){
+      const old=get(K.p)[0]||{};
+      const merged=Object.assign({},old,{
+       nome:first(n.p,'nome')||old.nome||'',nasc:first(n.p,'nasc','data_nascimento','dataNascimento')||old.nasc||'',
+       alerg:first(n.p,'alerg','alergias')||old.alerg||'',cond:first(n.p,'cond','condicoes','condições')||old.cond||'',
+       circ:first(n.p,'circ','cirurgias')||old.circ||'',info:first(n.p,'info','informacoes','informações')||old.info||'',
+       emerg:first(n.p,'emerg','contato_emergencia','contato_emergência')||old.emerg||'',tel:first(n.p,'tel','telefone')||old.tel||''
+      });
+      set(K.p,[merged]);
+   }
+   render();
+   $('resultadoImport').innerHTML='<div class="alert safe">✅ Importação concluída! Os dados foram adicionados ao seu histórico. Confira a linha do tempo e os registros antes de usar o relatório médico.</div>';
+ }catch(e){
+   $('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui ler esse conteúdo como JSON. Volte à IA e peça: <b>“Retorne somente JSON válido, sem markdown ou explicações.”</b></div>';
+ }
+}
+function limparImportacao(){$('importIA').value='';$('resultadoImport').innerHTML=''}
+function processarTextoLivre(){
+ const t=$('textoLivre').value.trim();if(!t){alert('Cole algum texto primeiro.');return}
+ let added=0;
+ // Conservative pattern recognition: creates only records that have enough explicit information.
+ const name=t.match(/(?:meu nome é|me chamo)\s+([A-Za-zÀ-ÿ ]{2,60})/i);
+ const p=get(K.p)[0]||{};
+ if(name){p.nome=name[1].trim();set(K.p,[p]);added++}
+ const med=[...t.matchAll(/(?:uso|tomo|tomando|medicamento)\s+([A-Za-zÀ-ÿ0-9 +.-]{3,60})(?:\s+(\d+\s?(?:mg|g|ml|mcg)))?/gi)];
+ med.forEach(m=>{set(K.m,get(K.m).concat([{nome:m[1].trim(),dose:m[2]||'',freq:'',inicio:'',fim:'',pres:'',obs:'Importado de texto livre'}]));added++});
+ const pain=t.match(/(?:dor|dores)\s+(?:de|no|na|em)\s*([A-Za-zÀ-ÿ ]{2,40})(?:.{0,100}?(\d{1,2})\s*\/\s*10)?/i);
+ if(pain){set(K.d,get(K.d).concat([{data:new Date().toISOString().slice(0,16),local:pain[1].trim(),int:Math.min(Number(pain[2]||0),10),tipo:'',freq:'',gatilho:'',sint:t.slice(0,300),obs:'Importado de texto livre'}]));added++}
+ render();
+ $('resultadoLivre').innerHTML=added?`<div class="alert safe">🪄 Tentei organizar <b>${added}</b> informação(ões). Confira os registros porque o texto livre pode exigir correção manual.</div>`:'<div class="alert warn">Não encontrei informações com segurança suficiente. Use o prompt estruturado acima para obter uma importação mais completa.</div>';
+}
+</script>
+
+<script>
+function hasAnyHealthData(){
+ return [K.d,K.c,K.m,K.e,K.p].some(k=>get(k).length>0);
+}
+function showOnboarding(){
+ if(localStorage.getItem('msa2_onboarding_done')!=='1' && !hasAnyHealthData()){
+   const o=document.getElementById('onboarding'); if(o)o.style.display='block';
+ }
+}
+function finishOnboarding(mode){
+ localStorage.setItem('msa2_onboarding_done','1');
+ const o=document.getElementById('onboarding');if(o)o.style.display='none';
+ if(mode==='import')go('importar');
+ if(mode==='profile')go('perfil');
+}
+function onboardImport(){finishOnboarding('import')}
+function onboardProfile(){finishOnboarding('profile')}
+function resetWelcome(){
+ localStorage.removeItem('msa2_onboarding_done');
+ alert('A tela inicial aparecerá novamente quando você recarregar o site.');
+ location.reload();
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(showOnboarding,150));
+</script>
+</body></html>
