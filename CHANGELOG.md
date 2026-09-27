@@ -1,5 +1,13 @@
 # Changelog — Minha Saúde IA
 
+## V4.73 — Compartilhamento seguro
+- Criado seletor de conteúdo para compartilhamento.
+- 🔹 **Apenas completude**: percentual do perfil principal sem ficha clínica.
+- 🔹 **Resumo**: quantidades e organização geral, sem listar dados clínicos detalhados.
+- ⚠️ **Ficha completa**: exige confirmação explícita antes de compartilhar.
+- Usa compartilhamento nativo quando disponível ou copia o conteúdo para a área de transferência.
+- Versão atualizada para V4.73.
+
 ## V4.71 — Aplicativo instalável e modo offline
 - Adicionado `manifest.json` para instalação como aplicativo.
 - Adicionado `sw.js` para cache da interface e funcionamento offline básico.
