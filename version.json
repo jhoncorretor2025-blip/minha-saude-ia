@@ -1,5 +1,5 @@
 {
-  "version": "V4.5",
+  "version": "V4.6",
   "updatedAt": "2026-09-27T00:00:00Z",
-  "changes": "Correção da tela de carregamento da importação + preservação de campos do perfil já preenchidos"
+  "changes": "Auditoria do fluxo IA → importação, limpeza de funções duplicadas e abertura das IAs com cópia robusta"
 }
