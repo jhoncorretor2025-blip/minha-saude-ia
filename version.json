@@ -1,5 +1,5 @@
 {
-  "version": "V5.02",
-  "updatedAt": "2026-09-28T02:25:00Z",
-  "changes": "Importação por IA com detecção de registros iguais/parecidos e escolha explícita entre manter o atual ou adicionar o importado."
+  "version": "V5.03",
+  "updatedAt": "2026-09-28T02:50:00Z",
+  "changes": "Gerenciador de perfis locais para separar históricos de pessoas diferentes no mesmo navegador usando namespaces independentes."
 }
