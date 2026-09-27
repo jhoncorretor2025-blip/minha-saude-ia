@@ -1,5 +1,5 @@
 {
-  "version": "V4.77",
-  "updatedAt": "2026-09-27T20:00:00Z",
-  "changes": "Correção do HTML/JavaScript dos relatórios: evitado fechamento indevido da tag script, que fazia código aparecer como texto na página. Cache e referências atualizados."
+  "version": "V4.78",
+  "updatedAt": "2026-09-27T20:20:00Z",
+  "changes": "Correção do HTML/JavaScript dos relatórios e acesso direto ao ciclo menstrual. O botão do ciclo agora navega diretamente para o diário."
 }
