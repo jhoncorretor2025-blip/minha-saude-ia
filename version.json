@@ -1,5 +1,5 @@
 {
-  "version": "V5.11",
-  "updatedAt": "2026-09-27T22:50:00Z",
-  "changes": "API central de armazenamento ampliada com has, clear, raw e setJSON, preservando compatibilidade com get/set/remove."
+  "version": "V5.12",
+  "updatedAt": "2026-09-27T23:10:00Z",
+  "changes": "Fluxo de importação IA corrigido: perguntas objetivas para doenças/condições ausentes, aliases ampliados e instruções da tela alinhadas ao novo comportamento."
 }
