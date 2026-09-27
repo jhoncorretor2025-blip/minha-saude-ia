@@ -1,5 +1,5 @@
 {
-  "version": "V5.19",
-  "updatedAt": "2026-09-27T23:25:00Z",
-  "changes": "Melhorias progressivas no painel: acesso rápido às áreas de saúde e bloco de atenção com resumo contextual dos registros. Mantidas as melhorias anteriores de navegação, mobile e ações rápidas."
+  "version": "V5.20",
+  "updatedAt": "2026-09-27T23:40:00Z",
+  "changes": "Melhorias gráficas e de usabilidade: tema claro/escuro persistente, botão de alternância acessível, melhor contraste em cartões, formulários e tabelas no modo escuro e foco visual para navegação por teclado."
 }
