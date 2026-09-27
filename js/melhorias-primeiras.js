@@ -270,11 +270,105 @@ function wrapRenderForTrash(){
   wrapped.__msaTrashWrapped=true;window.render=wrapped;
 }
 
+
+/* ===== V4.91 — verificador de consistência dos dados ===== */
+const CONSISTENCY_DATASETS=[
+  {key:K.d,label:'Sintomas',dates:['data']},
+  {key:K.c,label:'Consultas',dates:['data','ret']},
+  {key:K.m,label:'Medicamentos',dates:['inicio','fim']},
+  {key:K.e,label:'Exames',dates:['data']},
+  {key:K.v,label:'Sinais vitais',dates:['data']},
+  {key:K.r,label:'Lembretes',dates:['data']},
+  {key:K.vax,label:'Vacinas',dates:['data']},
+  {key:K.fam,label:'Histórico familiar',dates:[]},
+  {key:K.ciclo,label:'Ciclo menstrual',dates:['inicio','fim']},
+  {key:K.nutri,label:'Nutrição',dates:['data']},
+  {key:K.sono,label:'Sono',dates:['data']},
+  {key:K.bem,label:'Bem-estar',dates:['data']},
+  {key:K.gat,label:'Gatilhos',dates:['data']}
+];
+const strictDate=v=>{
+  if(v===null||v===undefined||String(v).trim()==='')return true;
+  const s=String(v).trim().slice(0,10),m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(!m)return false;
+  const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));
+  return d.getFullYear()===Number(m[1])&&d.getMonth()===Number(m[2])-1&&d.getDate()===Number(m[3]);
+};
+function duplicateDataCount(key,fields){
+  const a=storage.get(key),seen=new Set(),dupes=[];
+  a.forEach((r,i)=>{
+    const sig=fields.map(f=>normalizeDuplicate(r?.[f])).join('|');
+    if(!sig||/^\|*$/.test(sig))return;
+    if(seen.has(sig))dupes.push(i);else seen.add(sig);
+  });
+  return dupes.length;
+}
+function runConsistencyChecks(){
+  const issues=[], p=storage.get(K.p)[0]||{};
+  const add=(level,title,detail)=>issues.push({level,title,detail});
+  if(p.nasc&&!strictDate(p.nasc))add('erro','Data de nascimento inválida','Revise a data cadastrada no perfil.');
+  const age=Number(String(p.idade??'').replace(',','.')),birth=p.nasc;
+  if(birth&&Number.isFinite(age)&&age>=0){
+    const b=new Date(String(birth).slice(0,10)+'T12:00:00'),now=new Date(),calc=now.getFullYear()-b.getFullYear()-((now.getMonth()<b.getMonth()||now.getMonth()===b.getMonth()&&now.getDate()<b.getDate())?1:0);
+    if(Math.abs(calc-age)>1)add('atenção','Idade e nascimento não batem','A idade informada é '+age+' e a idade calculada pela data de nascimento é '+calc+'.');
+  }
+  const altura=Number(String(p.altura??'').replace(',','.')),peso=Number(String(p.peso??'').replace(',','.'));
+  if(p.altura&&(!Number.isFinite(altura)||altura<=0))add('erro','Altura inválida','Confira o valor cadastrado em centímetros.');
+  if(p.peso&&(!Number.isFinite(peso)||peso<=0))add('erro','Peso inválido','Confira o valor cadastrado.');
+  CONSISTENCY_DATASETS.forEach(ds=>{
+    storage.get(ds.key).forEach((r,i)=>{
+      ds.dates.forEach(field=>{if(r?.[field]&&!strictDate(r[field]))add('erro',ds.label+' — data inválida','Registro '+(i+1)+': campo '+field+' contém uma data que não foi reconhecida.')});
+    });
+  });
+  storage.get(K.m).forEach((r,i)=>{
+    if(r?.inicio&&r?.fim&&strictDate(r.inicio)&&strictDate(r.fim)&&String(r.fim).slice(0,10)<String(r.inicio).slice(0,10))add('erro','Medicamento com período invertido','Registro '+(i+1)+': a data final é anterior à inicial.');
+  });
+  storage.get(K.ciclo).forEach((r,i)=>{
+    if(r?.inicio&&r?.fim&&strictDate(r.inicio)&&strictDate(r.fim)&&String(r.fim).slice(0,10)<String(r.inicio).slice(0,10))add('erro','Ciclo com período invertido','Registro '+(i+1)+': o fim do ciclo não pode ser anterior ao início.');
+  });
+  const dupChecks=[
+    [K.d,'Sintomas',['data','local','int','tipo','sint']],
+    [K.c,'Consultas',['data','esp','med','mot']],
+    [K.m,'Medicamentos',['nome','dose','inicio']],
+    [K.e,'Exames',['data','nome','res']],
+    [K.v,'Sinais vitais',['data','peso','pressao','fc','temp','glic','sat']],
+    [K.r,'Lembretes',['nome','data','tipo']],
+    [K.vax,'Vacinas',['nome','data']],
+    [K.fam,'Histórico familiar',['parente','info','idade']]
+  ];
+  dupChecks.forEach(x=>{const n=duplicateDataCount(x[0],x[2]);if(n)add('informativo','Possíveis duplicados em '+x[1],n+' registro(s) repetido(s) foram detectados pela combinação de campos principais.')});
+  const medRot=storage.get(K.medRot),taken=storage.get(K.medTaken);
+  const orphan=taken.filter(x=>x?.medId!=null&&!medRot.some(m=>String(m?.id)===String(x.medId))).length;
+  if(orphan)add('atenção','Doses sem rotina correspondente',orphan+' registro(s) de dose apontam para uma rotina que não existe mais.');
+  return issues;
+}
+window.msaExecutarConsistencia=function(){
+  const box=byId('msaConsistencyResult');if(!box)return;
+  const issues=runConsistencyChecks();
+  if(!issues.length){box.innerHTML='<div class="alert safe"><b>✅ Nenhuma inconsistência estrutural encontrada.</b><br><span class="muted">A verificação analisa apenas a organização dos dados; ela não substitui uma avaliação profissional de saúde.</span></div>';return}
+  const icon={erro:'🔴',atenção:'🟠',informativo:'🔵'};
+  box.innerHTML='<div class="list">'+issues.map(x=>'<div class="item"><div class="itemtop"><b>'+icon[x.level]+' '+esc(x.title)+'</b><span class="tag">'+esc(x.level)+'</span></div><p>'+esc(x.detail)+'</p></div>').join('')+'</div><p class="muted" style="margin-top:10px">Total: '+issues.length+' apontamento(s). Eles indicam problemas de organização ou consistência, não um diagnóstico.</p>';
+};
+function ensureConsistencyUI(){
+  const toolsGroup=[...document.querySelectorAll('#nav .nav-group')].find(g=>g.querySelector('.nav-toggle[data-menu="tools"]')),menu=toolsGroup?.querySelector('.nav-menu');
+  if(menu&&!menu.querySelector('[data-tab="consistencia"]')){
+    const b=document.createElement('button');b.type='button';b.setAttribute('data-tab','consistencia');b.textContent='🔍 Verificar dados';menu.appendChild(b);
+  }
+  if(!byId('consistencia')){
+    const host=document.getElementById('main-content')||document.querySelector('.wrap')||document.body;
+    const sec=document.createElement('section');sec.id='consistencia';
+    sec.innerHTML='<div class="card"><div class="dash-section-title"><div><h2>🔍 Verificar consistência</h2><div class="muted">Procura problemas de organização dos dados, como datas inválidas, períodos invertidos, possíveis duplicados e referências quebradas.</div></div><button class="btn green" type="button" id="msaConsistencyRun">🔍 Verificar agora</button></div><div id="msaConsistencyResult"><div class="empty">Clique em “Verificar agora” para iniciar.</div></div></div>';
+    host.appendChild(sec);
+    sec.querySelector('#msaConsistencyRun').addEventListener('click',window.msaExecutarConsistencia);
+  }
+}
+
 function startDrafts(){
   attachDraftHandlers();
   attachDuplicateGuard();
   ensureTrashUI();
   wrapRenderForTrash();
+  ensureConsistencyUI();
   renderDraftPanel();
   document.addEventListener('click',e=>{
     const trash=e.target.closest&&e.target.closest('[data-trash-action]');
