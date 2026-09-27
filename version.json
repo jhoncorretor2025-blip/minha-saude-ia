@@ -1,5 +1,5 @@
 {
-  "version": "V4.86",
-  "updatedAt": "2026-09-27T21:45:00Z"
-  "changes": "Criada a fundação visual do Design System: tokens de cores, espaçamentos, raios, tipografia e componentes para cabeçalhos, cards, botões, formulários, filtros, listas, estados, feedbacks e modais."
+  "version": "V4.87",
+  "updatedAt": "2026-09-27T21:50:00Z"
+  "changes": "Melhorias rápidas de alto impacto em UX: salto para conteúdo, foco acessível, alvos de toque mobile, campos mais confortáveis, ações responsivas e respeito a redução de movimento."
 }
