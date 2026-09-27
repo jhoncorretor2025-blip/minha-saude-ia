@@ -1,5 +1,12 @@
 # Changelog — Minha Saúde IA
 
+## V5.05 — Backup criptografado
+- 🔐 Exportação criptografada com AES-GCM.
+- 🧂 Derivação de chave por PBKDF2-SHA-256.
+- 🔑 A senha não é armazenada.
+- 🛡️ Recurso protege o arquivo exportado; o armazenamento local atual permanece como local-first.
+
+
 ## V5.03 — Perfis locais
 - 👨‍👩‍👧‍👦 Gerenciador de perfis separados no navegador.
 - 🔗 Links individuais para abrir cada histórico.
