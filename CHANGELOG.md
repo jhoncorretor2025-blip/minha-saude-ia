@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V4.98 — Metas pessoais
+- 🎯 Criação de metas locais.
+- 📊 Indicadores de completude, água, registros e peso.
+- 📱 Acompanhamento visual do progresso.
+
+
 ## V4.97 — Histórico de alterações
 - 🕘 Registro local das gravações feitas no aplicativo.
 - 🔒 O histórico guarda metadados da alteração, não uma cópia do conteúdo clínico.
