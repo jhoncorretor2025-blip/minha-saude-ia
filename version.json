@@ -1,5 +1,5 @@
 {
   "version": "V5.08",
-  "updatedAt": "2026-09-28T05:10:00Z",
+  "updatedAt": "2026-09-27T21:45:00Z",
   "changes": "Exportação FHIR R4 para portabilidade dos dados organizados, com mapeamento de perfil, condições, sintomas, sinais vitais, exames, medicamentos, consultas e vacinas."
 }
