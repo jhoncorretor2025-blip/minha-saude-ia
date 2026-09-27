@@ -1,5 +1,12 @@
 # Changelog — Minha Saúde IA
 
+## V4.66 — Dados locais e isolamento do navegador
+- Reforçada a arquitetura **local-first**: os dados pessoais são armazenados no navegador por meio de localStorage.
+- Confirmado que o repositório não deve conter dados pessoais reais.
+- Atualizados os arquivos de interface e scripts para V4.66.
+- Atualizada a documentação para deixar explícito que abrir a mesma URL em outro dispositivo/navegador não deve carregar o armazenamento local de outra pessoa.
+- Nenhuma API/banco de dados de saúde foi adicionado.
+
 ## V4.65 — Saúde reprodutiva ampliada
 - Adicionado campo de **duração média do ciclo**.
 - Adicionado campo de **duração média do sangramento**.
