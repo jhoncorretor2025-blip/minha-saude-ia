@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Saúde IA — V5.15</title>
+<title>Minha Saúde IA — V5.16</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -40,7 +40,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
  .nav-menu{min-width:210px;max-width:calc(100vw - 24px)}
 }
 
-/* V5.15 — Ferramentas em 2 colunas para reduzir a altura do menu */
+/* V5.16 — Ferramentas em 2 colunas para reduzir a altura do menu */
 .tools-menu{
  grid-template-columns:repeat(2,minmax(0,1fr));
  min-width:430px;
@@ -56,6 +56,99 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
  }
 }
  
+/* V5.16 — experiência mobile dedicada, sem alterar o desktop */
+.msa-mobile-bar,.msa-mobile-drawer,.msa-mobile-backdrop{display:none}
+@media(max-width:760px){
+  body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+  .grouped-nav{display:none!important}
+  .wrap{margin-top:10px}
+  .msa-mobile-bar{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
+    position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));
+    z-index:12000;padding:7px;background:rgba(255,255,255,.96);
+    border:1px solid #dfe6f0;border-radius:18px;
+    box-shadow:0 14px 36px rgba(15,23,42,.18);backdrop-filter:blur(12px)
+  }
+  .msa-mobile-bar button{
+    min-height:50px;border:0;border-radius:13px;background:transparent;color:var(--muted);
+    font:inherit;font-size:11px;font-weight:900;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:2px;cursor:pointer
+  }
+  .msa-mobile-bar button strong{font-size:20px;line-height:1}
+  .msa-mobile-bar button.active{background:#eaf1ff;color:var(--blue)}
+  .msa-mobile-backdrop{
+    position:fixed;inset:0;background:rgba(15,23,42,.48);z-index:12001
+  }
+  .msa-mobile-drawer{
+    display:flex;flex-direction:column;position:fixed;left:0;right:0;bottom:0;
+    z-index:12002;max-height:min(86vh,760px);background:#fff;
+    border-radius:24px 24px 0 0;box-shadow:0 -18px 50px rgba(15,23,42,.22);
+    overflow:hidden
+  }
+  .msa-mobile-drawer-head{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:15px 16px 12px;border-bottom:1px solid #e7ebf2;flex:0 0 auto
+  }
+  .msa-mobile-drawer-head h2{font-size:18px;margin:0}
+  .msa-mobile-drawer-close{
+    width:40px;height:40px;border:0;border-radius:12px;background:#f1f5f9;
+    font-size:18px;font-weight:900;cursor:pointer
+  }
+  .msa-mobile-drawer-body{overflow:auto;padding:10px 12px 22px}
+  .msa-mobile-section{margin:0 0 12px}
+  .msa-mobile-section-title{
+    margin:8px 4px 6px;color:#64748b;font-size:11px;font-weight:900;
+    text-transform:uppercase;letter-spacing:.06em
+  }
+  .msa-mobile-links{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .msa-mobile-links button{
+    min-height:46px;border:1px solid #e3e8f0;background:#f8fafc;color:var(--text);
+    border-radius:12px;padding:9px 10px;text-align:left;font:inherit;font-size:13px;
+    font-weight:800;cursor:pointer
+  }
+  .msa-mobile-links button:active{transform:scale(.98)}
+  .msa-mobile-links button.danger{background:#fff1f2;color:#b91c1c;border-color:#fecdd3}
+  .msa-mobile-quick{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px
+  }
+  .msa-mobile-quick button{
+    min-height:72px;border:1px solid #dbe5ff;background:#f5f8ff;border-radius:13px;
+    font:inherit;font-weight:900;color:#1e40af;cursor:pointer
+  }
+  .msa-mobile-quick span{display:block;font-size:10px;margin-top:3px;color:#475569}
+  .msa-mobile-drawer[aria-hidden="true"],.msa-mobile-backdrop[aria-hidden="true"]{display:none}
+  /* Conteúdo e controles pensados para toque com uma mão */
+  .card{padding:15px}
+  h2{font-size:19px}
+  .dash-section-title,.eng-head,.dash-head{gap:10px;flex-wrap:wrap}
+  .row{gap:7px}
+  form .row>.btn,.card-actions>.btn,.modal-actions>.btn{flex:1 1 180px}
+  form{gap:13px}
+  label{line-height:1.35}
+  input,select,textarea{font-size:16px!important}
+  textarea{min-height:105px}
+  .btn{min-height:46px;padding:12px 14px}
+  .btn.small{min-height:44px}
+  .item{padding:13px}
+  .msa-filter-bar{margin-bottom:13px}
+  #buscar .row{align-items:stretch}
+  #globalSearchInput{min-width:0;flex:1 1 100%!important}
+  #buscar .row .btn{flex:1 1 120px}
+  /* Evita quebra ruim em tabelas/grades de relatórios internos */
+  .table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  /* Modais quase tela cheia, mantendo botão de fechar acessível */
+  .msa-modal-overlay{padding:8px}
+  .msa-modal{width:100%;max-height:calc(100vh - 16px);border-radius:18px}
+}
+@media(max-width:430px){
+  .msa-mobile-links{grid-template-columns:1fr}
+  .msa-mobile-quick{grid-template-columns:1fr 1fr}
+  .msa-mobile-quick button{min-height:66px}
+  .msa-mobile-drawer{max-height:88vh}
+  .dash-section-title>.btn,.eng-head>.btn{width:100%}
+  form .row>.btn,.card-actions>.btn,.modal-actions>.btn{flex-basis:100%}
+  .grid4 .card{min-height:76px}
+}
 /* V4.82 — redesign visual mobile-first */
 :root{
  --bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#667085;--blue:#2563eb;--blue2:#4f46e5;
@@ -180,7 +273,7 @@ footer{padding-bottom:20px}
 @media(max-width:430px){#cicloMenuBtn{font-size:11px}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V5.15">
+  <link rel="stylesheet" href="css/design-system.css?v=V5.16">
 </head>
 <body>
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
@@ -288,7 +381,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V5.12</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V5.16</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 <nav id="nav" class="grouped-nav">
  <div class="nav-group">
@@ -1036,7 +1129,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V5.15. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V5.16. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -1057,12 +1150,12 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V5.12" defer></script>
-<script src="js/core/storage.js?v=V5.12" defer></script>
-<script src="js/core/utils.js?v=V5.12" defer></script>
-<script src="js/menu.js?v=V5.12" defer></script>
-<script src="js/app.js?v=V5.15" defer></script>
-<script src="js/recursos.js?v=V5.15" defer></script>
+<script src="js/core/constants.js?v=V5.16" defer></script>
+<script src="js/core/storage.js?v=V5.16" defer></script>
+<script src="js/core/utils.js?v=V5.16" defer></script>
+<script src="js/menu.js?v=V5.16" defer></script>
+<script src="js/app.js?v=V5.16" defer></script>
+<script src="js/recursos.js?v=V5.16" defer></script>
 
 
 <script>
@@ -1079,11 +1172,11 @@ function iniciarImportacao(){
  },80);
 }
 </script>
-<script src="js/importacao.js?v=V5.15" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/melhorias-primeiras.js?v=V5.15" defer></script>
-<script src="js/expansoes.js?v=V5.15" defer></script>
-<script src="js/importacao-fluxo-v514.js?v=V5.15" defer></script>
-<script src="js/melhorias-v513.js?v=V5.15" defer></script>
+<script src="js/importacao.js?v=V5.16" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/melhorias-primeiras.js?v=V5.16" defer></script>
+<script src="js/expansoes.js?v=V5.16" defer></script>
+<script src="js/importacao-fluxo-v514.js?v=V5.16" defer></script>
+<script src="js/melhorias-v513.js?v=V5.16" defer></script>
 
 
 <script>
@@ -1246,7 +1339,7 @@ async function verificarNovaVersao(){
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
   const data=await r.json();
-  if(data.version && data.version!=='V5.15'){
+  if(data.version && data.version!=='V5.16'){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
