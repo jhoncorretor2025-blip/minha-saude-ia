@@ -1,5 +1,14 @@
 # Changelog — Minha Saúde IA
 
+## V4.84 — Organização e navegação refinadas
+- 🧭 **Ciclo menstrual** reposicionado antes de **Ferramentas**, mantendo acesso separado e mais fácil de encontrar.
+- 📱 Navegação móvel refinada com melhor destaque do ciclo e respeito à área segura do celular.
+- ⌨️ Melhorado o foco visual para navegação por teclado nos menus.
+- 🧹 Sincronizadas as referências de versão da interface, scripts e verificação automática: **V4.84**.
+- 🚀 Cache do PWA atualizado para acompanhar a nova versão.
+- 📝 Documentação da arquitetura e estrutura do projeto atualizada para facilitar manutenção por futuras IAs.
+
+
 ## V4.83 — Linha do tempo mais limpa
 - 🧹 Removidos da exibição os placeholders **“valor”**, **“Não informado”**, **“N/A”** e equivalentes.
 - 😣 Sintomas com intensidade **0/10** não mostram mais “0/10” como se fosse uma informação relevante.
