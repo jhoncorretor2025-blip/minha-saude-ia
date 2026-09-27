@@ -1,4 +1,4 @@
-/* Minha Saúde IA — menus independentes V4.54
+/* Minha Saúde IA — menus independentes V4.55
    O menu não depende do restante do aplicativo para abrir e navegar.
 */
 (function(){
