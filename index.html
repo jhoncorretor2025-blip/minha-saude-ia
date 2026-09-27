@@ -164,9 +164,10 @@ footer{padding-bottom:20px}
 @media(max-width:430px){#cicloMenuBtn{font-size:11px}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V4.86">
+  <link rel="stylesheet" href="css/design-system.css?v=V4.87">
 </head>
 <body>
+<a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
 <div id="importDiagnostic" style="display:none;margin-top:12px"></div>
 <div id="shareSafeOverlay" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.82);z-index:100002;align-items:center;justify-content:center;padding:18px;overflow:auto">
 <div class="card" style="max-width:620px;width:100%">
@@ -272,7 +273,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
 <header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V4.84</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
-<div class="wrap">
+<div class="wrap" id="main-content" tabindex="-1">
 <nav id="nav" class="grouped-nav">
  <div class="nav-group">
   <button type="button" class="nav-toggle" data-menu="overview">🏠 Visão geral ▾</button>
