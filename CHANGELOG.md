@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V5.06 — Passkey local
+- 🔑 Cadastro de Passkey com WebAuthn.
+- 📱 Opção de usar Passkey para desbloqueio neste navegador.
+- ℹ️ Não é login de conta nem sincronização online.
+
+
 ## V5.05 — Backup criptografado
 - 🔐 Exportação criptografada com AES-GCM.
 - 🧂 Derivação de chave por PBKDF2-SHA-256.
