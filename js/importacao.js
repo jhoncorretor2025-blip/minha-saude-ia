@@ -1,4 +1,4 @@
-/* Minha Saúde IA - módulo de importação V4.58 */
+/* Minha Saúde IA - módulo de importação V4.60 */
 function obterPromptIA(){
  const t=document.getElementById('promptIA');
  return t?t.value:'';
@@ -50,74 +50,65 @@ function normalizarImport(d){
 }
 function normalizarFichaIA(raw){
  var names=['NOME','DATA_NASCIMENTO','IDADE','SEXO','TIPO_SANGUINEO','ALTURA','PESO','OBJETIVO_CORPORAL','ACADEMIA','FREQUENCIA_ACADEMIA','ATIVIDADE_FISICA','TRABALHO_TIPO','HORAS_SENTADO','HORAS_EM_PE','AGUA_POR_DIA','FREQUENCIA_URINARIA','FREQUENCIA_EVACUACAO','EXPOSICAO_CALOR_SUOR','ALIMENTACAO','DOENCAS','ALERGIAS','CIRURGIAS_INTERNACOES','CONTATO_EMERGENCIA','TELEFONE_EMERGENCIA','ULTIMA_MENSTRUACAO','CICLO_MENSTRUAL','DURACAO_MENSTRUACAO','FREQUENCIA_SEXUAL','USO_PRESERVATIVO','JA_ENGRAVIDOU','JA_FOI_MAE','NUMERO_GESTACOES','HISTORICO_REPRODUTIVO','ULTIMO_PREVENTIVO_COLO','ULTIMA_MAMOGRAFIA','ULTIMO_TESTE_IST','VACINA_HPV','PROXIMO_PREVENTIVO','OBSERVACOES_PREVENCAO','FREQUENCIA_DORCELAX','FREQUENCIA_PARACETAMOL','OUTROS_REMEDIOS_DOR','JA_TEVE_CATAPORA','QUANDO_CATAPORA','MEDICAMENTOS','SUPLEMENTOS','ULTIMO_SINTOMA','LOCAL_SINTOMA','DATA_INICIO_SINTOMA','INTENSIDADE','OUTROS_SINTOMAS','CONSULTAS','EXAMES','SINAIS_VITAIS','VACINAS','HISTORICO_FAMILIAR','LEMBRETES','DOCUMENTOS','INFORMACOES_IMPORTANTES'];
- var values={},lines=String(raw||'').replace(/^\uFEFF/,'').replace(/\r/g,'').split('\n'),current='';
+ var aliases={
+  NOME:['NOME','NOME_COMPLETO','NOME DO PACIENTE','PACIENTE'],
+  DATA_NASCIMENTO:['DATA_NASCIMENTO','DATA DE NASCIMENTO','NASCIMENTO'],
+  TIPO_SANGUINEO:['TIPO_SANGUINEO','TIPO SANGUÍNEO','TIPO SANGUINEO'],
+  OBJETIVO_CORPORAL:['OBJETIVO_CORPORAL','OBJETIVO CORPORAL','OBJETIVO'],
+  FREQUENCIA_ACADEMIA:['FREQUENCIA_ACADEMIA','FREQUÊNCIA ACADEMIA','FREQUENCIA ACADEMIA'],
+  ATIVIDADE_FISICA:['ATIVIDADE_FISICA','ATIVIDADE FÍSICA','ATIVIDADE FISICA'],
+  TRABALHO_TIPO:['TRABALHO_TIPO','TIPO DE TRABALHO','TRABALHO'],
+  HORAS_SENTADO:['HORAS_SENTADO','HORAS SENTADO','TEMPO SENTADO'],
+  HORAS_EM_PE:['HORAS_EM_PE','HORAS EM PÉ','TEMPO EM PÉ'],
+  AGUA_POR_DIA:['AGUA_POR_DIA','ÁGUA POR DIA','AGUA POR DIA','CONSUMO DE ÁGUA'],
+  FREQUENCIA_URINARIA:['FREQUENCIA_URINARIA','FREQUÊNCIA URINÁRIA','FREQUENCIA URINARIA','URINA POR DIA'],
+  FREQUENCIA_EVACUACAO:['FREQUENCIA_EVACUACAO','FREQUÊNCIA DE EVACUAÇÃO','FREQUENCIA DE EVACUACAO','EVACUAÇÃO'],
+  EXPOSICAO_CALOR_SUOR:['EXPOSICAO_CALOR_SUOR','EXPOSIÇÃO AO CALOR/SUOR','CALOR E SUOR'],
+  CIRURGIAS_INTERNACOES:['CIRURGIAS_INTERNACOES','CIRURGIAS/INTERNAÇÕES','CIRURGIAS E INTERNAÇÕES'],
+  CONTATO_EMERGENCIA:['CONTATO_EMERGENCIA','CONTATO DE EMERGÊNCIA','CONTATO EMERGENCIA'],
+  TELEFONE_EMERGENCIA:['TELEFONE_EMERGENCIA','TELEFONE DE EMERGÊNCIA','TELEFONE EMERGENCIA'],
+  MEDICAMENTOS:['MEDICAMENTOS','REMÉDIOS','REMEDIOS','MEDICAÇÕES','MEDICACOES'],
+  SUPLEMENTOS:['SUPLEMENTOS','VITAMINAS E SUPLEMENTOS'],
+  ULTIMO_SINTOMA:['ULTIMO_SINTOMA','ÚLTIMO SINTOMA','ULTIMO SINTOMA','SINTOMA'],
+  LOCAL_SINTOMA:['LOCAL_SINTOMA','LOCAL DO SINTOMA','LOCAL'],
+  DATA_INICIO_SINTOMA:['DATA_INICIO_SINTOMA','DATA DE INÍCIO DO SINTOMA','INÍCIO DO SINTOMA'],
+  OUTROS_SINTOMAS:['OUTROS_SINTOMAS','OUTROS SINTOMAS'],
+  HISTORICO_FAMILIAR:['HISTORICO_FAMILIAR','HISTÓRICO FAMILIAR','HISTORICO FAMILIAR'],
+  INFORMACOES_IMPORTANTES:['INFORMACOES_IMPORTANTES','INFORMAÇÕES IMPORTANTES','INFORMACOES IMPORTANTES']
+ };
+ function keyNorm(s){return String(s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]+/g,' ').trim().replace(/\\s+/g,' ')}
+ var keyMap={};
+ names.forEach(function(n){keyMap[keyNorm(n)]=n;(aliases[n]||[]).forEach(function(a){keyMap[keyNorm(a)]=n})});
+ function canonical(k){var n=keyNorm(k);return keyMap[n]||''}
+ var values={},lines=String(raw||'').replace(/^\\uFEFF/,'').replace(/\\r/g,'').split('\\n'),current='';
  lines.forEach(function(line){
-  var clean=line.trim();
-  var m=clean.match(/^\[([^\]]+)\]\s*(.*)$/);
+  var clean=line.trim().replace(/^[-*]\\s*/,'');
+  var m=clean.match(/^\\[([^\\]]+)\\]\\s*(.*)$/);
+  if(!m)m=clean.match(/^([^:]{2,70}):\\s*(.*)$/);
   if(m){
-   var key=String(m[1]).trim().toUpperCase();
-   if(names.indexOf(key)>=0){current=key;values[current]=m[2]||'';return}
+   var key=canonical(m[1]);
+   if(key){current=key;values[current]=m[2]||'';return}
   }
-  if(current)values[current]+=(values[current]?'\n':'')+line;
+  if(current)values[current]+=(values[current]?'\\n':'')+line;
  });
- function field(n){var v=String(values[n]||'').trim();return /^não informado$/i.test(v)?'Não informado':v}
- function date(v){
-  var s=String(v||'').trim(),m=s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
-  if(m)return m[3]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[1]).padStart(2,'0');
-  return s;
- }
- function num(v){var m=String(v||'').replace(',','.').match(/-?\d+(?:\.\d+)?/);return m?m[0]:''}
- function height(v){var n=num(v);if(!n)return '';var x=Number(n);return /\bm\b/i.test(String(v))&&x<3?String(Math.round(x*100)):String(x)}
- function splitRecords(text){return String(text||'').split(/;\s*/).map(function(x){return x.trim()}).filter(Boolean)}
- function pipeParts(text){return String(text||'').split(/\s*\|\s*/).map(function(x){return x.trim()})}
- function parseVital(x){
-  var p=pipeParts(x),o={data:'',peso:'',pressao:'',fc:'',temp:'',glic:'',sat:'',obs:''};
-  p.forEach(function(part,i){
-   var low=part.toLowerCase();
-   if(i===0&&!/\b(peso|pressão|pressao|fc|batimentos|temp|temperatura|glicemia|saturação|saturacao)\s*:/i.test(part)){o.data=date(part);return}
-   var m=part.match(/^([^:]+):\s*(.*)$/);if(!m)return;
-   var k=m[1].trim().toLowerCase(),v=m[2].trim();
-   if(/peso/.test(k))o.peso=v.replace(/\s*kg\b/i,'').trim();
-   else if(/press/.test(k))o.pressao=v;
-   else if(/fc|batimento/.test(k))o.fc=v;
-   else if(/temp/.test(k))o.temp=v;
-   else if(/glic/.test(k))o.glic=v;
-   else if(/satura|sat/.test(k))o.sat=v;
-   else if(/observ/.test(k))o.obs=v;
-  });
-  if(!o.data)o.data=new Date().toISOString().slice(0,16);
-  return o;
- }
- function parseVaccine(x){
-  var p=pipeParts(x),o={nome:'',data:'',obs:''};
-  p.forEach(function(part,i){
-   var m=part.match(/^([^:]+):\s*(.*)$/);if(m){var k=m[1].trim().toLowerCase(),v=m[2].trim();if(/vacina|nome/.test(k))o.nome=v;else if(/data/.test(k))o.data=date(v);else if(/dose|observ/.test(k))o.obs=v;}
-   else if(i===0)o.nome=part;else if(/^\d{1,2}[\/-]\d{1,2}[\/-]\d{4}$/.test(part))o.data=date(part);else o.obs+=(o.obs? ' — ':'')+part;
-  });
-  return o;
- }
- function parseFamily(x){
-  var p=pipeParts(x),o={parente:'',info:''};
-  p.forEach(function(part,i){var m=part.match(/^([^:]+):\s*(.*)$/);if(m){var k=m[1].trim().toLowerCase(),v=m[2].trim();if(/parente|familiar/.test(k))o.parente=v;else if(/condição|condicao|informação|informacao/.test(k))o.info=v;}else if(i===0)o.parente=part;else o.info+=(o.info?' — ':'')+part});
-  return o;
- }
- function parseReminder(x){
-  var p=pipeParts(x),o={id:String(Date.now())+Math.random(),nome:'',data:'',tipo:'Outro'};
-  p.forEach(function(part,i){var m=part.match(/^([^:]+):\s*(.*)$/);if(m){var k=m[1].trim().toLowerCase(),v=m[2].trim();if(/lembrar|nome/.test(k))o.nome=v;else if(/data|hora/.test(k))o.data=v;else if(/tipo/.test(k))o.tipo=v;}else if(i===0)o.nome=part;else if(!o.data)o.data=part;else o.tipo=part});
-  return o;
- }
- function parseDocument(x){
-  var p=pipeParts(x),o={id:String(Date.now())+Math.random(),nome:'Documento informado',tipo:'',tamanho:'',data:''};
-  p.forEach(function(part,i){var m=part.match(/^([^:]+):\s*(.*)$/);if(m){var k=m[1].trim().toLowerCase(),v=m[2].trim();if(/nome|documento/.test(k))o.nome=v;else if(/tipo/.test(k))o.tipo=v;else if(/data/.test(k))o.data=date(v);}else if(i===0)o.nome=part;});
-  return o;
- }
+ function field(n){var v=String(values[n]||'').trim();return /^não informado$|^nao informado$|^não disponível$|^nao disponivel$|^n/?a$/i.test(v)?'Não informado':v}
+ function date(v){var s=String(v||'').trim(),m=s.match(/^(\\d{1,2})[\\/-](\\d{1,2})[\\/-](\\d{4})$/);if(m)return m[3]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[1]).padStart(2,'0');return s}
+ function num(v){var m=String(v||'').replace(',','.').match(/-?\\d+(?:\\.\\d+)?/);return m?m[0]:''}
+ function height(v){var n=num(v);if(!n)return '';var x=Number(n);return /\\bm\\b/i.test(String(v))&&x<3?String(Math.round(x*100)):String(x)}
+ function splitRecords(text){return String(text||'').split(/;\\s*|\\n(?=\\s*(?:[-*]\\s*)?[^\\n|]+\\|)/).map(function(x){return x.replace(/^[-*]\\s*/,'').trim()}).filter(Boolean)}
+ function pipeParts(text){return String(text||'').split(/\\s*\\|\\s*/).map(function(x){return x.trim()})}
+ function parseVital(x){var p=pipeParts(x),o={data:'',peso:'',pressao:'',fc:'',temp:'',glic:'',sat:'',obs:''};p.forEach(function(part,i){var m=part.match(/^([^:]+):\\s*(.*)$/);if(i===0&&!m){o.data=date(part);return}if(!m)return;var k=keyNorm(m[1]),v=m[2].trim();if(/PESO/.test(k))o.peso=v.replace(/\\s*KG\\b/i,'').trim();else if(/PRESS/.test(k))o.pressao=v;else if(/FC|BATIMENTO/.test(k))o.fc=v;else if(/TEMP/.test(k))o.temp=v;else if(/GLIC/.test(k))o.glic=v;else if(/SATUR|SAT/.test(k))o.sat=v;else if(/OBSERV/.test(k))o.obs=v});if(!o.data)o.data=new Date().toISOString().slice(0,16);return o}
+ function parseVaccine(x){var p=pipeParts(x),o={nome:'',data:'',obs:''};p.forEach(function(part,i){var m=part.match(/^([^:]+):\\s*(.*)$/);if(m){var k=keyNorm(m[1]),v=m[2].trim();if(/VACINA|NOME/.test(k))o.nome=v;else if(/DATA/.test(k))o.data=date(v);else if(/DOSE|OBSERV/.test(k))o.obs=v}else if(i===0)o.nome=part;else if(/^\\d{1,2}[\\/-]\\d{1,2}[\\/-]\\d{4}$/.test(part))o.data=date(part);else o.obs+=(o.obs?' — ':'')+part});return o}
+ function parseFamily(x){var p=pipeParts(x),o={parente:'',info:''};p.forEach(function(part,i){var m=part.match(/^([^:]+):\\s*(.*)$/);if(m){var k=keyNorm(m[1]),v=m[2].trim();if(/PARENTE|FAMILIAR/.test(k))o.parente=v;else if(/CONDICAO|INFORMACAO/.test(k))o.info=v}else if(i===0)o.parente=part;else o.info+=(o.info?' — ':'')+part});return o}
+ function parseReminder(x){var p=pipeParts(x),o={id:String(Date.now())+Math.random(),nome:'',data:'',tipo:'Outro'};p.forEach(function(part,i){var m=part.match(/^([^:]+):\\s*(.*)$/);if(m){var k=keyNorm(m[1]),v=m[2].trim();if(/LEMBRAR|NOME/.test(k))o.nome=v;else if(/DATA|HORA/.test(k))o.data=v;else if(/TIPO/.test(k))o.tipo=v}else if(i===0)o.nome=part;else if(!o.data)o.data=part;else o.tipo=part});return o}
+ function parseDocument(x){var p=pipeParts(x),o={id:String(Date.now())+Math.random(),nome:'Documento informado',tipo:'',tamanho:'',data:''};p.forEach(function(part,i){var m=part.match(/^([^:]+):\\s*(.*)$/);if(m){var k=keyNorm(m[1]),v=m[2].trim();if(/NOME|DOCUMENTO/.test(k))o.nome=v;else if(/TIPO/.test(k))o.tipo=v;else if(/DATA/.test(k))o.data=date(v)}else if(i===0)o.nome=part});return o}
  var p={nome:field('NOME'),nasc:date(field('DATA_NASCIMENTO')),idade:num(field('IDADE')),sexo:field('SEXO'),sangue:field('TIPO_SANGUINEO'),altura:height(field('ALTURA')),peso:num(field('PESO')),objetivoCorporal:field('OBJETIVO_CORPORAL'),academia:field('ACADEMIA'),academiaFreq:field('FREQUENCIA_ACADEMIA'),atividadeFisica:field('ATIVIDADE_FISICA'),trabalhoTipo:field('TRABALHO_TIPO'),horasSentado:field('HORAS_SENTADO'),horasPe:field('HORAS_EM_PE'),aguaDia:field('AGUA_POR_DIA'),urinaDia:field('FREQUENCIA_URINARIA'),evacuacaoDia:field('FREQUENCIA_EVACUACAO'),calorSuor:field('EXPOSICAO_CALOR_SUOR'),alimentacao:field('ALIMENTACAO'),cond:field('DOENCAS'),alerg:field('ALERGIAS'),circ:field('CIRURGIAS_INTERNACOES'),supl:field('SUPLEMENTOS'),info:field('INFORMACOES_IMPORTANTES'),emerg:field('CONTATO_EMERGENCIA'),tel:field('TELEFONE_EMERGENCIA'),menstruacao:date(field('ULTIMA_MENSTRUACAO')),ciclo:field('CICLO_MENSTRUAL'),duracaoMenstr:field('DURACAO_MENSTRUACAO'),sexoFreq:field('FREQUENCIA_SEXUAL'),camisinha:field('USO_PRESERVATIVO'),engravidou:field('JA_ENGRAVIDOU'),mae:field('JA_FOI_MAE'),gestacoes:field('NUMERO_GESTACOES'),reproObs:field('HISTORICO_REPRODUTIVO'),prevColo:date(field('ULTIMO_PREVENTIVO_COLO')),mamografia:date(field('ULTIMA_MAMOGRAFIA')),ist:date(field('ULTIMO_TESTE_IST')),hpv:date(field('VACINA_HPV')),prevProx:date(field('PROXIMO_PREVENTIVO')),prevObs:field('OBSERVACOES_PREVENCAO'),dorcelaxFreq:field('FREQUENCIA_DORCELAX'),paracetamolFreq:field('FREQUENCIA_PARACETAMOL'),outrosDor:field('OUTROS_REMEDIOS_DOR'),catapora:field('JA_TEVE_CATAPORA'),cataporaQuando:field('QUANDO_CATAPORA')};
  var medText=field('MEDICAMENTOS'),sint=field('ULTIMO_SINTOMA'),local=field('LOCAL_SINTOMA'),data=field('DATA_INICIO_SINTOMA'),inten=field('INTENSIDADE'),outros=field('OUTROS_SINTOMAS');
- var n=parseInt((inten.match(/\d+/)||['0'])[0],10)||0;
+ var n=parseInt((inten.match(/\\d+/)||['0'])[0],10)||0;
  var dores=sint&&sint.toLowerCase()!=='não informado'?[{data:data||new Date().toISOString().slice(0,16),local:local||'Não informado',int:Math.max(0,Math.min(10,n)),tipo:'',freq:'',gatilho:'',sint:outros?sint+' — '+outros:sint,obs:'Importado da IA'}]:[];
  var ct=field('CONSULTAS'),et=field('EXAMES');
- var consultas=ct&&ct.toLowerCase()!=='não informado'?splitRecords(ct).map(function(x){var m=x.match(/^(\d{1,2}\/\d{1,2}\/\d{4})\s*[:\-]?\s*(.*)$/);return {data:m?date(m[1]):'',esp:'',med:'',mot:m?m[2]:x,perg:'',obs:'Importado da IA',ret:''}}):[];
- var exames=et&&et.toLowerCase()!=='não informado'?splitRecords(et).map(function(x){var m=x.match(/^(.*?)(?:\s*\((\d{1,2}\/\d{1,2}\/\d{4})\))$/);return {nome:m?m[1].trim():'Exame informado',data:m?date(m[2]):'',res:m?m[1].trim():x,obs:'Importado da IA'}}):[];
+ var consultas=ct&&ct.toLowerCase()!=='não informado'?splitRecords(ct).map(function(x){var m=x.match(/^(\\d{1,2}\\/\\d{1,2}\\/\\d{4})\\s*[:\\-]?\\s*(.*)$/);return {data:m?date(m[1]):'',esp:'',med:'',mot:m?m[2]:x,perg:'',obs:'Importado da IA',ret:''}}):[];
+ var exames=et&&et.toLowerCase()!=='não informado'?splitRecords(et).map(function(x){var m=x.match(/^(.*?)(?:\\s*\\((\\d{1,2}\\/\\d{1,2}\\/\\d{4})\\))$/);return {nome:m?m[1].trim():'Exame informado',data:m?date(m[2]):'',res:m?m[1].trim():x,obs:'Importado da IA'}}):[];
  var meds=medText&&medText.toLowerCase()!=='não informado'?splitRecords(medText).map(function(x){return {nome:x,dose:'',freq:'',inicio:'',fim:'',pres:'',obs:'Importado da IA'}}):[];
  var vt=field('SINAIS_VITAIS'),v=vt&&vt.toLowerCase()!=='não informado'?splitRecords(vt).map(parseVital):[];
  var vx=field('VACINAS'),vax=vx&&vx.toLowerCase()!=='não informado'?splitRecords(vx).map(parseVaccine).filter(function(x){return x.nome}):[];
@@ -128,7 +119,7 @@ function normalizarFichaIA(raw){
 }
 function atualizarProgresso(p,step,status){var bar=$('importProgress'),pct=$('importPercent'),st=$('importStep'),msg=$('importStatus');if(bar)bar.style.width=p+'%';if(pct)pct.textContent=p+'%';if(st)st.textContent=step;if(msg)msg.textContent=status}
 function esperar(ms){return new Promise(function(resolve){setTimeout(resolve,ms)})}
-function criarDiagnosticoImportacao(code,step,error,raw){var box=$('importDiagnostic'),diag={versao:'V4.56',codigo:code,etapa:step,mensagem:String(error&&error.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error&&error.stack||'').split('\n').slice(0,4).join('\n')};if(box){box.style.display='block';box.innerHTML='<div class="alert danger"><b>🔎 Diagnóstico da falha</b><br>Versão: '+esc(diag.versao)+' · Etapa: '+esc(diag.etapa)+'<br>Código: <b>'+esc(diag.codigo)+'</b><pre style="white-space:pre-wrap;word-break:break-word">'+esc(JSON.stringify(diag,null,2))+'</pre></div>'}console.error('[Minha Saúde IA]',diag)}
+function criarDiagnosticoImportacao(code,step,error,raw){var box=$('importDiagnostic'),diag={versao:'V4.60',codigo:code,etapa:step,mensagem:String(error&&error.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error&&error.stack||'').split('\n').slice(0,4).join('\n')};if(box){box.style.display='block';box.innerHTML='<div class="alert danger"><b>🔎 Diagnóstico da falha</b><br>Versão: '+esc(diag.versao)+' · Etapa: '+esc(diag.etapa)+'<br>Código: <b>'+esc(diag.codigo)+'</b><pre style="white-space:pre-wrap;word-break:break-word">'+esc(JSON.stringify(diag,null,2))+'</pre></div>'}console.error('[Minha Saúde IA]',diag)}
 function importarNormalizado(n){
  var pk=['nome','nasc','idade','sexo','sangue','altura','peso','objetivoCorporal','academia','academiaFreq','atividadeFisica','trabalhoTipo','horasSentado','horasPe','aguaDia','urinaDia','evacuacaoDia','calorSuor','alimentacao','cond','alerg','circ','supl','info','emerg','tel','menstruacao','ciclo','duracaoMenstr','sexoFreq','camisinha','engravidou','mae','gestacoes','reproObs','prevColo','mamografia','ist','hpv','prevProx','prevObs','dorcelaxFreq','paracetamolFreq','outrosDor','catapora','cataporaQuando'],has=function(k){var v=String(n.p[k]||'').trim();return v&&v.toLowerCase()!=='não informado'};
  if(n.dores.length)set(K.d,get(K.d).concat(n.dores));
