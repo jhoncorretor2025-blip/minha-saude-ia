@@ -1,5 +1,5 @@
 {
-  "version": "V4.63",
-  "updatedAt": "2026-09-27T22:05:00Z",
-  "changes": "Organização da navegação: Nutrição, Sono e Bem-estar e Histórico familiar foram movidos para a nova aba Complementos."
+  "version": "V4.64",
+  "updatedAt": "2026-09-27T22:25:00Z",
+  "changes": "Controle diário de anticoncepcional para perfil feminino: horário, lembrete e registro de tomada ou não tomada por dia."
 }
