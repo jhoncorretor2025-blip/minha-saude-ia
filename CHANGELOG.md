@@ -1,5 +1,14 @@
 # Changelog — Minha Saúde IA
 
+## V4.91 — Verificador de consistência
+- 🔍 Nova área para verificar a organização dos dados.
+- 📅 Detecta datas inválidas.
+- 🔄 Detecta períodos invertidos em medicamentos e ciclos.
+- 🔎 Aponta possíveis duplicados.
+- 🔗 Detecta registros de doses sem rotina correspondente.
+- 🛡️ Não interpreta exames nem faz diagnóstico.
+
+
 ## V4.90 — Lixeira e restauração
 - 🗑️ Registros principais podem ser movidos para uma Lixeira em vez de apagados diretamente.
 - ♻️ Itens da Lixeira podem ser restaurados.
