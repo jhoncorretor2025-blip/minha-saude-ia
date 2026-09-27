@@ -1,31 +1,8 @@
 /* Minha Saúde IA — aplicação principal V4.70 */
 
-const K={ciclo:'msa2_ciclo_menstrual',d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',p:'msa2_perfil',v:'msa2_vitais',r:'msa2_lembretes',vax:'msa2_vacinas',fam:'msa2_familia',doc:'msa2_documentos',nutri:'msa2_nutri',suplReg:'msa2_suplementos',food:'msa2_reacoes_alimentares',agua:'msa2_hidratacao',sono:'msa2_sono',bem:'msa2_bemestar',gat:'msa2_gatilhos',medRot:'msa2_medicamentos_rotina',medTaken:'msa2_medicamentos_tomados',anticoncepcional:'msa2_anticoncepcional'};
-const LEGACY_KEYS={msa_dores:'msa2_dores',msa_consultas:'msa2_consultas',msa_meds:'msa2_meds',msa_exames:'msa2_exames',msa_perfil:'msa2_perfil',msa_vitais:'msa2_vitais',msa_lembretes:'msa2_lembretes',msa_vacinas:'msa2_vacinas',msa_familia:'msa2_familia',msa_documentos:'msa2_documentos'};
-function lerStorage(k){
- try{
-  let raw=window.msaStorage.getItem(k);
-  if(!raw){
-   const legacy=Object.keys(LEGACY_KEYS).find(x=>LEGACY_KEYS[x]===k&&window.msaStorage.getItem(x));
-   if(legacy){raw=window.msaStorage.getItem(legacy);try{window.msaStorage.setItem(k,raw)}catch(e){}}
-  }
-  if(!raw)return [];
-  const parsed=JSON.parse(raw);
-  if(Array.isArray(parsed))return parsed;
-  if(k===K.p&&parsed&&typeof parsed==='object')return [parsed];
-  return [];
- }catch(e){console.warn('[Minha Saúde IA] leitura protegida:',k,e);return []}
-}
-const get=k=>lerStorage(k);
-const set=(k,v)=>{
- const json=JSON.stringify(v);
- try{
-  const old=window.msaStorage.getItem(k);
-  if(old&&old!==json&&old.length<=300000&&!k.startsWith('msa2_backup_'))window.msaStorage.setItem('msa2_backup_'+k,old);
-  window.msaStorage.setItem(k,json);
-  return true;
- }catch(e){console.error('[Minha Saúde IA] falha ao salvar',k,e);return false}
-};
+const K=window.MSA_K||window.K;
+const get=k=>window.MSAStorage.get(k);
+const set=(k,v)=>window.MSAStorage.set(k,v);
 const $=x=>document.getElementById(x);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 function atualizarURLPagina(id,modo){
