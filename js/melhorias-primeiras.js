@@ -118,6 +118,62 @@ function attachDraftHandlers(){
     });
   });
 }
+
+/* ===== V4.89 — prevenção de registros duplicados ===== */
+const DUP_CONFIG={
+  dorForm:{key:K.d,fields:['dData','dLocal','dInt','dTipo','dSint'],map:{dData:'data',dLocal:'local',dInt:'int',dTipo:'tipo',dSint:'sint'}},
+  cForm:{key:K.c,fields:['cData','cEsp','cMed','cMot'],map:{cData:'data',cEsp:'esp',cMed:'med',cMot:'mot'}},
+  mForm:{key:K.m,fields:['mNome','mDose','mInicio'],map:{mNome:'nome',mDose:'dose',mInicio:'inicio'}},
+  eForm:{key:K.e,fields:['eData','eNome','eRes'],map:{eData:'data',eNome:'nome',eRes:'res'}},
+  vForm:{key:K.v,fields:['vData','vPeso','vPressao','vFC','vTemp','vGlic','vSat'],map:{vData:'data',vPeso:'peso',vPressao:'pressao',vFC:'fc',vTemp:'temp',vGlic:'glic',vSat:'sat'}},
+  rForm:{key:K.r,fields:['rNome','rData','rTipo'],map:{rNome:'nome',rData:'data',rTipo:'tipo'}},
+  vaxForm:{key:K.vax,fields:['vaxNome','vaxData'],map:{vaxNome:'nome',vaxData:'data'}},
+  famForm:{key:K.fam,fields:['famParente','famInfo'],map:{famParente:'parente',famInfo:'info'}},
+  nutriForm:{key:K.nutri,fields:['nutriData','nutriTexto'],map:{nutriData:'data',nutriTexto:'texto'}},
+  suplForm:{key:K.suplReg,fields:['suplNome','suplDose','suplHora'],map:{suplNome:'nome',suplDose:'dose',suplHora:'hora'}},
+  foodForm:{key:K.food,fields:['foodNome','foodReacao','foodData'],map:{foodNome:'nome',foodReacao:'reacao',foodData:'data'}},
+  aguaForm:{key:K.agua,fields:['aguaData','aguaQtd'],map:{aguaData:'data',aguaQtd:'qtd'}},
+  sonoForm:{key:K.sono,fields:['sonoData','sonoDormiu','sonoAcordou'],map:{sonoData:'data',sonoDormiu:'dormiu',sonoAcordou:'acordou'}},
+  bemForm:{key:K.bem,fields:['bemData','bemEstresse','bemAnsiedade'],map:{bemData:'data',bemEstresse:'estresse',bemAnsiedade:'ansiedade'}},
+  gatilhoForm:{key:K.gat,fields:['gatData','gatNome','gatSintoma'],map:{gatData:'data',gatNome:'gatilho',gatSintoma:'sintoma'}},
+  famFormPage:{key:K.fam,fields:['famParentePage','famCondPage','famIdadePage'],map:{famParentePage:'parente',famCondPage:'cond',famIdadePage:'idade'}},
+  medRotForm:{key:K.medRot,fields:['medRotNome','medRotDose','medRotHora'],map:{medRotNome:'nome',medRotDose:'dose',medRotHora:'hora'}},
+  lembFormPage:{key:K.r,fields:['lembNomePage','lembDataPage','lembTipoPage'],map:{lembNomePage:'nome',lembDataPage:'data',lembTipoPage:'tipo'}}
+};
+const normalizeDuplicate=v=>String(v??'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function duplicateFormSignature(form,cfg,useRecord,record){
+  return cfg.fields.map(id=>{
+    if(useRecord)return normalizeDuplicate(record?.[cfg.map[id]]);
+    const el=byId(id);
+    if(!el)return '';
+    if(el.type==='checkbox')return el.checked?'1':'0';
+    if(el.type==='radio')return el.checked?normalizeDuplicate(el.value):'';
+    return normalizeDuplicate(el.value);
+  }).join('|');
+}
+function isDuplicateForm(form,cfg){
+  const sig=duplicateFormSignature(form,cfg,false,null);
+  if(!sig||/^\|*$/.test(sig))return false;
+  return storage.get(cfg.key).some(record=>duplicateFormSignature(form,cfg,true,record)===sig);
+}
+function attachDuplicateGuard(){
+  Object.keys(DUP_CONFIG).forEach(id=>{
+    const form=byId(id);if(!form||form.dataset.msaDuplicateReady)return;
+    form.dataset.msaDuplicateReady='1';
+    form.addEventListener('submit',function(e){
+      const cfg=DUP_CONFIG[id];
+      if(isDuplicateForm(form,cfg)){
+        const ok=confirm('🔎 Já existe um registro igual ou muito parecido.\n\nDeseja salvar mesmo assim?\n\nCancelar evita um possível duplicado.');
+        if(!ok){
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          return false;
+        }
+      }
+    },true);
+  });
+}
+
 function startDrafts(){
   attachDraftHandlers();renderDraftPanel();
   document.addEventListener('click',e=>{
