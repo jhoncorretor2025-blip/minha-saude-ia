@@ -34,3 +34,13 @@ Antes de alterar funcionalidades:
 3. Conferir `version.json`.
 4. Incrementar a versão em qualquer alteração funcional.
 5. Registrar a alteração no `CHANGELOG.md`.
+
+
+## V4.61 — Recursos complementares
+O módulo `js/recursos.js` concentra funcionalidades adicionais para evitar que `app.js` cresça desnecessariamente:
+- modo emergência;
+- exportação JSON estruturada;
+- cofre local de documentos;
+- abertura e remoção de documentos locais.
+
+Esses recursos funcionam no navegador e não usam chave de API. O armazenamento continua local. Arquivos no cofre têm limite de 2 MB por item para reduzir o risco de esgotar o armazenamento do navegador.
