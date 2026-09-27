@@ -464,4 +464,40 @@ window.confirmarImportacaoPendente=function(){
 };
 
 
+
+/* ===== V5.03 — perfis familiares locais ===== */
+const FAMILY_REG_KEY='msa3_perfis_locais';
+function readFamilyRegistry(){try{return JSON.parse(window.localStorage.getItem(FAMILY_REG_KEY)||'[]')}catch(e){return[]}}
+function writeFamilyRegistry(a){try{window.localStorage.setItem(FAMILY_REG_KEY,JSON.stringify(a.slice(-30)));return true}catch(e){return false}}
+function profileSlug(v){return String(v||'perfil').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9_-]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||('perfil-'+Date.now())}
+function currentProfileId(){return String(window.msaStoragePerfil||new URLSearchParams(location.search).get('perfil')||'').trim()}
+function profileURL(id){return location.origin+location.pathname+'?perfil='+encodeURIComponent(id)}
+function ensureFamilyProfilesUI(){
+ const toolsGroup=[...document.querySelectorAll('#nav .nav-group')].find(g=>g.querySelector('.nav-toggle[data-menu="tools"]')),menu=toolsGroup?.querySelector('.nav-menu');
+ if(menu&&!menu.querySelector('[data-tab="perfis-locais"]')){const b=document.createElement('button');b.type='button';b.setAttribute('data-tab','perfis-locais');b.textContent='👨‍👩‍👧‍👦 Perfis locais';menu.appendChild(b)}
+ if(byId('perfis-locais')){renderFamilyProfiles();return}
+ const host=byId('main-content')||document.querySelector('.wrap')||document.body,sec=document.createElement('section');sec.id='perfis-locais';
+ sec.innerHTML='<div class="card"><div class="dash-section-title"><div><h2>👨‍👩‍👧‍👦 Perfis locais</h2><div class="muted">Separe históricos de pessoas diferentes no mesmo navegador. Cada perfil usa uma área local independente.</div></div></div><form id="msaFamilyProfileForm" class="grid2"><label>Nome do perfil<input id="msaFamilyProfileName" required placeholder="Ex.: João, Maria, Filho"></label><div style="align-self:end"><button class="btn green" type="submit">➕ Criar perfil</button></div></form><div class="alert info" style="margin-top:12px">🔒 Criar um perfil gera um link local separado. Os dados não são enviados para um servidor.</div><div id="msaFamilyProfileList" class="list" style="margin-top:13px"></div></div>';
+ host.appendChild(sec);
+ sec.querySelector('#msaFamilyProfileForm').addEventListener('submit',e=>{
+  e.preventDefault();const name=byId('msaFamilyProfileName').value.trim();let id=profileSlug(name);const reg=readFamilyRegistry();while(reg.some(x=>x.id===id))id=profileSlug(name)+'-'+Math.random().toString(36).slice(2,6);reg.push({id,name,createdAt:new Date().toISOString()});writeFamilyRegistry(reg);e.target.reset();renderFamilyProfiles();
+ });
+ renderFamilyProfiles();
+}
+function renderFamilyProfiles(){
+ const box=byId('msaFamilyProfileList');if(!box)return;
+ const reg=readFamilyRegistry(),current=currentProfileId();
+ const items=[{id:'',name:'Perfil atual padrão',createdAt:null},...reg.filter(x=>x.id!==current)];
+ box.innerHTML=items.map(x=>{
+   const active=(x.id===current)||(!x.id&&!current),href=x.id?profileURL(x.id):location.origin+location.pathname;
+   return '<div class="item"><div class="itemtop"><b>👤 '+esc(x.name)+'</b>'+(active?'<span class="tag">Atual</span>':'')+'</div><p>'+ (x.createdAt?'Criado em '+esc(new Date(x.createdAt).toLocaleString('pt-BR')):'Use o perfil padrão do navegador')+'</p><div class="row"><button class="btn '+(active?'secondary':'green')+' small" type="button" '+(active?'disabled':'')+' data-family-open="'+esc(href)+'">'+(active?'✅ Perfil ativo':'↔️ Abrir perfil')+'</button><button class="btn secondary small" type="button" data-family-copy="'+esc(href)+'">🔗 Copiar link</button></div></div>';
+ }).join('')||'<div class="empty">Nenhum perfil local criado.</div>';
+}
+document.addEventListener('click',e=>{
+ const open=e.target.closest&&e.target.closest('[data-family-open]');if(open)location.href=open.getAttribute('data-family-open');
+ const copy=e.target.closest&&e.target.closest('[data-family-copy]');if(copy){const url=copy.getAttribute('data-family-copy');navigator.clipboard?.writeText(url).then(()=>alert('🔗 Link do perfil copiado.')).catch(()=>prompt('Copie o link:',url))}
+});
+document.addEventListener('DOMContentLoaded',()=>setTimeout(ensureFamilyProfilesUI,700));
+
+
 })();
