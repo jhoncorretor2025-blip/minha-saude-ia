@@ -1,5 +1,5 @@
 {
-  "version": "V4.48",
-  "updatedAt": "2026-09-27T22:50:00Z",
-  "changes": "Corrige a inserção do perfil visual na Home, exibindo foto, nome, idade e peso no início da tela"
+  "version": "V4.49",
+  "updatedAt": "2026-09-27T23:05:00Z",
+  "changes": "Amplia a Home e a Carteirinha com tipo sanguíneo, alergias conhecidas, condições/diagnósticos contínuos, altura, peso e data de nascimento; adiciona tipo sanguíneo ao perfil e à importação por IA"
 }
