@@ -1,5 +1,5 @@
 {
-  "version": "V5.07",
-  "updatedAt": "2026-09-28T04:30:00Z",
-  "changes": "Painel de acessibilidade com tamanho de texto, contraste, espaçamento e redução de animações."
+  "version": "V5.08",
+  "updatedAt": "2026-09-28T05:10:00Z",
+  "changes": "Exportação FHIR R4 para portabilidade dos dados organizados, com mapeamento de perfil, condições, sintomas, sinais vitais, exames, medicamentos, consultas e vacinas."
 }
