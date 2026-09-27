@@ -1,5 +1,5 @@
 {
-  "version": "V4.82",
-  "updatedAt": "2026-09-27T21:20:00Z",
-  "changes": "Guia para iniciantes transformado em card minimizado expansível, mantendo o passo a passo completo disponível ao clicar."
+  "version": "V4.83",
+  "updatedAt": "2026-09-27T21:35:00Z",
+  "changes": "Linha do tempo limpa: placeholders como “valor”, “Não informado” e intensidade 0 não aparecem como informação registrada."
 }
