@@ -543,4 +543,53 @@ function ensureSyncUI(){
 document.addEventListener('DOMContentLoaded',()=>setTimeout(ensureSyncUI,750));
 
 
+
+/* ===== V5.05 — backup criptografado local ===== */
+function bytesToB64(bytes){let s='';for(let i=0;i<bytes.length;i+=0x8000)s+=String.fromCharCode(...bytes.subarray(i,i+0x8000));return btoa(s)}
+function b64ToBytes(str){const s=atob(str),a=new Uint8Array(s.length);for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return a}
+async function deriveCryptoKey(password,salt){
+ const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);
+ return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:250000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+async function encryptPackage(pkg,password){
+ if(!window.crypto?.subtle)throw new Error('Este navegador não oferece Web Crypto.');
+ const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),key=await deriveCryptoKey(password,salt);
+ const data=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(JSON.stringify(pkg)));
+ return {app:'Minha Saúde IA',formatVersion:'encrypted-1',algorithm:'AES-GCM',kdf:'PBKDF2-SHA256',iterations:250000,salt:bytesToB64(salt),iv:bytesToB64(iv),data:bytesToB64(new Uint8Array(data))};
+}
+async function decryptPackage(pkg,password){
+ const salt=b64ToBytes(pkg.salt),iv=b64ToBytes(pkg.iv),key=await deriveCryptoKey(password,salt),raw=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,b64ToBytes(pkg.data));
+ return JSON.parse(new TextDecoder().decode(raw));
+}
+window.msaExportEncrypted=async function(){
+ const p=prompt('🔐 Crie uma senha para proteger o backup criptografado. Use uma senha que você conseguirá lembrar.');
+ if(!p||p.length<8)return alert('Use uma senha com pelo menos 8 caracteres.');
+ try{const enc=await encryptPackage(buildSyncPackage(),p);downloadLocal('minha-saude-ia-backup-criptografado-'+new Date().toISOString().slice(0,10)+'.msaenc',JSON.stringify(enc),'application/octet-stream');alert('✅ Backup criptografado criado. A senha não é armazenada no aplicativo.');}catch(e){alert('❌ Não foi possível criptografar: '+(e.message||e))}
+};
+window.msaImportEncrypted=async function(file){
+ const password=prompt('🔑 Digite a senha do backup criptografado.');
+ if(!password)return;
+ try{
+  const pkg=JSON.parse(await file.text());
+  if(pkg?.formatVersion!=='encrypted-1'||pkg?.algorithm!=='AES-GCM')throw new Error('Formato criptografado inválido.');
+  const inner=await decryptPackage(pkg,password);
+  if(inner.app!=='Minha Saúde IA'||!inner.data)throw new Error('Conteúdo incompatível.');
+  if(!confirm('🔓 Backup descriptografado com sucesso. Ele será mesclado ao perfil atual sem apagar os dados existentes. Continuar?'))return;
+  SYNC_KEYS.forEach(([name])=>{const inc=Array.isArray(inner.data[name])?inner.data[name]:[];if(!inc.length)return;const key=K[name],before=storage.get(key),after=name==='p'?[Object.assign({},before[0]||{},Object.keys(before[0]||{}).length?{}:inc[0])]:mergeSyncArray(before,inc);if(JSON.stringify(before)!==JSON.stringify(after))storage.set(key,after)});
+  try{render();renderNovosModulos();renderDocumentosSaude()}catch(e){}
+  alert('✅ Backup criptografado restaurado com sucesso.');
+ }catch(e){alert('❌ Não foi possível abrir o backup. Verifique a senha e o arquivo.')}
+};
+function ensureEncryptedBackupUI(){
+ const sec=byId('backup');if(!sec||byId('msaEncryptedBackup'))return;
+ const card=document.createElement('div');card.id='msaEncryptedBackup';card.className='card';card.style.marginTop='13px';
+ card.innerHTML='<h2>🔐 Backup criptografado</h2><div class="muted">Crie um arquivo protegido por senha usando criptografia do navegador. A senha não fica armazenada no sistema.</div><div class="row" style="margin-top:12px"><button class="btn green" type="button" id="msaEncryptExport">🔐 Criar backup protegido</button><input id="msaEncryptedFile" type="file" accept=".msaenc,application/octet-stream" style="display:none"><button class="btn secondary" type="button" id="msaEncryptImport">♻️ Restaurar backup protegido</button></div><div class="alert warn" style="margin-top:12px">⚠️ Este recurso protege o arquivo exportado. O PIN atual continua sendo apenas um bloqueio da interface; criptografia de todo o armazenamento local exige uma migração arquitetural específica.</div>';
+ sec.appendChild(card);
+ card.querySelector('#msaEncryptExport').addEventListener('click',window.msaExportEncrypted);
+ card.querySelector('#msaEncryptImport').addEventListener('click',()=>card.querySelector('#msaEncryptedFile').click());
+ card.querySelector('#msaEncryptedFile').addEventListener('change',e=>{const f=e.target.files[0];if(f)window.msaImportEncrypted(f);e.target.value=''});
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(ensureEncryptedBackupUI,780));
+
+
 })();
