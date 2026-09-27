@@ -1,5 +1,5 @@
 {
-  "version": "V4.50",
-  "updatedAt": "2026-09-27T23:25:00Z",
-  "changes": "Torna o sexo obrigatório no perfil, com opções Masculino, Feminino e Outro, bloqueia o salvamento sem seleção e direciona automaticamente para completar o dado quando uma ficha importada não o possui"
+  "version": "V4.51",
+  "updatedAt": "2026-09-27T23:50:00Z",
+  "changes": "Adiciona páginas de Nutrição e Suplementação, Sono e Bem-estar Mental, Histórico Familiar e Genética e Central de Lembretes e Rotina, com registros locais, hidratação, suplementos, sono, estresse, gatilhos, antecedentes, rotina de medicamentos, confirmação de tomada e controle de estoque."
 }
