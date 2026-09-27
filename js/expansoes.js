@@ -452,7 +452,7 @@ window.confirmarImportacaoPendente=function(){
   else if(typeof importarNormalizado==='function')importarNormalizado(chosen);
   (plan?.profile||[]).forEach(x=>{
     const el=document.querySelector('input[name="ic_'+CSS.escape(x.id)+'"]:checked');
-    if(el?.value==='import'){
+    if(el && el.value==='import'){
       const p=storage.get(K.p)[0]||{};p[x.field]=x.valueIncoming;storage.set(K.p,[p]);
     }
   });
