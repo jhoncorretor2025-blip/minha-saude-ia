@@ -1,5 +1,5 @@
 {
-  "version": "V4.35",
-  "updatedAt": "2026-09-27T20:40:00Z",
-  "changes": "Melhora o guia da importação por IA com escolha explícita entre ChatGPT e Gemini, mantendo o prompt visível e o passo a passo antes de abrir a IA"
+  "version": "V4.37",
+  "updatedAt": "2026-09-27T20:55:00Z",
+  "changes": "Amplia o perfil e a importação por IA com frequência de uso de Dorcelax e paracetamol, outros remédios para dor/febre e histórico de catapora, incluindo esses dados nos resumos"
 }
