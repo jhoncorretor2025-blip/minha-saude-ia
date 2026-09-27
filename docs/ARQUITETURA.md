@@ -44,3 +44,11 @@ O módulo `js/recursos.js` concentra funcionalidades adicionais para evitar que 
 - abertura e remoção de documentos locais.
 
 Esses recursos funcionam no navegador e não usam chave de API. O armazenamento continua local. Arquivos no cofre têm limite de 2 MB por item para reduzir o risco de esgotar o armazenamento do navegador.
+
+
+## V4.66 — Isolamento local dos dados
+- Dados pessoais pertencem ao **navegador/dispositivo do usuário** e não ficam embutidos na página publicada.
+- Não existe banco de dados de saúde, API de armazenamento ou envio automático de dados pessoais.
+- O site publicado contém somente código/interface; cada navegador cria e lê seu próprio armazenamento local (localStorage).
+- Nunca adicionar dados pessoais reais, perfis de exemplo identificáveis ou fichas de usuário aos arquivos do repositório.
+- Se outra pessoa abrir a mesma URL em outro dispositivo/navegador e enxergar dados pessoais, verificar primeiro se ela está usando o mesmo perfil de navegador/dispositivo ou algum mecanismo de compartilhamento do navegador; o GitHub Pages, por si só, não compartilha localStorage entre dispositivos.
