@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V4.97 — Histórico de alterações
+- 🕘 Registro local das gravações feitas no aplicativo.
+- 🔒 O histórico guarda metadados da alteração, não uma cópia do conteúdo clínico.
+- 🧹 Pode ser limpo separadamente dos dados de saúde.
+
+
 ## V4.96 — QR Code de emergência
 - 📱 Geração de QR Code para o cartão de emergência.
 - 🔒 Conteúdo limitado ao resumo do cartão pessoal.
