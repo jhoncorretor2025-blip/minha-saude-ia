@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Saúde IA — V5.14</title>
+<title>Minha Saúde IA — V5.15</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -40,6 +40,22 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
  .nav-menu{min-width:210px;max-width:calc(100vw - 24px)}
 }
 
+/* V5.15 — Ferramentas em 2 colunas para reduzir a altura do menu */
+.tools-menu{
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ min-width:430px;
+ gap:3px 5px;
+}
+.tools-menu button{min-width:0}
+.tools-group>.tools-menu{left:auto;right:0}
+@media(max-width:760px){
+ .tools-menu{
+  min-width:0;
+  width:calc(100vw - 24px);
+  grid-template-columns:repeat(2,minmax(0,1fr));
+ }
+}
+ 
 /* V4.82 — redesign visual mobile-first */
 :root{
  --bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#667085;--blue:#2563eb;--blue2:#4f46e5;
@@ -164,7 +180,7 @@ footer{padding-bottom:20px}
 @media(max-width:430px){#cicloMenuBtn{font-size:11px}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V5.14">
+  <link rel="stylesheet" href="css/design-system.css?v=V5.15">
 </head>
 <body>
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
@@ -305,9 +321,9 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
  <div class="nav-group">
   <button type="button" id="cicloMenuBtn" data-tab="perfil" onclick="setTimeout(function(){var f=document.getElementById('cicloForm');if(f){f.scrollIntoView({behavior:'smooth',block:'start');}},120)">🌸 Ciclo menstrual</button>
  </div>
- <div class="nav-group">
+ <div class="nav-group tools-group">
   <button type="button" class="nav-toggle" data-menu="tools">🛠️ Ferramentas ▾</button>
-  <div class="nav-menu">
+  <div class="nav-menu tools-menu">
    <button type="button" data-tab="relatorios">📊 Relatórios</button>
    <button type="button" data-tab="exportar">📤 Exportar</button>
    <button type="button" data-tab="documentos">📄 Documentos</button>
@@ -1020,7 +1036,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V5.14. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V5.15. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -1045,8 +1061,8 @@ REGRAS:
 <script src="js/core/storage.js?v=V5.12" defer></script>
 <script src="js/core/utils.js?v=V5.12" defer></script>
 <script src="js/menu.js?v=V5.12" defer></script>
-<script src="js/app.js?v=V5.14" defer></script>
-<script src="js/recursos.js?v=V5.14" defer></script>
+<script src="js/app.js?v=V5.15" defer></script>
+<script src="js/recursos.js?v=V5.15" defer></script>
 
 
 <script>
@@ -1063,11 +1079,11 @@ function iniciarImportacao(){
  },80);
 }
 </script>
-<script src="js/importacao.js?v=V5.14" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/melhorias-primeiras.js?v=V5.14" defer></script>
-<script src="js/expansoes.js?v=V5.14" defer></script>
-<script src="js/importacao-fluxo-v514.js?v=V5.14" defer></script>
-<script src="js/melhorias-v513.js?v=V5.14" defer></script>
+<script src="js/importacao.js?v=V5.15" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/melhorias-primeiras.js?v=V5.15" defer></script>
+<script src="js/expansoes.js?v=V5.15" defer></script>
+<script src="js/importacao-fluxo-v514.js?v=V5.15" defer></script>
+<script src="js/melhorias-v513.js?v=V5.15" defer></script>
 
 
 <script>
@@ -1230,7 +1246,7 @@ async function verificarNovaVersao(){
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
   const data=await r.json();
-  if(data.version && data.version!=='V4.93'){
+  if(data.version && data.version!=='V5.15'){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
