@@ -1,5 +1,5 @@
 {
-  "version": "V4.9",
+  "version": "V4.10",
   "updatedAt": "2026-09-27T00:00:00Z",
-  "changes": "Acionamento seguro da importação, tela de carregamento imediata e diagnóstico visível se o módulo externo falhar"
+  "changes": "Acionamento seguro da importação, tela de carregamento imediata, diagnóstico visível e alinhamento do módulo V4.10"
 }
