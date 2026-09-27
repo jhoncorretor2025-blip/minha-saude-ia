@@ -1,5 +1,5 @@
 {
-  "version": "V4.7",
+  "version": "V4.8",
   "updatedAt": "2026-09-27T00:00:00Z",
-  "changes": "Módulo de importação IA separado em importacao.js para facilitar manutenção e correção da tela de carregamento"
+  "changes": "Módulo de importação IA separado em importacao.js e correção da execução assíncrona da tela de carregamento"
 }
