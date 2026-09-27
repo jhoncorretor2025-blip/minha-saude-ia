@@ -1,5 +1,5 @@
 {
-  "version": "V5.10",
-  "updatedAt": "2026-09-27T22:35:00Z",
-  "changes": "Chaves de armazenamento centralizadas em MSA_K nos módulos de melhorias e recursos, mantendo compatibilidade com as chaves existentes."
+  "version": "V5.11",
+  "updatedAt": "2026-09-27T22:50:00Z",
+  "changes": "API central de armazenamento ampliada com has, clear, raw e setJSON, preservando compatibilidade com get/set/remove."
 }
