@@ -1,5 +1,5 @@
 {
-  "version": "V5.20",
-  "updatedAt": "2026-09-27T23:40:00Z",
-  "changes": "Melhorias gráficas e de usabilidade: tema claro/escuro persistente, botão de alternância acessível, melhor contraste em cartões, formulários e tabelas no modo escuro e foco visual para navegação por teclado."
+  "version": "V5.21",
+  "updatedAt": "2026-09-27T23:55:00Z",
+  "changes": "Correção da V5.20: o bloco de tema escuro havia sido inserido dentro do HTML dos relatórios, fazendo código JavaScript aparecer na tela. O bloco foi reposicionado para o documento principal e os relatórios voltaram a gerar somente o conteúdo do relatório."
 }
