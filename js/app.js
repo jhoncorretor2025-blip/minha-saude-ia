@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V4.14 */
+/* Minha Saúde IA — aplicação principal V4.15 */
 
 const K={d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',p:'msa2_perfil'};
 const get=k=>JSON.parse(localStorage.getItem(k)||'[]'), set=(k,v)=>localStorage.setItem(k,JSON.stringify(v)), $=x=>document.getElementById(x);
