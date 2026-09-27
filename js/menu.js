@@ -136,7 +136,7 @@
         mobileSection('IA e ferramentas',[
           ['ia','🤖 IA'],['importar','⚡ Importar com IA'],['buscar','🔎 Buscar'],
           ['perguntas','❓ Perguntas para consulta'],['avisos','🔔 Central de avisos'],
-          ['carteirinha','🪪 Carteirinha']
+          ['carteirinha','🪪 Carteirinha'],['configuracoes','⚙️ Configurações']
         ])+
         '<div class="msa-mobile-section"><div class="msa-mobile-section-title">Ações especiais</div>'+
           '<div class="msa-mobile-links"><button type="button" class="danger" data-mobile-emergency="1">🚨 Modo emergência</button>'+
