@@ -1,4 +1,4 @@
-/* Minha Saúde IA - módulo de importação V4.12 */
+/* Minha Saúde IA - módulo de importação V4.14 */
 function copiarPrompt(){
  const t=$('promptIA');
  if(!t)return;
@@ -19,25 +19,38 @@ function normalizarImport(d){
 }
 function normalizarFichaIA(raw){
  var names=['NOME','DATA_NASCIMENTO','IDADE','SEXO','ALTURA','PESO','DOENCAS','ALERGIAS','CIRURGIAS_INTERNACOES','MEDICAMENTOS','SUPLEMENTOS','ULTIMO_SINTOMA','LOCAL_SINTOMA','DATA_INICIO_SINTOMA','INTENSIDADE','OUTROS_SINTOMAS','CONSULTAS','EXAMES','INFORMACOES_IMPORTANTES'];
- var values={},lines=String(raw||'').replace(/\r/g,'').split('\n'),current='';
- lines.forEach(function(line){var m=line.trim().match(/^\[([A-Z0-9_]+)\]\s*$/);if(m&&names.indexOf(m[1])>=0){current=m[1];values[current]='';return}if(current)values[current]+=(values[current]?'\n':'')+line});
+ var values={},lines=String(raw||'').replace(/^\uFEFF/,'').replace(/\r/g,'').split('\n'),current='';
+ lines.forEach(function(line){
+  var clean=line.trim();
+  var m=clean.match(/^\[([^\]]+)\]\s*(.*)$/);
+  if(m){
+   var key=String(m[1]).trim().toUpperCase();
+   if(names.indexOf(key)>=0){current=key;values[current]=m[2]||'';return}
+  }
+  if(current)values[current]+=(values[current]?'\n':'')+line;
+ });
  function field(n){var v=String(values[n]||'').trim();return /^não informado$/i.test(v)?'':v}
- function date(v){var m=String(v||'').trim().match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);return m?m[3]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[1]).padStart(2,'0'):String(v||'').trim()}
+ function date(v){
+  var s=String(v||'').trim(),m=s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+  if(m)return m[3]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[1]).padStart(2,'0');
+  return s;
+ }
  function num(v){var m=String(v||'').replace(',','.').match(/-?\d+(?:\.\d+)?/);return m?m[0]:''}
- function height(v){var n=num(v);if(!n)return '';var x=Number(n);return /m\b/i.test(String(v))&&x<3?String(Math.round(x*100)):String(x)}
+ function height(v){var n=num(v);if(!n)return '';var x=Number(n);return /\bm\b/i.test(String(v))&&x<3?String(Math.round(x*100)):String(x)}
+ function splitRecords(text){return String(text||'').split(/;\s+/).map(function(x){return x.trim()}).filter(Boolean)}
  var p={nome:field('NOME'),nasc:date(field('DATA_NASCIMENTO')),idade:num(field('IDADE')),sexo:field('SEXO'),altura:height(field('ALTURA')),peso:num(field('PESO')),cond:field('DOENCAS'),alerg:field('ALERGIAS'),circ:field('CIRURGIAS_INTERNACOES'),supl:field('SUPLEMENTOS'),info:field('INFORMACOES_IMPORTANTES')};
- var med=field('MEDICAMENTOS'),sint=field('ULTIMO_SINTOMA'),local=field('LOCAL_SINTOMA'),data=field('DATA_INICIO_SINTOMA'),inten=field('INTENSIDADE'),outros=field('OUTROS_SINTOMAS');
+ var medText=field('MEDICAMENTOS'),sint=field('ULTIMO_SINTOMA'),local=field('LOCAL_SINTOMA'),data=field('DATA_INICIO_SINTOMA'),inten=field('INTENSIDADE'),outros=field('OUTROS_SINTOMAS');
  var n=parseInt((inten.match(/\d+/)||['0'])[0],10)||0;
  var dores=sint?[{data:data||new Date().toISOString().slice(0,16),local:local||'Não informado',int:Math.max(0,Math.min(10,n)),tipo:'',freq:'',gatilho:'',sint:outros?sint+' — '+outros:sint,obs:'Importado da IA'}]:[];
  var ct=field('CONSULTAS'),et=field('EXAMES');
- var consultas=ct?[{data:'',esp:'',med:'',mot:ct,perg:'',obs:'Importado da IA',ret:''}]:[];
- var exames=et?[{nome:'Exame informado',data:'',res:et,obs:'Importado da IA'}]:[];
- var meds=med?[{nome:med,dose:'',freq:'',inicio:'',fim:'',pres:'',obs:'Importado da IA'}]:[];
+ var consultas=splitRecords(ct).map(function(x){var m=x.match(/^(\d{1,2}\/\d{1,2}\/\d{4})\s*[:\-]?\s*(.*)$/);return {data:m?date(m[1]):'',esp:'',med:'',mot:m?m[2]:x,perg:'',obs:'Importado da IA',ret:''}});
+ var exames=splitRecords(et).map(function(x){var m=x.match(/^(.*?)(?:\s*\((\d{1,2}\/\d{1,2}\/\d{4})\))$/);return {nome:m?m[1].trim():'Exame informado',data:m?date(m[2]):'',res:m?m[1].trim():x,obs:'Importado da IA'}});
+ var meds=splitRecords(medText).map(function(x){return {nome:x,dose:'',freq:'',inicio:'',fim:'',pres:'',obs:'Importado da IA'}});
  return {p:p,dores:dores,consultas:consultas,meds:meds,exames:exames};
 }
 function atualizarProgresso(p,step,status){var bar=$('importProgress'),pct=$('importPercent'),st=$('importStep'),msg=$('importStatus');if(bar)bar.style.width=p+'%';if(pct)pct.textContent=p+'%';if(st)st.textContent=step;if(msg)msg.textContent=status}
 function esperar(ms){return new Promise(function(resolve){setTimeout(resolve,ms)})}
-function criarDiagnosticoImportacao(code,step,error,raw){var box=$('importDiagnostic'),diag={versao:'V4.12',codigo:code,etapa:step,mensagem:String(error&&error.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error&&error.stack||'').split('\n').slice(0,4).join('\n')};if(box){box.style.display='block';box.innerHTML='<div class="alert danger"><b>🔎 Diagnóstico da falha</b><br>Versão: '+esc(diag.versao)+' · Etapa: '+esc(diag.etapa)+'<br>Código: <b>'+esc(diag.codigo)+'</b><pre style="white-space:pre-wrap;word-break:break-word">'+esc(JSON.stringify(diag,null,2))+'</pre></div>'}console.error('[Minha Saúde IA]',diag)}
+function criarDiagnosticoImportacao(code,step,error,raw){var box=$('importDiagnostic'),diag={versao:'V4.14',codigo:code,etapa:step,mensagem:String(error&&error.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error&&error.stack||'').split('\n').slice(0,4).join('\n')};if(box){box.style.display='block';box.innerHTML='<div class="alert danger"><b>🔎 Diagnóstico da falha</b><br>Versão: '+esc(diag.versao)+' · Etapa: '+esc(diag.etapa)+'<br>Código: <b>'+esc(diag.codigo)+'</b><pre style="white-space:pre-wrap;word-break:break-word">'+esc(JSON.stringify(diag,null,2))+'</pre></div>'}console.error('[Minha Saúde IA]',diag)}
 function importarNormalizado(n){
  var pk=['nome','nasc','idade','sexo','altura','peso','cond','alerg','circ','supl','info'],has=function(k){var v=String(n.p[k]||'').trim();return v&&v.toLowerCase()!=='não informado'};
  if(n.dores.length)set(K.d,get(K.d).concat(n.dores));if(n.consultas.length)set(K.c,get(K.c).concat(n.consultas));if(n.meds.length)set(K.m,get(K.m).concat(n.meds));if(n.exames.length)set(K.e,get(K.e).concat(n.exames));
@@ -64,4 +77,4 @@ async function processarImportacao(){
  if(loading)loading.style.display='none';if(btn){btn.disabled=false;btn.textContent='✨ Importar e salvar'}
 }
 function limparImportacao(){if($('importIA'))$('importIA').value='';if($('resultadoImport'))$('resultadoImport').innerHTML=''}
-window._importacaoModuloV411=true;
+window._importacaoModuloV414=true;
