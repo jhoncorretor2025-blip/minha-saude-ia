@@ -1,5 +1,5 @@
 {
-  "version": "V4.98",
-  "updatedAt": "2026-09-28T00:55:00Z",
-  "changes": "Metas pessoais locais com indicadores de completude, água, registros e peso."
+  "version": "V4.99",
+  "updatedAt": "2026-09-28T01:10:00Z",
+  "changes": "Painel inicial personalizável: o usuário pode mostrar ou ocultar blocos da página inicial sem alterar seus dados."
 }
