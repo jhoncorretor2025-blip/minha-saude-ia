@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Saúde IA — V4.29</title>
+<title>Minha Saúde IA — V4.30</title>
 <style>
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
@@ -23,7 +23,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
 @media(max-width:760px){.grid4{grid-template-columns:1fr 1fr}.actions{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
 @media(max-width:430px){.actions{grid-template-columns:1fr}.wrap{padding:0 9px}.card{padding:15px}}
 
-/* V4.29 — menus definitivos */
+/* V4.30 — menus definitivos */
 .grouped-nav{display:flex;gap:8px;align-items:flex-start;overflow:visible;background:#fff;padding:8px;border-radius:18px;box-shadow:var(--shadow);position:relative;z-index:1000}
 .nav-group{position:relative;min-width:0}
 .nav-toggle{border:0;background:#f7f9fc;padding:10px 13px;border-radius:11px;color:var(--muted);font-weight:900;white-space:nowrap;user-select:none;cursor:pointer;font:inherit}
@@ -39,7 +39,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
  .nav-menu{min-width:210px;max-width:calc(100vw - 24px)}
 }
 <style>
-/* V4.29 — redesign visual mobile-first */
+/* V4.30 — redesign visual mobile-first */
 :root{
  --bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#667085;--blue:#2563eb;--blue2:#4f46e5;
  --green:#059669;--red:#dc2626;--yellow:#d97706;--border:#e6eaf0;--shadow:0 10px 28px rgba(15,23,42,.07);
@@ -85,7 +85,7 @@ footer{padding-bottom:20px}
  #onboarding>div{padding:19px}.onb-grid{grid-template-columns:1fr!important}
 }
 <style>
-/* V4.29 — painel de saúde */
+/* V4.30 — painel de saúde */
 .health-dashboard{overflow:hidden;background:linear-gradient(145deg,#fff 0%,#f7f9ff 100%)}
 .dash-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:15px}
 .dash-badge{font-size:10px;font-weight:800;letter-spacing:.08em;background:#e9efff;color:#315dcc;border-radius:999px;padding:7px 9px;white-space:nowrap}
@@ -104,7 +104,18 @@ footer{padding-bottom:20px}
 .dash-bar-label{font-size:9px;color:#788294;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55px}
 @media(max-width:700px){.dash-grid{grid-template-columns:1fr 1fr}.dash-insights{grid-template-columns:1fr 1fr}.dash-head{align-items:center}}
 @media(max-width:430px){.dash-metric b{font-size:24px}.dash-metric{padding:11px}.dash-mini strong{font-size:13px}}
-</style></style></style>
+<style>
+/* V4.30 — engajamento e acompanhamento diário */
+.engagement-card,.quick-register{border-radius:20px;background:#fff}
+.eng-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.eng-check{font-size:11px;font-weight:800;color:#2563eb;background:#eef4ff;border-radius:999px;padding:7px 9px}
+.moods{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:14px}.moods button{border:1px solid #e4e8ef;background:#fafbfe;border-radius:15px;padding:10px 4px;font-size:24px;cursor:pointer;transition:.18s}.moods button:hover{transform:translateY(-2px);border-color:#b9caf4;background:#f5f8ff}.moods small{display:block;font-size:10px;color:#687386;margin-top:4px}
+.eng-status{font-size:12px;color:#687386;margin-top:10px;padding:9px 11px;background:#f8faff;border-radius:12px}
+.progress-number{font-size:24px;color:#2563eb}.progress-track{height:11px;background:#edf1f7;border-radius:99px;overflow:hidden;margin:14px 0 9px}.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#2563eb,#7c3aed);border-radius:99px;transition:width .4s ease}.progress-missing{font-size:12px;color:#687386}.streak-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}.streak-row>div{background:#f8faff;border:1px solid #e7ebf3;border-radius:15px;padding:12px}.streak-row b,.streak-row small{display:block}.streak-row small{font-size:11px;color:#7a8494;margin-top:4px}
+.quick-register{display:flex;justify-content:space-between;gap:15px;align-items:center;background:linear-gradient(135deg,#eef4ff,#f7f2ff)}.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;min-width:290px}.quick-grid button{border:1px solid #dce5fa;background:#fff;border-radius:13px;padding:8px;font-size:19px;cursor:pointer;transition:.18s}.quick-grid button:hover{transform:translateY(-2px)}.quick-grid span{display:block;font-size:10px;color:#596579;margin-top:2px}
+.goal-list{display:grid;gap:8px;margin-top:12px}.goal{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #e7ebf2;border-radius:13px;cursor:pointer}.goal input{min-height:auto;width:18px;height:18px}.goal.done{background:#f0fdf4;border-color:#cdeed9}.discoveries{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}.discovery{background:#f8faff;border:1px solid #e6ebf5;border-radius:15px;padding:13px}.discovery b{display:block;font-size:20px;margin-bottom:4px}.discovery span{font-size:11px;color:#687386;line-height:1.35}
+@media(max-width:700px){.moods{grid-template-columns:repeat(5,1fr)}.quick-register{display:block}.quick-grid{margin-top:13px;min-width:0}.discoveries{grid-template-columns:1fr 1fr}}
+@media(max-width:430px){.moods small{font-size:8px}.moods button{padding:8px 2px}.streak-row{grid-template-columns:1fr 1fr}.discoveries{grid-template-columns:1fr}}
+</style></style></style></style>
 </head>
 <body>
 <div id="importDiagnostic" style="display:none;margin-top:12px"></div>
@@ -167,7 +178,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V4.29</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V4.30</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap">
 <nav id="nav" class="grouped-nav">
  <div class="nav-group">
@@ -212,6 +223,36 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <button class="btn green" onclick="go('importar')">✨ Importar com IA</button>
 <button class="btn secondary" onclick="go('perfil')">👤 Preencher manualmente</button>
 </div>
+</div>
+<div class="card engagement-card" style="margin-top:13px">
+<div class="eng-head"><div><h2>👋 Como você está hoje?</h2><div class="muted">Um toque rápido para manter seu acompanhamento em dia.</div></div><span id="moodDone" class="eng-check">Hoje</span></div>
+<div class="moods">
+<button onclick="registrarHumor('😊 Muito bem')">😊<small>Muito bem</small></button>
+<button onclick="registrarHumor('🙂 Bem')">🙂<small>Bem</small></button>
+<button onclick="registrarHumor('😐 Normal')">😐<small>Normal</small></button>
+<button onclick="registrarHumor('😕 Não muito')">😕<small>Não muito</small></button>
+<button onclick="registrarHumor('😣 Com sintomas')">😣<small>Com sintomas</small></button>
+</div><div id="moodStatus" class="eng-status">Ainda não registrado hoje.</div>
+</div>
+<div class="card engagement-card">
+<div class="eng-head"><div><h2>🏆 Seu progresso</h2><div class="muted">Quanto mais organizado, mais útil fica seu histórico.</div></div><b id="profilePercent" class="progress-number">0%</b></div>
+<div class="progress-track"><div id="profileProgress" class="progress-fill"></div></div>
+<div id="profileMissing" class="progress-missing">Vamos começar pelo seu perfil.</div>
+<div class="streak-row"><div><b>🔥 <span id="streakDays">0</span> dias</b><small>de acompanhamento</small></div><div><b>🌳 <span id="healthLevel">Começando</span></b><small>organização do histórico</small></div></div>
+</div>
+<div class="card quick-register">
+<div><h2>➕ Registrar agora</h2><div class="muted">Escolha uma ação e vá direto ao que interessa.</div></div>
+<div class="quick-grid">
+<button onclick="go('dor')">😣<span>Sintoma</span></button><button onclick="go('acompanhamento')">❤️<span>Sinal vital</span></button>
+<button onclick="go('meds')">💊<span>Medicamento</span></button><button onclick="go('consultas')">👨‍⚕️<span>Consulta</span></button>
+<button onclick="go('exames')">🧪<span>Exame</span></button><button onclick="go('acompanhamento')">💉<span>Vacina</span></button>
+</div></div>
+<div class="card engagement-card">
+<div class="eng-head"><div><h2>🎯 Meus objetivos</h2><div class="muted">Pequenas ações para deixar seu histórico completo.</div></div></div>
+<div id="goalList" class="goal-list"></div>
+</div>
+<div class="card engagement-card">
+<h2>✨ Descubra seus dados</h2><div id="healthDiscoveries" class="discoveries"></div>
 </div>
 <div class="card health-dashboard" style="margin-top:13px">
 <div class="dash-head"><div><h2 style="margin-bottom:3px">📊 Seu Painel de Saúde</h2><div class="muted">Um resumo rápido de tudo que já está registrado.</div></div><span class="dash-badge">VISÃO GERAL</span></div>
@@ -500,10 +541,10 @@ REGRAS:
 <div class="card" style="margin-top:13px"><h2>🩺 Preparar minha consulta</h2><div class="muted">A partir dos seus registros, gere um conjunto de perguntas para conversar com o profissional.</div><button class="btn green" style="margin-top:10px" onclick="perguntasConsulta()">✨ Gerar perguntas</button><div id="perguntas" style="margin-top:12px"></div></div></section>
 
 <div id="updateNotice" class="alert safe" style="display:none;margin-top:12px"></div>
-<footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V4.29. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V4.30. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
-<script src="js/app.js?v=V4.29" defer></script>
+<script src="js/app.js?v=V4.30" defer></script>
 >
 
 
@@ -521,7 +562,7 @@ function iniciarImportacao(){
  },80);
 }
 </script>
-<script src="js/importacao.js?v=V4.29" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/importacao.js?v=V4.30" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
 
 
 <script>
@@ -636,7 +677,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 /* V4.4: auto-update and force-refresh */
 function forcarAtualizacao(){
  const u=new URL(window.location.href);
- u.searchParams.set('appv','V4.29');
+ u.searchParams.set('appv','V4.30');
  u.searchParams.set('cb',Date.now());
  window.location.replace(u.toString());
 }
@@ -645,7 +686,7 @@ async function verificarNovaVersao(){
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
   const data=await r.json();
-  if(data.version && data.version!=='V4.29'){
+  if(data.version && data.version!=='V4.30'){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
