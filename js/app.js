@@ -1,6 +1,6 @@
 /* Minha Saúde IA — aplicação principal V4.70 */
 
-const K={d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',p:'msa2_perfil',v:'msa2_vitais',r:'msa2_lembretes',vax:'msa2_vacinas',fam:'msa2_familia',doc:'msa2_documentos',nutri:'msa2_nutri',suplReg:'msa2_suplementos',food:'msa2_reacoes_alimentares',agua:'msa2_hidratacao',sono:'msa2_sono',bem:'msa2_bemestar',gat:'msa2_gatilhos',medRot:'msa2_medicamentos_rotina',medTaken:'msa2_medicamentos_tomados',anticoncepcional:'msa2_anticoncepcional'};
+const K={ciclo:'msa2_ciclo_menstrual',d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',p:'msa2_perfil',v:'msa2_vitais',r:'msa2_lembretes',vax:'msa2_vacinas',fam:'msa2_familia',doc:'msa2_documentos',nutri:'msa2_nutri',suplReg:'msa2_suplementos',food:'msa2_reacoes_alimentares',agua:'msa2_hidratacao',sono:'msa2_sono',bem:'msa2_bemestar',gat:'msa2_gatilhos',medRot:'msa2_medicamentos_rotina',medTaken:'msa2_medicamentos_tomados',anticoncepcional:'msa2_anticoncepcional'};
 const LEGACY_KEYS={msa_dores:'msa2_dores',msa_consultas:'msa2_consultas',msa_meds:'msa2_meds',msa_exames:'msa2_exames',msa_perfil:'msa2_perfil',msa_vitais:'msa2_vitais',msa_lembretes:'msa2_lembretes',msa_vacinas:'msa2_vacinas',msa_familia:'msa2_familia',msa_documentos:'msa2_documentos'};
 function lerStorage(k){
  try{
@@ -148,7 +148,7 @@ function calcularCompletudeSaude(){
  ];
  const ok=v=>Array.isArray(v)?v.length>0:!!v&&String(v).trim()!==''&&!/^não informado$/i.test(String(v).trim());
  if(/femin|mulher|female/i.test(String(p.sexo||''))){
-  itens.push(['Saúde reprodutiva','Duração média do ciclo',p.ciclo],['Saúde reprodutiva','Duração média do sangramento',p.duracaoMenstr],['Saúde reprodutiva','Regularidade do ciclo',p.regularidade],['Saúde reprodutiva','Método anticoncepcional',p.anticoncepcionalMetodo||p.usaAnticoncepcional]);
+  itens.push(['Saúde reprodutiva','Duração média do ciclo',p.ciclo],['Saúde reprodutiva','Diário do ciclo',get(K.ciclo).length],['Saúde reprodutiva','Duração média do sangramento',p.duracaoMenstr],['Saúde reprodutiva','Regularidade do ciclo',p.regularidade],['Saúde reprodutiva','Método anticoncepcional',p.anticoncepcionalMetodo||p.usaAnticoncepcional]);
 }
  const preenchidos=itens.filter(x=>ok(x[2])).length;
  return {percentual:Math.round(preenchidos/itens.length*100),total:itens.length,preenchidos,itens,pendentes:itens.filter(x=>!ok(x[2]))};
@@ -329,8 +329,37 @@ $('mForm').onsubmit=e=>{e.preventDefault();let a=get(K.m);a.push({nome:$('mNome'
 $('eForm').onsubmit=e=>{e.preventDefault();let a=get(K.e);a.push({nome:$('eNome').value,data:$('eData').value,res:$('eRes').value,obs:$('eObs').value});set(K.e,a);e.target.reset();render();alert('Exame salvo!')};
 
 function hojeLocal(){return new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10)}
+function diasEntre(a,b){
+ const da=new Date(a+'T00:00:00'),db=new Date(b+'T00:00:00');
+ return Math.round((db-da)/86400000);
+}
+function adicionarDiasData(data,dias){
+ const d=new Date(data+'T00:00:00');d.setDate(d.getDate()+dias);
+ return d.toISOString().slice(0,10);
+}
+function renderCicloMenstrual(){
+ const a=get(K.ciclo).filter(x=>x.inicio).slice().sort((x,y)=>String(x.inicio).localeCompare(String(y.inicio)));
+ const resumo=$('cicloResumo'),listEl=$('cicloList');
+ if(!resumo||!listEl)return;
+ if(!a.length){
+   resumo.innerHTML='🩸 Registre o primeiro início da menstruação para começar seu histórico.';
+   listEl.innerHTML='<div class="empty">Nenhum ciclo registrado ainda.</div>';
+   return;
+ }
+ const intervalos=[];
+ for(let i=1;i<a.length;i++){const n=diasEntre(a[i-1].inicio,a[i].inicio);if(n>0&&n<100)intervalos.push(n)}
+ const media=intervalos.length?Math.round(intervalos.reduce((s,n)=>s+n,0)/intervalos.length):null;
+ const ultimo=a[a.length-1].inicio;
+ const proximo=media?adicionarDiasData(ultimo,media):null;
+ resumo.innerHTML='<b>📊 Histórico:</b> '+a.length+' ciclo(s)'+(media?' · <b>média entre inícios:</b> '+media+' dias':' · registre mais ciclos para calcular uma média')+(proximo?' · <b>próximo início estimado:</b> '+formatDateBR(proximo): '');
+ listEl.innerHTML=a.slice().reverse().map((x,i)=>{
+   const idx=a.findIndex(y=>y.id===x.id), intervalo=idx>0?diasEntre(a[idx-1].inicio,x.inicio):null;
+   return '<div class="item"><div class="itemtop"><b>🩸 Início: '+esc(formatDateBR(x.inicio))+'</b><span class="tag">'+(intervalo?intervalo+' dias de intervalo':'Primeiro registro')+'</span></div><p>'+(x.fim?'Fim: '+esc(formatDateBR(x.fim))+' · ':'')+'Fluxo: '+esc(x.fluxo||'Não informado')+' · Dor/cólica: '+esc(x.dor||'Não informado')+'/10'+(x.obs?' · 📝 '+esc(x.obs):'')+'</p></div>';
+ }).join('');
+}
 function renderNovosModulos(){
  atualizarPainelAnticoncepcional();
+ renderCicloMenstrual();
  const rev=(k,fn)=>{const a=get(k);return a.length?a.slice().reverse().map(fn).join(''):'<div class="empty">Nenhum registro ainda.</div>'};
  if($('nutriList'))$('nutriList').innerHTML=rev(K.nutri,x=>'<div class="item"><b>🍎 '+esc(x.data)+'</b><p>'+esc(x.texto)+(x.foto?' 📸 Foto anexada':'')+'</p></div>');
  if($('suplList'))$('suplList').innerHTML=rev(K.suplReg,x=>'<div class="item"><b>💊 '+esc(x.nome)+'</b><p>'+esc(x.dose||'')+(x.hora?' · '+x.hora:'')+' · estoque: '+(x.estoque??'—')+(x.obs?' · '+esc(x.obs):'')+'</p></div>');
@@ -359,6 +388,18 @@ function renderNovosModulos(){
 if($('lembAgenda')){const items=[...get(K.r).map(x=>({d:x.data,n:x.nome,t:x.tipo||'Lembrete'})),...get(K.medRot).map(x=>({d:hojeLocal()+'T'+x.hora,n:x.nome,t:'Medicamento'}))].filter(x=>x.d).sort((a,b)=>String(a.d).localeCompare(String(b.d))).slice(0,8);$('lembAgenda').innerHTML=items.length?items.map(x=>'<div class="item"><b>'+esc(x.n)+'</b><p>'+esc(x.d)+' · '+esc(x.t)+'</p></div>').join(''):'<div class="empty">Nenhum próximo cuidado.</div>'}
 }
 function arquivoDataURL(file,cb){if(!file){cb('');return}const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(file)}
+$('cicloForm')?.addEventListener('submit',e=>{
+ e.preventDefault();
+ const inicio=$('cicloInicio').value,fim=$('cicloFim').value;
+ if(!inicio){alert('Informe o início da menstruação.');return}
+ if(fim&&fim<inicio){alert('A data de fim não pode ser anterior ao início.');return}
+ let a=get(K.ciclo);
+ const idx=a.findIndex(x=>x.inicio===inicio);
+ const registro={id:idx>=0?a[idx].id:Date.now(),inicio,fim,fluxo:$('cicloFluxo').value,dor:$('cicloDor').value,obs:$('cicloObs').value};
+ if(idx>=0)a[idx]=registro;else a.push(registro);
+ a.sort((x,y)=>String(x.inicio).localeCompare(String(y.inicio)));
+ set(K.ciclo,a);e.target.reset();renderNovosModulos();alert('🩸 Ciclo menstrual registrado!'); 
+});
 $('nutriForm')?.addEventListener('submit',e=>{e.preventDefault();arquivoDataURL($('nutriFoto').files[0],foto=>{let a=get(K.nutri);a.push({data:$('nutriData').value,texto:$('nutriTexto').value,foto});set(K.nutri,a);e.target.reset();renderNovosModulos();alert('🍎 Alimentação registrada!')})});
 $('suplForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.suplReg);a.push({nome:$('suplNome').value,dose:$('suplDose').value,hora:$('suplHora').value,estoque:$('suplEstoque').value,obs:$('suplObs').value});set(K.suplReg,a);e.target.reset();renderNovosModulos();alert('💊 Suplemento salvo!')});
 $('foodForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.food);a.push({nome:$('foodNome').value,reacao:$('foodReacao').value,data:$('foodData').value,obs:$('foodObs').value});set(K.food,a);e.target.reset();renderNovosModulos();alert('⚠️ Reação registrada!')});
