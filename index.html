@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Saúde IA — V3.7</title>
+<title>Minha Saúde IA — V3.8</title>
 <style>
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
@@ -64,7 +64,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V3.7</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V3.8</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap">
 <nav id="nav">
 <button class="active" data-tab="home">🏠 Início</button><button data-tab="timeline">🕐 Linha do tempo</button><button data-tab="dor">😣 Sintomas</button><button data-tab="consultas">👨‍⚕️ Consultas</button><button data-tab="meds">💊 Medicamentos</button><button data-tab="exames">🧪 Exames</button><button data-tab="perfil">👤 Perfil</button><button data-tab="relatorios">📊 Relatórios</button><button data-tab="backup">💾 Backup</button><button data-tab="importar">⚡ Importar com IA</button><button data-tab="ia">🤖 IA</button>
@@ -285,7 +285,7 @@ REGRAS:
 <div class="card" style="margin-top:13px"><h2>🩺 Preparar minha consulta</h2><div class="muted">A partir dos seus registros, gere um conjunto de perguntas para conversar com o profissional.</div><button class="btn green" style="margin-top:10px" onclick="perguntasConsulta()">✨ Gerar perguntas</button><div id="perguntas" style="margin-top:12px"></div></div></section>
 
 <div id="updateNotice" class="alert safe" style="display:none;margin-top:12px"></div>
-<footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V3.7 de demonstração. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V3.8 de demonstração. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -375,15 +375,20 @@ function normalizarImport(d){
  return {p,dores,consultas,meds,exames};
 }
 function normalizarFichaIA(raw){
- const field=(name)=>{const re=new RegExp('\\['+name+'\\]\\s*([\\s\\S]*?)(?=\\n\\s*\\[[A-Z0-9_]+\\]|$)','i');const m=raw.match(re);return m?m[1].trim():''};
+ const field=(name)=>{
+   const re=new RegExp('\\\\['+name+'\\\\]\\\\s*([\\\\s\\\\S]*?)(?=\\\\n\\\\s*\\\\[[A-Z0-9_]+\\\\]|$)','i');
+   const m=raw.match(re);
+   const v=m?m[1].trim():'';
+   return v.toLowerCase()==='não informado'?'':v;
+ };
  const p={nome:field('NOME'),nasc:field('DATA_NASCIMENTO'),idade:field('IDADE'),sexo:field('SEXO'),altura:field('ALTURA'),peso:field('PESO'),cond:field('DOENCAS'),alerg:field('ALERGIAS'),circ:field('CIRURGIAS_INTERNACOES'),supl:field('SUPLEMENTOS'),info:field('INFORMACOES_IMPORTANTES')};
  const med=field('MEDICAMENTOS'),sint=field('ULTIMO_SINTOMA'),local=field('LOCAL_SINTOMA'),data=field('DATA_INICIO_SINTOMA'),inten=field('INTENSIDADE'),outros=field('OUTROS_SINTOMAS');
- const n=parseInt((inten.match(/\d+/)||['0'])[0]);
- const dores=sint&&sint!=='Não informado'?[{data:data||new Date().toISOString().slice(0,16),local:local||'Não informado',int:Math.max(0,Math.min(10,n)),tipo:'',freq:'',gatilho:'',sint:outros?sint+' — '+outros:sint,obs:'Importado da IA'}]:[];
+ const n=parseInt((inten.match(/\\d+/)||['0'])[0],10)||0;
+ const dores=sint?[{data:data||new Date().toISOString().slice(0,16),local:local||'Não informado',int:Math.max(0,Math.min(10,n)),tipo:'',freq:'',gatilho:'',sint:outros?sint+' — '+outros:sint,obs:'Importado da IA'}]:[];
  const ct=field('CONSULTAS'),et=field('EXAMES');
- const consultas=ct&&ct!=='Não informado'?[{data:'',esp:'',med:'',mot:ct,perg:'',obs:'Importado da IA',ret:''}]:[];
- const exames=et&&et!=='Não informado'?[{nome:'Exame informado',data:'',res:et,obs:'Importado da IA'}]:[];
- const meds=med&&med!=='Não informado'?[{nome:med,dose:'',freq:'',inicio:'',fim:'',pres:'',obs:'Importado da IA'}]:[];
+ const consultas=ct?[{data:'',esp:'',med:'',mot:ct,perg:'',obs:'Importado da IA',ret:''}]:[];
+ const exames=et?[{nome:'Exame informado',data:'',res:et,obs:'Importado da IA'}]:[];
+ const meds=med?[{nome:med,dose:'',freq:'',inicio:'',fim:'',pres:'',obs:'Importado da IA'}]:[];
  return {p,dores,consultas,meds,exames};
 }
 function importarNormalizado(n){
@@ -402,9 +407,16 @@ function importarNormalizado(n){
 function processarImportacao(){
  let raw=$('importIA').value.trim();
  if(!raw){alert('Cole primeiro a resposta da IA.');return}
- raw=raw.replace(/^```(?:json|text)?\\s*/i,'').replace(/\\s*```$/,'').trim();
- try{if(raw.startsWith('{'))return importarNormalizado(normalizarImport(JSON.parse(raw)));return importarNormalizado(normalizarFichaIA(raw));}
- catch(e){$('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui organizar essa ficha. Verifique se a IA devolveu os campos [NOME], [IDADE], [PESO] etc.</div>';}
+ raw=raw.replace(/^\s*\`\`\`(?:json|text)?\s*/i,'').replace(/\s*\`\`\`\s*$/,'').trim();
+ try{
+   let n;
+   if(raw.startsWith('{')) n=normalizarImport(JSON.parse(raw));
+   else n=normalizarFichaIA(raw);
+   importarNormalizado(n);
+ }catch(e){
+   console.error('Importação:',e);
+   $('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui organizar a resposta. Cole a ficha com campos como <b>[NOME]</b>, <b>[IDADE]</b>, <b>[PESO]</b>, <b>[MEDICAMENTOS]</b> etc. Também aceito JSON.</div>';
+ }
 }
 function limparImportacao(){$('importIA').value='';$('resultadoImport').innerHTML=''}
 function processarTextoLivre(){
@@ -512,10 +524,10 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 
 <script>
-/* V3.7: auto-update and force-refresh */
+/* V3.8: auto-update and force-refresh */
 function forcarAtualizacao(){
  const u=new URL(window.location.href);
- u.searchParams.set('appv','V3.7');
+ u.searchParams.set('appv','V3.8');
  u.searchParams.set('cb',Date.now());
  window.location.replace(u.toString());
 }
@@ -524,7 +536,7 @@ async function verificarNovaVersao(){
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
   const data=await r.json();
-  if(data.version && data.version!=='V3.7'){
+  if(data.version && data.version!=='V3.8'){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
@@ -675,35 +687,6 @@ function normalizarImport(d){
    nome:first(x,'nome','exame'),data:first(x,'data'),res:first(x,'res','resultado'),obs:first(x,'obs','observacoes','observações')
  }));
  return {p,dores,consultas,meds,exames};
-}
-function processarImportacao(){
- let raw=$('importIA').value.trim();
- if(!raw){alert('Cole primeiro a resposta da IA.');return}
- raw=raw.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
- try{
-   const data=JSON.parse(raw), n=normalizarImport(data);
-   let count=n.dores.length+n.consultas.length+n.meds.length+n.exames.length+(Object.keys(n.p).length?1:0);
-   if(!count)throw new Error('Nenhum dado reconhecido');
-   if(!confirm(`Foram encontrados ${n.dores.length} sintomas, ${n.consultas.length} consultas, ${n.meds.length} medicamentos, ${n.exames.length} exames e ${Object.keys(n.p).length?1:0} perfil. Adicionar aos registros atuais?`))return;
-   if(n.dores.length)set(K.d,get(K.d).concat(n.dores));
-   if(n.consultas.length)set(K.c,get(K.c).concat(n.consultas));
-   if(n.meds.length)set(K.m,get(K.m).concat(n.meds));
-   if(n.exames.length)set(K.e,get(K.e).concat(n.exames));
-   if(Object.keys(n.p).length){
-      const old=get(K.p)[0]||{};
-      const merged=Object.assign({},old,{
-       nome:first(n.p,'nome')||old.nome||'',nasc:first(n.p,'nasc','data_nascimento','dataNascimento')||old.nasc||'',
-       alerg:first(n.p,'alerg','alergias')||old.alerg||'',cond:first(n.p,'cond','condicoes','condições')||old.cond||'',
-       circ:first(n.p,'circ','cirurgias')||old.circ||'',info:first(n.p,'info','informacoes','informações')||old.info||'',
-       emerg:first(n.p,'emerg','contato_emergencia','contato_emergência')||old.emerg||'',tel:first(n.p,'tel','telefone')||old.tel||''
-      });
-      set(K.p,[merged]);
-   }
-   render();
-   $('resultadoImport').innerHTML='<div class="alert safe">✅ Importação concluída! Os dados foram adicionados ao seu histórico. Confira a linha do tempo e os registros antes de usar o relatório médico.</div>';
- }catch(e){
-   $('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui ler esse conteúdo como JSON. Volte à IA e peça: <b>“Retorne somente JSON válido, sem markdown ou explicações.”</b></div>';
- }
 }
 function limparImportacao(){$('importIA').value='';$('resultadoImport').innerHTML=''}
 function processarTextoLivre(){
