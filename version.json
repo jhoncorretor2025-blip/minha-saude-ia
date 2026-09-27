@@ -1,5 +1,5 @@
 {
   "version": "V4.4",
   "updatedAt": "2026-09-27T00:00:00Z",
-  "changes": "Diagnóstico detalhado de falhas na importação"
+  "changes": "Diagnóstico de importação + normalização de data, idade e altura"
 }
