@@ -643,4 +643,39 @@ function addPasskeyToGate(){
 document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{ensurePasskeyUI();addPasskeyToGate()},820));
 
 
+
+/* ===== V5.07 — painel de acessibilidade ===== */
+const A11Y_KEY='msa3_acessibilidade';
+function readA11y(){try{return JSON.parse(window.localStorage.getItem(A11Y_KEY)||'{}')}catch(e){return{}}}
+function applyA11y(){
+ const p=readA11y(),body=document.body;
+ body.classList.toggle('msa-a11y-contrast',p.contrast===true);
+ body.classList.toggle('msa-a11y-spacing',p.spacing===true);
+ body.classList.toggle('msa-a11y-motion',p.motion===false);
+ body.dataset.msaFont=p.font||'100';
+ if(p.font&&p.font!=='100')body.classList.add('msa-a11y-font');else body.classList.remove('msa-a11y-font');
+}
+function injectA11yStyles(){
+ if(byId('msaA11yStyles'))return;
+ const s=document.createElement('style');s.id='msaA11yStyles';s.textContent='.msa-a11y-contrast{filter:contrast(1.12)}.msa-a11y-spacing #main-content label,.msa-a11y-spacing #main-content .item,.msa-a11y-spacing #main-content .card{line-height:1.65}.msa-a11y-font h1,.msa-a11y-font h2,.msa-a11y-font h3,.msa-a11y-font h4,.msa-a11y-font p,.msa-a11y-font label,.msa-a11y-font button,.msa-a11y-font input,.msa-a11y-font select,.msa-a11y-font textarea,.msa-a11y-font .muted,.msa-a11y-font small,.msa-a11y-font .tag{font-size:calc(1em * var(--msa-a11y-scale,1))}.msa-a11y-motion *, .msa-a11y-motion *::before, .msa-a11y-motion *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}body[data-msa-font="110"]{--msa-a11y-scale:1.1}body[data-msa-font="125"]{--msa-a11y-scale:1.25}body[data-msa-font="150"]{--msa-a11y-scale:1.5}';
+ document.head.appendChild(s);
+}
+function saveA11y(p){window.localStorage.setItem(A11Y_KEY,JSON.stringify(p));applyA11y()}
+function ensureA11yUI(){
+ injectA11yStyles();applyA11y();
+ const toolsGroup=[...document.querySelectorAll('#nav .nav-group')].find(g=>g.querySelector('.nav-toggle[data-menu="tools"]')),menu=toolsGroup?.querySelector('.nav-menu');
+ if(menu&&!menu.querySelector('[data-tab="acessibilidade"]')){const b=document.createElement('button');b.type='button';b.setAttribute('data-tab','acessibilidade');b.textContent='♿ Acessibilidade';menu.appendChild(b)}
+ if(byId('acessibilidade'))return;
+ const host=byId('main-content')||document.querySelector('.wrap')||document.body,sec=document.createElement('section');sec.id='acessibilidade';
+ const p=readA11y();
+ sec.innerHTML='<div class="card"><div class="dash-section-title"><div><h2>♿ Acessibilidade</h2><div class="muted">Ajuste a experiência visual e de movimento deste navegador.</div></div><button class="btn secondary" type="button" id="msaA11yReset">Restaurar</button></div><div class="grid2" style="margin-top:13px"><label>Tamanho do texto<select id="msaA11yFont"><option value="100">100% — padrão</option><option value="110">110%</option><option value="125">125%</option><option value="150">150%</option></select></label><label style="display:flex;align-items:center;gap:8px"><input id="msaA11yContrast" type="checkbox"> <span>Maior contraste</span></label><label style="display:flex;align-items:center;gap:8px"><input id="msaA11ySpacing" type="checkbox"> <span>Mais espaçamento de leitura</span></label><label style="display:flex;align-items:center;gap:8px"><input id="msaA11yMotion" type="checkbox"> <span>Reduzir animações</span></label></div><div class="alert info" style="margin-top:13px">ℹ️ As preferências ficam neste navegador e não alteram seus dados de saúde.</div></div>';
+ host.appendChild(sec);
+ sec.querySelector('#msaA11yFont').value=p.font||'100';sec.querySelector('#msaA11yContrast').checked=p.contrast===true;sec.querySelector('#msaA11ySpacing').checked=p.spacing===true;sec.querySelector('#msaA11yMotion').checked=p.motion===false;
+ const sync=()=>saveA11y({font:sec.querySelector('#msaA11yFont').value,contrast:sec.querySelector('#msaA11yContrast').checked,spacing:sec.querySelector('#msaA11ySpacing').checked,motion:!sec.querySelector('#msaA11yMotion').checked});
+ sec.querySelectorAll('select,input').forEach(el=>el.addEventListener('change',sync));
+ sec.querySelector('#msaA11yReset').addEventListener('click',()=>{window.localStorage.removeItem(A11Y_KEY);sec.querySelector('#msaA11yFont').value='100';sec.querySelector('#msaA11yContrast').checked=false;sec.querySelector('#msaA11ySpacing').checked=false;sec.querySelector('#msaA11yMotion').checked=false;applyA11y()});
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(ensureA11yUI,900));
+
+
 })();
