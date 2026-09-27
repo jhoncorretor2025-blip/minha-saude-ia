@@ -488,7 +488,8 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <div class="grid2">
 <label>🩸 Última menstruação<input id="pMenstruacao" type="date"></label>
 <label>📆 Ciclo menstrual (dias)<input id="pCiclo" type="number" min="1" max="100" placeholder="Ex.: 28"></label>
-<label>🩸 Duração da menstruação (dias)<input id="pDuracaoMenstr" type="number" min="1" max="30" placeholder="Ex.: 5"></label>
+<label>🩸 Duração média do sangramento (dias)<input id="pDuracaoMenstr" type="number" min="1" max="30" placeholder="Ex.: 5"></label>
+<label>🔄 Regularidade do ciclo<select id="pRegularidade"><option value="">Não informado</option><option>Regular</option><option>Irregular</option></select></label>
 <label>💗 Relações sexuais por semana<input id="pSexoFreq" type="number" min="0" max="100" step="0.1" placeholder="Ex.: 2"></label>
 <label>🛡️ Uso de preservativo<select id="pCamisinha"><option value="">Prefiro não informar</option><option>Sempre</option><option>Às vezes</option><option>Nunca</option></select></label>
 <label>🤰 Já engravidou?<select id="pEngravidou"><option value="">Prefiro não informar</option><option>Sim</option><option>Não</option></select></label>
@@ -499,12 +500,18 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <div id="contraceptiveBox" class="contraceptive-box" style="display:none">
 <div class="repro-title"><div><h3>💊 Anticoncepcional diário</h3><div class="muted">Se você usa anticoncepcional em horário fixo, o sistema pode lembrar todos os dias e registrar se a dose foi tomada.</div></div><span>PRIVADO</span></div>
 <div class="grid2">
-<label>Usa anticoncepcional diário?<select id="pUsaAnticoncepcional"><option value="">Não informado</option><option>Sim</option><option>Não</option></select></label>
-<label>Nome do anticoncepcional<input id="pAnticoncepcionalNome" placeholder="Ex.: nome do medicamento"></label>
+<label>Usa anticoncepcional?<select id="pUsaAnticoncepcional"><option value="">Não informado</option><option>Sim</option><option>Não</option></select></label>
+<label>💊 Método utilizado<select id="pAnticoncepcionalMetodo"><option value="">Não informado</option><option>Pílula combinada</option><option>Pílula de progestágeno (minipílula)</option><option>DIU hormonal (Mirena/Kyleena ou similar)</option><option>DIU de cobre/prata</option><option>Injeção mensal</option><option>Injeção trimestral</option><option>Implante</option><option>Anel vaginal</option><option>Adesivo</option><option>Outro</option></select></label>
+<label>Nome do anticoncepcional<input id="pAnticoncepcionalNome" placeholder="Ex.: nome comercial ou princípio ativo"></label>
 <label>⏰ Horário habitual<input id="pAnticoncepcionalHora" type="time"></label>
 <label>📅 Data de início<input id="pAnticoncepcionalInicio" type="date"></label>
+<div id="pillRegimenBox" class="grid2" style="display:none">
+<label>📦 Regime da pílula combinada<select id="pAnticoncepcionalRegime"><option value="">Não informado</option><option>21 dias</option><option>24 dias</option><option>28 dias</option></select></label>
+<label>💊 Tipo de minipílula<select id="pMinipilulaTipo"><option value="">Não informado</option><option>Tradicional (ex.: noretisterona/norgestrel)</option><option>Drospirenona</option><option>Outro / não informado</option></select></label>
 </div>
-<div class="alert warn" style="margin-top:10px">🔔 O aviso é um lembrete de rotina. Ele não substitui orientação profissional. Se houver esquecimento, atraso ou dúvida sobre a eficácia contraceptiva, siga a orientação da bula/profissional de saúde.</div>
+</div>
+<div class="row" style="margin-top:10px"><button class="btn secondary" type="button" onclick="orientarEsquecimentoAnticoncepcional()">🚨 Esqueci uma dose</button><button class="btn secondary" type="button" onclick="window.open('https://www.gov.br/anvisa/pt-br/sistemas/bulario-eletronico','_blank','noopener')">📖 Consultar Bulário Anvisa</button></div>
+<div class="alert warn" style="margin-top:10px">🔔 O aviso é um lembrete de rotina. A orientação para esquecimento depende do método e do produto. O aplicativo não substitui a bula específica nem orientação profissional.</div>
 </div>
 <div class="prevention-box">
 <div class="repro-title"><div><h3>🩺 Prevenção e acompanhamento</h3><div class="muted">Registre exames e acompanhamentos preventivos para não perder seu histórico. A indicação e periodicidade dependem da idade, riscos e orientação profissional.</div></div></div>
