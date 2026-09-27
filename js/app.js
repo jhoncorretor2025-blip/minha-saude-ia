@@ -263,7 +263,25 @@ function prepararContextoIA(){
 function findAlerts(d){for(let x of d){let s=(x.sint||'').toLowerCase();if(x.int>=9)return '🔴 Há registro de dor muito intensa (9–10/10). Se for atual, súbita, piorando ou acompanhada de outros sinais importantes, procure avaliação médica.';if(/falta de ar|desmaio|convuls|confusão|fraqueza de um lado|sangramento importante/.test(s))return '🔴 Foi registrado um possível sinal de alerta. Se estiver acontecendo agora, procure atendimento médico rapidamente.'}return ''}
 $('dData').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
 $('dorForm')?.addEventListener('submit',()=>{});
-$('pForm').onsubmit=e=>{e.preventDefault();if(!$('pSexo').value){alert('👤 Selecione Masculino, Feminino ou Outro para continuar.');$('pSexo').focus();return;}set(K.p,[{nome:$('pNome').value,nasc:$('pNasc').value,idade:$('pIdade').value,peso:$('pPeso').value,sexo:$('pSexo').value,sangue:$('pSangue').value,altura:$('pAltura').value,supl:$('pSupl').value,alerg:$('pAlerg').value,cond:$('pCond').value,circ:$('pCirc').value,info:$('pInfo').value,emerg:$('pEmerg').value,tel:$('pTel').value}]);render();renderNovosModulos();alert('Perfil salvo!')};
+$('pForm').onsubmit=e=>{
+ e.preventDefault();
+ if(!$('pSexo').value){alert('👤 Selecione Masculino, Feminino ou Outro para continuar.');$('pSexo').focus();return;}
+ const old=get(K.p)[0]||{};
+ const perfil=Object.assign({},old,{
+  nome:$('pNome').value,nasc:$('pNasc').value,idade:$('pIdade').value,peso:$('pPeso').value,sexo:$('pSexo').value,
+  sangue:$('pSangue').value,altura:$('pAltura').value,supl:$('pSupl').value,alerg:$('pAlerg').value,cond:$('pCond').value,
+  circ:$('pCirc').value,info:$('pInfo').value,emerg:$('pEmerg').value,tel:$('pTel').value,
+  menstruacao:$('pMenstruacao').value,ciclo:$('pCiclo').value,duracaoMenstr:$('pDuracaoMenstr').value,sexoFreq:$('pSexoFreq').value,
+  camisinha:$('pCamisinha').value,engravidou:$('pEngravidou').value,mae:$('pMae').value,gestacoes:$('pGestacoes').value,
+  reproObs:$('pReproObs').value,prevColo:$('pPrevColo').value,mamografia:$('pMamografia').value,ist:$('pIST').value,hpv:$('pHPV').value,
+  prevProx:$('pPrevProx').value,prevObs:$('pPrevObs').value,dorcelaxFreq:$('pDorcelaxFreq').value,
+  paracetamolFreq:$('pParacetamolFreq').value,outrosDor:$('pOutrosDor').value,catapora:$('pCatapora').value,cataporaQuando:$('pCataporaQuando').value,
+  academia:$('pAcademia').value,academiaFreq:$('pAcademiaFreq').value,trabalhoTipo:$('pTrabalhoTipo').value,
+  horasSentado:$('pHorasSentado').value,horasPe:$('pHorasPe').value,aguaDia:$('pAguaDia').value,urinaDia:$('pUrinaDia').value,
+  evacuacaoDia:$('pEvacuacaoDia').value,calorSuor:$('pCalorSuor').value
+ });
+ set(K.p,[perfil]);render();renderNovosModulos();renderCarteirinha();alert('Perfil salvo!');
+};
 $('dorForm').onsubmit=e=>{e.preventDefault();let a=get(K.d);a.push({data:$('dData').value,local:$('dLocal').value,int:+$('dInt').value,tipo:$('dTipo').value,freq:$('dFreq').value,gatilho:$('dGatilho').value,sint:$('dSint').value,obs:$('dObs').value});set(K.d,a);e.target.reset();$('dInt').value=5;$('dScore').textContent=5;render();alert('Sintoma salvo!')};
 $('cForm').onsubmit=e=>{e.preventDefault();let a=get(K.c);a.push({data:$('cData').value,esp:$('cEsp').value,med:$('cMed').value,mot:$('cMot').value,perg:$('cPerg').value,obs:$('cObs').value,ret:$('cRet').value});set(K.c,a);e.target.reset();render();alert('Consulta salva!')};
 $('mForm').onsubmit=e=>{e.preventDefault();let a=get(K.m);a.push({nome:$('mNome').value,dose:$('mDose').value,freq:$('mFreq').value,inicio:$('mInicio').value,fim:$('mFim').value,pres:$('mPres').value,obs:$('mObs').value});set(K.m,a);e.target.reset();render();alert('Medicamento salvo!')};
