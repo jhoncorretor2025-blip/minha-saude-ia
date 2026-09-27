@@ -1,5 +1,5 @@
 {
-  "version": "V4.58",
-  "updatedAt": "2026-09-28T02:05:00Z",
-  "changes": "Correção de erro de sintaxe no app.js que impedia o aplicativo principal de carregar e fazia a importação permanecer em 0%."
+  "version": "V4.59",
+  "updatedAt": "2026-09-27T20:45:00Z",
+  "changes": "Organização do projeto em documentação e diretório de prompts; preparação para manutenção e continuidade por novas IAs; atualização do diagnóstico de importação."
 }
