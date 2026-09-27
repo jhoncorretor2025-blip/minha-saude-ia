@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V5.10 — Chaves centralizadas
+- 🧩 `melhorias.js` e `recursos.js` usam `MSA_K`.
+- 💾 Chaves `msa2_*` existentes foram preservadas.
+- 🛡️ Nenhuma migração de dados foi necessária.
+
+
 ## V5.09.1 — Core compartilhado
 - 🧩 `app.js`, `melhorias.js` e `recursos.js` passaram a reutilizar `core/utils.js`.
 - 🛡️ Mantidos aliases/fallbacks para reduzir risco de quebra.
