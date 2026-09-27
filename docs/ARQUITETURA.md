@@ -74,6 +74,12 @@ O aplicativo possui manifesto e service worker. O cache é usado para a interfac
 O registro principal de sono usa horários de início/fim e calcula a duração. Campos de despertares por urina e dor são armazenados como contagem, sem interpretação clínica automática.
 
 
+## V4.86 — Design System visual
+- `css/design-system.css` é a fundação visual para novos componentes e futuras migrações.
+- A folha define tokens (`--msa-*`) e componentes prefixados com `.msa-*`.
+- Nesta primeira etapa ela é carregada de forma aditiva; estilos legados permanecem intactos para reduzir risco.
+- Migrações visuais devem ser feitas componente por componente e validadas antes da remoção de estilos antigos.
+
 ## V4.85 — Núcleo compartilhado e reorganização segura
 - `js/core/constants.js` é a fonte compartilhada dos nomes de armazenamento.
 - `js/core/storage.js` centraliza leitura, gravação, remoção e migração das chaves legadas.
