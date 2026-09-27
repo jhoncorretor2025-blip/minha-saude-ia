@@ -1,5 +1,12 @@
 # Changelog — Minha Saúde IA
 
+## V4.79 — Ciclo menstrual contextual por sexo do perfil
+- 🌸 O menu **Ciclo menstrual** fica oculto quando o perfil está como **Masculino**.
+- 👩 Quando o perfil está como **Feminino**, o menu aparece normalmente.
+- 🔄 A visibilidade é atualizada automaticamente ao carregar ou alterar o sexo no perfil.
+- Versão atualizada para V4.79.
+
+
 ## V4.78 — Ciclo menstrual com acesso direto
 - 🌸 Corrigido o botão principal **Ciclo menstrual**.
 - 👉 O botão agora navega diretamente para a área de saúde reprodutiva e posiciona a tela no diário do ciclo.
