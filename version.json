@@ -1,5 +1,5 @@
 {
-  "version": "V5.06",
-  "updatedAt": "2026-09-28T03:45:00Z",
-  "changes": "Passkey local opcional para desbloqueio neste navegador, com WebAuthn e sem login em nuvem."
+  "version": "V5.07",
+  "updatedAt": "2026-09-28T04:30:00Z",
+  "changes": "Painel de acessibilidade com tamanho de texto, contraste, espaçamento e redução de animações."
 }
