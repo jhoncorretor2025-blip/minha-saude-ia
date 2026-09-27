@@ -64,3 +64,7 @@ Cada tela principal pode ser aberta diretamente usando `?pagina=ID`. O parâmetr
 
 ## V4.69 — Melhorias de navegação e acompanhamento
 O módulo `js/melhorias.js` concentra busca, avisos, calendário e perguntas para consulta. Essas funções leem e gravam somente no armazenamento local do perfil atual.
+
+
+## V4.71 — PWA e offline
+O aplicativo possui manifesto e service worker. O cache é usado para a interface e arquivos estáticos; dados pessoais continuam no armazenamento local do perfil e não são incluídos no cache como conteúdo remoto.
