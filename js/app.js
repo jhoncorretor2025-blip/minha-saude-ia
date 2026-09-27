@@ -4,7 +4,7 @@ const K=window.MSA_K||window.K;
 const get=k=>window.MSAStorage.get(k);
 const set=(k,v)=>window.MSAStorage.set(k,v);
 const $=x=>document.getElementById(x);
-const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const esc=window.MSAUtils?.esc||function(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))};
 function atualizarURLPagina(id,modo){
  try{
   const u=new URL(window.location.href);
@@ -42,7 +42,7 @@ function fecharMenus(){
 function bodyPick(el,v){$('dLocal').value=v;document.querySelectorAll('.bodymap button').forEach(x=>x.classList.remove('sel'));el.classList.add('sel')}
 function fmt(d){if(!d)return '—';let x=new Date(d);return isNaN(x)?d:x.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}
 function list(id,a,fn){$(id).innerHTML=a.length?a.slice().reverse().map(fn).join(''):'<div class="empty">Nenhum registro ainda.</div>'}
-function formatDateBR(v){if(!v)return 'Data não informada';var s=String(v);var m=s.match(/^(\\d{4})-(\\d{2})-(\\d{2})/);return m?m[3]+'/'+m[2]+'/'+m[1]:s}
+const formatDateBR=window.MSAUtils?.formatDateBR||function(v){if(!v)return 'Data não informada';var s=String(v);var m=s.match(/^(\\d{4})-(\\d{2})-(\\d{2})/);return m?m[3]+'/'+m[2]+'/'+m[1]:s};
 function getNextCare(){
  const p=get(K.p)[0]||{},c=get(K.c),e=get(K.e),m=get(K.m),vax=get(K.vax),r=get(K.r),items=[];
  c.forEach(x=>{if(x.ret)items.push({date:x.ret,icon:'👨‍⚕️',title:'Retorno de consulta',sub:x.esp||x.med||'Consulta'});});
