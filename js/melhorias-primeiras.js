@@ -174,11 +174,111 @@ function attachDuplicateGuard(){
   });
 }
 
+
+/* ===== V4.90 — Lixeira e desfazer exclusão ===== */
+const TRASH_KEY='msa2_lixeira';
+const LIST_CONFIG=[
+  {container:'listD',key:K.d,label:'Sintoma'},
+  {container:'listC',key:K.c,label:'Consulta'},
+  {container:'listM',key:K.m,label:'Medicamento'},
+  {container:'listE',key:K.e,label:'Exame'}
+];
+const readTrash=()=>{try{return storage.getItem(TRASH_KEY)?JSON.parse(storage.getItem(TRASH_KEY)):[]}catch(e){return[]}};
+const writeTrash=a=>{try{storage.setItem(TRASH_KEY,JSON.stringify(a.slice(-200)));return true}catch(e){return false}};
+function ensureTrashUI(){
+  const nav=document.querySelector('#nav .nav-group .nav-menu');
+  const toolsGroup=[...document.querySelectorAll('#nav .nav-group')].find(g=>g.querySelector('.nav-toggle[data-menu="tools"]'));
+  const toolsMenu=toolsGroup?.querySelector('.nav-menu')||nav;
+  if(toolsMenu&&!toolsMenu.querySelector('[data-tab="lixeira"]')){
+    const b=document.createElement('button');
+    b.type='button';b.setAttribute('data-tab','lixeira');b.textContent='🗑️ Lixeira';
+    toolsMenu.appendChild(b);
+  }
+  if(!document.getElementById('lixeira')){
+    const host=document.getElementById('main-content')||document.querySelector('.wrap')||document.body;
+    const sec=document.createElement('section');
+    sec.id='lixeira';
+    sec.innerHTML='<div class="card"><div class="dash-section-title"><div><h2>🗑️ Lixeira</h2><div class="muted">Registros excluídos dos históricos principais ficam aqui até serem restaurados ou apagados definitivamente.</div></div><button class="btn secondary" type="button" id="msaTrashRefresh">🔄 Atualizar</button></div><div id="msaTrashList" class="list"></div></div>';
+    host.appendChild(sec);
+    sec.querySelector('#msaTrashRefresh').addEventListener('click',renderTrash);
+  }
+  renderTrash();
+}
+function trashLabel(record,label){
+  if(label==='Sintoma')return [record.local,record.data].filter(Boolean).join(' · ')||'Sintoma registrado';
+  if(label==='Consulta')return [record.esp,record.data].filter(Boolean).join(' · ')||'Consulta registrada';
+  if(label==='Medicamento')return [record.nome,record.inicio||record.data].filter(Boolean).join(' · ')||'Medicamento registrado';
+  if(label==='Exame')return [record.nome,record.data].filter(Boolean).join(' · ')||'Exame registrado';
+  return label;
+}
+window.msaExcluirRegistro=function(key,index,label){
+  const arr=storage.get(key);
+  if(!Array.isArray(arr)||index<0||index>=arr.length)return;
+  const record=arr[index];
+  if(!confirm('🗑️ Mover este registro para a Lixeira?\n\nVocê poderá restaurá-lo depois.'))return;
+  const trash=readTrash();
+  trash.push({id:String(Date.now())+'_'+Math.random().toString(36).slice(2,7),sourceKey:key,label,record,deletedAt:new Date().toISOString()});
+  if(!writeTrash(trash))return alert('Não foi possível abrir a Lixeira.');
+  arr.splice(index,1);storage.set(key,arr);
+  renderTrash();
+  if(typeof window.render==='function')window.render();
+};
+window.msaRestaurarRegistro=function(id){
+  const trash=readTrash(),idx=trash.findIndex(x=>x.id===id);
+  if(idx<0)return;
+  const item=trash[idx],arr=storage.get(item.sourceKey);
+  arr.push(item.record);
+  storage.set(item.sourceKey,arr);
+  trash.splice(idx,1);writeTrash(trash);renderTrash();
+  if(typeof window.render==='function')window.render();
+  alert('♻️ Registro restaurado.');
+};
+window.msaApagarDaLixeira=function(id){
+  const trash=readTrash(),idx=trash.findIndex(x=>x.id===id);
+  if(idx<0)return;
+  if(!confirm('⚠️ Apagar este item definitivamente? Essa ação não poderá ser desfeita.'))return;
+  trash.splice(idx,1);writeTrash(trash);renderTrash();
+};
+function renderTrash(){
+  const box=byId('msaTrashList');if(!box)return;
+  const trash=readTrash().slice().reverse();
+  if(!trash.length){box.innerHTML='<div class="empty">🎉 A Lixeira está vazia.</div>';return}
+  box.innerHTML=trash.map(x=>{
+    const when=new Date(x.deletedAt),dt=isNaN(when)?'':when.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});
+    return '<div class="item"><div class="itemtop"><b>🗑️ '+esc(x.label)+'</b><span class="tag">'+esc(dt)+'</span></div><p>'+esc(trashLabel(x.record,x.label))+'</p><div class="row" style="margin-top:9px"><button class="btn green small" type="button" data-trash-action="restore" data-trash-id="'+esc(x.id)+'">♻️ Restaurar</button><button class="btn secondary small" type="button" data-trash-action="delete" data-trash-id="'+esc(x.id)+'">Apagar definitivamente</button></div></div>';
+  }).join('');
+}
+function addDeleteButtons(){
+  LIST_CONFIG.forEach(cfg=>{
+    const box=byId(cfg.container);if(!box)return;
+    box.querySelectorAll('.msa-delete-btn').forEach(b=>b.remove());
+    const arr=storage.get(cfg.key);
+    const items=[...box.children].filter(el=>el.classList.contains('item'));
+    items.forEach((item,displayIndex)=>{
+      const index=arr.length-1-displayIndex;
+      if(index<0)return;
+      const row=document.createElement('div');row.className='row msa-delete-row';row.style.marginTop='9px';
+      const b=document.createElement('button');b.type='button';b.className='btn secondary small msa-delete-btn';b.textContent='🗑️ Mover para a Lixeira';b.addEventListener('click',()=>window.msaExcluirRegistro(cfg.key,index,cfg.label));
+      row.appendChild(b);item.appendChild(row);
+    });
+  });
+}
+function wrapRenderForTrash(){
+  if(typeof window.render!=='function'||window.render.__msaTrashWrapped)return;
+  const original=window.render;
+  function wrapped(){const out=original.apply(this,arguments);setTimeout(addDeleteButtons,0);return out}
+  wrapped.__msaTrashWrapped=true;window.render=wrapped;
+}
+
 function startDrafts(){
   attachDraftHandlers();
   attachDuplicateGuard();
+  ensureTrashUI();
+  wrapRenderForTrash();
   renderDraftPanel();
   document.addEventListener('click',e=>{
+    const trash=e.target.closest&&e.target.closest('[data-trash-action]');
+    if(trash){const id=trash.getAttribute('data-trash-id');if(trash.getAttribute('data-trash-action')==='restore')window.msaRestaurarRegistro(id);else window.msaApagarDaLixeira(id);return}
     const b=e.target.closest&&e.target.closest('[data-msa-draft-action]');if(!b)return;
     const id=b.getAttribute('data-msa-draft-id');
     if(b.getAttribute('data-msa-draft-action')==='restore')window.msaRestaurarRascunho(id);
