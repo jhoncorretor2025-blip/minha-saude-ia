@@ -1,5 +1,12 @@
 # Changelog — Minha Saúde IA
 
+## V4.90 — Lixeira e restauração
+- 🗑️ Registros principais podem ser movidos para uma Lixeira em vez de apagados diretamente.
+- ♻️ Itens da Lixeira podem ser restaurados.
+- ⚠️ Exclusão definitiva exige confirmação.
+- 📦 Aplicado inicialmente a sintomas, consultas, medicamentos e exames.
+
+
 ## V4.89 — Prevenção de duplicados
 - 🔎 Antes de salvar, formulários principais verificam se já existe uma entrada igual ou muito parecida.
 - ✅ O usuário pode confirmar o salvamento quando o registro repetido for intencional.
