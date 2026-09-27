@@ -1,5 +1,5 @@
 {
-  "version": "V4.99.1",
-  "updatedAt": "2026-09-28T01:20:00Z",
-  "changes": "Correção de seletores da personalização do painel inicial para apontar aos blocos corretos."
+  "version": "V5.00",
+  "updatedAt": "2026-09-28T01:45:00Z",
+  "changes": "Painel de padrões dos registros, com frequências por local, tipo, gatilho, dia e horário, sem diagnóstico."
 }
