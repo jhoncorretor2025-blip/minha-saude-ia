@@ -1,5 +1,5 @@
 {
   "version": "V4.92",
-  "updatedAt": "2026-09-27T23:35:00Z"
-  "changes": "Filtros avançados na linha do tempo por texto, tipo de registro e período, com limpeza rápida dos filtros."
+  "updatedAt": "2026-09-27T23:35:00Z",
+  "changes": "Cinco melhorias iniciais: rascunhos automáticos, prevenção de duplicados, Lixeira, verificador de consistência e filtros avançados na linha do tempo."
 }
