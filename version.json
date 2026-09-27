@@ -1,5 +1,5 @@
 {
-  "version": "V4.67",
-  "updatedAt": "2026-09-27T23:30:00Z",
-  "changes": "Link de instalação separado: cada URL com perfil cria um espaço de armazenamento local independente, permitindo compartilhar o aplicativo zerado sem misturar dados."
+  "version": "V4.68",
+  "updatedAt": "2026-09-27T23:45:00Z",
+  "changes": "Navegação por URL: cada página possui o parâmetro pagina, com suporte a copiar links, atualizar a página e usar voltar/avançar do navegador."
 }
