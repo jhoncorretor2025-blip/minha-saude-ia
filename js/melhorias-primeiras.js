@@ -175,7 +175,9 @@ function attachDuplicateGuard(){
 }
 
 function startDrafts(){
-  attachDraftHandlers();renderDraftPanel();
+  attachDraftHandlers();
+  attachDuplicateGuard();
+  renderDraftPanel();
   document.addEventListener('click',e=>{
     const b=e.target.closest&&e.target.closest('[data-msa-draft-action]');if(!b)return;
     const id=b.getAttribute('data-msa-draft-id');
