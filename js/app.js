@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V4.68 */
+/* Minha Saúde IA — aplicação principal V4.70 */
 
 const K={d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',p:'msa2_perfil',v:'msa2_vitais',r:'msa2_lembretes',vax:'msa2_vacinas',fam:'msa2_familia',doc:'msa2_documentos',nutri:'msa2_nutri',suplReg:'msa2_suplementos',food:'msa2_reacoes_alimentares',agua:'msa2_hidratacao',sono:'msa2_sono',bem:'msa2_bemestar',gat:'msa2_gatilhos',medRot:'msa2_medicamentos_rotina',medTaken:'msa2_medicamentos_tomados',anticoncepcional:'msa2_anticoncepcional'};
 const LEGACY_KEYS={msa_dores:'msa2_dores',msa_consultas:'msa2_consultas',msa_meds:'msa2_meds',msa_exames:'msa2_exames',msa_perfil:'msa2_perfil',msa_vitais:'msa2_vitais',msa_lembretes:'msa2_lembretes',msa_vacinas:'msa2_vacinas',msa_familia:'msa2_familia',msa_documentos:'msa2_documentos'};
@@ -343,8 +343,15 @@ function renderNovosModulos(){
  if($('gatList'))$('gatList').innerHTML=rev(K.gat,x=>'<div class="item"><b>🎯 '+esc(x.gatilho)+'</b><p>'+esc(x.data)+' · sintoma: '+esc(x.sintoma||'—')+(x.obs?' · '+esc(x.obs):'')+'</p></div>');
  if($('famListPage'))$('famListPage').innerHTML=rev(K.fam,x=>'<div class="item"><b>🧬 '+esc(x.parente)+'</b><p>'+esc(x.info||x.cond||'')+(x.idade?' · diagnóstico aos '+esc(x.idade)+' anos':'')+(x.obs?' · '+esc(x.obs):'')+'</p></div>');
  if($('lembListPage'))$('lembListPage').innerHTML=rev(K.r,x=>'<div class="item"><b>🔔 '+esc(x.nome)+'</b><p>'+esc(x.data||'')+' · '+esc(x.tipo||'')+'</p></div>');
- if($('medRotList'))$('medRotList').innerHTML=rev(K.medRot,x=>'<div class="item"><b>💊 '+esc(x.nome)+'</b><p>'+esc(x.dose||'')+' · '+esc(x.hora)+' · estoque '+(x.estoque??0)+(+x.estoque<=+x.min?' ⚠️ Reposição':'')+'</p><button class="btn secondary" onclick="confirmarDose('+x.id+')">✅ Tomei</button></div>');
- if($('lembAgenda')){const items=[...get(K.r).map(x=>({d:x.data,n:x.nome,t:x.tipo||'Lembrete'})),...get(K.medRot).map(x=>({d:hojeLocal()+'T'+x.hora,n:x.nome,t:'Medicamento'}))].filter(x=>x.d).sort((a,b)=>String(a.d).localeCompare(String(b.d))).slice(0,8);$('lembAgenda').innerHTML=items.length?items.map(x=>'<div class="item"><b>'+esc(x.n)+'</b><p>'+esc(x.d)+' · '+esc(x.t)+'</p></div>').join(''):'<div class="empty">Nenhum próximo cuidado.</div>'}
+ if($('medRotList'))$('medRotList').innerHTML=rev(K.medRot,x=>{const dia=hojeLocal(),tomou=get(K.medTaken).some(t=>t.medId===x.id&&String(t.data).slice(0,10)===dia);return '<div class="item"><div class="itemtop"><b>💊 '+esc(x.nome)+'</b><span class="tag">'+(tomou?'✅ Hoje registrado':'⏳ Hoje pendente')+'</span></div><p>'+esc(x.dose||'')+' · '+esc(x.hora)+' · estoque '+(x.estoque??0)+(+x.estoque<=+x.min?' ⚠️ Reposição':'')+'</p><button class="btn '+(tomou?'secondary':'green')+'" onclick="confirmarDose('+x.id+')">'+(tomou?'↩️ Registrar novamente':'✅ Tomei')+'</button></div>'});
+ if($('medAdherenceSummary')){
+ const meds=get(K.medRot),taken=get(K.medTaken),today=hojeLocal();
+ const active=meds.length,done=meds.filter(m=>taken.some(t=>t.medId===m.id&&String(t.data).slice(0,10)===today)).length;
+ const last7=new Date();last7.setDate(last7.getDate()-6);
+ const week=taken.filter(t=>new Date(t.data)>=last7).length;
+ $('medAdherenceSummary').innerHTML='<div class="card stat"><span>💊 Rotinas</span><b>'+active+'</b></div><div class="card stat"><span>✅ Hoje</span><b>'+done+'/'+active+'</b></div><div class="card stat"><span>📅 Últimos 7 dias</span><b>'+week+'</b></div><div class="card stat"><span>📦 Estoque baixo</span><b>'+meds.filter(m=>+m.estoque<=+m.min).length+'</b></div>';
+}
+if($('lembAgenda')){const items=[...get(K.r).map(x=>({d:x.data,n:x.nome,t:x.tipo||'Lembrete'})),...get(K.medRot).map(x=>({d:hojeLocal()+'T'+x.hora,n:x.nome,t:'Medicamento'}))].filter(x=>x.d).sort((a,b)=>String(a.d).localeCompare(String(b.d))).slice(0,8);$('lembAgenda').innerHTML=items.length?items.map(x=>'<div class="item"><b>'+esc(x.n)+'</b><p>'+esc(x.d)+' · '+esc(x.t)+'</p></div>').join(''):'<div class="empty">Nenhum próximo cuidado.</div>'}
 }
 function arquivoDataURL(file,cb){if(!file){cb('');return}const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(file)}
 $('nutriForm')?.addEventListener('submit',e=>{e.preventDefault();arquivoDataURL($('nutriFoto').files[0],foto=>{let a=get(K.nutri);a.push({data:$('nutriData').value,texto:$('nutriTexto').value,foto});set(K.nutri,a);e.target.reset();renderNovosModulos();alert('🍎 Alimentação registrada!')})});
@@ -357,7 +364,14 @@ $('gatilhoForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.g
 $('famFormPage')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.fam);a.push({parente:$('famParentePage').value,cond:$('famCondPage').value,info:$('famCondPage').value,idade:$('famIdadePage').value,obs:$('famObsPage').value});set(K.fam,a);e.target.reset();renderNovosModulos();alert('🧬 Antecedente salvo!')});
 function gerarPerguntasFamilia(){const a=get(K.fam),conds=[...new Set(a.map(x=>x.cond||x.info).filter(Boolean))];$('famPerguntas').innerHTML=conds.length?'<b>Perguntas sugeridas:</b><ol>'+conds.map(c=>'<li>Há algum exame preventivo ou acompanhamento relacionado a histórico familiar de '+esc(c)+' que devo discutir com meu médico?</li>').join('')+'</ol>':'Registre antecedentes familiares para gerar perguntas organizadas.'}
 $('medRotForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.medRot);a.push({id:Date.now(),nome:$('medRotNome').value,dose:$('medRotDose').value,hora:$('medRotHora').value,estoque:$('medRotEstoque').value||0,min:$('medRotMin').value||0});set(K.medRot,a);e.target.reset();renderNovosModulos();alert('💊 Rotina criada!')});
-function confirmarDose(id){let a=get(K.medTaken);a.push({id,data:new Date().toISOString()});set(K.medTaken,a);let r=get(K.medRot),i=r.findIndex(x=>x.id===id);if(i>=0&&+r[i].estoque>0){r[i].estoque=+r[i].estoque-1;set(K.medRot,r)}renderNovosModulos();alert('✅ Dose confirmada e estoque atualizado.')}
+function confirmarDose(id){
+ let a=get(K.medTaken),hoje=hojeLocal(),idx=a.findIndex(x=>x.medId===id&&String(x.data).slice(0,10)===hoje);
+ let r=get(K.medRot),med=r.find(x=>x.id===id);
+ if(idx>=0){a.splice(idx,1);set(K.medTaken,a);if(med&&+med.estoque>0){med.estoque=+med.estoque+1;set(K.medRot,r)}renderNovosModulos();return}
+ a.push({id:id,medId:id,data:new Date().toISOString()});set(K.medTaken,a);
+ if(med&&+med.estoque>0){med.estoque=+med.estoque-1;set(K.medRot,r)}
+ renderNovosModulos();alert('✅ Dose registrada para hoje e estoque atualizado.');
+}
 $('lembFormPage')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.r);a.push({nome:$('lembNomePage').value,data:$('lembDataPage').value,tipo:$('lembTipoPage').value});set(K.r,a);e.target.reset();renderNovosModulos();alert('🔔 Lembrete criado!')});
 function checarMedicamentosRotina(){const now=new Date(),hm=now.toTimeString().slice(0,5),date=hojeLocal();get(K.medRot).forEach(x=>{if(x.hora===hm){const chave='msa2_alerta_'+x.id+'_'+date+'_'+hm;if(!window.msaStorage.getItem(chave)){window.msaStorage.setItem(chave,'1');if('Notification'in window&&Notification.permission==='granted')new Notification('💊 Hora do medicamento',{body:x.nome+(x.dose?' — '+x.dose:'')});else alert('💊 Hora do medicamento: '+x.nome+(x.dose?' — '+x.dose:''))}}})}
 setInterval(checarMedicamentosRotina,30000);
