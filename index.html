@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Saúde IA — V4.5</title>
+<title>Minha Saúde IA — V4.6</title>
 <style>
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
@@ -81,7 +81,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V4.5</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V4.6</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap">
 <nav id="nav">
 <button class="active" data-tab="home">🏠 Início</button><button data-tab="timeline">🕐 Linha do tempo</button><button data-tab="dor">😣 Sintomas</button><button data-tab="consultas">👨‍⚕️ Consultas</button><button data-tab="meds">💊 Medicamentos</button><button data-tab="exames">🧪 Exames</button><button data-tab="perfil">👤 Perfil</button><button data-tab="relatorios">📊 Relatórios</button><button data-tab="backup">💾 Backup</button><button data-tab="importar">⚡ Importar com IA</button><button data-tab="ia">🤖 IA</button>
@@ -485,7 +485,7 @@ function atualizarProgresso(p,step,status){
 const esperar=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function criarDiagnosticoImportacao(code,step,error,raw){
  const box=$('importDiagnostic');
- const diag={versao:'V4.5',codigo:code,etapa:step,mensagem:String(error?.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error?.stack||'').split('\n').slice(0,4).join('\n')};
+ const diag={versao:'V4.6',codigo:code,etapa:step,mensagem:String(error?.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error?.stack||'').split('\n').slice(0,4).join('\n')};
  if(box){
   box.style.display='block';
   box.innerHTML='<div class="alert danger"><b>🔎 Diagnóstico da falha</b><br>Versão: '+esc(diag.versao)+' · Etapa: '+esc(diag.etapa)+'<br>Código: <b>'+esc(diag.codigo)+'</b><pre id="importDiagnosticText" style="white-space:pre-wrap;word-break:break-word;background:#fff;margin-top:10px;padding:10px;border-radius:10px;color:#7f1d1d;font-size:11px">'+esc(JSON.stringify(diag,null,2))+'</pre><button class="btn secondary small" type="button" onclick="copiarDiagnosticoImportacao()">📋 Copiar diagnóstico</button></div>';
@@ -607,8 +607,21 @@ async function onboardIA(){
 }
 function abrirIA(url){
  const prompt=$('promptIA')?.value||'';
- const open=()=>window.open(url,'_blank');
- navigator.clipboard?.writeText(prompt).then(open).catch(()=>{if($('promptIA')){$('promptIA').select();document.execCommand('copy')}open()});
+ const win=window.open(url,'_blank');
+ try{
+   if(navigator.clipboard?.writeText) navigator.clipboard.writeText(prompt);
+   else{
+     const t=$('promptIA');
+     if(t){t.focus();t.select();document.execCommand('copy');}
+   }
+ }catch(e){
+   const t=$('promptIA');
+   if(t){try{t.focus();t.select();document.execCommand('copy')}catch(err){}}
+ }
+ if(!win){
+   const msg=$('copiado');
+   if(msg)msg.textContent='⚠️ A janela da IA foi bloqueada. Permita pop-ups e toque novamente.';
+ }
 }
 function abrirChatGPT(){
  abrirIA('https://chatgpt.com/?q='+encodeURIComponent($('promptIA')?.value||''));
@@ -655,7 +668,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 /* V4.4: auto-update and force-refresh */
 function forcarAtualizacao(){
  const u=new URL(window.location.href);
- u.searchParams.set('appv','V4.5');
+ u.searchParams.set('appv','V4.6');
  u.searchParams.set('cb',Date.now());
  window.location.replace(u.toString());
 }
@@ -664,7 +677,7 @@ async function verificarNovaVersao(){
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
   const data=await r.json();
-  if(data.version && data.version!=='V4.5'){
+  if(data.version && data.version!=='V4.6'){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
@@ -782,82 +795,5 @@ initReports();render();setTimeout(verificarNovaVersao,700);
 </script>
 
 
-<script>
-function copiarPrompt(){
- const t=$('promptIA');
- navigator.clipboard?.writeText(t.value).then(()=>{$('copiado').textContent='✅ Copiado! Agora cole no ChatGPT ou Gemini.'}).catch(()=>{t.select();document.execCommand('copy');$('copiado').textContent='✅ Copiado!'});
-}
-function normalObj(x){return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}
-function arr(x){return Array.isArray(x)?x:[]}
-function first(o,...keys){for(const k of keys)if(o&&o[k]!==undefined&&o[k]!==null&&String(o[k]).trim()!=='')return o[k];return ''}
-function normalizarImport(d){
- const p=normalObj(d.perfil||d.profile);
- const dores=arr(d.dores||d.dores_e_sintomas||d.sintomas).map(x=>({
-   data:first(x,'data','inicio','quando','datetime'),
-   local:first(x,'local','onde','regiao','região'),
-   int:Number(first(x,'int','intensidade','intensidade_0_10'))||0,
-   tipo:first(x,'tipo','caracteristica','característica'),
-   freq:first(x,'freq','frequencia','frequência'),
-   gatilho:first(x,'gatilho','gatilhos','piora_melhora'),
-   sint:first(x,'sint','sintomas','outros_sintomas'),
-   obs:first(x,'obs','observacoes','observações')
- }));
- const consultas=arr(d.consultas).map(x=>({
-   data:first(x,'data'),esp:first(x,'especialidade'),med:first(x,'med','medico','médico'),
-   mot:first(x,'motivo'),perg:first(x,'perguntas'),obs:first(x,'obs','orientacoes','orientações'),ret:first(x,'ret','retorno')
- }));
- const meds=arr(d.medicamentos||d.remedios||d.remédios).map(x=>({
-   nome:first(x,'nome','medicamento','remedio','remédio'),dose:first(x,'dose'),
-   freq:first(x,'freq','frequencia','frequência'),inicio:first(x,'inicio','início'),
-   fim:first(x,'fim'),pres:first(x,'pres','prescritor','prescrito_por'),obs:first(x,'obs','observacoes','observações')
- }));
- const exames=arr(d.exames).map(x=>({
-   nome:first(x,'nome','exame'),data:first(x,'data'),res:first(x,'res','resultado'),obs:first(x,'obs','observacoes','observações')
- }));
- return {p,dores,consultas,meds,exames};
-}
-function limparImportacao(){$('importIA').value='';$('resultadoImport').innerHTML=''}
-function processarTextoLivre(){
- const t=$('textoLivre').value.trim();if(!t){alert('Cole algum texto primeiro.');return}
- let added=0;
- // Conservative pattern recognition: creates only records that have enough explicit information.
- const name=t.match(/(?:meu nome é|me chamo)\s+([A-Za-zÀ-ÿ ]{2,60})/i);
- const p=get(K.p)[0]||{};
- if(name){p.nome=name[1].trim();set(K.p,[p]);added++}
- const med=[...t.matchAll(/(?:uso|tomo|tomando|medicamento)\s+([A-Za-zÀ-ÿ0-9 +.-]{3,60})(?:\s+(\d+\s?(?:mg|g|ml|mcg)))?/gi)];
- med.forEach(m=>{set(K.m,get(K.m).concat([{nome:m[1].trim(),dose:m[2]||'',freq:'',inicio:'',fim:'',pres:'',obs:'Importado de texto livre'}]));added++});
- const pain=t.match(/(?:dor|dores)\s+(?:de|no|na|em)\s*([A-Za-zÀ-ÿ ]{2,40})(?:.{0,100}?(\d{1,2})\s*\/\s*10)?/i);
- if(pain){set(K.d,get(K.d).concat([{data:new Date().toISOString().slice(0,16),local:pain[1].trim(),int:Math.min(Number(pain[2]||0),10),tipo:'',freq:'',gatilho:'',sint:t.slice(0,300),obs:'Importado de texto livre'}]));added++}
- render();
- $('resultadoLivre').innerHTML=added?`<div class="alert safe">🪄 Tentei organizar <b>${added}</b> informação(ões). Confira os registros porque o texto livre pode exigir correção manual.</div>`:'<div class="alert warn">Não encontrei informações com segurança suficiente. Use o prompt estruturado acima para obter uma importação mais completa.</div>';
-}
-</script>
 
-<script>
-function hasAnyHealthData(){
- return [K.d,K.c,K.m,K.e,K.p].some(k=>get(k).length>0);
-}
-function showOnboarding(){
- // V3: a nova tela de escolha deve aparecer uma vez nesta versão.
- // Depois que a escolha for feita, ela não volta a aparecer a cada abertura.
- if(localStorage.getItem('msa2_onboarding_v2_done')!=='1' && !hasAnyHealthData()){
-   const o=document.getElementById('onboarding'); if(o)o.style.display='block';
- }
-}
-function finishOnboarding(mode){
- localStorage.setItem('msa2_onboarding_done','1');
- localStorage.setItem('msa2_onboarding_v2_done','1');
- const o=document.getElementById('onboarding');if(o)o.style.display='none';
- if(mode==='import')go('importar');
- if(mode==='profile')go('perfil');
-}
-function onboardImport(){finishOnboarding('import')}
-function onboardProfile(){finishOnboarding('profile')}
-function resetWelcome(){
- localStorage.removeItem('msa2_onboarding_done');
- alert('A tela inicial aparecerá novamente quando você recarregar o site.');
- location.reload();
-}
-document.addEventListener('DOMContentLoaded',()=>setTimeout(showOnboarding,150));
-</script>
 </body></html>
