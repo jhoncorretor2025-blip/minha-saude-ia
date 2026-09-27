@@ -1,5 +1,5 @@
 {
-  "version": "V4.76",
-  "updatedAt": "2026-09-28T02:15:00Z",
-  "changes": "Ciclo menstrual destacado como menu principal ao lado de Ferramentas, com acesso direto ao acompanhamento do ciclo."
+  "version": "V4.77",
+  "updatedAt": "2026-09-27T20:00:00Z",
+  "changes": "Correção do HTML/JavaScript dos relatórios: evitado fechamento indevido da tag script, que fazia código aparecer como texto na página. Cache e referências atualizados."
 }
