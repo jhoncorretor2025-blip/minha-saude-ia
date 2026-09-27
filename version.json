@@ -1,5 +1,5 @@
 {
-  "version": "V4.83",
-  "updatedAt": "2026-09-27T21:35:00Z",
-  "changes": "Linha do tempo limpa: placeholders como “valor”, “Não informado” e intensidade 0 não aparecem como informação registrada."
+  "version": "V4.84",
+  "updatedAt": "2026-09-27T21:50:00Z",
+  "changes": "Melhorias de manutenção e navegação: versão/cache sincronizados, Ciclo menstrual reposicionado, navegação móvel refinada e foco de teclado reforçado."
 }
