@@ -164,6 +164,7 @@ function aplicarPreferencias(){
  document.querySelectorAll('[data-feature-nav="nutricao"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.nutricao==='off'));
  document.querySelectorAll('[data-feature-nav="sonoBem"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.sonoBem==='off'));
  document.querySelectorAll('[data-feature-nav="ciclo"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.ciclo==='off'));
+ $('reproSection')?.classList.toggle('msa-feature-off',pref.ciclo==='off');
  document.querySelectorAll('#dashActivityEdit,#dashActivity').forEach(el=>el.closest('.metric-kpi')?.classList.toggle('msa-feature-off',pref.academia==='off'));
  $('medidasCorporaisCard')?.classList.toggle('msa-feature-off',pref.academia==='off');
 }
