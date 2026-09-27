@@ -140,7 +140,7 @@
         ])+
         '<div class="msa-mobile-section"><div class="msa-mobile-section-title">Ações especiais</div>'+
           '<div class="msa-mobile-links"><button type="button" class="danger" data-mobile-emergency="1">🚨 Modo emergência</button>'+
-          '<button type="button" data-mobile-tab="perfil" data-mobile-ciclo="1">🌸 Ciclo menstrual</button></div></div>'+
+          '<button type="button" data-mobile-tab="perfil" data-mobile-ciclo="1" data-feature-nav="ciclo">🌸 Ciclo menstrual</button></div></div>'+
       '</div>';
 
     var bar=document.createElement('nav');
@@ -159,7 +159,7 @@
 
     function mobileSection(title,items){
       return '<div class="msa-mobile-section"><div class="msa-mobile-section-title">'+title+'</div><div class="msa-mobile-links">'+
-        items.map(function(x){return '<button type="button" data-mobile-tab="'+x[0]+'">'+x[1]+'</button>';}).join('')+
+        items.map(function(x){var f=x[0]==='nutricao'?'nutricao':x[0]==='sono'?'sonoBem':x[0]==='acompanhamento'?'academia':null;return '<button type="button" data-mobile-tab="'+x[0]+'"'+(f?' data-feature-nav="'+f+'"':'')+'>'+x[1]+'</button>';}).join('')+
       '</div></div>';
     }
 
