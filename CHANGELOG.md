@@ -1,5 +1,12 @@
 # Changelog — Minha Saúde IA
 
+## V5.00 — Padrões dos registros
+- 📈 Frequências de sintomas por local e tipo.
+- 🎯 Frequências de gatilhos informados.
+- 📅 Distribuição por dia da semana e horário.
+- 🛡️ Sem diagnóstico ou inferência de causa.
+
+
 ## V4.99.1 — Correção da personalização do painel
 - 🛠️ Corrigidos os seletores usados para mostrar/ocultar os blocos corretos da página inicial.
 
