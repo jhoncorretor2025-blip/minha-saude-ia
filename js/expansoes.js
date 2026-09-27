@@ -592,4 +592,55 @@ function ensureEncryptedBackupUI(){
 document.addEventListener('DOMContentLoaded',()=>setTimeout(ensureEncryptedBackupUI,780));
 
 
+
+/* ===== V5.06 — passkey local ===== */
+const PASSKEY_KEY='msa3_passkey_local';
+const toB64=a=>btoa(String.fromCharCode(...new Uint8Array(a)));
+const fromB64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0)).buffer;
+async function registerLocalPasskey(){
+ if(!window.PublicKeyCredential||!navigator.credentials)return alert('🔑 Este navegador não oferece Passkey/WebAuthn.');
+ try{
+  const cred=await navigator.credentials.create({publicKey:{
+   challenge:crypto.getRandomValues(new Uint8Array(32)),
+   rp:{name:'Minha Saúde IA',id:location.hostname},
+   user:{id:crypto.getRandomValues(new Uint8Array(16)),name:'usuario-local',displayName:'Minha Saúde IA'},
+   pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
+   authenticatorSelection:{residentKey:'preferred',userVerification:'preferred'},
+   timeout:60000,attestation:'none'
+  }});
+  if(!cred)return;
+  window.localStorage.setItem(PASSKEY_KEY,JSON.stringify({credentialId:toB64(cred.rawId),createdAt:new Date().toISOString()}));
+  alert('✅ Passkey registrada neste navegador. Ela pode ser usada como desbloqueio local rápido.');
+ }catch(e){alert('❌ Não foi possível registrar a Passkey.')}
+}
+async function verifyLocalPasskey(){
+ const saved=(()=>{try{return JSON.parse(window.localStorage.getItem(PASSKEY_KEY)||'null')}catch(e){return null}})();
+ if(!saved?.credentialId)return alert('Nenhuma Passkey local foi cadastrada.');
+ try{
+  const cred=await navigator.credentials.get({publicKey:{
+   challenge:crypto.getRandomValues(new Uint8Array(32)),
+   allowCredentials:[{type:'public-key',id:fromB64(saved.credentialId)}],
+   userVerification:'preferred',timeout:60000
+  }});
+  if(cred){const gate=byId('pinGate');if(gate)gate.style.display='none';alert('✅ Passkey aceita. A interface foi desbloqueada neste navegador.')}
+ }catch(e){alert('❌ A autenticação pela Passkey não foi concluída.')}
+}
+window.msaRegisterPasskey=registerLocalPasskey;window.msaVerifyPasskey=verifyLocalPasskey;
+function ensurePasskeyUI(){
+ const sec=byId('backup');if(!sec||byId('msaPasskeyCard'))return;
+ const card=document.createElement('div');card.id='msaPasskeyCard';card.className='card';card.style.marginTop='13px';
+ card.innerHTML='<h2>🔑 Passkey neste dispositivo</h2><div class="muted">Use a biometria, PIN do dispositivo ou chave de segurança compatível para desbloqueio local.</div><div class="row" style="margin-top:12px"><button class="btn green" type="button" id="msaPasskeyRegister">🔑 Cadastrar Passkey</button><button class="btn secondary" type="button" id="msaPasskeyVerify">✅ Testar Passkey</button></div><div class="alert info" style="margin-top:12px">ℹ️ Esta versão usa a Passkey apenas como mecanismo local de desbloqueio neste navegador. Login e autenticação de conta entre dispositivos ainda exigem backend.</div>';
+ sec.appendChild(card);
+ card.querySelector('#msaPasskeyRegister').addEventListener('click',registerLocalPasskey);
+ card.querySelector('#msaPasskeyVerify').addEventListener('click',verifyLocalPasskey);
+}
+function addPasskeyToGate(){
+ const gate=byId('pinGate');if(!gate||gate.querySelector('[data-msa-passkey-gate]'))return;
+ const b=document.createElement('button');b.type='button';b.className='btn secondary';b.setAttribute('data-msa-passkey-gate','1');b.style.cssText='margin-top:9px;width:100%';b.textContent='🔑 Entrar com Passkey';
+ b.addEventListener('click',verifyLocalPasskey);
+ const msg=byId('gateMsg');(msg?.parentNode||gate).insertBefore(b,msg||null);
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{ensurePasskeyUI();addPasskeyToGate()},820));
+
+
 })();
