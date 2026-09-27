@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V5.01 — Acompanhamento de medicamentos
+- 💊 Visão de 30 dias por rotina.
+- ✅ Contagem de dias com dose registrada.
+- ℹ️ Separação explícita entre registro no app e adesão ao tratamento.
+
+
 ## V5.00 — Padrões dos registros
 - 📈 Frequências de sintomas por local e tipo.
 - 🎯 Frequências de gatilhos informados.
