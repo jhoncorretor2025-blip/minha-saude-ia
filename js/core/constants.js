@@ -8,7 +8,7 @@ const K={
  p:'msa2_perfil',v:'msa2_vitais',r:'msa2_lembretes',vax:'msa2_vacinas',fam:'msa2_familia',
  doc:'msa2_documentos',nutri:'msa2_nutri',suplReg:'msa2_suplementos',food:'msa2_reacoes_alimentares',
  agua:'msa2_hidratacao',sono:'msa2_sono',bem:'msa2_bemestar',gat:'msa2_gatilhos',
- medRot:'msa2_medicamentos_rotina',medTaken:'msa2_medicamentos_tomados',anticoncepcional:'msa2_anticoncepcional'
+ medRot:'msa2_medicamentos_rotina',medTaken:'msa2_medicamentos_tomados',anticoncepcional:'msa2_anticoncepcional',medidas:'msa2_medidas_corporais'
 };
 window.MSA_K=K;
 window.K=window.K||K;
