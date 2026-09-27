@@ -1,5 +1,15 @@
 # Changelog — Minha Saúde IA
 
+## V4.67 — Link separado para novos usuários
+- Adicionado sistema de **perfil local por URL**.
+- O link normal continua usando o armazenamento local já existente, preservando os dados do usuário atual.
+- Links com `?perfil=...` usam um namespace de armazenamento separado.
+- Adicionado botão **🔗 Link zerado para outra pessoa**, que gera um link novo e copia para a área de transferência.
+- A pessoa que receber esse link começa com o aplicativo vazio, sem acessar o cadastro local de outro perfil.
+- Os dados continuam somente no navegador; o link não envia nem sincroniza dados com servidor.
+- Atualizada a documentação de arquitetura.
+- Versão atualizada para V4.67.
+
 ## V4.66 — Dados locais e isolamento do navegador
 - Reforçada a arquitetura **local-first**: os dados pessoais são armazenados no navegador por meio de localStorage.
 - Confirmado que o repositório não deve conter dados pessoais reais.
