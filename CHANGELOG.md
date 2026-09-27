@@ -1,5 +1,13 @@
 # Changelog — Minha Saúde IA
 
+## V4.60 — Importação de IA mais tolerante
+- O importador agora reconhece marcadores com ou sem acentos e pequenas variações de nomes.
+- Aceita campos no formato `[CAMPO]`, além de algumas respostas no formato `CAMPO: valor`.
+- Tolera listas com marcadores e pequenas diferenças de espaçamento.
+- Mantém suporte a JSON e blocos Markdown.
+- Normaliza valores como “Não disponível” para “Não informado”.
+- Atualiza o diagnóstico interno para V4.60.
+
 ## V4.59 — Organização do projeto
 - Criada documentação de arquitetura.
 - Criada documentação específica do fluxo de importação por IA.
