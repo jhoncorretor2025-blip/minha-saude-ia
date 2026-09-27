@@ -2,6 +2,26 @@
 
 Aplicativo web pessoal para organizar informações de saúde de forma simples.
 
+## Estrutura do projeto
+
+```
+minha-saude-ia/
+├── index.html
+├── js/
+│   ├── app.js
+│   ├── importacao.js
+│   └── menu.js
+├── prompts/
+│   └── importacao-saude.txt
+├── docs/
+│   ├── ARQUITETURA.md
+│   └── IMPORTACAO-IA.md
+├── version.json
+└── CHANGELOG.md
+```
+
+A documentação em `docs/` existe para permitir que outra pessoa ou IA entenda rapidamente a arquitetura antes de alterar o projeto.
+
 ## Recursos
 
 - Perfil de saúde
