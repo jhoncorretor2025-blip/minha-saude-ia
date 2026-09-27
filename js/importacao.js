@@ -1,12 +1,42 @@
-/* Minha Saúde IA - módulo de importação V4.53 */
+/* Minha Saúde IA - módulo de importação V4.56 */
+function obterPromptIA(){
+ const t=document.getElementById('promptIA');
+ return t?t.value:'';
+}
+function copiarPromptSincrono(){
+ const t=document.getElementById('promptIA');
+ if(!t)return false;
+ let ok=false;
+ try{
+  t.focus();
+  t.select();
+  ok=document.execCommand('copy');
+ }catch(e){}
+ if($('copiado'))$('copiado').textContent=ok?'✅ Prompt copiado!':'';
+ return ok;
+}
 function copiarPromptIA(){copiarPrompt()}
 function copiarPrompt(){
- const t=$('promptIA');
+ const t=document.getElementById('promptIA');
  if(!t)return;
- const ok=function(){if($('copiado'))$('copiado').textContent='✅ Copiado! Agora cole no ChatGPT ou Gemini.'};
- if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t.value).then(ok).catch(function(){t.select();document.execCommand('copy');ok()});
- else{t.select();document.execCommand('copy');ok()}
+ const texto=t.value||'';
+ const ok=function(){if($('copiado'))$('copiado').textContent='✅ Prompt copiado! Agora cole no ChatGPT ou Gemini.'};
+ if(navigator.clipboard&&navigator.clipboard.writeText){
+  navigator.clipboard.writeText(texto).then(ok).catch(function(){
+   if(!copiarPromptSincrono()&&$('copiado'))$('copiado').textContent='⚠️ Não foi possível copiar automaticamente. Selecione o texto e copie manualmente.';
+  });
+ }else if(!copiarPromptSincrono()){
+  if($('copiado'))$('copiado').textContent='⚠️ Não foi possível copiar automaticamente. Selecione o texto e copie manualmente.';
+ }else ok();
 }
+function copiarPromptAntesDeAbrir(){
+ const texto=obterPromptIA();
+ const copiado=copiarPromptSincrono();
+ if(!copiado&&navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(texto).catch(function(){});
+}
+window.copiarPrompt=window.copiarPrompt||copiarPrompt;
+window.copiarPromptIA=window.copiarPromptIA||copiarPromptIA;
+window.copiarPromptAntesDeAbrir=copiarPromptAntesDeAbrir;
 function normalObj(x){return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}
 function arr(x){return Array.isArray(x)?x:[]}
 function first(o){for(var i=1;i<arguments.length;i++){var k=arguments[i];if(o&&o[k]!==undefined&&o[k]!==null&&String(o[k]).trim()!=='')return o[k]}return ''}
@@ -98,7 +128,7 @@ function normalizarFichaIA(raw){
 }
 function atualizarProgresso(p,step,status){var bar=$('importProgress'),pct=$('importPercent'),st=$('importStep'),msg=$('importStatus');if(bar)bar.style.width=p+'%';if(pct)pct.textContent=p+'%';if(st)st.textContent=step;if(msg)msg.textContent=status}
 function esperar(ms){return new Promise(function(resolve){setTimeout(resolve,ms)})}
-function criarDiagnosticoImportacao(code,step,error,raw){var box=$('importDiagnostic'),diag={versao:'V4.53',codigo:code,etapa:step,mensagem:String(error&&error.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error&&error.stack||'').split('\n').slice(0,4).join('\n')};if(box){box.style.display='block';box.innerHTML='<div class="alert danger"><b>🔎 Diagnóstico da falha</b><br>Versão: '+esc(diag.versao)+' · Etapa: '+esc(diag.etapa)+'<br>Código: <b>'+esc(diag.codigo)+'</b><pre style="white-space:pre-wrap;word-break:break-word">'+esc(JSON.stringify(diag,null,2))+'</pre></div>'}console.error('[Minha Saúde IA]',diag)}
+function criarDiagnosticoImportacao(code,step,error,raw){var box=$('importDiagnostic'),diag={versao:'V4.56',codigo:code,etapa:step,mensagem:String(error&&error.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error&&error.stack||'').split('\n').slice(0,4).join('\n')};if(box){box.style.display='block';box.innerHTML='<div class="alert danger"><b>🔎 Diagnóstico da falha</b><br>Versão: '+esc(diag.versao)+' · Etapa: '+esc(diag.etapa)+'<br>Código: <b>'+esc(diag.codigo)+'</b><pre style="white-space:pre-wrap;word-break:break-word">'+esc(JSON.stringify(diag,null,2))+'</pre></div>'}console.error('[Minha Saúde IA]',diag)}
 function importarNormalizado(n){
  var pk=['nome','nasc','idade','sexo','sangue','altura','peso','objetivoCorporal','academia','academiaFreq','atividadeFisica','trabalhoTipo','horasSentado','horasPe','aguaDia','urinaDia','calorSuor','alimentacao','cond','alerg','circ','supl','info','emerg','tel','menstruacao','ciclo','duracaoMenstr','sexoFreq','camisinha','engravidou','mae','gestacoes','reproObs','prevColo','mamografia','ist','hpv','prevProx','prevObs','dorcelaxFreq','paracetamolFreq','outrosDor','catapora','cataporaQuando'],has=function(k){var v=String(n.p[k]||'').trim();return v&&v.toLowerCase()!=='não informado'};
  if(n.dores.length)set(K.d,get(K.d).concat(n.dores));
