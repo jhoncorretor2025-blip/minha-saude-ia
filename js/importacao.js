@@ -99,7 +99,7 @@ function normalizarFichaIA(raw){
   }
   if(current)values[current]+=(values[current]?'\n':'')+line;
  });
- function field(n){var v=String(values[n]||'').trim();return /^não informado$|^nao informado$|^não disponível$|^nao disponivel$|^n/?a$/i.test(v)?'Não informado':v}
+ function field(n){var v=String(values[n]||'').trim();return /^não informado$|^nao informado$|^não disponível$|^nao disponivel$|^n\/?a$/i.test(v)?'Não informado':v}
  function date(v){var s=String(v||'').trim(),m=s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);if(m)return m[3]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[1]).padStart(2,'0');return s}
  function num(v){var m=String(v||'').replace(',','.').match(/-?\d+(?:\.\d+)?/);return m?m[0]:''}
  function height(v){var n=num(v);if(!n)return '';var x=Number(n);return /\bm\b/i.test(String(v))&&x<3?String(Math.round(x*100)):String(x)}
