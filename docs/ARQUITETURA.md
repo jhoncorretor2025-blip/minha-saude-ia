@@ -60,3 +60,7 @@ O aplicativo pode receber `?perfil=IDENTIFICADOR` na URL. Esse identificador cri
 
 ## V4.68 — Navegação por URL
 Cada tela principal pode ser aberta diretamente usando `?pagina=ID`. O parâmetro pode coexistir com `?perfil=IDENTIFICADOR`. A URL contém somente identificadores de navegação; dados pessoais continuam no armazenamento local e nunca devem ser colocados na URL.
+
+
+## V4.69 — Melhorias de navegação e acompanhamento
+O módulo `js/melhorias.js` concentra busca, avisos, calendário e perguntas para consulta. Essas funções leem e gravam somente no armazenamento local do perfil atual.
