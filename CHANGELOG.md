@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V4.89 — Prevenção de duplicados
+- 🔎 Antes de salvar, formulários principais verificam se já existe uma entrada igual ou muito parecida.
+- ✅ O usuário pode confirmar o salvamento quando o registro repetido for intencional.
+- 🛡️ Nenhum registro antigo é alterado automaticamente.
+
+
 ## V4.88 — Rascunhos automáticos
 - 📝 Formulários passam a salvar rascunhos localmente enquanto o usuário preenche.
 - ↩️ Rascunhos podem ser retomados ou apagados.
