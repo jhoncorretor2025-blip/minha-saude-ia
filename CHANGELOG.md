@@ -1,5 +1,16 @@
 # Changelog — Minha Saúde IA
 
+## V4.74 — Diário do sono simplificado
+- Formulário reduzido para registro rápido do sono.
+- 🌙 Horário que dormiu.
+- ☀️ Horário que acordou.
+- ⏱️ Cálculo automático da duração aproximada do sono, inclusive quando passa da meia-noite.
+- 🚽 Quantidade de vezes que acordou para urinar.
+- 😣 Quantidade de vezes que acordou por dor.
+- 📝 Observação opcional.
+- Registros antigos de sono continuam sendo exibidos no formato anterior quando encontrados.
+- Versão atualizada para V4.74.
+
 ## V4.73 — Compartilhamento seguro
 - Criado seletor de conteúdo para compartilhamento.
 - 🔹 **Apenas completude**: percentual do perfil principal sem ficha clínica.
