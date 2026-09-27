@@ -1,5 +1,13 @@
 # Changelog — Minha Saúde IA
 
+## V4.82 — Guia para iniciantes minimizado
+- 🧭 O **Guia para quem nunca usou IA** agora começa minimizado.
+- 👆 Um clique expande o passo a passo completo.
+- 📄 A página fica mais curta para quem já sabe usar IA.
+- 📱 Mantida a adaptação dos passos para celular.
+- Versão atualizada para V4.82.
+
+
 ## V4.81 — Guia de importação mais compacto
 - 📐 Cards do guia reduzidos para ocupar menos espaço vertical.
 - 🖥️ Passos organizados em duas colunas no computador.
