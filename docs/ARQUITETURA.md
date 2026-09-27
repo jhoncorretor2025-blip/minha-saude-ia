@@ -1,5 +1,10 @@
 # Minha Saúde IA — Arquitetura
 
+## V5.08 — FHIR
+- `js/expansoes.js` gera um `Bundle` FHIR R4 para portabilidade dos registros.
+- O exportador é deliberadamente não clínico: ele mapeia fatos já registrados sem inferir diagnósticos ou recomendações.
+
+
 ## V4.93 — Compatibilidade
 - O módulo `js/melhorias.js` mantém o acesso à API de armazenamento bruto necessária ao gerenciamento de perguntas.
 - `js/melhorias-primeiras.js` acrescenta recursos de dados de forma aditiva.
