@@ -440,6 +440,7 @@ function goSemBloqueio(id){document.querySelectorAll('nav button[data-tab]').for
 function atualizarSaudeReprodutiva(){
  const s=String($('pSexo')?.value||'').trim().toLowerCase();
  const feminino=/femin|mulher|female/.test(s);
+ const cicloMenu=$('cicloMenuBtn');if(cicloMenu)cicloMenu.closest('.nav-group').style.display=feminino?'block':'none';
  const box=$('reproSection');if(box)box.style.display=feminino?'block':'none';
  const cb=$('contraceptiveBox');if(cb)cb.style.display=feminino?'block':'none';
  atualizarCamposMetodoAnticoncepcional();
