@@ -1,5 +1,5 @@
 {
-  "version": "V4.44",
-  "updatedAt": "2026-09-27T22:10:00Z",
-  "changes": "Finaliza a correção de sintaxe das métricas corporais e rotina de saúde"
+  "version": "V4.45",
+  "updatedAt": "2026-09-27T22:20:00Z",
+  "changes": "Alinha o prompt, importador e contexto da IA com peso, altura, IMC, objetivo corporal, academia, atividade física, rotina de trabalho, horas sentado/em pé, água, frequência urinária, calor/suor e alimentação"
 }
