@@ -1,5 +1,11 @@
 # Changelog — Minha Saúde IA
 
+## V5.02 — Conflitos na importação IA
+- 🔎 Detecta entradas iguais ou parecidas com registros existentes.
+- ✅ Permite manter o atual ou adicionar o importado.
+- 👤 Conflitos de campos do perfil também podem ser revisados.
+
+
 ## V5.01 — Acompanhamento de medicamentos
 - 💊 Visão de 30 dias por rotina.
 - ✅ Contagem de dias com dose registrada.
