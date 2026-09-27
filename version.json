@@ -1,5 +1,5 @@
 {
-  "version": "V5.22",
-  "updatedAt": "2026-09-28T00:05:00Z",
-  "changes": "Correção adicional dos relatórios: o bloco de ações rápidas também estava sendo incorporado ao documento de impressão e aparecia como código na tela. O bloco foi removido do relatório e mantido somente na página principal."
+  "version": "V5.23",
+  "updatedAt": "2026-09-28T00:15:00Z",
+  "changes": "Navegação mobile mais visível: novo botão fixo '☰ Menu' no topo da tela, além da barra inferior já existente. O botão abre o menu completo com Visão geral, Saúde, Complementos, Recursos, Ferramentas e ações especiais."
 }
