@@ -1,5 +1,5 @@
 {
-  "version": "V5.29",
-  "updatedAt": "2026-09-28T02:00:00Z",
-  "changes": "Novo acompanhamento de medidas corporais para academia: registro por data de bíceps, barriga/cintura, glúteos/quadril, panturrilha, coxa e peito/tórax, com histórico salvo localmente e acesso pelo menu Acompanhamento."
+  "version": "V5.30",
+  "updatedAt": "2026-09-28T02:20:00Z",
+  "changes": "Personalização por perfil: novo controle para ativar/desativar recursos. Academia e medidas corporais, nutrição, sono e bem-estar e ciclo menstrual podem ser ocultados para simplificar a experiência e reativados depois em Configurações. Preferências ficam salvas localmente."
 }
