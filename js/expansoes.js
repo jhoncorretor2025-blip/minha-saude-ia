@@ -91,6 +91,7 @@ function renderDocumentosWithOCR(){
 }
 function startOCR(){ensureOverlay();setTimeout(renderDocumentosWithOCR,250)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startOCR);else startOCR();
+document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{installHistoryLogging();ensureHistoryUI()},380));
 document.addEventListener('DOMContentLoaded',()=>setTimeout(startDocumentTags,420));
 
 /* ===== V4.95 — categorias e etiquetas de documentos ===== */
@@ -192,6 +193,50 @@ function addQRButton(){
  }
 }
 document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{ensureQROverlay();addQRButton()},350));
+
+
+
+/* ===== V4.97 — histórico de alterações ===== */
+const HISTORY_KEY='msa2_historico_alteracoes';
+const historyLabel={};
+Object.keys(K).forEach(k=>{
+ const map={d:'Sintomas',c:'Consultas',m:'Medicamentos',e:'Exames',p:'Perfil',v:'Sinais vitais',r:'Lembretes',vax:'Vacinas',fam:'Histórico familiar',doc:'Documentos',nutri:'Nutrição',suplReg:'Suplementos',food:'Reações alimentares',agua:'Hidratação',sono:'Sono',bem:'Bem-estar',gat:'Gatilhos',medRot:'Rotinas de medicamentos',medTaken:'Doses de medicamentos',ciclo:'Ciclo menstrual',anticoncepcional:'Anticoncepcional'};
+ if(map[k])historyLabel[K[k]]=map[k];
+});
+function readHistory(){try{return rawStorage.getItem(HISTORY_KEY)?JSON.parse(rawStorage.getItem(HISTORY_KEY)):[]}catch(e){return[]}}
+function addHistory(entry){
+ const a=readHistory();a.push(entry);if(a.length>300)a.splice(0,a.length-300);
+ try{rawStorage.setItem(HISTORY_KEY,JSON.stringify(a))}catch(e){}
+}
+function installHistoryLogging(){
+ if(window.MSAStorage.__msaHistoryWrapped)return;
+ const original=window.MSAStorage.set,wrapped=function(key,value){
+   const result=original.call(this,key,value);
+   if(key!==HISTORY_KEY&&/^msa2_/.test(String(key))){
+     let count='—';try{count=Array.isArray(value)?value.length:(value&&typeof value==='object'?1:'—')}catch(e){}
+     addHistory({timestamp:new Date().toISOString(),key:String(key),label:historyLabel[key]||'Dados locais',count,action:'salvar'});
+   }
+   return result;
+ };
+ wrapped.__msaHistoryWrapped=true;window.MSAStorage.set=wrapped;
+}
+function ensureHistoryUI(){
+ const toolsGroup=[...document.querySelectorAll('#nav .nav-group')].find(g=>g.querySelector('.nav-toggle[data-menu="tools"]')),menu=toolsGroup?.querySelector('.nav-menu');
+ if(menu&&!menu.querySelector('[data-tab="historico"]')){
+  const b=document.createElement('button');b.type='button';b.setAttribute('data-tab','historico');b.textContent='🕘 Histórico de alterações';menu.appendChild(b);
+ }
+ if(byId('historico'))return;
+ const host=byId('main-content')||document.querySelector('.wrap')||document.body,sec=document.createElement('section');sec.id='historico';
+ sec.innerHTML='<div class="card"><div class="dash-section-title"><div><h2>🕘 Histórico de alterações</h2><div class="muted">Mostra quando os registros locais foram salvos. O histórico não guarda uma cópia do conteúdo sensível.</div></div><button class="btn secondary" type="button" id="msaHistoryClear">Limpar histórico</button></div><div id="msaHistoryList" class="list"></div></div>';
+ host.appendChild(sec);sec.querySelector('#msaHistoryClear').addEventListener('click',()=>{
+  if(!confirm('Limpar somente o histórico de alterações? Os dados de saúde não serão apagados.'))return;
+  rawStorage.removeItem(HISTORY_KEY);renderHistory();
+ });renderHistory();
+}
+function renderHistory(){
+ const box=byId('msaHistoryList');if(!box)return;const a=readHistory().slice().reverse();
+ box.innerHTML=a.length?a.map(x=>{const d=new Date(x.timestamp);return '<div class="item"><div class="itemtop"><b>💾 '+esc(x.label)+'</b><span class="tag">'+esc(isNaN(d)?x.timestamp:d.toLocaleString('pt-BR'))+'</span></div><p>Ação: '+esc(x.action)+' · registros armazenados: '+esc(x.count)+'</p></div>'}).join(''):'<div class="empty">Ainda não há alterações registradas.</div>';
+}
 
 
 })();
