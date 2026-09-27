@@ -1,5 +1,10 @@
 # Minha Saúde IA — Arquitetura
 
+## V4.93 — Compatibilidade
+- O módulo `js/melhorias.js` mantém o acesso à API de armazenamento bruto necessária ao gerenciamento de perguntas.
+- `js/melhorias-primeiras.js` acrescenta recursos de dados de forma aditiva.
+
+
 ## Objetivo
 Aplicativo web pessoal para organizar informações de saúde no navegador.
 
