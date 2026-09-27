@@ -1,5 +1,5 @@
 {
-  "version": "V4.93",
-  "updatedAt": "2026-09-27T23:55:00Z",
-  "changes": "Rodada inicial concluída: rascunhos automáticos, prevenção de duplicados, Lixeira, verificador de consistência, filtros da timeline e correção de compatibilidade do módulo de melhorias."
+  "version": "V4.95",
+  "updatedAt": "2026-09-28T00:10:00Z",
+  "changes": "OCR local para imagens e categorias/etiquetas para documentos do cofre."
 }
