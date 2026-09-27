@@ -1,5 +1,14 @@
 # Changelog — Minha Saúde IA
 
+## V4.87 — 5 melhorias rápidas de UX
+- ♿ Pular para o conteúdo e foco mais claro para teclado.
+- 📱 Alvos de toque mais confortáveis no mobile.
+- 📝 Campos mais legíveis e fáceis de tocar.
+- 🔄 Ações responsivas em telas estreitas.
+- 🧘 Respeito à preferência `prefers-reduced-motion`.
+- 🛡️ Lógica, armazenamento e importação permanecem intactos.
+
+
 ## V4.86 — Fundação visual do Design System
 - 🎨 Criado `css/design-system.css` como fonte oficial para novos componentes visuais.
 - 🎯 Definidos tokens de cores, tipografia, espaçamentos, raios, sombras e dimensões de controles.
