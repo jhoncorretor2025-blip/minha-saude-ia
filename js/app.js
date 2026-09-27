@@ -123,6 +123,9 @@ function calcularCompletudeSaude(){
   ['Histórico','Histórico familiar',get(K.fam).length],['Organização','Lembretes',get(K.r).length],['Organização','Documentos',get(K.doc).length]
  ];
  const ok=v=>Array.isArray(v)?v.length>0:!!v&&String(v).trim()!==''&&!/^não informado$/i.test(String(v).trim());
+ if(/femin|mulher|female/i.test(String(p.sexo||''))){
+  itens.push(['Saúde reprodutiva','Duração média do ciclo',p.ciclo],['Saúde reprodutiva','Duração média do sangramento',p.duracaoMenstr],['Saúde reprodutiva','Regularidade do ciclo',p.regularidade],['Saúde reprodutiva','Método anticoncepcional',p.anticoncepcionalMetodo||p.usaAnticoncepcional]);
+}
  const preenchidos=itens.filter(x=>ok(x[2])).length;
  return {percentual:Math.round(preenchidos/itens.length*100),total:itens.length,preenchidos,itens,pendentes:itens.filter(x=>!ok(x[2]))};
 }
