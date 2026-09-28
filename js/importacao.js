@@ -227,9 +227,32 @@ function normalizarTextoPDFParaImportacao(raw){
  blocos.forEach(function(b){var start=t.indexOf(b[1]),end=t.indexOf(b[2],start+1);if(start<0)return;var body=(end>start?t.slice(start+b[1].length,end):t.slice(start+b[1].length)).trim();if(!body||/^Nenhum registro/i.test(body))return;out.push(b[1]);if(b[0]==='SONO E BEM-ESTAR'){var sm=body.match(/Rotina habitual de sono:\s*normalmente dorme às\s*([^ ]+)\s*e acorda às\s*([^—-]+)\s*[—-]\s*cerca de\s*([\d.,]+)\s*horas por noite/i);if(sm)out.push('SONO_HABITUAL: '+sm[1]+' -> '+sm[2]+' ('+sm[3]+' horas)')}else out.push(body)});
  return out.join('\n');
 }
+
+function carregarTesseract(){
+ return new Promise(function(resolve,reject){
+  if(window.Tesseract){resolve(window.Tesseract);return}
+  var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+  s.onload=function(){window.Tesseract?resolve(window.Tesseract):reject(new Error('OCR não carregou'))};
+  s.onerror=function(){reject(new Error('Não foi possível carregar o OCR'))};
+  document.head.appendChild(s);
+ });
+}
+async function extrairTextoPDFComOCR(file,status){
+ var pdfjs=await carregarPDFJS(),T=await carregarTesseract(),buf=await file.arrayBuffer(),pdf=await pdfjs.getDocument({data:buf}).promise,partes=[];
+ var worker=await T.createWorker('por',1,{logger:function(m){if(status&&m&&m.status&&typeof m.progress==='number')status.innerHTML='🔎 OCR: '+m.status+' '+Math.round(m.progress*100)+'%'}}); 
+ for(var n=1;n<=pdf.numPages;n++){
+  if(status)status.innerHTML='🔎 OCR: lendo página '+n+' de '+pdf.numPages+'…';
+  var page=await pdf.getPage(n),vp=page.getViewport({scale:1.7}),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+  canvas.width=Math.ceil(vp.width);canvas.height=Math.ceil(vp.height);
+  await page.render({canvasContext:ctx,viewport:vp}).promise;
+  var res=await worker.recognize(canvas);partes.push(res.data.text||'');
+ }
+ await worker.terminate();return {text:partes.join('\n\n'),pages:pdf.numPages,ocr:true};
+}
+
 async function lerPDFParaImportacao(ev){
  var file=ev&&ev.target&&ev.target.files?ev.target.files[0]:null,status=document.getElementById('pdfImportStatus'),preview=document.getElementById('pdfImportPreview');
  if(status)status.innerHTML='⏳ Lendo o PDF localmente…';if(preview)preview.style.display='none';
- try{var r=await extrairTextoPDFArquivo(file);if(!r.text.trim())throw new Error('Este PDF não possui texto extraível. Ele pode ser um PDF escaneado/imagem.');var ficha=normalizarTextoPDFParaImportacao(r.text),area=document.getElementById('importIA');if(area)area.value=ficha;if(status)status.innerHTML='✅ PDF lido com sucesso. Nenhum dado foi salvo ainda.';if(preview){preview.style.display='block';preview.innerHTML='<b>🔎 PDF analisado</b><br><span class="muted">'+r.pages+' página(s) · '+ficha.split(/\n/).filter(Boolean).length+' linhas estruturadas.</span><br><br><b>Próximo passo:</b> revise a ficha e clique em <b>✨ Importar e salvar</b>. O aplicativo ainda mostrará a prévia antes de gravar.'}if(area)area.scrollIntoView({behavior:'smooth',block:'center'})}catch(e){if(status)status.innerHTML='⚠️ '+(e.message||'Não foi possível ler o PDF.')}finally{if(ev&&ev.target)ev.target.value=''}
+ try{var r=await extrairTextoPDFArquivo(file);if(!r.text.trim()){r=await extrairTextoPDFComOCR(file,status);if(!r.text.trim())throw new Error('Não foi possível reconhecer texto neste PDF.');}var ficha=normalizarTextoPDFParaImportacao(r.text),area=document.getElementById('importIA');if(area)area.value=ficha;if(status)status.innerHTML='✅ PDF lido com sucesso. Nenhum dado foi salvo ainda.';if(preview){preview.style.display='block';preview.innerHTML='<b>🔎 PDF analisado</b><br><span class="muted">'+r.pages+' página(s) · '+ficha.split(/\n/).filter(Boolean).length+' linhas estruturadas.</span><br><br><b>Próximo passo:</b> revise a ficha e clique em <b>✨ Importar e salvar</b>. O aplicativo ainda mostrará a prévia antes de gravar.'}if(area)area.scrollIntoView({behavior:'smooth',block:'center'})}catch(e){if(status)status.innerHTML='⚠️ '+(e.message||'Não foi possível ler o PDF.')}finally{if(ev&&ev.target)ev.target.value=''}
 }
 window.lerPDFParaImportacao=lerPDFParaImportacao;
