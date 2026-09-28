@@ -140,6 +140,6 @@ function inicializar(){
  const filtro=document.getElementById('msaTimelineFiltro');if(filtro)filtro.innerHTML='<option value="todos">Todos os registros</option>'+allData().map(x=>'<option>'+esc(x[0])+'</option>').join('');
  renderConsistenciaSaude();
 }
-window.renderInteligenciaSaude=function(){renderCentralInteligencia();renderLinhaInteligente();renderConsistenciaSaude()};
+window.renderInteligenciaSaude=function(){window.renderCentralInteligencia();window.renderLinhaInteligente();window.renderConsistenciaSaude()};
 document.addEventListener('DOMContentLoaded',()=>setTimeout(inicializar,260));
 })();
