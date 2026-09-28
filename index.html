@@ -299,6 +299,9 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
  body.msa-exp-simple .msa-mobile-links button{min-height:54px;font-size:14px}
  body.msa-exp-simple .msa-mobile-quick button{min-height:78px}
 }
+/* V5.33 — navegação reorganizada */
+@media(min-width:761px){.grouped-nav{justify-content:flex-start;align-items:center;gap:6px}.grouped-nav .nav-group{flex:0 0 auto}.grouped-nav .nav-group:last-child .nav-menu{left:auto;right:0}}
+@media(max-width:760px){.msa-mobile-menu-fab{display:none!important}.msa-mobile-bar{grid-template-columns:repeat(4,1fr)}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/design-system.css?v=V5.32">
@@ -529,60 +532,19 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 
 <header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V5.32</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
-<nav id="nav" class="grouped-nav">
- <div class="nav-group">
-  <button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button>
-  <div class="nav-menu">
-   <button type="button" data-tab="home">🏠 Visão geral</button>
-   <button type="button" data-tab="timeline">🕐 Linha do tempo</button>
-  </div>
- </div>
- <div class="nav-group">
-  <button type="button" class="nav-toggle" data-menu="health">❤️ Minha saúde ▾</button>
-  <div class="nav-menu">
-   <button type="button" data-tab="dor">😣 Sintomas</button>
-   <button type="button" data-tab="meds">💊 Medicamentos</button>
-   <button type="button" data-tab="consultas">👨‍⚕️ Consultas</button>
-   <button type="button" data-tab="exames">🧪 Exames</button>
-   <button type="button" data-tab="acompanhamento">📈 Sinais vitais</button>
-   <button type="button" data-tab="perfil">👤 Meu perfil</button>
-  </div>
- </div>
- <div class="nav-group">
-  <button type="button" class="nav-toggle" data-menu="followup">📊 Acompanhamento ▾</button>
-  <div class="nav-menu">
-   <button type="button" data-tab="timeline">🕐 Linha do tempo</button>
-   <button type="button" data-tab="nutricao" data-feature-nav="nutricao">🥗 Nutrição</button>
-   <button type="button" data-tab="sono" data-feature-nav="sonoBem">😴 Sono e bem-estar</button>
-   <button type="button" data-tab="familia">🧬 Histórico familiar</button>
-   <button type="button" data-tab="acompanhamento" data-feature-nav="academia">📏 Medidas corporais</button>
-  </div>
- </div>
- <div class="nav-group">
-  <button type="button" class="nav-toggle" data-menu="organization">📁 Organização ▾</button>
-  <div class="nav-menu">
-   <button type="button" data-tab="relatorios">📊 Relatórios</button>
-   <button type="button" data-tab="documentos">📄 Documentos</button>
-   <button type="button" data-tab="calendario">📅 Calendário</button>
-   <button type="button" data-tab="lembretes">⏰ Lembretes</button>
-   <button type="button" data-tab="exportar">📤 Exportar</button>
-   <button type="button" data-tab="backup">💾 Backup e segurança</button>
-   <button type="button" data-tab="configuracoes">⚙️ Configurações</button>
-  </div>
- </div>
- <div class="nav-group">
-  <button type="button" class="nav-toggle" data-menu="tools">🤖 IA e ferramentas ▾</button>
-  <div class="nav-menu tools-menu">
-   <button type="button" data-tab="ia">🤖 IA</button>
-   <button type="button" data-tab="importar">⚡ Importar com IA</button>
-   <button type="button" data-tab="buscar">🔎 Buscar</button>
-   <button type="button" data-tab="perguntas">❓ Perguntas para consulta</button>
-   <button type="button" data-tab="avisos">🔔 Central de avisos</button>
-   <button type="button" onclick="abrirModoEmergencia()" style="color:#b91c1c">🚨 Emergência</button>
-   <button type="button" id="cicloMenuBtn" data-tab="perfil" data-feature-nav="ciclo" onclick="setTimeout(function(){var f=document.getElementById('cicloForm');if(f){f.scrollIntoView({behavior:'smooth',block:'start');}},120)">🌸 Ciclo menstrual</button>
-   <button type="button" data-tab="carteirinha">🪪 Carteirinha</button>
-  </div>
- </div>
+<nav id="nav" class="grouped-nav" aria-label="Navegação principal">
+ <div class="nav-group"><button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button><div class="nav-menu"><button type="button" data-tab="home">🏠 Visão geral</button><button type="button" data-tab="timeline">🕐 Linha do tempo</button></div></div>
+ <div class="nav-group"><button type="button" class="nav-toggle" data-menu="health">❤️ Saúde ▾</button><div class="nav-menu">
+ <button type="button" data-tab="dor">😣 Sintomas</button><button type="button" data-tab="meds">💊 Medicamentos</button><button type="button" data-tab="consultas">👨‍⚕️ Consultas</button><button type="button" data-tab="exames">🧪 Exames</button><button type="button" data-tab="acompanhamento">❤️ Sinais vitais</button><button type="button" data-tab="vacinas">💉 Vacinas</button><button type="button" data-tab="perfil">👤 Meu perfil</button>
+ </div></div>
+ <div class="nav-group"><button type="button" class="nav-toggle" data-menu="followup">📊 Acompanhamento ▾</button><div class="nav-menu">
+ <button type="button" data-tab="acompanhamento" data-feature-nav="academia">📏 Medidas corporais</button><button type="button" data-tab="nutricao" data-feature-nav="nutricao">🥗 Nutrição</button><button type="button" data-tab="sono" data-feature-nav="sonoBem">😴 Sono e bem-estar</button><button type="button" data-tab="familia">🧬 Histórico familiar</button><button type="button" data-tab="avisos">🔔 Atenção e avisos</button>
+ </div></div>
+ <div class="nav-group"><button type="button" class="nav-toggle" data-menu="organization">📁 Organização ▾</button><div class="nav-menu">
+ <button type="button" data-tab="calendario">📅 Calendário</button><button type="button" data-tab="lembretes">⏰ Lembretes</button><button type="button" data-tab="documentos">📄 Documentos</button><button type="button" data-tab="relatorios">📊 Relatórios</button>
+ </div></div>
+ <div class="nav-group"><button type="button" class="nav-toggle" data-menu="ai">🤖 IA ▾</button><div class="nav-menu"><button type="button" data-tab="ia">🤖 Assistente</button><button type="button" data-tab="importar">⚡ Importar com IA</button><button type="button" data-tab="perguntas">❓ Preparar consulta</button></div></div>
+ <div class="nav-group"><button type="button" class="nav-toggle" data-menu="more">⋯ Mais ▾</button><div class="nav-menu"><button type="button" data-tab="carteirinha">🪪 Carteirinha</button><button type="button" data-tab="exportar">📤 Exportar</button><button type="button" data-tab="backup">💾 Backup e segurança</button><button type="button" data-tab="configuracoes">⚙️ Configurações</button></div></div>
 </nav>
 
 <section id="configuracoes"><div class="card"><h2>⚙️ Configurações e personalização</h2><div class="muted">O aplicativo pode se adaptar ao jeito que cada pessoa prefere usar tecnologia. Escolha a experiência e os recursos que fazem sentido para você.</div>
