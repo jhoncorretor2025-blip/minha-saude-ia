@@ -361,3 +361,28 @@
     iniciar();
   }
 })();
+/* V5.68-fallback-handlers */
+(function(){
+  function lista(k){try{var s=window.MSAStorage||{};var v=s.get?s.get(k):[];return Array.isArray(v)?v:[]}catch(e){return[]}}
+  function perfil(){var a=lista('msa2_perfil');return a[0]||{}}
+  window.exportarJSONCompleto=window.exportarJSONCompleto||function(){
+    try{
+      var keys=['msa2_perfil','msa2_dores','msa2_consultas','msa2_meds','msa2_exames','msa2_vitais','msa2_vacinas','msa2_familia','msa2_documentos','msa2_lembretes','msa2_nutri','msa2_sono','msa2_medidas'];
+      var dados={};keys.forEach(function(k){dados[k]=lista(k)});
+      var blob=new Blob([JSON.stringify(dados,null,2)],{type:'application/json;charset=utf-8'});
+      var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='minha-saude-ia-backup.json';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},1000);
+    }catch(e){alert('⚠️ Não foi possível gerar o backup JSON.');console.error(e)}
+  };
+  window.adicionarDocumentoSaude=window.adicionarDocumentoSaude||function(){var x=document.getElementById('novoDocumentoArquivo');if(x)x.click();else alert('⚠️ Área de documentos não encontrada.')};
+  window.fecharModoEmergencia=window.fecharModoEmergencia||function(){var x=document.getElementById('emergencyOverlay');if(x)x.style.display='none'};
+  window.imprimirModoEmergencia=window.imprimirModoEmergencia||function(){
+    var x=document.getElementById('emergencyOverlay');if(!x)return;var p=x.querySelector('.emergency-card');if(!p)return;
+    var w=window.open('','_blank','width=760,height=900');if(!w){alert('⚠️ Permita pop-ups para imprimir o resumo.');return}
+    w.document.write('<!doctype html><html><head><title>Resumo de emergência</title><style>body{font-family:Arial;padding:28px;color:#172033}.emergency-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.wide{grid-column:1/-1}.emergency-actions{display:none}</style></head><body>'+p.innerHTML+'</body></html>');w.document.close();w.focus();setTimeout(function(){w.print()},250);
+  };
+  window.exportarResumoEmergencia=window.exportarResumoEmergencia||function(){
+    var p=perfil(),m=lista('msa2_meds');
+    var t=['RESUMO DE EMERGÊNCIA','Nome: '+(p.nome||'Não informado'),'Tipo sanguíneo: '+(p.sangue||'Não informado'),'Alergias: '+(p.alerg||'Não informado'),'Condições: '+(p.cond||'Não informado'),'Medicamentos: '+(m.length?m.map(function(x){return x.nome||x.medicamento||'Medicamento'}).join(', '):'Não informado'),'Contato: '+(p.emerg||'Não informado'),'Telefone: '+(p.tel||'Não informado')].join('\n');
+    var b=new Blob([t],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='resumo-emergencia.txt';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},1000);
+  };
+})();
