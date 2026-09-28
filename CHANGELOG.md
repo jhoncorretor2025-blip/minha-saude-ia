@@ -1,3 +1,16 @@
+## V5.74 — Importação mais tolerante e inicialização protegida
+
+- 📥 O botão de importação passa a usar uma inicialização protegida que aguarda o módulo carregar antes de executar.
+- 🧩 Se o módulo não carregar, a página mostra um diagnóstico em vez de falhar silenciosamente.
+- 🤖 A importação aceita marcadores com Markdown, como `**[NOME]**`, listas e cabeçalhos.
+- 🔤 Aceita também separadores como `:` e `=` nos marcadores.
+- 📦 Respostas JSON podem ser encontradas mesmo quando vêm dentro de bloco Markdown ou acompanhadas de texto antes/depois.
+- 🧾 JSON com perfil na raiz passa a ser reconhecido, além do formato `perfil`/`profile`.
+- 🛡️ Mantidos o fluxo de revisão, as chaves `msa2_*`, os dados existentes e o caráter local do aplicativo.
+- 🔄 Versão e cache do PWA sincronizados para V5.74.
+
+V5.74 — 2026-09-28
+
 ## V5.73 — Correção crítica da importação de dados
 
 - 🛠️ Corrigido erro de sintaxe em `js/importacao.js` causado por uma sequência `\\n` literal no meio do código de processamento.
