@@ -1,3 +1,13 @@
+## V5.71 — Blindagem contra retorno de código na interface
+- Corrigidas todas as referências operacionais antigas V5.67 do index.html.
+- Atualizado o cache-busting de CSS/JS para V5.71.
+- Adicionada detecção de conteúdo de código contaminando o corpo da página.
+- Ao detectar contaminação, o sistema remove registros de Service Worker/cache e recarrega uma URL com cache-buster.
+- Sincronizados version.json, sw.js e versão exibida no menu.
+- Dados locais e chaves de armazenamento não foram alterados.
+
+V5.71 — 2026-09-28
+
 ## V5.70 — Correção crítica dos relatórios
 
 - Corrigido o módulo de relatórios que incorporava indevidamente blocos de **CSS e JavaScript do aplicativo** dentro do HTML gerado.
