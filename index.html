@@ -1358,6 +1358,14 @@ REGRAS:
 <div id="iaChoices" class="row" style="margin-top:9px"></div>
 </div>
 <div class="muted" style="margin-top:8px">💡 Ao abrir uma IA, o prompt é copiado para a área de transferência. Se ele não aparecer automaticamente, toque no campo da IA e escolha <b>Colar</b>. Para adicionar ou trocar IAs, use <b>⚙️ Configurações → Minhas IAs</b>.</div>
+<div class="card" style="margin-top:18px;border:1px solid #cfe0ff;background:linear-gradient(135deg,#f8fbff,#fff)">
+<h3 style="margin:0">📄 Importar informações de um PDF</h3>
+<p class="muted" style="margin:5px 0 12px">Envie um histórico de saúde em PDF. O aplicativo tenta ler o texto <b>localmente no seu navegador</b>, organizar os campos reconhecidos e colocar uma prévia na área de importação. <b>Nada é salvo automaticamente.</b></p>
+<label class="btn secondary" style="display:inline-flex;align-items:center;justify-content:center;cursor:pointer">📎 Escolher PDF<input id="pdfImportFile" type="file" accept=".pdf,application/pdf" onchange="lerPDFParaImportacao(event)" style="display:none"></label>
+<div id="pdfImportStatus" class="muted" style="margin-top:9px">Formatos aceitos: PDF · limite de 10 MB.</div>
+<div id="pdfImportPreview" class="alert safe" style="display:none;margin-top:10px"></div>
+<div class="muted" style="font-size:11px;margin-top:8px">🔒 O arquivo não é enviado automaticamente para uma IA. PDFs escaneados como imagem podem precisar de OCR e serão identificados quando não houver texto extraível.</div>
+</div>
 <h3 style="margin-top:22px">📥 Cole aqui a ficha que a IA devolveu</h3>
 <textarea id="importIA" style="min-height:220px" placeholder="Cole aqui a ficha organizada pela IA..."></textarea>
 <div class="row" style="margin-top:9px">
