@@ -1,5 +1,5 @@
 {
-  "version": "V5.59",
-  "updatedAt": "2026-09-28T09:45:00Z",
-  "changes": "Importação de PDF com leitura local de texto e OCR para PDFs escaneados, revisão antes de salvar."
+  "version": "V5.60",
+  "updatedAt": "2026-09-28T10:30:00-03:00",
+  "changes": "Corrige o botão Importar e salvar, que agora chama diretamente o fluxo de importação e revisão."
 }
