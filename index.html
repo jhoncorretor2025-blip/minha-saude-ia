@@ -1545,8 +1545,11 @@ async function verificarNovaVersao(){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
-    const clean=window.location.origin+window.location.pathname;
-    window.location.replace(clean);
+    const clean=window.location.origin+window.location.pathname+window.location.search;
+    const reload=()=>window.location.replace(clean);
+    if('serviceWorker' in navigator){
+     navigator.serviceWorker.getRegistrations().then(rs=>Promise.all(rs.map(r=>r.unregister()))).then(()=>('caches' in window)?caches.keys().then(ks=>Promise.all(ks.map(k=>caches.delete(k)))):null).then(reload).catch(reload);
+    }else reload();
    }else{
     const el=document.getElementById('updateNotice');
     if(el){el.style.display='block';el.innerHTML='🆕 <b>Nova versão '+esc(data.version)+' disponível.</b> Toque em <b>Atualizar agora</b> para tentar novamente.';}
