@@ -386,3 +386,15 @@
     var b=new Blob([t],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='resumo-emergencia.txt';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},1000);
   };
 })();
+
+(function msaV568VersionSync(){
+  function sync(){
+    try{
+      document.title=document.title.replace(/V5\.67/g,'V5.68');
+      document.querySelectorAll('body *').forEach(function(el){
+        if(el.children.length===0 && el.textContent.indexOf('V5.67')>=0)el.textContent=el.textContent.replace(/V5\.67/g,'V5.68');
+      });
+    }catch(e){}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});else sync();
+})();
