@@ -1,5 +1,17 @@
 # Changelog — Minha Saúde IA
 
+## V5.63 — Auditoria funcional e correções
+- 🔧 Corrigidas funções visíveis que estavam sem implementação no código atual.
+- 📅 Calendário agora possui navegação de mês, botão Hoje e visualização de registros por dia.
+- 🔔 Central de avisos agora atualiza e mostra registros futuros identificados.
+- ❓ Perguntas para consulta agora permitem adicionar, marcar como respondida/reabrir e excluir.
+- 📤 Compartilhamento controlado agora abre, fecha e prepara o conteúdo conforme o nível escolhido.
+- 🛡️ Compartilhamento completo só é gerado quando o usuário escolhe explicitamente essa opção.
+- 📱 Ajustes preservam a navegação mobile existente.
+- 💾 Nenhuma chave de armazenamento existente foi removida.
+
+# Changelog — Minha Saúde IA
+
 ## V5.62 — Navegação e organização
 - 🧭 Menu desktop agora permite pesquisar funções diretamente.
 - ⌨️ Atalho Ctrl+K (ou Cmd+K) foca a busca do menu.
