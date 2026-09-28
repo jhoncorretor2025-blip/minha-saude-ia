@@ -131,14 +131,19 @@ const RECURSOS_PERSONALIZAVEIS=[
  {key:'sonoBem',icon:'😴',label:'Sono e bem-estar',desc:'Registros de sono, humor, ansiedade, estresse e bem-estar.',targets:['sonoBem']},
  {key:'ciclo',icon:'🌸',label:'Ciclo menstrual',desc:'Recursos de ciclo menstrual e acompanhamento reprodutivo.',targets:['ciclo']}
 ];
+function experienciaPadrao(){
+ const saved=get(K.preferencias)[0];
+ return saved&&typeof saved==='object'&&['simple','comfortable','advanced'].includes(saved.experiencia)?saved.experiencia:'comfortable';
+}
 function preferenciasPadrao(){
  const p=get(K.p)[0]||{},saved=get(K.preferencias)[0];
- if(saved&&typeof saved==='object')return Object.assign({academia:'on',nutricao:'on',sonoBem:'on',ciclo:'on'},saved);
- return {academia:p.academia==='Não'?'off':'on',nutricao:'on',sonoBem:'on',ciclo:'on'};
+ if(saved&&typeof saved==='object')return Object.assign({academia:'on',nutricao:'on',sonoBem:'on',ciclo:'on',experiencia:'comfortable'},saved);
+ return {academia:p.academia==='Não'?'off':'on',nutricao:'on',sonoBem:'on',ciclo:'on',experiencia:'comfortable'};
 }
 function salvarPreferenciasObjeto(pref){
  set(K.preferencias,[Object.assign({},preferenciasPadrao(),pref)]);
  aplicarPreferencias();
+ aplicarExperiencia();
  renderConfiguracoes();
 }
 function salvarPreferenciasPerfil(){
@@ -146,27 +151,39 @@ function salvarPreferenciasPerfil(){
  salvarPreferenciasObjeto(pref);
  alert('⚙️ Preferências salvas! O aplicativo foi personalizado.');
 }
+function salvarExperiencia(){
+ const value=$('prefExperiencia')?.value||'comfortable';
+ salvarPreferenciasObjeto({experiencia:value});
+ const nomes={simple:'🔰 Simples',comfortable:'🙂 Confortável',advanced:'⚡ Avançado'};
+ alert('🎚️ Experiência definida como '+nomes[value]+'. Você pode mudar isso quando quiser em Configurações.');
+}
 function renderConfiguracoes(){
  const pref=preferenciasPadrao(),box=$('settingsPreferences');
  if(box){
-  box.innerHTML=RECURSOS_PERSONALIZAVEIS.map(r=>'<label style="display:flex;flex-direction:column;gap:6px;border:1px solid #dbe4f0;border-radius:14px;padding:12px;background:#fff"><span style="font-weight:900">'+r.icon+' '+r.label+'</span><small class="muted">'+r.desc+'</small><select data-pref-key="'+r.key+'"><option value="on" '+(pref[r.key]==='on'?'selected':'')+'>Ativado</option><option value="off" '+(pref[r.key]==='off'?'selected':'')+'>Desativado</option></select></label>').join('');
-  box.querySelectorAll('[data-pref-key]').forEach(s=>s.addEventListener('change',function(){
-   salvarPreferenciasObjeto({[this.dataset.prefKey]:this.value});
-  }));
+  const exp='<div class="experience-setting"><div class="experience-setting-title">🎚️ Experiência do aplicativo</div><div class="muted">Escolha quanto de informação, atalhos e opções você prefere ver. Isso não depende da sua idade.</div><select id="prefExperiencia" style="margin-top:8px"><option value="simple">🔰 Simples — poucos caminhos, botões maiores e mais orientação</option><option value="comfortable">🙂 Confortável — equilíbrio entre simplicidade e recursos</option><option value="advanced">⚡ Avançado — mais atalhos, detalhes e acesso rápido</option></select><button class="btn secondary" type="button" style="margin-top:8px" onclick="salvarExperiencia()">💾 Aplicar experiência</button></div>';
+  box.innerHTML=exp+RECURSOS_PERSONALIZAVEIS.map(r=>'<label style="display:flex;flex-direction:column;gap:6px;border:1px solid #dbe4f0;border-radius:14px;padding:12px;background:#fff"><span style="font-weight:900">'+r.icon+' '+r.label+'</span><small class="muted">'+r.desc+'</small><select data-pref-key="'+r.key+'"><option value="on" '+(pref[r.key]==='on'?'selected':'')+'>Ativado</option><option value="off" '+(pref[r.key]==='off'?'selected':'')+'>Desativado</select></label>').join('');
+  box.querySelector('#prefExperiencia').value=pref.experiencia||'comfortable';
+  box.querySelectorAll('[data-pref-key]').forEach(s=>s.addEventListener('change',function(){salvarPreferenciasObjeto({[this.dataset.prefKey]:this.value})}));
  }
- ['academia','nutricao','sonoBem','ciclo'].forEach(k=>{const el=$('pref'+k.charAt(0).toUpperCase()+k.slice(1));if(el)el.value=pref[k]});
 }
 function aplicarPreferencias(){
  const pref=preferenciasPadrao();
  document.querySelectorAll('[data-feature]').forEach(el=>el.classList.toggle('msa-feature-off',pref[el.dataset.feature]==='off'));
- const fitNav=document.querySelectorAll('[data-feature-nav="academia"]');
- fitNav.forEach(el=>el.classList.toggle('msa-feature-off',pref.academia==='off'));
+ document.querySelectorAll('[data-feature-nav="academia"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.academia==='off'));
  document.querySelectorAll('[data-feature-nav="nutricao"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.nutricao==='off'));
  document.querySelectorAll('[data-feature-nav="sonoBem"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.sonoBem==='off'));
  document.querySelectorAll('[data-feature-nav="ciclo"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.ciclo==='off'));
  $('reproSection')?.classList.toggle('msa-feature-off',pref.ciclo==='off');
  document.querySelectorAll('#dashActivityEdit,#dashActivity').forEach(el=>el.closest('.metric-kpi')?.classList.toggle('msa-feature-off',pref.academia==='off'));
  $('medidasCorporaisCard')?.classList.toggle('msa-feature-off',pref.academia==='off');
+}
+function aplicarExperiencia(){
+ const level=experienciaPadrao();
+ document.body.classList.remove('msa-exp-simple','msa-exp-comfortable','msa-exp-advanced');
+ document.body.classList.add('msa-exp-'+level);
+ document.documentElement.dataset.msaExperience=level;
+ document.querySelectorAll('[data-experience="advanced"]').forEach(el=>el.classList.toggle('msa-experience-off',level!=='advanced'));
+ document.querySelectorAll('[data-experience="simple-hidden"]').forEach(el=>el.classList.toggle('msa-experience-off',level==='simple'));
 }
 function render(){
 let d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
@@ -189,6 +206,7 @@ if($('homeSummary')){
 loadProfile();
 renderConfiguracoes();
 aplicarPreferencias();
+aplicarExperiencia();
 atualizarPerfilHome();
 renderCarteirinha();
 atualizarDashboard();
