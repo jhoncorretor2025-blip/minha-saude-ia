@@ -521,7 +521,7 @@ function mergeSyncArray(current,incoming){
  incoming.forEach(x=>{const s=JSON.stringify(x);if(!seen.has(s)){out.push(x);seen.add(s)}});
  return out;
 }
-async window.msaImportSyncPackage=async function(file){
+window.msaImportSyncPackage=async function(file){
  const text=await file.text(),pkg=JSON.parse(text);
  if(!pkg||pkg.app!=='Minha Saúde IA'||!pkg.data||typeof pkg.data!=='object')throw new Error('Pacote inválido ou incompatível.');
  const counts=[];for(const [name] of SYNC_KEYS){const inc=Array.isArray(pkg.data[name])?pkg.data[name]:[];if(inc.length)counts.push(name+': '+inc.length)}
