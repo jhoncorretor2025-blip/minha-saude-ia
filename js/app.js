@@ -609,7 +609,7 @@ function renderNovosModulos(){
  const detalhes=x.dormiu&&x.acordou
   ? '🌙 '+esc(x.dormiu)+' → ☀️ '+esc(x.acordou)+' · '+esc(x.horas||'—')+' h · 🚽 xixi: '+esc(x.xixi??0)+' · 😣 dor: '+esc(x.dor??0)
   : '⏱️ '+esc(x.horas||'—')+' h · qualidade '+esc(x.qual||'—')+'/10 · despertares '+esc(x.despert||'0');
- return '<div class="item"><b>😴 '+esc(x.data)+'</b><p>'+detalhes+(x.obs?' · 📝 '+esc(x.obs):'')+'</p></div>';
+ return '<div class="item"><b>😴 '+(x.habitual?'Rotina habitual':'Registro de sono')+'</b><p>'+detalhes+(x.habitual?' · 📅 Todos os dias':(x.data?' · 📅 '+esc(x.data):''))+(x.obs?' · 📝 '+esc(x.obs):'')+'</p></div>';
 });
  if($('bemList'))$('bemList').innerHTML=rev(K.bem,x=>'<div class="item"><b>🧠 '+esc(x.data)+'</b><p>Estresse: '+esc(x.estresse||'—')+'/10 · ansiedade: '+esc(x.ansiedade||'—')+'/10'+(x.obs?' · '+esc(x.obs):'')+'</p></div>');
  if($('gatList'))$('gatList').innerHTML=rev(K.gat,x=>'<div class="item"><b>🎯 '+esc(x.gatilho)+'</b><p>'+esc(x.data)+' · sintoma: '+esc(x.sintoma||'—')+(x.obs?' · '+esc(x.obs):'')+'</p></div>');
@@ -649,8 +649,10 @@ $('sonoForm')?.addEventListener('submit',e=>{
  let mins=(fh*60+fm)-(ih*60+im);if(mins<=0)mins+=1440;
  const horas=(mins/60).toFixed(1);
  let a=get(K.sono);
- a.push({id:Date.now(),data:hojeLocal(),dormiu:inicio,acordou:fim,horas:horas,xixi:$('sonoXixi').value||0,dor:$('sonoDor').value||0,obs:$('sonoObs').value});
- set(K.sono,a);e.target.reset();$('sonoXixi').value=0;$('sonoDor').value=0;renderNovosModulos();alert('🌙 Sono registrado! Você dormiu cerca de '+horas.replace('.',',')+' horas.');
+ const rotina={id:'habitual',habitual:true,dormiu:inicio,acordou:fim,horas:horas,xixi:$('sonoXixi').value||0,dor:$('sonoDor').value||0,obs:$('sonoObs').value,atualizadoEm:new Date().toISOString()};
+ const antigas=a.filter(x=>!x.habitual&&x.id!=='habitual');
+ a=antigas.concat([rotina]);
+ set(K.sono,a);e.target.reset();$('sonoXixi').value=0;$('sonoDor').value=0;renderNovosModulos();alert('🌙 Rotina de sono salva! Você normalmente dorme cerca de '+horas.replace('.',',')+' horas por noite.');
 });
 $('bemForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.bem);a.push({data:$('bemData').value,estresse:$('bemEstresse').value,ansiedade:$('bemAnsiedade').value,obs:$('bemObs').value});set(K.bem,a);e.target.reset();renderNovosModulos();alert('🧠 Bem-estar registrado!')});
 $('gatilhoForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.gat);a.push({data:$('gatData').value,gatilho:$('gatNome').value,sintoma:$('gatSintoma').value,obs:$('gatObs').value});set(K.gat,a);e.target.reset();renderNovosModulos();alert('🎯 Gatilho registrado!')});
