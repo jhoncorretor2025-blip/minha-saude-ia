@@ -1,5 +1,5 @@
 {
-  "version": "V5.54",
-  "updatedAt": "2026-09-28T08:10:00Z",
-  "changes": "Corrige versão visível e inclui a rotina habitual de sono no PDF, com horário de dormir, acordar e total de horas por noite."
+  "version": "V5.55",
+  "updatedAt": "2026-09-28T08:25:00Z",
+  "changes": "Corrige exportação PDF: separa linhas e tópicos, preserva emojis e aplica negrito aos campos."
 }
