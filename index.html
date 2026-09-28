@@ -16,7 +16,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V5.61</title>
+<title>Minha Saúde IA — V5.62</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -536,7 +536,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V5.61</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V5.62</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 <nav id="nav" class="grouped-nav" aria-label="Navegação principal">
  <div class="nav-group"><button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button><div class="nav-menu"><button type="button" data-tab="home">🏠 Visão geral</button><button type="button" data-tab="timeline">🕐 Linha do tempo</button></div></div>
@@ -550,7 +550,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
  <button type="button" data-tab="calendario">📅 Calendário</button><button type="button" data-tab="lembretes">⏰ Lembretes</button><button type="button" data-tab="documentos">📄 Documentos</button><button type="button" data-tab="relatorios">📊 Relatórios</button>
  </div></div>
  <div class="nav-group"><button type="button" class="nav-toggle" data-menu="ai">🤖 IA ▾</button><div class="nav-menu"><button type="button" data-tab="ia">🤖 Assistente</button><button type="button" data-tab="importar">⚡ Importar com IA</button><button type="button" data-tab="perguntas">❓ Preparar consulta</button></div></div>
- <div class="nav-group"><button type="button" class="nav-toggle" data-menu="more">⋯ Mais ▾</button><div class="nav-menu"><button type="button" data-tab="carteirinha">🪪 Carteirinha</button><button type="button" data-tab="exportar">📤 Exportar</button><button type="button" data-tab="backup">💾 Backup e segurança</button><button type="button" data-tab="configuracoes">⚙️ Configurações</button></div></div>
+ <div class="nav-group"><button type="button" class="nav-toggle" data-menu="more">🔐 Dados e segurança ▾</button><div class="nav-menu"><button type="button" data-tab="carteirinha">🪪 Carteirinha</button><button type="button" data-tab="exportar">📤 Exportar</button><button type="button" data-tab="backup">💾 Backup e segurança</button><button type="button" data-tab="configuracoes">⚙️ Configurações</button></div></div>
 </nav>
 
 <section id="configuracoes"><div class="card"><h2>⚙️ Configurações e personalização</h2><div class="muted">O aplicativo pode se adaptar ao jeito que cada pessoa prefere usar tecnologia. Escolha a experiência e os recursos que fazem sentido para você.</div>
@@ -1634,7 +1634,73 @@ function openReport(title,body){
 .msa-pendencias-list{overflow:auto;padding:0 20px 20px;max-height:calc(min(88vh,820px) - 175px)}.msa-pendencias-group{margin-top:16px}.msa-pendencias-group h3{font-size:13px;color:#64748b;margin:0 0 7px}
 .msa-pendencia-item{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 13px;margin:6px 0;border:1px solid #e3e8f0;background:#fff;border-radius:13px;text-align:left;cursor:pointer;font:inherit}.msa-pendencia-item:hover{border-color:#a9c4f3;background:#f8fbff}.msa-pendencia-item span{font-weight:800;color:#334155}.msa-pendencia-item strong{color:#2563eb;font-size:12px;white-space:nowrap}
 @media(max-width:600px){.msa-pendencias-overlay{padding:8px;align-items:flex-end}.msa-pendencias-card{max-height:92vh;border-radius:22px 22px 0 0}.msa-pendencias-head{padding:16px}.msa-pendencias-list{padding:0 14px 18px;max-height:calc(92vh - 175px)}.msa-pendencias-progress{margin:12px 14px 6px}.msa-pendencia-item{min-height:48px}}
-</style></body></html>');
+</style>
+<!-- V5.62 — navegação mais clara e segura -->
+<style id="msaV562Navigation">
+@media(min-width:761px){
+ #nav{position:sticky;top:10px;max-height:calc(100vh - 20px);overflow:visible}
+ #nav .nav-menu{max-height:calc(100vh - 110px);overflow:auto}
+}
+.msa-desktop-nav-tools{display:flex;align-items:center;gap:6px;margin-left:auto;padding-left:6px}
+.msa-desktop-nav-search{width:190px;height:40px;border:1px solid #dbe3ee;border-radius:11px;padding:8px 11px;background:#f8fafc;font:inherit;font-size:13px!important;color:var(--text)}
+.msa-desktop-nav-search:focus{outline:none;background:#fff;border-color:#7aa2ff;box-shadow:0 0 0 3px rgba(37,99,235,.10)}
+.msa-nav-filter-hidden{display:none!important}
+.msa-nav-search-empty{padding:10px 12px;color:#64748b;font-size:12px;display:none}
+@media(max-width:760px){.msa-desktop-nav-tools{display:none!important}}
+@media(max-width:900px) and (min-width:761px){.msa-desktop-nav-search{width:145px}}
+</style>
+<script id="msaV562NavigationScript">
+(function(){
+'use strict';
+function boot(){
+ const nav=document.getElementById('nav');
+ if(!nav || document.getElementById('msaDesktopNavSearch')) return;
+ const tools=document.createElement('div');
+ tools.className='msa-desktop-nav-tools';
+ tools.innerHTML='<input id="msaDesktopNavSearch" class="msa-desktop-nav-search" type="search" placeholder="🔎 Procurar função..." aria-label="Procurar função no menu">';
+ const more=nav.querySelector('.nav-group:last-child');
+ if(more) nav.insertBefore(tools,more); else nav.appendChild(tools);
+ const input=tools.querySelector('input');
+ const groups=Array.from(nav.querySelectorAll('.nav-group'));
+ input.addEventListener('input',function(){
+  const q=input.value.trim().toLowerCase();
+  groups.forEach(function(group){
+   let visible=0;
+   group.querySelectorAll('.nav-menu button[data-tab]').forEach(function(btn){
+    const show=!q || btn.textContent.toLowerCase().includes(q);
+    btn.classList.toggle('msa-nav-filter-hidden',!show);
+    if(show) visible++;
+   });
+   group.style.display=(!q || visible)?'':'none';
+   let empty=group.querySelector('.msa-nav-search-empty');
+   if(q && !empty){
+    empty=document.createElement('div');empty.className='msa-nav-search-empty';
+    group.querySelector('.nav-menu').appendChild(empty);
+   }
+   if(empty){empty.textContent='Nenhuma função encontrada';empty.style.display=q&&visible===0?'block':'none'}
+   if(q && visible){
+    group.classList.add('open');
+    group.querySelector('.nav-toggle')?.setAttribute('aria-expanded','true');
+   }
+  });
+ });
+ input.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){input.value='';input.dispatchEvent(new Event('input'));input.blur();}
+  if(e.key==='Enter'){
+   const first=nav.querySelector('.nav-group:not([style*="display: none"]) .nav-menu button[data-tab]:not(.msa-nav-filter-hidden)');
+   if(first){first.click();input.value='';input.dispatchEvent(new Event('input'))}
+  }
+ });
+ document.addEventListener('keydown',function(e){
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){
+   e.preventDefault();input.focus();input.select();
+  }
+ });
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else setTimeout(boot,0);
+})();
+</script>
+\n</body></html>');
  w.document.close();
  setTimeout(()=>w.print(),300);
 }
