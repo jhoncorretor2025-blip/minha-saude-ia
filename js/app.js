@@ -296,7 +296,8 @@ function mostrarBoasVindasSeNecessario(){
  modal.querySelector('#msaStartManual').onclick=()=>{finish();if(typeof go==='function')go('perfil')};
  modal.querySelector('#msaWelcomeClose').onclick=finish;
 }
-function render(){\nmostrarBoasVindasSeNecessario();
+function render(){
+mostrarBoasVindasSeNecessario();
 let d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
 $('nD').textContent=d.length;$('nC').textContent=c.length;$('nM').textContent=m.length;$('nE').textContent=e.length;
 list('listD',d,x=>`<div class="item"><div class="itemtop"><b>😣 ${esc(x.local)}</b><span class="tag">${x.int}/10</span></div><p>${fmt(x.data)} · ${esc(x.tipo)} · ${esc(x.freq)}<br>${esc(x.sint||'Sem sintomas associados')}<br>${esc(x.gatilho||'')} ${esc(x.obs||'')}</p></div>`);
