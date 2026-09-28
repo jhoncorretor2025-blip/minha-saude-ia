@@ -587,6 +587,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 
 <section id="configuracoes"><div class="card"><h2>⚙️ Configurações e personalização</h2><div class="muted">O aplicativo pode se adaptar ao jeito que cada pessoa prefere usar tecnologia. Escolha a experiência e os recursos que fazem sentido para você.</div>
 <div id="settingsPreferences" class="grid2" style="margin-top:14px"></div>
+<div id="settingsAI" class="card" style="margin-top:14px"></div>
 <div class="alert safe" style="margin-top:12px">💡 Você pode mudar essas escolhas quando quiser. Elas não alteram nem apagam seus registros.</div></div></section>
 
 <section id="home" class="active"><div id="homeProfileHero" class="home-profile-hero"><div class="home-avatar" id="homeAvatar"><span>👤</span></div><div class="home-profile-main"><div class="home-greeting">👋 Olá!</div><h2 id="homeProfileName">Seu nome</h2><div class="home-profile-stats"><span>🎂 <b id="homeProfileAge">—</b> anos</span><span>⚖️ <b id="homeProfileWeight">—</b> kg</span><span>📏 <b id="homeProfileHeight">—</b></span><span>🩸 <b id="homeProfileBlood">—</b></span></div></div><button class="home-profile-edit" type="button" onclick="go('perfil')">✏️ Editar</button></div>
@@ -1351,11 +1352,14 @@ REGRAS:
 - Não acrescente explicações, Markdown ou comentários fora dos campos acima.</textarea>
 <div class="row" style="margin-top:9px">
 <button class="btn" type="button" onclick="copiarPrompt()">📋 Copiar prompt</button>
-<a class="btn green" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" onclick="copiarPromptAntesDeAbrir()">🤖 Abrir ChatGPT</a>
-<a class="btn secondary" href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer" onclick="copiarPromptAntesDeAbrir()">✨ Abrir Gemini</a>
 <span id="copiado" class="muted"></span>
 </div>
-<div class="muted" style="margin-top:8px">💡 Ao abrir uma IA, o prompt também é copiado para a área de transferência. Se ele não aparecer automaticamente, toque no campo da IA e escolha <b>Colar</b>.</div>
+<div style="margin-top:12px;padding:12px;border:1px solid #dbe4f0;border-radius:15px;background:#f8fafc">
+<b>🤖 Suas IAs</b>
+<div class="muted" style="font-size:12px;margin-top:3px">Escolha uma IA ativada em ⚙️ Configurações. No celular, o aplicativo tenta abrir o app quando configurado; caso contrário, abre a versão web.</div>
+<div id="iaChoices" class="row" style="margin-top:9px"></div>
+</div>
+<div class="muted" style="margin-top:8px">💡 Ao abrir uma IA, o prompt é copiado para a área de transferência. Se ele não aparecer automaticamente, toque no campo da IA e escolha <b>Colar</b>. Para adicionar ou trocar IAs, use <b>⚙️ Configurações → Minhas IAs</b>.</div>
 <h3 style="margin-top:22px">📥 Cole aqui a ficha que a IA devolveu</h3>
 <textarea id="importIA" style="min-height:220px" placeholder="Cole aqui a ficha organizada pela IA..."></textarea>
 <div class="row" style="margin-top:9px">
