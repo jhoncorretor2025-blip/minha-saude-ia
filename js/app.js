@@ -373,6 +373,7 @@ function atualizarEngajamento(){
  if(h&&h.data===hoje){const st=$('moodStatus');if(st)st.textContent='Registrado hoje: '+h.valor;const d=$('moodDone');if(d){d.textContent='✓ Feito';d.style.background='#ecfdf3';d.style.color='#059669'}}
  const c=calcularCompletudeSaude(),pct=c.percentual;
  const pe=$('profilePercent'),pf=$('profileProgress');if(pe)pe.textContent=pct+'%';if(pf)pf.style.width=pct+'%';
+ const hm=$('homeMissingInfoText'); if(hm) hm.innerHTML=c.pendentes.length ? '<b>Ainda faltam '+c.pendentes.length+' informações</b> para completar o histórico. Clique em <b>“Ver o que falta”</b> para ir direto a cada uma.' : '<b>🎉 Seu cadastro está completo!</b> Não há informações pendentes nos campos avaliados.';
  const pm=$('profileMissing');
  if(pm)pm.innerHTML=c.pendentes.length
    ? '<b>📌 Ainda faltam '+c.pendentes.length+' informações:</b> '+c.pendentes.slice(0,4).map(x=>esc(x[1])).join(' · ')+(c.pendentes.length>4?' · …':'')
