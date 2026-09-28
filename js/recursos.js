@@ -15,10 +15,37 @@ function download(name,text,type){
  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 window.exportarJSONCompleto=function(){
- const keys=[key('d','msa2_dores'),key('c','msa2_consultas'),key('m','msa2_meds'),key('e','msa2_exames'),key('p','msa2_perfil'),key('v','msa2_vitais'),key('r','msa2_lembretes'),key('vax','msa2_vacinas'),key('fam','msa2_familia'),key('doc','msa2_documentos'),key('nutri','msa2_nutri'),key('suplReg','msa2_suplementos'),key('food','msa2_reacoes_alimentares'),key('agua','msa2_hidratacao'),key('sono','msa2_sono'),key('bem','msa2_bemestar'),key('gat','msa2_gatilhos'),key('medRot','msa2_medicamentos_rotina'),key('medTaken','msa2_medicamentos_tomados')];
+ const keys=[key('d','msa2_dores'),key('c','msa2_consultas'),key('m','msa2_meds'),key('e','msa2_exames'),key('p','msa2_perfil'),key('v','msa2_vitais'),key('r','msa2_lembretes'),key('vax','msa2_vacinas'),key('fam','msa2_familia'),key('doc','msa2_documentos'),key('nutri','msa2_nutri'),key('suplReg','msa2_suplementos'),key('food','msa2_reacoes_alimentares'),key('agua','msa2_hidratacao'),key('sono','msa2_sono'),key('bem','msa2_bemestar'),key('gat','msa2_gatilhos'),key('medRot','msa2_medicamentos_rotina'),key('medTaken','msa2_medicamentos_tomados'),key('ciclo','msa2_ciclo_menstrual'),key('anticoncepcional','msa2_anticoncepcional'),key('medidas','msa2_medidas_corporais'),key('preferencias','msa2_preferencias')];
  const data={app:'Minha Saúde IA',formatVersion:'1.0',exportedAt:new Date().toISOString(),data:{}};
  keys.forEach(k=>{try{data.data[k]=JSON.parse(window.msaStorage.getItem(k)||'[]')}catch(e){data.data[k]=[]}}); 
  download('minha-saude-ia-backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(data,null,2),'application/json');
+};
+window.baixarBackup=function(){window.exportarJSONCompleto();};
+window.restaurarBackup=async function(ev){
+ const file=ev?.target?.files?.[0];
+ if(!file)return;
+ try{
+  if(typeof window.msaImportSyncPackage==='function'){
+   await window.msaImportSyncPackage(file);
+   return;
+  }
+  const pkg=JSON.parse(await file.text());
+  if(!pkg||pkg.app!=='Minha Saúde IA'||!pkg.data)throw new Error('Arquivo incompatível.');
+  const entries=Object.entries(pkg.data);
+  if(!entries.length)throw new Error('O backup está vazio.');
+  if(!confirm('♻️ Backup encontrado. Os registros serão mesclados aos dados atuais, sem apagar o histórico existente. Continuar?'))return;
+  let total=0;
+  entries.forEach(([rawKey,incoming])=>{
+   const keyName=Object.keys(K).find(n=>K[n]===rawKey);
+   if(!keyName||!Array.isArray(incoming)||!incoming.length)return;
+   const k=K[keyName],before=storage.get(k);
+   const after=(keyName==='p'||keyName==='preferencias')?incoming:[...before,...incoming.filter(x=>!before.some(y=>JSON.stringify(y)===JSON.stringify(x)))];
+   if(JSON.stringify(before)!==JSON.stringify(after)){storage.set(k,after);total+=incoming.length;}
+  });
+  if(typeof render==='function')render();
+  alert('✅ Backup restaurado. '+total+' item(ns) novo(s) foram mesclados.');
+ }catch(e){alert('❌ Não foi possível restaurar o backup: '+(e.message||e));}
+ finally{if(ev?.target)ev.target.value='';}
 };
 window.abrirModoEmergencia=function(){
  const p=profile(), meds=g(key('m','msa2_meds')), modal=document.getElementById('emergencyOverlay');
