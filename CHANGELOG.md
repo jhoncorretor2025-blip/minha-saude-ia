@@ -1,5 +1,16 @@
 # Changelog — Minha Saúde IA
 
+## V5.65 — Importação mais segura e clara
+- 🛡️ Importação agora valida se informações foram realmente reconhecidas antes de avançar.
+- 👀 A etapa de progresso deixa claro que os dados **não são salvos antes da revisão**.
+- 📊 A tela informa quantos campos e registros foram reconhecidos.
+- ✅ Após a confirmação, o sistema verifica se os principais registros foram gravados.
+- 🔎 Diagnóstico de erro atualizado para V5.65.
+- 📝 Rascunho da importação continua preservado durante tentativas e cancelamentos.
+- 💾 Nenhuma chave de armazenamento existente foi removida ou renomeada.
+
+# Changelog — Minha Saúde IA
+
 ## V5.64 — Revisão de UX e dados
 - 📅 Próximos cuidados agora mostram somente datas futuras ou de hoje.
 - 🧹 Corrigido identificador duplicado na Home que poderia causar comportamento inconsistente no JavaScript.
