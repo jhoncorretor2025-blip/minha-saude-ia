@@ -24,7 +24,7 @@
       var txt=(document.body&&document.body.innerText)||'';
       var sinais=['function relatorioCompleto()','function relatorioMedico()','function relatorioSintomas()','msaV547Pendencias','msaV562NavigationScript','msaV563FixesScript'];
       if(!sinais.some(function(s){return txt.indexOf(s)!==-1;}))return;
-      var chave='msa2_contaminacao_guard_v571';
+      var chave='msa2_contaminacao_guard_v572';
       if(sessionStorage.getItem(chave)==='1')return;
       sessionStorage.setItem(chave,'1');
       var limpar=Promise.resolve();
