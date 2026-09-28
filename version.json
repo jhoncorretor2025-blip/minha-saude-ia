@@ -1,5 +1,5 @@
 {
-  "version": "V5.30",
-  "updatedAt": "2026-09-28T02:20:00Z",
-  "changes": "Personalização por perfil: novo controle para ativar/desativar recursos. Academia e medidas corporais, nutrição, sono e bem-estar e ciclo menstrual podem ser ocultados para simplificar a experiência e reativados depois em Configurações. Preferências ficam salvas localmente."
+  "version": "V5.31",
+  "updatedAt": "2026-09-28T02:45:00Z",
+  "changes": "Experiência adaptável (Simples, Confortável ou Avançada) salva nas preferências e alterável em Configurações. Menu passa a destacar Backup e segurança. Backup ganhou transferência entre dispositivos com pacote completo, incluindo medidas corporais e preferências, além de restauração por mesclagem. Mantida a opção de backup criptografado. Sincronização automática em nuvem continua como etapa futura."
 }
