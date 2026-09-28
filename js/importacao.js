@@ -38,15 +38,100 @@ window.copiarPrompt=window.copiarPrompt||copiarPrompt;
 window.copiarPromptIA=window.copiarPromptIA||copiarPromptIA;
 window.copiarPromptAntesDeAbrir=copiarPromptAntesDeAbrir;
 function normalObj(x){return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}
+function extrairJSONDaResposta(raw){
+ var s=String(raw||'').replace(/^\uFEFF/,'').trim(),candidatos=[];
+ var fence=s.match(/\`\`\`(?:json|javascript|js|texto|text|markdown)?\\s*([\\s\\S]*?)\`\`\`/i);
+ if(fence)candidatos.push(fence[1].trim());
+ candidatos.push(s);
+ var a=s.indexOf('{'),b=s.lastIndexOf('}');
+ if(a>=0&&b>a)candidatos.push(s.slice(a,b+1));
+ for(var i=0;i<candidatos.length;i++){
+  try{
+   var obj=JSON.parse(candidatos[i]);
+   if(obj&&typeof obj==='object'&&!Array.isArray(obj))return obj;
+  }catch(e){}
+ }
+ return null;
+}
+function limparLinhaFicha(line){
+ return String(line||'').trim()
+  .replace(/^\s*[-*+]\s+/,'')
+  .replace(/^\s*#{1,6}\s*/,'')
+  .replace(/^\s*[>*]\s*/,'')
+  .replace(/^\s*[\`*_]+(?=\[)/,'')
+  .replace(/(?<=\])\s*[\`*_]+(?=\s|$)/g,'')
+  .trim();
+}
+
 function arr(x){return Array.isArray(x)?x:[]}
 function first(o){for(var i=1;i<arguments.length;i++){var k=arguments[i];if(o&&o[k]!==undefined&&o[k]!==null&&String(o[k]).trim()!=='')return o[k]}return ''}
 function normalizarImport(d){
- var p=normalObj(d.perfil||d.profile);
- var dores=arr(d.dores||d.dores_e_sintomas||d.sintomas).map(function(x){return {data:first(x,'data','inicio','quando','datetime'),local:first(x,'local','onde','regiao','região'),int:Number(first(x,'int','intensidade','intensidade_0_10'))||0,tipo:first(x,'tipo','caracteristica','característica'),freq:first(x,'freq','frequencia','frequência'),gatilho:first(x,'gatilho','gatilhos','piora_melhora'),sint:first(x,'sint','sintomas','outros_sintomas'),obs:first(x,'obs','observacoes','observações')}});
- var consultas=arr(d.consultas).map(function(x){return {data:first(x,'data'),esp:first(x,'especialidade'),med:first(x,'med','medico','médico'),mot:first(x,'motivo'),perg:first(x,'perguntas'),obs:first(x,'obs','orientacoes','orientações'),ret:first(x,'ret','retorno')}});
- var meds=arr(d.medicamentos||d.remedios||d.remédios).map(function(x){return {nome:first(x,'nome','medicamento','remedio','remédio'),dose:first(x,'dose'),freq:first(x,'freq','frequencia','frequência'),inicio:first(x,'inicio','início'),fim:first(x,'fim'),pres:first(x,'pres','prescritor','prescrito_por'),obs:first(x,'obs','observacoes','observações')}});
- var exames=arr(d.exames).map(function(x){return {nome:first(x,'nome','exame'),data:first(x,'data'),res:first(x,'res','resultado'),obs:first(x,'obs','observacoes','observações')}});
- return {p:p,dores:dores,consultas:consultas,meds:meds,exames:exames};
+ var fonte=normalObj(d.perfil||d.profile||d.pessoa||d.paciente),raiz=normalObj(d),p={};
+ if(!Object.keys(fonte).length)fonte=raiz;
+ var mapa={
+  nome:['nome','NOME','nome_completo','NOME_COMPLETO','paciente','PACIENTE'],
+  nasc:['nasc','data_nascimento','DATA_NASCIMENTO','data de nascimento','nascimento'],
+  idade:['idade','IDADE'],
+  sexo:['sexo','SEXO'],
+  sangue:['sangue','tipo_sanguineo','TIPO_SANGUINEO','tipo sanguíneo'],
+  altura:['altura','ALTURA'],
+  peso:['peso','PESO'],
+  objetivoCorporal:['objetivoCorporal','objetivo_corporal','OBJETIVO_CORPORAL','objetivo'],
+  academia:['academia','ACADEMIA'],
+  academiaFreq:['academiaFreq','frequencia_academia','FREQUENCIA_ACADEMIA','frequência academia'],
+  atividadeFisica:['atividadeFisica','atividade_fisica','ATIVIDADE_FISICA','atividade física'],
+  trabalhoTipo:['trabalhoTipo','trabalho_tipo','TRABALHO_TIPO','trabalho'],
+  horasSentado:['horasSentado','horas_sentado','HORAS_SENTADO','tempo sentado'],
+  horasPe:['horasPe','horas_em_pe','HORAS_EM_PE','tempo em pé'],
+  aguaDia:['aguaDia','agua_por_dia','AGUA_POR_DIA','água por dia'],
+  urinaDia:['urinaDia','frequencia_urinaria','FREQUENCIA_URINARIA'],
+  evacuacaoDia:['evacuacaoDia','frequencia_evacuacao','FREQUENCIA_EVACUACAO'],
+  calorSuor:['calorSuor','exposicao_calor_suor','EXPOSICAO_CALOR_SUOR'],
+  alimentacao:['alimentacao','ALIMENTACAO'],
+  cond:['cond','doencas','DOENCAS','condicoes','condições de saúde'],
+  alerg:['alerg','alergias','ALERGIAS'],
+  circ:['circ','cirurgias_internacoes','CIRURGIAS_INTERNACOES'],
+  emerg:['emerg','contato_emergencia','CONTATO_EMERGENCIA'],
+  tel:['tel','telefone_emergencia','TELEFONE_EMERGENCIA'],
+  menstruacao:['menstruacao','ultima_menstruacao','ULTIMA_MENSTRUACAO'],
+  ciclo:['ciclo','ciclo_menstrual','CICLO_MENSTRUAL'],
+  duracaoMenstr:['duracaoMenstr','duracao_menstruacao','DURACAO_MENSTRUACAO'],
+  regularidade:['regularidade','regularidade_ciclo','REGULARIDADE_CICLO'],
+  sexoFreq:['sexoFreq','frequencia_sexual','FREQUENCIA_SEXUAL'],
+  sexoFreqMin:['sexoFreqMin','frequencia_sexual_min','FREQUENCIA_SEXUAL_MIN'],
+  sexoFreqMax:['sexoFreqMax','frequencia_sexual_max','FREQUENCIA_SEXUAL_MAX'],
+  masturbacaoDia:['masturbacaoDia','masturbacao_por_dia','MASTURBACAO_POR_DIA'],
+  camisinha:['camisinha','uso_preservativo','USO_PRESERVATIVO'],
+  engravidou:['engravidou','ja_engravidou','JA_ENGRAVIDOU'],
+  mae:['mae','ja_foi_mae','JA_FOI_MAE'],
+  gestacoes:['gestacoes','numero_gestacoes','NUMERO_GESTACOES'],
+  reproObs:['reproObs','historico_reprodutivo','HISTORICO_REPRODUTIVO'],
+  usaAnticoncepcional:['usaAnticoncepcional','usa_anticoncepcional','USA_ANTICONCEPCIONAL'],
+  anticoncepcionalMetodo:['anticoncepcionalMetodo','metodo_anticoncepcional','METODO_ANTICONCEPCIONAL'],
+  anticoncepcionalNome:['anticoncepcionalNome','nome_anticoncepcional','NOME_ANTICONCEPCIONAL'],
+  anticoncepcionalHora:['anticoncepcionalHora','horario_anticoncepcional','HORARIO_ANTICONCEPCIONAL'],
+  anticoncepcionalInicio:['anticoncepcionalInicio','inicio_anticoncepcional','INICIO_ANTICONCEPCIONAL'],
+  anticoncepcionalRegime:['anticoncepcionalRegime','regime_anticoncepcional','REGIME_ANTICONCEPCIONAL'],
+  minipilulaTipo:['minipilulaTipo','tipo_minipilula','TIPO_MINIPILULA'],
+  prevColo:['prevColo','ultimo_preventivo_colo','ULTIMO_PREVENTIVO_COLO'],
+  mamografia:['mamografia','ultima_mamografia','ULTIMA_MAMOGRAFIA'],
+  ist:['ist','ultimo_teste_ist','ULTIMO_TESTE_IST'],
+  hpv:['hpv','vacina_hpv','VACINA_HPV'],
+  prevProx:['prevProx','proximo_preventivo','PROXIMO_PREVENTIVO'],
+  prevObs:['prevObs','observacoes_prevencao','OBSERVACOES_PREVENCAO'],
+  dorcelaxFreq:['dorcelaxFreq','frequencia_dorcelax','FREQUENCIA_DORCELAX'],
+  paracetamolFreq:['paracetamolFreq','frequencia_paracetamol','FREQUENCIA_PARACETAMOL'],
+  outrosDor:['outrosDor','outros_remedios_dor','OUTROS_REMEDIOS_DOR'],
+  catapora:['catapora','ja_teve_catapora','JA_TEVE_CATAPORA'],
+  cataporaQuando:['cataporaQuando','quando_catapora','QUANDO_CATAPORA']
+ };
+ Object.keys(mapa).forEach(function(k){var v=first.apply(null,[fonte].concat(mapa[k]));if(v!=='')p[k]=v});
+ var dores=arr(raiz.dores||raiz.dores_e_sintomas||raiz.sintomas).map(function(x){return {data:first(x,'data','inicio','quando','datetime'),local:first(x,'local','onde','regiao','região'),int:Number(first(x,'int','intensidade','intensidade_0_10'))||0,tipo:first(x,'tipo','caracteristica','característica'),freq:first(x,'freq','frequencia','frequência'),gatilho:first(x,'gatilho','gatilhos','piora_melhora'),sint:first(x,'sint','sintomas','outros_sintomas'),obs:first(x,'obs','observacoes','observações')}});
+ var consultas=arr(raiz.consultas).map(function(x){return {data:first(x,'data'),esp:first(x,'especialidade'),med:first(x,'med','medico','médico'),mot:first(x,'motivo'),perg:first(x,'perguntas'),obs:first(x,'obs','orientacoes','orientações'),ret:first(x,'ret','retorno')}});
+ var meds=arr(raiz.medicamentos||raiz.remedios||raiz.remédios).map(function(x){return {nome:first(x,'nome','medicamento','remedio','remédio'),dose:first(x,'dose'),freq:first(x,'freq','frequencia','frequência'),inicio:first(x,'inicio','início'),fim:first(x,'fim'),pres:first(x,'pres','prescritor','prescrito_por'),obs:first(x,'obs','observacoes','observações')}});
+ var exames=arr(raiz.exames).map(function(x){return {nome:first(x,'nome','exame'),data:first(x,'data'),res:first(x,'res','resultado'),obs:first(x,'obs','observacoes','observações')}});
+ var vitais=arr(raiz.vitais||raiz.sinais_vitais||raiz.sinaisVitais),vacinas=arr(raiz.vacinas||raiz.vax),familia=arr(raiz.familia||raiz.historico_familiar||raiz.historicoFamiliar),lembretes=arr(raiz.lembretes||raiz.reminders),documentos=arr(raiz.documentos||raiz.docs);
+ return {p:p,dores:dores,consultas:consultas,meds:meds,exames:exames,vitais:vitais,vacinas:vacinas,familia:familia,lembretes:lembretes,documentos:documentos};
 }
 function normalizarFichaIA(raw){
  var names=['NOME','DATA_NASCIMENTO','IDADE','SEXO','TIPO_SANGUINEO','ALTURA','PESO','OBJETIVO_CORPORAL','ACADEMIA','FREQUENCIA_ACADEMIA','ATIVIDADE_FISICA','TRABALHO_TIPO','HORAS_SENTADO','HORAS_EM_PE','AGUA_POR_DIA','FREQUENCIA_URINARIA','FREQUENCIA_EVACUACAO','EXPOSICAO_CALOR_SUOR','ALIMENTACAO','DOENCAS','DOENCAS_PAI','DOENCAS_MAE','ALERGIAS','CIRURGIAS_INTERNACOES','CONTATO_EMERGENCIA','TELEFONE_EMERGENCIA','ULTIMA_MENSTRUACAO','CICLO_MENSTRUAL','DURACAO_MENSTRUACAO','REGULARIDADE_CICLO','FREQUENCIA_SEXUAL','FREQUENCIA_SEXUAL_MIN','FREQUENCIA_SEXUAL_MAX','MASTURBACAO_POR_DIA','USO_PRESERVATIVO','JA_ENGRAVIDOU','JA_FOI_MAE','NUMERO_GESTACOES','HISTORICO_REPRODUTIVO','USA_ANTICONCEPCIONAL','METODO_ANTICONCEPCIONAL','NOME_ANTICONCEPCIONAL','HORARIO_ANTICONCEPCIONAL','INICIO_ANTICONCEPCIONAL','REGIME_ANTICONCEPCIONAL','TIPO_MINIPILULA','ULTIMO_PREVENTIVO_COLO','ULTIMA_MAMOGRAFIA','ULTIMO_TESTE_IST','VACINA_HPV','PROXIMO_PREVENTIVO','OBSERVACOES_PREVENCAO','FREQUENCIA_DORCELAX','FREQUENCIA_PARACETAMOL','OUTROS_REMEDIOS_DOR','JA_TEVE_CATAPORA','QUANDO_CATAPORA','MEDICAMENTOS','SUPLEMENTOS','ULTIMO_SINTOMA','LOCAL_SINTOMA','DATA_INICIO_SINTOMA','INTENSIDADE','OUTROS_SINTOMAS','CONSULTAS','EXAMES','SINAIS_VITAIS','VACINAS','HISTORICO_FAMILIAR','LEMBRETES','DOCUMENTOS','INFORMACOES_IMPORTANTES'];
@@ -93,9 +178,9 @@ function normalizarFichaIA(raw){
  function canonical(k){var n=keyNorm(k);return keyMap[n]||''}
  var values={},lines=String(raw||'').replace(/^\uFEFF/,'').replace(/\r/g,'').split('\n'),current='';
  lines.forEach(function(line){
-  var clean=line.trim().replace(/^[-*]\s*/,'');
+  var clean=limparLinhaFicha(line);
   var m=clean.match(/^\[([^\]]+)\]\s*(.*)$/);
-  if(!m)m=clean.match(/^([^:]{2,70}):\s*(.*)$/);
+  if(!m)m=clean.match(/^([^:=–—-]{2,70})\s*[:=]\s*(.*)$/);
   if(m){
    var key=canonical(m[1]);
    if(key){current=key;values[current]=m[2]||'';return}
@@ -200,7 +285,7 @@ async function processarImportacao(){
   atualizarProgresso(10,'Lendo resposta','Lendo as informações recebidas da IA…');$('resultadoImport').innerHTML='<div class="alert">⏳ Importação em andamento…</div>';await esperar(250);
   raw=raw.replace(/^\s*```(?:json|text)?\s*/i,'').replace(/\s*```\s*$/,'').trim();
   atualizarProgresso(30,'Organizando perfil','Separando seus dados pessoais e informações de saúde…');await esperar(250);
-  var n=raw.charAt(0)==='{'?normalizarImport(JSON.parse(raw)):normalizarFichaIA(raw);
+  var json=extrairJSONDaResposta(raw),n=json?normalizarImport(json):normalizarFichaIA(raw);
   var validacao=validarResultadoImportacao(n);
   var total=n.dores.length+n.consultas.length+n.meds.length+n.exames.length+n.vitais.length+n.vacinas.length+n.familia.length+n.lembretes.length+n.documentos.length+['nome','nasc','idade','sexo','altura','peso','objetivoCorporal','academia','academiaFreq','atividadeFisica','trabalhoTipo','horasSentado','horasPe','aguaDia','urinaDia','calorSuor','alimentacao','cond','alerg','circ','supl','info','emerg','tel','menstruacao','ciclo','duracaoMenstr','sexoFreq','camisinha','engravidou','mae','gestacoes','reproObs','usaAnticoncepcional','anticoncepcionalNome','anticoncepcionalHora','anticoncepcionalInicio','prevColo','mamografia','ist','hpv','prevProx','prevObs','dorcelaxFreq','paracetamolFreq','outrosDor','catapora','cataporaQuando'].filter(function(k){return String(n.p[k]||'').trim()&&String(n.p[k]).toLowerCase()!=='não informado'}).length;
   if(!total)throw new Error('Nenhuma informação reconhecida');
