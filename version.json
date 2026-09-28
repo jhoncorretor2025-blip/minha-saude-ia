@@ -1,5 +1,5 @@
 {
-  "version":"V5.48",
-  "updatedAt":"2026-09-28T06:55:00Z",
-  "changes":"Prompt inicial passa a buscar doenças do pai e da mãe separadamente, com importação automática para o Histórico Familiar."
+  "version": "V5.49",
+  "updatedAt": "2026-09-28T07:10:00Z",
+  "changes": "Exportação para PDF corrigida para abrir a impressão diretamente, sem depender de nova janela ou pop-up."
 }
