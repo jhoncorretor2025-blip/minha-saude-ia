@@ -1,5 +1,5 @@
 {
-  "version":"V5.44",
-  "updatedAt":"2026-09-28T05:45:00Z",
-  "changes":"Revisão do fluxo do perfil: um único salvamento direto, sem submit duplicado, com confirmação real da persistência."
+  "version":"V5.45",
+  "updatedAt":"2026-09-28T06:05:00Z",
+  "changes":"Refinamento visual profissional e amigável: Home, perfil, cards, botões, campos e responsividade."
 }
