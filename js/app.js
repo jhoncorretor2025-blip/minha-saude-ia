@@ -183,7 +183,7 @@ function adicionarIAConfigurada(){
  const nome=prompt('Nome da inteligência artificial:');
  if(!nome||!nome.trim())return;
  const web=prompt('Endereço web da IA (https://...):');
- if(!web||!/^https?:\\/\\//i.test(web.trim())){alert('Informe um endereço web válido começando com https:// ou http://.');return}
+ if(!web||!(web.trim().startsWith('https://')||web.trim().startsWith('http://'))){alert('Informe um endereço web válido começando com https:// ou http://.');return}
  const app=prompt('Link para tentar abrir o aplicativo (opcional). No Android pode ser um link intent:// ou esquema do aplicativo:');
  const id='ia_'+Date.now().toString(36);
  const ias=preferenciasPadrao().ias.map(x=>Object.assign({},x,{principal:false}));
@@ -208,7 +208,7 @@ function removerIA(id){
 }
 function editarIA(id){
  const ia=preferenciasPadrao().ias.find(x=>x.id===id);if(!ia)return;
- const web=prompt('Endereço web da IA:',ia.web||'');if(!web||!/^https?:\\/\\//i.test(web.trim()))return;
+ const web=prompt('Endereço web da IA:',ia.web||'');if(!web||!(web.trim().startsWith('https://')||web.trim().startsWith('http://')))return;
  const app=prompt('Link para tentar abrir o aplicativo (opcional):',ia.app||'');
  salvarMinhasIAs(preferenciasPadrao().ias.map(x=>x.id===id?Object.assign({},x,{web:web.trim(),app:(app||'').trim()}):x));
 }
