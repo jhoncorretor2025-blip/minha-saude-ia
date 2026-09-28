@@ -1,5 +1,5 @@
 {
-  "version":"V5.47",
-  "updatedAt":"2026-09-28T06:35:00Z",
-  "changes":"Novo botão para preencher informações pendentes, com lista organizada e acesso direto ao campo ou seção correspondente."
+  "version":"V5.48",
+  "updatedAt":"2026-09-28T06:55:00Z",
+  "changes":"Prompt inicial passa a buscar doenças do pai e da mãe separadamente, com importação automática para o Histórico Familiar."
 }
