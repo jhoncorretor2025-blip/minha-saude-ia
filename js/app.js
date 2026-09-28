@@ -44,12 +44,14 @@ function fmt(d){if(!d)return '—';let x=new Date(d);return isNaN(x)?d:x.toLocal
 function list(id,a,fn){$(id).innerHTML=a.length?a.slice().reverse().map(fn).join(''):'<div class="empty">Nenhum registro ainda.</div>'}
 const formatDateBR=window.MSAUtils?.formatDateBR||function(v){if(!v)return 'Data não informada';var s=String(v);var m=s.match(/^(\\d{4})-(\\d{2})-(\\d{2})/);return m?m[3]+'/'+m[2]+'/'+m[1]:s};
 function getNextCare(){
- const p=get(K.p)[0]||{},c=get(K.c),e=get(K.e),m=get(K.m),vax=get(K.vax),r=get(K.r),items=[];
- c.forEach(x=>{if(x.ret)items.push({date:x.ret,icon:'👨‍⚕️',title:'Retorno de consulta',sub:x.esp||x.med||'Consulta'});});
- e.forEach(x=>{if(x.data)items.push({date:x.data,icon:'🧪',title:x.nome||'Exame',sub:'Exame registrado'});});
- vax.forEach(x=>{if(x.data)items.push({date:x.data,icon:'💉',title:x.nome||'Vacina',sub:x.obs||'Vacinação registrada'});});
- r.forEach(x=>{if(x.data)items.push({date:x.data,icon:'📌',title:x.nome||'Lembrete',sub:x.tipo||'Lembrete'});});
- if(p.prevProx)items.push({date:p.prevProx,icon:'🌸',title:'Acompanhamento preventivo',sub:'Data registrada no perfil'});
+ const p=get(K.p)[0]||{},c=get(K.c),e=get(K.e),vax=get(K.vax),r=get(K.r),items=[];
+ const hoje=new Date();hoje.setHours(0,0,0,0);
+ const add=(date,icon,title,sub)=>{if(!date)return;const s=String(date).slice(0,10);if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(s))return;const dt=new Date(s+'T00:00:00');if(dt>=hoje)items.push({date:s,icon,title,sub});};
+ c.forEach(x=>add(x.ret,'👨‍⚕️','Retorno de consulta',x.esp||x.med||'Consulta'));
+ e.forEach(x=>add(x.data,'🧪',x.nome||'Exame','Exame registrado'));
+ vax.forEach(x=>add(x.data,'💉',x.nome||'Vacina',x.obs||'Vacinação registrada'));
+ r.forEach(x=>add(x.data,'📌',x.nome||'Lembrete',x.tipo||'Lembrete'));
+ add(p.prevProx,'🌸','Acompanhamento preventivo','Data registrada no perfil');
  return items.sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(0,6);
 }
 function atualizarSmartHome(){
