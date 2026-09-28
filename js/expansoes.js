@@ -503,7 +503,7 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(ensureFamilyProfiles
 
 
 /* ===== V5.04 — pacote de transferência / base para sincronização ===== */
-const SYNC_KEYS=[['d','Sintomas'],['c','Consultas'],['m','Medicamentos'],['e','Exames'],['p','Perfil'],['v','Sinais vitais'],['r','Lembretes'],['vax','Vacinas'],['fam','Histórico familiar'],['doc','Documentos'],['nutri','Nutrição'],['suplReg','Suplementos'],['food','Reações alimentares'],['agua','Hidratação'],['sono','Sono'],['bem','Bem-estar'],['gat','Gatilhos'],['medRot','Rotinas de medicamentos'],['medTaken','Doses de medicamentos'],['ciclo','Ciclo menstrual'],['anticoncepcional','Anticoncepcional']];
+const SYNC_KEYS=[['d','Sintomas'],['c','Consultas'],['m','Medicamentos'],['e','Exames'],['p','Perfil'],['v','Sinais vitais'],['r','Lembretes'],['vax','Vacinas'],['fam','Histórico familiar'],['doc','Documentos'],['nutri','Nutrição'],['suplReg','Suplementos'],['food','Reações alimentares'],['agua','Hidratação'],['sono','Sono'],['bem','Bem-estar'],['gat','Gatilhos'],['medRot','Rotinas de medicamentos'],['medTaken','Doses de medicamentos'],['ciclo','Ciclo menstrual'],['anticoncepcional','Anticoncepcional'],['medidas','Medidas corporais'],['preferencias','Preferências']];
 function buildSyncPackage(){
  const data={app:'Minha Saúde IA',formatVersion:'2.0',exportedAt:new Date().toISOString(),profileId:currentProfileId(),data:{}};
  SYNC_KEYS.forEach(([name])=>{data.data[name]=storage.get(K[name])});
@@ -521,13 +521,13 @@ function mergeSyncArray(current,incoming){
  incoming.forEach(x=>{const s=JSON.stringify(x);if(!seen.has(s)){out.push(x);seen.add(s)}});
  return out;
 }
-async function importSyncPackage(file){
+async window.msaImportSyncPackage=async function(file){
  const text=await file.text(),pkg=JSON.parse(text);
  if(!pkg||pkg.app!=='Minha Saúde IA'||!pkg.data||typeof pkg.data!=='object')throw new Error('Pacote inválido ou incompatível.');
  const counts=[];for(const [name] of SYNC_KEYS){const inc=Array.isArray(pkg.data[name])?pkg.data[name]:[];if(inc.length)counts.push(name+': '+inc.length)}
  if(!confirm('📦 Pacote encontrado ('+counts.join(', ')+').\n\nA importação vai MESCLAR os registros locais, sem apagar o histórico atual. Continuar?'))return;
  let merged=0;
- SYNC_KEYS.forEach(([name])=>{const key=K[name],inc=Array.isArray(pkg.data[name])?pkg.data[name]:[];if(!inc.length)return;const before=storage.get(key);let after;if(name==='p'){const cur=before[0]||{},src=inc[0]||{};after=[Object.assign({},cur,Object.keys(cur).length?{}:src)];}else after=mergeSyncArray(before,inc);if(JSON.stringify(before)!==JSON.stringify(after)){storage.set(key,after);merged+=inc.length}});
+ SYNC_KEYS.forEach(([name])=>{const key=K[name],inc=Array.isArray(pkg.data[name])?pkg.data[name]:[];if(!inc.length)return;const before=storage.get(key);let after;if(name==='p'||name==='preferencias'){after=inc;}else after=mergeSyncArray(before,inc);if(JSON.stringify(before)!==JSON.stringify(after)){storage.set(key,after);merged+=inc.length}});
  try{render();if(typeof renderNovosModulos==='function')renderNovosModulos();if(typeof renderDocumentosSaude==='function')renderDocumentosSaude()}catch(e){}
  alert('✅ Pacote importado. '+merged+' registro(s)/item(ns) novos foram mesclados.');
 }
@@ -539,7 +539,7 @@ function ensureSyncUI(){
  sec.innerHTML='<div class="card"><div class="dash-section-title"><div><h2>📦 Transferir entre dispositivos</h2><div class="muted">Exporte um pacote completo para levar seus dados a outro celular ou computador.</div></div></div><div class="grid2"><div class="card"><h3>📤 Exportar pacote</h3><p class="muted">Baixe um arquivo JSON com os registros do perfil atual.</p><button class="btn green" type="button" id="msaSyncExport">📦 Baixar pacote</button></div><div class="card"><h3>📥 Importar pacote</h3><p class="muted">O pacote será mesclado ao histórico atual; nada será apagado automaticamente.</p><input id="msaSyncFile" type="file" accept=".json,application/json"><button class="btn secondary" type="button" id="msaSyncImport" style="margin-top:10px">📥 Importar pacote</button></div></div><div class="alert info" style="margin-top:13px">☁️ Sincronização automática entre aparelhos ainda requer uma conta e um servidor. Esta etapa cria a ponte local segura para transferência.</div></div>';
  host.appendChild(sec);
  sec.querySelector('#msaSyncExport').addEventListener('click',window.msaExportSyncPackage);
- sec.querySelector('#msaSyncImport').addEventListener('click',async()=>{const f=sec.querySelector('#msaSyncFile').files[0];if(!f)return alert('Escolha um pacote JSON antes de importar.');try{await importSyncPackage(f)}catch(e){alert('❌ Não foi possível importar: '+(e.message||e))}});
+ sec.querySelector('#msaSyncImport').addEventListener('click',async()=>{const f=sec.querySelector('#msaSyncFile').files[0];if(!f)return alert('Escolha um pacote JSON antes de importar.');try{await window.msaImportSyncPackage(f)}catch(e){alert('❌ Não foi possível importar: '+(e.message||e))}});
 }
 document.addEventListener('DOMContentLoaded',()=>setTimeout(ensureSyncUI,750));
 
@@ -576,7 +576,7 @@ window.msaImportEncrypted=async function(file){
   const inner=await decryptPackage(pkg,password);
   if(inner.app!=='Minha Saúde IA'||!inner.data)throw new Error('Conteúdo incompatível.');
   if(!confirm('🔓 Backup descriptografado com sucesso. Ele será mesclado ao perfil atual sem apagar os dados existentes. Continuar?'))return;
-  SYNC_KEYS.forEach(([name])=>{const inc=Array.isArray(inner.data[name])?inner.data[name]:[];if(!inc.length)return;const key=K[name],before=storage.get(key),after=name==='p'?[Object.assign({},before[0]||{},Object.keys(before[0]||{}).length?{}:inc[0])]:mergeSyncArray(before,inc);if(JSON.stringify(before)!==JSON.stringify(after))storage.set(key,after)});
+  SYNC_KEYS.forEach(([name])=>{const inc=Array.isArray(inner.data[name])?inner.data[name]:[];if(!inc.length)return;const key=K[name],before=storage.get(key),after=(name==='p'||name==='preferencias')?inc:mergeSyncArray(before,inc);if(JSON.stringify(before)!==JSON.stringify(after))storage.set(key,after)});
   try{render();renderNovosModulos();renderDocumentosSaude()}catch(e){}
   alert('✅ Backup criptografado restaurado com sucesso.');
  }catch(e){alert('❌ Não foi possível abrir o backup. Verifique a senha e o arquivo.')}
