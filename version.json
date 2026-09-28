@@ -1,5 +1,5 @@
 {
-  "version": "V5.38",
-  "updatedAt": "2026-09-28T03:45:00Z",
-  "changes": "Configuracao de IAs personalizadas, IA principal, ChatGPT, Gemini, NotebookLM, adicao de outras IAs e abertura por aplicativo com fallback para web. Preferencias de IA seguem na transferencia entre dispositivos."
+  "version": "V5.39",
+  "updatedAt": "2026-09-28T04:10:00Z",
+  "changes": "Refinamento geral da Home, CTAs, navegação desktop/mobile, busca no menu, acessibilidade, privacidade, feedback de salvamento do perfil e experiência responsiva."
 }
