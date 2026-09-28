@@ -2,7 +2,7 @@
    O menu não depende do restante do aplicativo para abrir e navegar.
 */
 (function(){
-  /* V5.75 — organização por objetivo: registrar, acompanhar, organizar e proteger */
+  /* V5.76 — organização por objetivo: registrar, acompanhar, organizar e proteger */
   function reorganizarMenuV569(){
     var nav=document.getElementById('nav');
     if(!nav || nav.getAttribute('data-menu-v569')==='1')return;
@@ -10,7 +10,7 @@
     nav.innerHTML=
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button><div class="nav-menu">'+
         '<button type="button" data-tab="home">🏠 Visão geral</button>'+
-        '<button type="button" data-tab="timeline">🕐 Linha do tempo</button>'+
+        '<button type="button" data-tab="timeline">🕐 Linha do tempo</button><button type="button" data-tab="inteligencia">🧠 Central de Inteligência</button>'+
         '<button type="button" data-tab="perfil">👤 Meu perfil</button>'+
       '</div></div>'+
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="register">➕ Registrar ▾</button><div class="nav-menu">'+
@@ -31,7 +31,7 @@
         '<button type="button" data-tab="lembretes">⏰ Lembretes</button>'+
       '</div></div>'+
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="organization">📁 Organizar ▾</button><div class="nav-menu">'+
-        '<button type="button" data-tab="documentos">📄 Documentos</button>'+
+        '<button type="button" data-tab="documentos">📄 Documentos</button><button type="button" data-tab="leitor">📄 Leitor inteligente</button>'+
         '<button type="button" data-tab="relatorios">📊 Relatórios</button>'+
         '<button type="button" data-tab="carteirinha">🪪 Carteirinha</button>'+
       '</div></div>'+
@@ -169,7 +169,7 @@
           '<button type="button" data-mobile-tab="acompanhamento">❤️<span>Sinal vital</span></button>'+
           '<button type="button" data-mobile-tab="acompanhamento" data-feature-nav="academia">📏<span>Medidas</span></button>'+
         '</div>'+
-        mobileSection('Principal',[['home','🏠 Início'],['timeline','🕐 Linha do tempo'],['perfil','👤 Meu perfil']])+ 
+        mobileSection('Principal',[['home','🏠 Início'],['timeline','🕐 Linha do tempo'],['inteligencia','🧠 Inteligência'],['perfil','👤 Meu perfil']])+ 
         mobileSection('Registrar',[
           ['dor','😣 Sintoma ou dor'],['meds','💊 Medicamentos'],['consultas','👨‍⚕️ Consultas'],
           ['exames','🧪 Exames'],['acompanhamento','❤️ Sinais vitais'],['acompanhamento','📏 Medidas corporais','academia'],
@@ -180,7 +180,7 @@
           ['calendario','📅 Calendário'],['lembretes','⏰ Lembretes']
         ])+
         mobileSection('Organizar',[
-          ['documentos','📄 Documentos'],['relatorios','📊 Relatórios'],['carteirinha','🪪 Carteirinha']
+          ['documentos','📄 Documentos'],['leitor','📄 Leitor inteligente'],['relatorios','📊 Relatórios'],['carteirinha','🪪 Carteirinha']
         ])+
         mobileSection('IA',[
           ['ia','🤖 Assistente'],['importar','⚡ Importar com IA'],['perguntas','❓ Preparar consulta']
@@ -405,7 +405,7 @@
     iniciar();
   }
 })();
-/* V5.75 — fallback handlers preservados */
+/* V5.76 — fallback handlers preservados */
 (function(){
   function lista(k){try{var s=window.MSAStorage||{};var v=s.get?s.get(k):[];return Array.isArray(v)?v:[]}catch(e){return[]}}
   function perfil(){var a=lista('msa2_perfil');return a[0]||{}}
@@ -434,9 +434,9 @@
 (function msaV569VersionSync(){
   function sync(){
     try{
-      document.title=document.title.replace(/V5\.67/g,'V5.75');
+      document.title=document.title.replace(/V5\.67/g,'V5.76');
       document.querySelectorAll('body *').forEach(function(el){
-        if(el.children.length===0 && el.textContent.indexOf('V5.75')>=0)el.textContent=el.textContent.replace(/V5\.67/g,'V5.75');
+        if(el.children.length===0 && el.textContent.indexOf('V5.76')>=0)el.textContent=el.textContent.replace(/V5\.67/g,'V5.76');
       });
     }catch(e){}
   }
