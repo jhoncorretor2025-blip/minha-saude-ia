@@ -556,6 +556,11 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <section id="configuracoes"><div class="card"><h2>⚙️ Configurações e personalização</h2><div class="muted">O aplicativo pode se adaptar ao jeito que cada pessoa prefere usar tecnologia. Escolha a experiência e os recursos que fazem sentido para você.</div>
 <div id="settingsPreferences" class="grid2" style="margin-top:14px"></div>
 <div id="settingsAI" class="card" style="margin-top:14px"></div>
+<div class="grid2" style="margin-top:14px">
+ <div class="card" style="margin:0"><h3>🔐 Privacidade e dados</h3><div class="muted">Entenda onde seus dados ficam, o que é compartilhado e como proteger seu histórico.</div><button class="btn secondary small" type="button" onclick="abrirPrivacidadeAjuda('privacidade')">🔐 Ver privacidade</button></div>
+ <div class="card" style="margin:0"><h3>❓ Central de ajuda</h3><div class="muted">Respostas rápidas sobre backup, PDF, IA, armazenamento local e segurança.</div><button class="btn secondary small" type="button" onclick="abrirPrivacidadeAjuda('ajuda')">❓ Abrir ajuda</button></div>
+</div>
+<div class="alert warn" style="margin-top:12px">⚠️ O Minha Saúde IA é uma ferramenta de organização pessoal. Ele não substitui avaliação, diagnóstico ou tratamento por profissionais de saúde.</div>
 <div class="alert safe" style="margin-top:12px">💡 Você pode mudar essas escolhas quando quiser. Elas não alteram nem apagam seus registros.</div></div></section>
 
 <section id="home" class="active"><div id="homeProfileHero" class="home-profile-hero"><div class="home-avatar" id="homeAvatar"><span>👤</span></div><div class="home-profile-main"><div class="home-greeting">👋 Olá!</div><h2 id="homeProfileName">Seu nome</h2><div class="home-profile-stats"><span>🎂 <b id="homeProfileAge">—</b> anos</span><span>⚖️ <b id="homeProfileWeight">—</b> kg</span><span>📏 <b id="homeProfileHeight">—</b></span><span>🩸 <b id="homeProfileBlood">—</b></span></div></div><button class="home-profile-edit" type="button" onclick="go('perfil')">✏️ Editar</button></div>
