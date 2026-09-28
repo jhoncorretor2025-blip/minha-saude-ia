@@ -1,5 +1,5 @@
 {
-  "version": "V5.70",
-  "updatedAt": "2026-09-28T16:45:00-03:00",
-  "changes": "Correção crítica do módulo de relatórios: removido conteúdo de scripts e estilos do aplicativo que estava sendo incorporado indevidamente ao relatório e aparecendo como texto no final da página."
+  "version": "V5.71",
+  "updatedAt": "2026-09-28T17:00:00-03:00",
+  "changes": "Blindagem contra retorno do erro de código aparecendo na página: versão e cache-busting sincronizados, detecção de conteúdo contaminado e limpeza de cache/service worker com recarga controlada."
 }
