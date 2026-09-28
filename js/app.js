@@ -444,6 +444,19 @@ function healthText(){
  lines.push('','[SINAIS VITAIS]');lines.push(...(v.length?v.map(x=>x.data+' | Peso: '+(x.peso||'')+' | Pressão: '+(x.pressao||'')+' | FC: '+(x.fc||'')+' | Temp: '+(x.temp||'')+' | Glicemia: '+(x.glic||'')+' | Saturação: '+(x.sat||'')+' | '+(x.obs||'')):['Nenhum registro.']));
  lines.push('','[VACINAS]');lines.push(...(vax.length?vax.map(x=>x.nome+' | '+(x.data||'')+' | '+(x.obs||'')):['Nenhum registro.']));
  lines.push('','[HISTÓRICO FAMILIAR]');lines.push(...(fam.length?fam.map(x=>x.parente+': '+x.info):['Nenhum registro.']));
+ lines.push('','[SONO E BEM-ESTAR]');
+ const sono=get(K.sono);
+ const rotinaSono=sono.find(x=>x.habitual)||sono[sono.length-1];
+ if(rotinaSono&&rotinaSono.dormiu&&rotinaSono.acordou){
+   lines.push('🌙 Rotina habitual de sono: normalmente dorme às '+rotinaSono.dormiu+' e acorda às '+rotinaSono.acordou+' — cerca de '+(rotinaSono.horas||'Não informado')+' horas por noite.');
+   lines.push('📅 Frequência: todos os dias');
+   lines.push('🚽 Despertares para urinar: '+(rotinaSono.xixi??'Não informado'));
+   lines.push('😣 Despertares com dor: '+(rotinaSono.dor??'Não informado'));
+   if(rotinaSono.obs)lines.push('📝 Observação: '+rotinaSono.obs);
+ }else{
+   lines.push('🌙 Rotina habitual de sono: Não informada.');
+ }
+ lines.push('ℹ️ O tempo habitual de sono é apresentado para acompanhamento do padrão de descanso e pode ser comparado com sintomas e bem-estar registrados. Este dado, isoladamente, não diagnostica doenças nem determina a causa de estresse ou outros sintomas.');
  lines.push('','[LEMBRETES]');lines.push(...(r.length?r.map(x=>x.data+' | '+x.tipo+' | '+x.nome):['Nenhum registro.']));
  lines.push('','Este arquivo organiza informações registradas pelo usuário e não constitui diagnóstico, prescrição ou laudo.');
  return lines.join('\n');
