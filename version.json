@@ -1,5 +1,5 @@
 {
-  "version": "V5.61",
-  "updatedAt": "2026-09-28T10:35:00-03:00",
-  "changes": "Corrige erro de sintaxe no JavaScript principal que impedia o fluxo de importação de avançar."
+  "version": "V5.62",
+  "updatedAt": "2026-09-28T15:20:00-03:00",
+  "changes": "Melhora a navegação, pesquisa de funções no menu desktop e organização visual dos menus."
 }
