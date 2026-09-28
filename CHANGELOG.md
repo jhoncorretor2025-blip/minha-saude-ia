@@ -1,3 +1,13 @@
+## V5.72 — Mapeamento seguro da arquitetura
+
+- 🗺️ Criado `docs/MAPA-MODULOS.md` com o mapa dos módulos, responsabilidades, acoplamentos, repetições, riscos e arquitetura-alvo.
+- 🛡️ Nenhum arquivo de runtime foi movido ou removido.
+- 💾 Nenhuma chave `msa2_*`, estrutura de dados ou dado local foi alterado.
+- 🧩 Definida uma sequência gradual de refatoração para reduzir riscos antes de qualquer reorganização física.
+- 🔄 Cache do PWA e `version.json` atualizados para V5.72.
+
+V5.72 — 2026-09-28
+
 ## V5.71 — Blindagem contra retorno de código na interface
 - Corrigidas todas as referências operacionais antigas V5.67 do index.html.
 - Atualizado o cache-busting de CSS/JS para V5.71.
