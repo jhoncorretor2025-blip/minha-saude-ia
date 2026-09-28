@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Minha Saúde IA — V5.32</title>
 <style>
 
@@ -391,6 +391,16 @@ body.msa-dark .metric-edit-btn{background:#0f172a;color:#93c5fd;border-color:#33
 </div>
 <style id="v530-preferences-css">
 /* V5.33: onboarding legado totalmente desativado para evitar bloqueio de toque no iPhone */
+/* V5.33 — reforço Safari/iPhone: viewport, área segura e toque */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden}
+body{min-height:100dvh;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+button,a,input,select,textarea{touch-action:manipulation}
+.msa-mobile-bar{padding-bottom:max(7px,env(safe-area-inset-bottom))}
+.msa-mobile-drawer{max-height:86dvh;max-height:86svh;max-height:86dvh}
+.msa-home-overlay{min-height:100dvh}
+.msa-home-modal{max-height:88dvh;max-height:88svh;max-height:88dvh}
+.msa-modal{max-height:calc(100dvh - 16px);max-height:calc(100svh - 16px)}
+
 #onboarding,#msaOnboardingOverlay{display:none!important;visibility:hidden!important;pointer-events:none!important;opacity:0!important;}
 body{overflow-x:hidden;}
 
