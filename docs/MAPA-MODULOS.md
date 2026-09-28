@@ -1,6 +1,6 @@
 # Mapa de Módulos — Minha Saúde IA
 
-**Versão de referência:** V5.72  
+**Versão de referência:** V5.74  
 **Objetivo:** documentar a estrutura atual antes de qualquer reorganização física dos arquivos.
 
 > Esta documentação é um mapa de manutenção. Ela não altera a arquitetura em runtime, não move arquivos e não altera chaves ou formatos de armazenamento.
