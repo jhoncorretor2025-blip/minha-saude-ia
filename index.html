@@ -2041,9 +2041,9 @@ window.msaToast=toast;
 function setupHome(){
  const home=byId('home');if(!home)return;
  home.classList.add('msa-compact-home');
- if(!byId('msaHomeMoreToggle')){
+ if(!byId('msaHomeMoreToggleDynamic')){
   const b=document.createElement('button');
-  b.id='msaHomeMoreToggle';b.className='msa-home-more-toggle';b.type='button';
+  b.id='msaHomeMoreToggleDynamic';b.className='msa-home-more-toggle';b.type='button';
   b.setAttribute('aria-expanded','false');b.setAttribute('aria-controls','msaHomeMoreRegion');
   b.textContent='＋ Mostrar mais recursos';
   b.onclick=function(){
@@ -2053,7 +2053,7 @@ function setupHome(){
    if(open){const target=home.querySelector('.progressive-hub');if(target)target.scrollIntoView({behavior:'smooth',block:'start'})}
   };
   const anchor=home.querySelector('.msa-advanced-card')||home.querySelector('.health-dashboard')||home.querySelector('.actions');
-  if(anchor&&anchor.parentNode){b.id='msaHomeMoreToggle';const region=document.createElement('div');region.id='msaHomeMoreRegion';region.className='msa-secondary-note';region.textContent='Relatórios, objetivos, descobertas e atalhos avançados ficam aqui.';anchor.parentNode.insertBefore(b,anchor.nextSibling);b.after(region)}
+  if(anchor&&anchor.parentNode){const region=document.createElement('div');region.id='msaHomeMoreRegion';region.className='msa-secondary-note';region.textContent='Relatórios, objetivos, descobertas e atalhos avançados ficam aqui.';anchor.parentNode.insertBefore(b,anchor.nextSibling);b.after(region)}
  }
  if(!byId('msaHomePrivacy')){
   const p=document.createElement('div');p.id='msaHomePrivacy';p.className='msa-home-privacy';
