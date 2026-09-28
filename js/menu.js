@@ -107,7 +107,7 @@
 
     drawer.innerHTML=
       '<div class="msa-mobile-drawer-head">'+
-        '<div><h2>🩺 Minha Saúde IA</h2><div class="muted">Acesso rápido</div></div>'+
+        '<div><h2>🩺 Minha Saúde IA</h2><div class="muted">Tudo organizado por objetivo</div></div>'+
         '<button class="msa-mobile-drawer-close" type="button" aria-label="Fechar menu">✕</button>'+
       '</div>'+
       '<div class="msa-mobile-drawer-body">'+
@@ -119,27 +119,27 @@
           '<button type="button" data-mobile-tab="acompanhamento">❤️<span>Sinal vital</span></button>'+
           '<button type="button" data-mobile-tab="buscar">🔎<span>Buscar</span></button>'+
         '</div>'+
-        mobileSection('Início',[
-          ['home','🏠 Visão geral']
-        ])+
+        mobileSection('Principal',[['home','🏠 Início'],['timeline','🕐 Linha do tempo']])+
         mobileSection('Minha saúde',[
           ['dor','😣 Sintomas'],['meds','💊 Medicamentos'],['consultas','👨‍⚕️ Consultas'],
-          ['exames','🧪 Exames'],['acompanhamento','📈 Sinais vitais'],['perfil','👤 Meu perfil']
+          ['exames','🧪 Exames'],['acompanhamento','❤️ Sinais vitais'],['perfil','👤 Meu perfil']
         ])+
         mobileSection('Acompanhamento',[
-          ['timeline','🕐 Linha do tempo'],['nutricao','🥗 Nutrição'],['sono','😴 Sono e bem-estar'],
-          ['familia','🧬 Histórico familiar'],['acompanhamento','📏 Medidas corporais']
+          ['acompanhamento','📏 Medidas corporais'],['nutricao','🥗 Nutrição'],
+          ['sono','😴 Sono e bem-estar'],['familia','🧬 Histórico familiar'],['avisos','🔔 Atenção e avisos']
         ])+
         mobileSection('Organização',[
-          ['relatorios','📊 Relatórios'],['documentos','📄 Documentos'],['calendario','📅 Calendário'],
-          ['lembretes','⏰ Lembretes'],['exportar','📤 Exportar'],['backup','💾 Backup e segurança']
+          ['calendario','📅 Calendário'],['lembretes','⏰ Lembretes'],
+          ['documentos','📄 Documentos'],['relatorios','📊 Relatórios']
         ])+
-        mobileSection('IA e ferramentas',[
-          ['ia','🤖 IA'],['importar','⚡ Importar com IA'],['buscar','🔎 Buscar'],
-          ['perguntas','❓ Perguntas para consulta'],['avisos','🔔 Central de avisos'],
-          ['carteirinha','🪪 Carteirinha'],['configuracoes','⚙️ Configurações']
+        mobileSection('IA',[
+          ['ia','🤖 Assistente'],['importar','⚡ Importar com IA'],['perguntas','❓ Preparar consulta']
         ])+
-        '<div class="msa-mobile-section"><div class="msa-mobile-section-title">Ações especiais</div>'+
+        mobileSection('Dados e segurança',[
+          ['carteirinha','🪪 Carteirinha'],['exportar','📤 Exportar'],
+          ['backup','💾 Backup e segurança'],['configuracoes','⚙️ Configurações']
+        ])+
+        '<div class="msa-mobile-section"><div class="msa-mobile-section-title">Ação especial</div>'+
           '<div class="msa-mobile-links"><button type="button" class="danger" data-mobile-emergency="1">🚨 Modo emergência</button>'+
           '<button type="button" data-mobile-tab="perfil" data-mobile-ciclo="1" data-feature-nav="ciclo">🌸 Ciclo menstrual</button></div></div>'+
       '</div>';
@@ -160,8 +160,10 @@
 
     function mobileSection(title,items){
       return '<div class="msa-mobile-section"><div class="msa-mobile-section-title">'+title+'</div><div class="msa-mobile-links">'+
-        items.map(function(x){var f=x[0]==='nutricao'?'nutricao':x[0]==='sono'?'sonoBem':x[0]==='acompanhamento'?'academia':null;return '<button type="button" data-mobile-tab="'+x[0]+'"'+(f?' data-feature-nav="'+f+'"':'')+'>'+x[1]+'</button>';}).join('')+
-      '</div></div>';
+        items.map(function(x){
+          var f=x[0]==='nutricao'?'nutricao':x[0]==='sono'?'sonoBem':x[0]==='acompanhamento'?'academia':null;
+          return '<button type="button" data-mobile-tab="'+x[0]+'"'+(f?' data-feature-nav="'+f+'"':'')+'>'+x[1]+'</button>';
+        }).join('')+'</div></div>';
     }
 
     function closeDrawer(){
@@ -186,9 +188,7 @@
     function doMobileTab(id){
       closeDrawer();
       navegar(id);
-      setTimeout(function(){
-        window.scrollTo({top:0,behavior:'smooth'});
-      },30);
+      setTimeout(function(){window.scrollTo({top:0,behavior:'smooth'});},30);
     }
 
     bar.addEventListener('click',function(ev){
@@ -208,10 +208,7 @@
         var id=tab.getAttribute('data-mobile-tab');
         doMobileTab(id);
         if(tab.hasAttribute('data-mobile-ciclo')){
-          setTimeout(function(){
-            var f=document.getElementById('cicloForm');
-            if(f)f.scrollIntoView({behavior:'smooth',block:'start'});
-          },140);
+          setTimeout(function(){var f=document.getElementById('cicloForm');if(f)f.scrollIntoView({behavior:'smooth',block:'start'});},140);
         }
         return;
       }
@@ -223,7 +220,7 @@
       if(ev.target.closest('.msa-mobile-drawer-close'))closeDrawer();
     });
     backdrop.addEventListener('click',closeDrawer);
-    document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeDrawer()});
+    document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeDrawer();});
   }
 
   if(document.readyState==='loading'){
