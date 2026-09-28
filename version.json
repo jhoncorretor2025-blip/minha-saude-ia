@@ -1,5 +1,5 @@
 {
-  "version":"V5.45",
-  "updatedAt":"2026-09-28T06:05:00Z",
-  "changes":"Refinamento visual profissional e amigável + versão e percentual de preenchimento incluídos em PDF, TXT e textos copiados/relatórios."
+  "version":"V5.46",
+  "updatedAt":"2026-09-28T06:20:00Z",
+  "changes":"Exportação PDF mais profissional: títulos maiores, negrito, emojis, blocos e melhor leitura para impressão."
 }
