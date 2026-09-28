@@ -436,7 +436,7 @@
     try{
       document.title=document.title.replace(/V5\.67/g,'V5.70');
       document.querySelectorAll('body *').forEach(function(el){
-        if(el.children.length===0 && el.textContent.indexOf('V5.67')>=0)el.textContent=el.textContent.replace(/V5\.67/g,'V5.70');
+        if(el.children.length===0 && el.textContent.indexOf('V5.71')>=0)el.textContent=el.textContent.replace(/V5\.67/g,'V5.70');
       });
     }catch(e){}
   }
