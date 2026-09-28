@@ -1576,16 +1576,21 @@ function openReport(title,body){
  const safeTitle=esc(title);
  const safeBody=String(body||'');
  const c=typeof calcularCompletudeSaude==='function'?calcularCompletudeSaude():{percentual:0,preenchidos:0,total:0};
- const appVersion='V5.45';
+ const appVersion='V5.46';
  const reportMeta='<div class="box" style="border:1px solid #dbeafe;background:#eff6ff"><b>📌 Identificação do sistema</b><br>Versão: <b>'+appVersion+'</b><br>Completude da ficha: <b>'+c.percentual+'%</b> ('+c.preenchidos+'/'+c.total+' itens avaliados)<br>Gerado em: '+new Date().toLocaleString('pt-BR')+'</div>';
  w.document.open();
  w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+safeTitle+'</title><style>'+
- 'body{font-family:Arial,sans-serif;max-width:850px;margin:30px auto;padding:0 16px;color:#172033;line-height:1.55}'+
- 'h1{color:#2563eb}h2{border-bottom:1px solid #ddd;padding-bottom:5px;margin-top:25px}'+
- '.box{background:#f4f7fb;padding:13px;border-radius:10px;margin:10px 0}'+
- 'table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:7px;text-align:left;font-size:13px}th{background:#f4f7fb}'+
- '.foot{color:#777;font-size:11px;margin-top:30px}'+
- '@media(max-width:700px){body{margin:16px auto;padding:0 10px}h1{font-size:24px}table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap}th,td{font-size:12px;padding:8px}.box{padding:12px}}'+
+ 'body{font-family:Arial,sans-serif;max-width:850px;margin:30px auto;padding:0 16px;color:#172033;line-height:1.65;background:#fff}'+
+ 'h1{color:#1d4ed8;font-size:30px;font-weight:900;margin:0 0 18px;padding-bottom:12px;border-bottom:3px solid #dbeafe;letter-spacing:-.02em}'+
+ 'h2{font-size:21px;font-weight:900;color:#172033;margin:28px 0 12px;padding:10px 12px;border-left:5px solid #2563eb;background:#eff6ff;border-radius:10px;page-break-after:avoid}'+
+ 'h3{font-size:17px;font-weight:900;color:#1d4ed8;margin:20px 0 8px}'+
+ 'p{margin:8px 0}ul,ol{margin:8px 0 16px;padding-left:28px}li{margin:7px 0;padding-left:3px}'+
+ '.box{background:#f8fafc;border:1px solid #e2e8f0;padding:14px 16px;border-radius:12px;margin:12px 0}'+
+ '.box b{font-weight:900;color:#172033}'+
+ 'table{border-collapse:collapse;width:100%;margin:12px 0 18px}th,td{border:1px solid #dbe2ea;padding:9px;text-align:left;font-size:13px;vertical-align:top}th{background:#eff6ff;font-weight:900;color:#1e3a8a}tr:nth-child(even) td{background:#fafcff}'+
+ '.foot{color:#64748b;font-size:11px;margin-top:34px;padding-top:12px;border-top:1px solid #e2e8f0}'+
+ '@media print{body{margin:0;max-width:none;padding:8mm 7mm}h1{font-size:27px}h2{font-size:19px;margin-top:20px;break-after:avoid}.box{break-inside:avoid}li,table{break-inside:auto}button{display:none!important}}'+
+ '@media(max-width:700px){body{margin:16px auto;padding:0 10px}h1{font-size:24px}h2{font-size:19px}table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap}th,td{font-size:12px;padding:8px}.box{padding:12px}}'+
  '</style></head><body><h1>🩺 '+safeTitle+'</h1>'+safeBody+
  '<div class="foot">Gerado pelo Minha Saúde IA. Este documento organiza informações registradas pelo usuário e não constitui diagnóstico, prescrição ou laudo médico.</div>'+
  '</body></html>');
@@ -1596,7 +1601,7 @@ function relatorioCompleto(){
  const {start,end,d,c,m,e}=rangeData(),p=get(K.p)[0]||{};
  openReport('Relatório completo',`
  <div class="box"><b>Período:</b> ${start} a ${end}<br><b>Nome:</b> ${esc(p.nome||'Não informado')}<br><b>Alergias:</b> ${esc(p.alerg||'Não informado')}<br><b>Condições:</b> ${esc(p.cond||'Não informado')}</div>
- <h2>Resumo</h2><p>${d.length} sintomas · ${c.length} consultas · ${m.length} medicamentos · ${e.length} exames</p>
+ <h2>📋 Resumo</h2><p>${d.length} sintomas · ${c.length} consultas · ${m.length} medicamentos · ${e.length} exames</p>
  <h2>😣 Sintomas</h2>${d.length?'<ul>'+d.map(x=>`<li>${x.data} — <b>${esc(x.local)}</b> — ${x.int}/10 — ${esc(x.tipo)}. ${esc(x.sint||'')}</li>`).join('')+'</ul>':'<p>Nenhum registro.</p>'}
  <h2>👨‍⚕️ Consultas</h2>${c.length?'<ul>'+c.map(x=>`<li>${x.data} — ${esc(x.esp)} — ${esc(x.med||'')}. ${esc(x.obs||'')}</li>`).join('')+'</ul>':'<p>Nenhuma.</p>'}
  <h2>💊 Medicamentos</h2>${m.length?'<ul>'+m.map(x=>`<li>${esc(x.nome)} — ${esc(x.dose||'')} — ${esc(x.freq||'')} — ${x.inicio||'—'} até ${x.fim||'—'}</li>`).join('')+'</ul>':'<p>Nenhum.</p>'}
@@ -1606,10 +1611,10 @@ function relatorioMedico(){
  const {start,end,d,c,m,e}=rangeData(),p=get(K.p)[0]||{};
  openReport('Resumo para consulta médica',`
  <div class="box"><b>Período:</b> ${start} a ${end}<br><b>Paciente:</b> ${esc(p.nome||'Não informado')}<br><b>Alergias:</b> ${esc(p.alerg||'Não informado')}<br><b>Condições já informadas:</b> ${esc(p.cond||'Não informado')}</div>
- <h2>Queixas e evolução</h2>${d.length?'<ul>'+d.map(x=>`<li>${x.data}: ${esc(x.local)}, intensidade ${x.int}/10, ${esc(x.tipo)}. Sintomas: ${esc(x.sint||'—')}. Gatilhos: ${esc(x.gatilho||'—')}</li>`).join('')+'</ul>':'<p>Nenhum sintoma registrado no período.</p>'}
- <h2>Medicamentos registrados</h2>${m.length?'<ul>'+m.map(x=>`<li>${esc(x.nome)} — ${esc(x.dose||'')} — ${esc(x.freq||'')}</li>`).join('')+'</ul>':'<p>Nenhum.</p>'}
- <h2>Exames</h2>${e.length?'<ul>'+e.map(x=>`<li>${x.data}: ${esc(x.nome)} — ${esc(x.res||'')}</li>`).join('')+'</ul>':'<p>Nenhum.</p>'}
- <h2>Perguntas para discutir</h2><ol><li>O que pode explicar a evolução dos sintomas registrados?</li><li>Há algum exame ou acompanhamento que deva ser considerado?</li><li>Quais sinais indicariam necessidade de retorno antes do previsto?</li></ol>`);
+ <h2>🩺 Queixas e evolução</h2>${d.length?'<ul>'+d.map(x=>`<li>${x.data}: ${esc(x.local)}, intensidade ${x.int}/10, ${esc(x.tipo)}. Sintomas: ${esc(x.sint||'—')}. Gatilhos: ${esc(x.gatilho||'—')}</li>`).join('')+'</ul>':'<p>Nenhum sintoma registrado no período.</p>'}
+ <h2>💊 Medicamentos registrados</h2>${m.length?'<ul>'+m.map(x=>`<li>${esc(x.nome)} — ${esc(x.dose||'')} — ${esc(x.freq||'')}</li>`).join('')+'</ul>':'<p>Nenhum.</p>'}
+ <h2>🧪 Exames</h2>${e.length?'<ul>'+e.map(x=>`<li>${x.data}: ${esc(x.nome)} — ${esc(x.res||'')}</li>`).join('')+'</ul>':'<p>Nenhum.</p>'}
+ <h2>💬 Perguntas para discutir</h2><ol><li>O que pode explicar a evolução dos sintomas registrados?</li><li>Há algum exame ou acompanhamento que deva ser considerado?</li><li>Quais sinais indicariam necessidade de retorno antes do previsto?</li></ol>`);
 }
 function relatorioSintomas(){let {start,end,d}=rangeData();openReport('Relatório de sintomas',`<p><b>Período:</b> ${start} a ${end}</p><table><tr><th>Data</th><th>Local</th><th>Intensidade</th><th>Tipo</th><th>Sintomas</th></tr>${d.map(x=>`<tr><td>${x.data}</td><td>${esc(x.local)}</td><td>${x.int}/10</td><td>${esc(x.tipo)}</td><td>${esc(x.sint||'')}</td></tr>`).join('')}</table>`) }
 function relatorioMeds(){let {start,end,m}=rangeData();openReport('Relatório de medicamentos',`<p><b>Período:</b> ${start} a ${end}</p><table><tr><th>Nome</th><th>Dose</th><th>Frequência</th><th>Início</th><th>Fim</th></tr>${m.map(x=>`<tr><td>${esc(x.nome)}</td><td>${esc(x.dose||'')}</td><td>${esc(x.freq||'')}</td><td>${x.inicio||''}</td><td>${x.fim||''}</td></tr>`).join('')}</table>`) }
@@ -1620,7 +1625,7 @@ function updateReportSummary(){
  const {start,end,d,c,m,e}=rangeData();
  const comp=calcularCompletudeSaude();
  const ri=$('rSistemaInfo');
- if(ri)ri.innerHTML='<div class="alert safe"><b>🩺 Identificação do relatório</b><br>Versão do sistema: <b>V5.45</b> · Ficha preenchida: <b>'+comp.percentual+'%</b> ('+comp.preenchidos+'/'+comp.total+')</div>';
+ if(ri)ri.innerHTML='<div class="alert safe"><b>🩺 Identificação do relatório</b><br>Versão do sistema: <b>V5.46</b> · Ficha preenchida: <b>'+comp.percentual+'%</b> ('+comp.preenchidos+'/'+comp.total+')</div>';
  const avg=d.length?(d.reduce((a,x)=>a+x.int,0)/d.length).toFixed(1):'—';
  $('rResumo').innerHTML=`<div class="grid4"><div><b>${d.length}</b><br><span class="muted">Sintomas</span></div><div><b>${c.length}</b><br><span class="muted">Consultas</span></div><div><b>${m.length}</b><br><span class="muted">Medicamentos</span></div><div><b>${e.length}</b><br><span class="muted">Exames</span></div></div><p style="margin-top:12px"><b>Intensidade média registrada:</b> ${avg}/10</p><p class="muted">Período: ${start} → ${end}</p>`;
 }
