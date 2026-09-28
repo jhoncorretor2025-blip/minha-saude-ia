@@ -1,5 +1,5 @@
 {
-  "version": "V5.68",
-  "updatedAt": "2026-09-28T16:00:00-03:00",
-  "changes": "Jornada principal aprimorada: próximo passo contextual na Home, ações rápidas ampliadas e navegação mobile mais direta, preservando os dados e recursos existentes."
+  "version": "V5.69",
+  "updatedAt": "2026-09-28T16:30:00-03:00",
+  "changes": "Navegação reorganizada por objetivo: Registrar, Acompanhar, Organizar, IA e Segurança, com versões específicas para desktop e celular e busca preservada."
 }
