@@ -271,7 +271,32 @@ function aplicarExperiencia(){
  document.querySelectorAll('[data-experience="advanced"]').forEach(el=>el.classList.toggle('msa-experience-off',level!=='advanced'));
  document.querySelectorAll('[data-experience="simple-hidden"]').forEach(el=>el.classList.toggle('msa-experience-off',level==='simple'));
 }
-function render(){
+function abrirPrivacidadeAjuda(tipo){
+ let old=document.getElementById('msaInfoModal');if(old)old.remove();
+ const priv=tipo==='privacidade';
+ const title=priv?'🔐 Privacidade e segurança':'❓ Central de ajuda';
+ const html=priv?
+ '<h3>🔐 Como seus dados são tratados</h3><p><b>Armazenamento local:</b> seus registros são mantidos no armazenamento do navegador deste dispositivo. O aplicativo não precisa de uma conta para funcionar.</p><p><b>Backup:</b> como os dados são locais, faça backups periódicos e guarde o arquivo em local seguro.</p><p><b>IA:</b> antes de enviar informações para qualquer serviço de IA, revise o que está sendo compartilhado e use somente dados que você se sinta confortável em enviar.</p><p><b>Compartilhamento:</b> use os recursos de compartilhamento somente com pessoas de confiança e revise o conteúdo antes de enviar.</p><p><b>Apagar dados:</b> ações de exclusão podem ser permanentes. Faça backup antes de apagar informações importantes.</p><p class="muted">O Minha Saúde IA é uma ferramenta de organização pessoal e não substitui profissionais de saúde.</p>':
+ '<h3>❓ Como usar</h3><p><b>📋 O que falta:</b> na Home, toque em “Ver o que falta” para localizar campos pendentes.</p><p><b>💾 Backup:</b> use a área de backup para guardar uma cópia do seu histórico.</p><p><b>📄 PDF:</b> abra a área de exportação e use a impressão do navegador para salvar em PDF.</p><p><b>🤖 IA:</b> a importação organiza informações antes de salvar. Revise o conteúdo antes de confirmar.</p><p><b>📱 Celular:</b> use a navegação inferior e o menu para encontrar as áreas.</p><p><b>🛡️ Segurança:</b> não compartilhe PIN, backups ou relatórios com pessoas não autorizadas.</p>';
+ const modal=document.createElement('div');modal.id='msaInfoModal';modal.style.cssText='position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.58);display:flex;align-items:center;justify-content:center;padding:18px';
+ modal.innerHTML='<div style="background:#fff;color:#172033;max-width:720px;width:100%;max-height:88vh;overflow:auto;border-radius:20px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.25)"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><h2 style="margin:0">'+title+'</h2><button class="btn secondary small" type="button" id="msaInfoClose">✕</button></div><div style="line-height:1.6;margin-top:14px">'+html+'</div><div class="row" style="margin-top:16px"><button class="btn green" type="button" id="msaInfoOk">Entendi</button></div></div>';
+ document.body.appendChild(modal);
+ const close=()=>modal.remove();modal.querySelector('#msaInfoClose').onclick=close;modal.querySelector('#msaInfoOk').onclick=close;modal.addEventListener('click',e=>{if(e.target===modal)close()});
+}
+function mostrarBoasVindasSeNecessario(){
+ if(window.msaStorage.getItem('msa2_onboarding_v1'))return;
+ const p=get(K.p)[0]||{};
+ if(p.nome||get(K.d).length||get(K.m).length||get(K.c).length||get(K.e).length){window.msaStorage.setItem('msa2_onboarding_v1','1');return}
+ let old=document.getElementById('msaWelcomeModal');if(old)old.remove();
+ const modal=document.createElement('div');modal.id='msaWelcomeModal';modal.style.cssText='position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.62);display:flex;align-items:center;justify-content:center;padding:18px';
+ modal.innerHTML='<div style="background:#fff;color:#172033;max-width:650px;width:100%;border-radius:22px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.28)"><div style="font-size:38px">🩺</div><h2 style="margin:6px 0">Bem-vindo ao Minha Saúde IA</h2><p style="line-height:1.6">Organize seu histórico de saúde em um só lugar: perfil, sintomas, medicamentos, consultas, exames, sono, documentos e relatórios.</p><div class="alert safe"><b>🔐 Privacidade:</b> seus registros ficam neste dispositivo enquanto você não usar um serviço externo. Faça backup regularmente.</div><div class="row" style="margin-top:14px"><button class="btn green" type="button" id="msaStartIA">✨ Começar com IA</button><button class="btn secondary" type="button" id="msaStartManual">👤 Preencher manualmente</button></div><button class="btn secondary small" style="margin-top:10px" type="button" id="msaWelcomeClose">Agora não</button></div>';
+ document.body.appendChild(modal);
+ const finish=()=>{window.msaStorage.setItem('msa2_onboarding_v1','1');modal.remove()};
+ modal.querySelector('#msaStartIA').onclick=()=>{finish();if(typeof go==='function')go('importar')};
+ modal.querySelector('#msaStartManual').onclick=()=>{finish();if(typeof go==='function')go('perfil')};
+ modal.querySelector('#msaWelcomeClose').onclick=finish;
+}
+function render(){\nmostrarBoasVindasSeNecessario();
 let d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
 $('nD').textContent=d.length;$('nC').textContent=c.length;$('nM').textContent=m.length;$('nE').textContent=e.length;
 list('listD',d,x=>`<div class="item"><div class="itemtop"><b>😣 ${esc(x.local)}</b><span class="tag">${x.int}/10</span></div><p>${fmt(x.data)} · ${esc(x.tipo)} · ${esc(x.freq)}<br>${esc(x.sint||'Sem sintomas associados')}<br>${esc(x.gatilho||'')} ${esc(x.obs||'')}</p></div>`);
