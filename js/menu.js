@@ -210,7 +210,7 @@
     function mobileSection(title,items){
       return '<div class="msa-mobile-section"><div class="msa-mobile-section-title">'+title+'</div><div class="msa-mobile-links">'+
         items.map(function(x){
-          var f=x[0]==='nutricao'?'nutricao':x[0]==='sono'?'sonoBem':x[0]==='acompanhamento'?'academia':null;
+          var f=x[2]||((x[0]==='nutricao')?'nutricao':(x[0]==='sono')?'sonoBem':null);
           return '<button type="button" data-mobile-tab="'+x[0]+'"'+(f?' data-feature-nav="'+f+'"':'')+'>'+x[1]+'</button>';
         }).join('')+'</div></div>';
     }
