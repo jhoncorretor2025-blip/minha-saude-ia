@@ -1,3 +1,13 @@
+## V5.73 — Correção crítica da importação de dados
+
+- 🛠️ Corrigido erro de sintaxe em `js/importacao.js` causado por uma sequência `\\n` literal no meio do código de processamento.
+- 📥 O módulo de importação volta a carregar e executar `processarImportacao()` corretamente.
+- 🔎 Diagnóstico da importação atualizado para V5.73.
+- 🛡️ Mantidos o formato da ficha, as chaves `msa2_*`, o fluxo de revisão e os dados existentes.
+- 🔄 Cache do PWA e referências de versão sincronizados para V5.73.
+
+V5.73 — 2026-09-28
+
 ## V5.72 — Mapeamento seguro da arquitetura
 
 - 🗺️ Criado `docs/MAPA-MODULOS.md` com o mapa dos módulos, responsabilidades, acoplamentos, repetições, riscos e arquitetura-alvo.
