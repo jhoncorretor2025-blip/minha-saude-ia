@@ -190,3 +190,46 @@ function limparImportacao(){if($('importIA'))$('importIA').value='';if($('result
 window.processarImportacao=processarImportacao;
 window.limparImportacao=limparImportacao;
 window._importacaoModuloV457=true;
+
+/* PDF -> ficha estruturada: extração local, sem envio automático */
+function carregarPDFJS(){
+ return new Promise(function(resolve,reject){
+  if(window.pdfjsLib){resolve(window.pdfjsLib);return}
+  var s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+  s.onload=function(){if(window.pdfjsLib){window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';resolve(window.pdfjsLib)}else reject(new Error('PDF.js não carregou'))};
+  s.onerror=function(){reject(new Error('Não foi possível carregar o leitor de PDF'))};
+  document.head.appendChild(s);
+ });
+}
+async function extrairTextoPDFArquivo(file){
+ if(!file)throw new Error('Selecione um PDF.');
+ if(file.size>10*1024*1024)throw new Error('O PDF deve ter no máximo 10 MB.');
+ var pdfjs=await carregarPDFJS(),buf=await file.arrayBuffer(),pdf=await pdfjs.getDocument({data:buf}).promise,paginas=[];
+ for(var n=1;n<=pdf.numPages;n++){
+  var page=await pdf.getPage(n),tc=await page.getTextContent(),itens=tc.items||[],linhas=[],linha='',ultimoY=null;
+  itens.forEach(function(item){
+   var str=String(item.str||''),y=item.transform&&item.transform.length?item.transform[5]:null;
+   if(ultimoY!==null&&y!==null&&Math.abs(y-ultimoY)>3&&linha.trim()){linhas.push(linha.trim());linha=''}
+   linha+=(linha?' ':'')+str;if(y!==null)ultimoY=y;
+  });
+  if(linha.trim())linhas.push(linha.trim());paginas.push(linhas.join('\n'));
+ }
+ return {text:paginas.join('\n\n'),pages:pdf.numPages};
+}
+function normalizarTextoPDFParaImportacao(raw){
+ var t=String(raw||'').replace(/\u00a0/g,' ').replace(/\r/g,'').replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n'),out=[];
+ function val(label){var m=t.match(new RegExp('(?:^|\\n|\\s)'+label+'\\s*:\\s*([^\\n]+)','i'));return m?m[1].trim():''}
+ function add(k,v){if(v&&v.trim()&&!/^não informado$|^nao informado$/i.test(v.trim()))out.push(k+': '+v.trim())}
+ out.push('[PERFIL]');
+ add('NOME',val('Nome'));add('DATA_NASCIMENTO',val('Nascimento'));add('IDADE',val('Idade'));add('SEXO',val('Sexo'));add('TIPO_SANGUINEO',val('Tipo sanguíneo'));add('ALTURA',val('Altura'));add('PESO',val('Peso'));add('OBJETIVO_CORPORAL',val('Objetivo corporal'));add('ACADEMIA',val('Academia'));add('FREQUENCIA_ACADEMIA',val('Frequência academia'));add('ATIVIDADE_FISICA',val('Atividade física'));add('TRABALHO_TIPO',val('Trabalho'));add('HORAS_SENTADO',val('Horas sentado'));add('HORAS_EM_PE',val('Horas em pé'));add('AGUA_POR_DIA',val('Água por dia'));add('FREQUENCIA_URINARIA',val('Frequência urinária'));add('FREQUENCIA_EVACUACAO',val('Frequência de evacuação'));add('EXPOSICAO_CALOR_SUOR',val('Exposição a calor/suor'));add('ALIMENTACAO',val('Alimentação'));add('ALERGIAS',val('Alergias'));add('DOENCAS',val('Condições'));add('CIRURGIAS_INTERNACOES',val('Cirurgias/internações'));add('INFORMACOES_IMPORTANTES',val('Informações importantes'));
+ var blocos=[['SINTOMAS','[SINTOMAS]','[CONSULTAS]'],['CONSULTAS','[CONSULTAS]','[MEDICAMENTOS]'],['MEDICAMENTOS','[MEDICAMENTOS]','[EXAMES]'],['EXAMES','[EXAMES]','[SINAIS VITAIS]'],['SINAIS VITAIS','[SINAIS VITAIS]','[VACINAS]'],['VACINAS','[VACINAS]','[HISTÓRICO FAMILIAR]'],['HISTÓRICO FAMILIAR','[HISTÓRICO FAMILIAR]','[SONO E BEM-ESTAR]'],['SONO E BEM-ESTAR','[SONO E BEM-ESTAR]','[LEMBRETES]'],['LEMBRETES','[LEMBRETES]','Este arquivo organiza']];
+ blocos.forEach(function(b){var start=t.indexOf(b[1]),end=t.indexOf(b[2],start+1);if(start<0)return;var body=(end>start?t.slice(start+b[1].length,end):t.slice(start+b[1].length)).trim();if(!body||/^Nenhum registro/i.test(body))return;out.push(b[1]);if(b[0]==='SONO E BEM-ESTAR'){var sm=body.match(/Rotina habitual de sono:\s*normalmente dorme às\s*([^ ]+)\s*e acorda às\s*([^—-]+)\s*[—-]\s*cerca de\s*([\d.,]+)\s*horas por noite/i);if(sm)out.push('SONO_HABITUAL: '+sm[1]+' -> '+sm[2]+' ('+sm[3]+' horas)')}else out.push(body)});
+ return out.join('\n');
+}
+async function lerPDFParaImportacao(ev){
+ var file=ev&&ev.target&&ev.target.files?ev.target.files[0]:null,status=document.getElementById('pdfImportStatus'),preview=document.getElementById('pdfImportPreview');
+ if(status)status.innerHTML='⏳ Lendo o PDF localmente…';if(preview)preview.style.display='none';
+ try{var r=await extrairTextoPDFArquivo(file);if(!r.text.trim())throw new Error('Este PDF não possui texto extraível. Ele pode ser um PDF escaneado/imagem.');var ficha=normalizarTextoPDFParaImportacao(r.text),area=document.getElementById('importIA');if(area)area.value=ficha;if(status)status.innerHTML='✅ PDF lido com sucesso. Nenhum dado foi salvo ainda.';if(preview){preview.style.display='block';preview.innerHTML='<b>🔎 PDF analisado</b><br><span class="muted">'+r.pages+' página(s) · '+ficha.split(/\n/).filter(Boolean).length+' linhas estruturadas.</span><br><br><b>Próximo passo:</b> revise a ficha e clique em <b>✨ Importar e salvar</b>. O aplicativo ainda mostrará a prévia antes de gravar.'}if(area)area.scrollIntoView({behavior:'smooth',block:'center'})}catch(e){if(status)status.innerHTML='⚠️ '+(e.message||'Não foi possível ler o PDF.')}finally{if(ev&&ev.target)ev.target.value=''}
+}
+window.lerPDFParaImportacao=lerPDFParaImportacao;
