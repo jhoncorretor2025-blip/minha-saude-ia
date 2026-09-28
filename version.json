@@ -1,5 +1,5 @@
 {
-  "version": "V5.53",
-  "updatedAt": "2026-09-28T07:55:00Z",
-  "changes": "PDF passa a usar o nome da pessoa no título e no nome sugerido do arquivo: Informações de Saúde - Nome."
+  "version": "V5.54",
+  "updatedAt": "2026-09-28T08:10:00Z",
+  "changes": "Corrige versão visível e inclui a rotina habitual de sono no PDF, com horário de dormir, acordar e total de horas por noite."
 }
