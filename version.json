@@ -1,5 +1,5 @@
 {
-  "version": "V5.57",
-  "updatedAt": "2026-09-28T09:00:00Z",
-  "changes": "Melhorias para divulgação: onboarding inicial, privacidade, central de ajuda e orientação de segurança."
+  "version": "V5.58",
+  "updatedAt": "2026-09-28T09:30:00Z",
+  "changes": "Adiciona importação de histórico de saúde em PDF com leitura local, extração de texto, estruturação e revisão antes de salvar."
 }
