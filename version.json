@@ -1,5 +1,5 @@
 {
-  "version": "V5.58",
-  "updatedAt": "2026-09-28T09:30:00Z",
-  "changes": "Adiciona importação de histórico de saúde em PDF com leitura local, extração de texto, estruturação e revisão antes de salvar."
+  "version": "V5.59",
+  "updatedAt": "2026-09-28T09:45:00Z",
+  "changes": "Importação de PDF com leitura local de texto e OCR para PDFs escaneados, revisão antes de salvar."
 }
