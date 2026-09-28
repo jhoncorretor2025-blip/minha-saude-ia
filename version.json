@@ -1,5 +1,5 @@
 {
-  "version": "V5.73",
-  "updatedAt": "2026-09-28T17:00:00-03:00",
-  "changes": "Correção crítica do módulo de importação: removida sequência literal inválida que impedia o JavaScript de carregar e processar os dados."
+  "version": "V5.74",
+  "updatedAt": "2026-09-28T17:22:00-03:00",
+  "changes": "Blindagem do fluxo de importação: inicialização aguarda o módulo, parser aceita marcadores formatados e separadores, e respostas JSON podem ser extraídas mesmo com texto ou Markdown ao redor."
 }
