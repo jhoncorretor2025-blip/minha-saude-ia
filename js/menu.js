@@ -132,7 +132,7 @@
         ])+
         mobileSection('Organização',[
           ['relatorios','📊 Relatórios'],['documentos','📄 Documentos'],['calendario','📅 Calendário'],
-          ['lembretes','⏰ Lembretes'],['exportar','📤 Exportar'],['backup','🔐 Segurança']
+          ['lembretes','⏰ Lembretes'],['exportar','📤 Exportar'],['backup','💾 Backup e segurança']
         ])+
         mobileSection('IA e ferramentas',[
           ['ia','🤖 IA'],['importar','⚡ Importar com IA'],['buscar','🔎 Buscar'],
