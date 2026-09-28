@@ -518,7 +518,11 @@ $('pForm').onsubmit=e=>{
   horasSentado:$('pHorasSentado').value,horasPe:$('pHorasPe').value,aguaDia:$('pAguaDia').value,urinaDia:$('pUrinaDia').value,
   evacuacaoDia:$('pEvacuacaoDia').value,calorSuor:$('pCalorSuor').value
  });
- set(K.p,[perfil]);render();renderNovosModulos();renderCarteirinha();alert('Perfil salvo!');
+ set(K.p,[perfil]);
+ try{render();}catch(err){console.error('[Minha Saúde IA] erro ao atualizar o perfil:',err);}
+ try{renderCarteirinha();}catch(err){console.error('[Minha Saúde IA] erro ao atualizar a carteirinha:',err);}
+ setTimeout(function(){try{renderNovosModulos();}catch(err){console.error('[Minha Saúde IA] erro ao atualizar módulos do perfil:',err);}},0);
+ alert('✅ Perfil salvo!');
 };
 $('dorForm').onsubmit=e=>{e.preventDefault();let a=get(K.d);a.push({data:$('dData').value,local:$('dLocal').value,int:+$('dInt').value,tipo:$('dTipo').value,freq:$('dFreq').value,gatilho:$('dGatilho').value,sint:$('dSint').value,obs:$('dObs').value});set(K.d,a);e.target.reset();$('dInt').value=5;$('dScore').textContent=5;render();alert('Sintoma salvo!')};
 $('cForm').onsubmit=e=>{e.preventDefault();let a=get(K.c);a.push({data:$('cData').value,esp:$('cEsp').value,med:$('cMed').value,mot:$('cMot').value,perg:$('cPerg').value,obs:$('cObs').value,ret:$('cRet').value});set(K.c,a);e.target.reset();render();alert('Consulta salva!')};
@@ -730,8 +734,7 @@ else if(/dor|do[ií]|pontada|queima/.test(l))ans='Para organizar melhor, registr
 else if(/rem[eé]dio|medicamento/.test(l))ans='Posso organizar nome, dose, frequência e período de uso. Não altere ou interrompa um medicamento prescrito sem orientação profissional.';
 else ans='Posso ajudar a estruturar a informação e preparar sua conversa com um profissional. Conte quando começou, intensidade, sintomas associados e o que mudou desde então.';
 chat.innerHTML+=`<div class="bubble bot">${ans}</div>`;$('iaInput').value='';chat.scrollTop=chat.scrollHeight}
-function perguntasConsulta(){let d=get(K.d),e=get(K.e),m=get(K.m);let q=[];if(d.length)q.push('Quais podem ser as causas possíveis dos sintomas que registrei e quais sinais devo observar?');if(e.length)q.push('Há algum resultado dos meus exames que devo discutir com mais atenção?');if(m.length)q.push('Os medicamentos que estou usando devem ser mantidos, ajustados ou revisados?');q.push('Quais exames ou acompanhamentos podem ser necessários?','Em quais situações devo procurar atendimento antes do retorno?');$('perguntas').innerHTML='<div class="alert safe"><b>Perguntas sugeridas:</b><ol>'+q.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol></div>'}
-function gerarRelatorio(){
+function perguntasConsulta(){try{let d=get(K.d),e=get(K.e),m=get(K.m);let q=[];if(d.length)q.push('Quais podem ser as causas possíveis dos sintomas que registrei e quais sinais devo observar?');if(e.length)q.push('Há algum resultado dos meus exames que devo discutir com mais atenção?');if(m.length)q.push('Os medicamentos que estou usando devem ser mantidos, ajustados ou revisados?');q.push('Quais exames ou acompanhamentos podem ser necessários?','Em quais situações devo procurar atendimento antes do retorno?');const box=$('perguntas');if(box)box.innerHTML='<div class="alert safe"><b>Perguntas sugeridas:</b><ol>'+q.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol></div>';}catch(err){console.error('[Minha Saúde IA] erro ao gerar perguntas:',err);const box=$('perguntas');if(box)box.innerHTML='<div class="alert danger">❌ Não foi possível gerar as perguntas agora. Tente novamente.</div>';}}function gerarRelatorio(){
  const p=get(K.p)[0]||{},d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
  const body=`<div class="box"><b>Nome:</b> ${esc(p.nome||'Não informado')}<br><b>Informações importantes:</b> ${esc(p.info||'—')}<br><b>Alergias:</b> ${esc(p.alerg||'—')}</div>
  <h2>Sintomas</h2><ul>${d.length?d.map(x=>`<li>${x.data} — ${esc(x.local)}, intensidade ${x.int}/10, ${esc(x.tipo)}. ${esc(x.sint||'')}</li>`).join(''):'<li>Nenhum registrado.</li>'}</ul>
