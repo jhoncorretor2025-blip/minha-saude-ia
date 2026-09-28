@@ -1,5 +1,5 @@
 {
-  "version": "V5.72",
+  "version": "V5.73",
   "updatedAt": "2026-09-28T17:00:00-03:00",
-  "changes": "Mapeamento da arquitetura atual em docs/MAPA-MODULOS.md, sem mover arquivos, alterar dados ou mudar o comportamento do aplicativo."
+  "changes": "Correção crítica do módulo de importação: removida sequência literal inválida que impedia o JavaScript de carregar e processar os dados."
 }
