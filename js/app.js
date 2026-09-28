@@ -451,7 +451,32 @@ function healthText(){
 function exportarTexto(){const text=healthText();const blob=new Blob([text],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='minha-saude-'+new Date().toISOString().slice(0,10)+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 function copiarParaIA(){const text=healthText()+'\n\nTAREFA PARA A IA:\nUse somente os fatos acima. Não invente, não altere os dados e não faça diagnóstico. Ajude a organizar ou preparar perguntas para um profissional de saúde.';if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(()=>alert('✅ Dados copiados. Agora você pode colar no ChatGPT, Gemini ou outra IA.')).catch(()=>copiarTextoFallback(text));else copiarTextoFallback(text)}
 function copiarTextoFallback(text){const t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();alert('✅ Dados copiados.')}
-function exportarPDF(){openReport('Minha Saúde IA — Exportação', '<pre style="white-space:pre-wrap;font-family:Arial,sans-serif;line-height:1.5">'+esc(healthText())+'</pre>')}
+function exportarPDF(){
+ const old=document.getElementById('msaPdfPrintRoot');
+ if(old)old.remove();
+ const root=document.createElement('div');
+ root.id='msaPdfPrintRoot';
+ root.innerHTML='<div class="msa-pdf-sheet"><h1>🩺 Minha Saúde IA — Exportação</h1><div class="msa-pdf-meta">Documento gerado em '+esc(new Date().toLocaleString('pt-BR'))+'</div><pre>'+esc(healthText())+'</pre><div class="msa-pdf-foot">Este documento organiza informações registradas pelo usuário e não constitui diagnóstico, prescrição ou laudo médico.</div></div>';
+ const style=document.createElement('style');
+ style.id='msaPdfPrintStyle';
+ style.textContent='#msaPdfPrintRoot{position:fixed;inset:0;z-index:99999;overflow:auto;background:#fff;padding:24px;color:#172033;font-family:Arial,sans-serif}.msa-pdf-sheet{max-width:900px;margin:0 auto;line-height:1.6}.msa-pdf-sheet h1{font-size:28px;margin:0 0 6px;color:#1d4ed8;border-bottom:3px solid #dbeafe;padding-bottom:12px}.msa-pdf-meta{color:#64748b;font-size:12px;margin-bottom:18px}.msa-pdf-sheet pre{white-space:pre-wrap;font:13px/1.6 Arial,sans-serif;margin:0}.msa-pdf-foot{margin-top:28px;padding-top:12px;border-top:1px solid #e2e8f0;color:#64748b;font-size:11px}@media print{body>*:not(#msaPdfPrintRoot){display:none!important}#msaPdfPrintRoot{position:static!important;inset:auto!important;overflow:visible!important;padding:8mm 7mm!important;background:#fff!important;color:#000!important}.msa-pdf-sheet{max-width:none!important}.msa-pdf-sheet h1{font-size:24px}.msa-pdf-sheet pre{font-size:11px;line-height:1.45}.msa-pdf-foot{font-size:9px}}@media screen{#msaPdfPrintRoot:before{content:"Preparando o PDF…";display:block;font-weight:800;color:#1d4ed8;margin-bottom:12px}}';
+ document.head.appendChild(style);
+ document.body.appendChild(root);
+ const oldTitle=document.title;
+ document.title='Minha Saúde IA - Exportação';
+ let done=false;
+ const cleanup=()=>{
+   if(done)return;
+   done=true;
+   window.removeEventListener('afterprint',cleanup);
+   root.remove();
+   style.remove();
+   document.title=oldTitle;
+ };
+ window.addEventListener('afterprint',cleanup,{once:true});
+ setTimeout(()=>{if(document.getElementById('msaPdfPrintRoot'))cleanup()},120000);
+ try{window.print()}catch(e){cleanup();alert('Não foi possível abrir a impressão. Tente novamente.')}
+}
 function abrirCartaoEmergencia(){const p=get(K.p)[0]||{},m=get(K.m);const body='<div class="box"><h2>🚨 Informações de emergência</h2><b>Nome:</b> '+esc(p.nome||'Não informado')+'<br><b>Nascimento:</b> '+esc(p.nasc||'Não informado')+'<br><b>Alergias:</b> '+esc(p.alerg||'Não informado')+'<br><b>Condições:</b> '+esc(p.cond||'Não informado')+'<br><b>Medicamentos registrados:</b> '+esc(m.map(x=>x.nome+(x.dose?' — '+x.dose:'')).join('; ')||'Não informado')+'<br><b>Contato:</b> '+esc(p.emerg||'Não informado')+' — '+esc(p.tel||'')+'<br><b>Informações:</b> '+esc(p.info||'Não informado')+'</div>';openReport('Cartão de emergência',body)}
 function copiarCartaoEmergencia(){const p=get(K.p)[0]||{},m=get(K.m);const text='CARTÃO DE EMERGÊNCIA\nNome: '+(p.nome||'Não informado')+'\nNascimento: '+(p.nasc||'Não informado')+'\nAlergias: '+(p.alerg||'Não informado')+'\nCondições: '+(p.cond||'Não informado')+'\nMedicamentos: '+(m.map(x=>x.nome+(x.dose?' — '+x.dose:'')).join('; ')||'Não informado')+'\nContato: '+(p.emerg||'Não informado')+' — '+(p.tel||'');if(navigator.clipboard)navigator.clipboard.writeText(text).then(()=>alert('✅ Cartão copiado.'));else copiarTextoFallback(text)}
 
