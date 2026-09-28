@@ -2,6 +2,53 @@
    O menu não depende do restante do aplicativo para abrir e navegar.
 */
 (function(){
+  /* V5.69 — organização por objetivo: registrar, acompanhar, organizar e proteger */
+  function reorganizarMenuV569(){
+    var nav=document.getElementById('nav');
+    if(!nav || nav.getAttribute('data-menu-v569')==='1')return;
+    var tools=nav.querySelector('.msa-desktop-nav-tools');
+    nav.innerHTML=
+      '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button><div class="nav-menu">'+
+        '<button type="button" data-tab="home">🏠 Visão geral</button>'+
+        '<button type="button" data-tab="timeline">🕐 Linha do tempo</button>'+
+        '<button type="button" data-tab="perfil">👤 Meu perfil</button>'+
+      '</div></div>'+
+      '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="register">➕ Registrar ▾</button><div class="nav-menu">'+
+        '<button type="button" data-tab="dor">😣 Sintoma ou dor</button>'+
+        '<button type="button" data-tab="meds">💊 Medicamento</button>'+
+        '<button type="button" data-tab="consultas">👨‍⚕️ Consulta</button>'+
+        '<button type="button" data-tab="exames">🧪 Exame</button>'+
+        '<button type="button" data-tab="acompanhamento">❤️ Sinal vital</button>'+
+        '<button type="button" data-tab="acompanhamento" data-feature-nav="academia">📏 Medidas corporais</button>'+
+        '<button type="button" data-tab="nutricao" data-feature-nav="nutricao">🥗 Nutrição</button>'+
+      '</div></div>'+
+      '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="followup">📊 Acompanhar ▾</button><div class="nav-menu">'+
+        '<button type="button" data-tab="timeline">🕐 Linha do tempo</button>'+
+        '<button type="button" data-tab="sono" data-feature-nav="sonoBem">😴 Sono e bem-estar</button>'+
+        '<button type="button" data-tab="familia">🧬 Histórico familiar</button>'+
+        '<button type="button" data-tab="avisos">🔔 Atenção e avisos</button>'+
+        '<button type="button" data-tab="calendario">📅 Calendário</button>'+
+        '<button type="button" data-tab="lembretes">⏰ Lembretes</button>'+
+      '</div></div>'+
+      '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="organization">📁 Organizar ▾</button><div class="nav-menu">'+
+        '<button type="button" data-tab="documentos">📄 Documentos</button>'+
+        '<button type="button" data-tab="relatorios">📊 Relatórios</button>'+
+        '<button type="button" data-tab="carteirinha">🪪 Carteirinha</button>'+
+      '</div></div>'+
+      '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="ai">🤖 IA ▾</button><div class="nav-menu">'+
+        '<button type="button" data-tab="ia">🤖 Assistente</button>'+
+        '<button type="button" data-tab="importar">⚡ Importar com IA</button>'+
+        '<button type="button" data-tab="perguntas">❓ Preparar consulta</button>'+
+      '</div></div>'+
+      '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="security">🔐 Segurança ▾</button><div class="nav-menu">'+
+        '<button type="button" data-tab="exportar">📤 Exportar e compartilhar</button>'+
+        '<button type="button" data-tab="backup">💾 Backup e restauração</button>'+
+        '<button type="button" data-tab="configuracoes">⚙️ Configurações</button>'+
+      '</div></div>';
+    if(tools)nav.appendChild(tools);
+    nav.setAttribute('data-menu-v569','1');
+  }
+
   function fechar(){
     document.querySelectorAll('#nav .nav-group').forEach(function(g){g.classList.remove('open')});
     document.querySelectorAll('#nav .nav-toggle').forEach(function(b){
@@ -38,6 +85,7 @@
   function iniciar(){
     var nav=document.getElementById('nav');
     if(!nav)return;
+    reorganizarMenuV569();
 
     nav.addEventListener('click',function(ev){
       var toggle=ev.target.closest ? ev.target.closest('.nav-toggle') : null;
@@ -109,7 +157,7 @@
 
     drawer.innerHTML=
       '<div class="msa-mobile-drawer-head">'+
-        '<div><h2>🩺 Minha Saúde IA</h2><div class="muted">Tudo organizado por objetivo</div></div>'+
+        '<div><h2>🩺 Minha Saúde IA</h2><div class="muted">Escolha pelo que você quer fazer</div></div>'+
         '<button class="msa-mobile-drawer-close" type="button" aria-label="Fechar menu">✕</button>'+
       '</div>'+
       '<div class="msa-mobile-drawer-body">'+
@@ -119,34 +167,30 @@
           '<button type="button" data-mobile-tab="consultas">👨‍⚕️<span>Consulta</span></button>'+
           '<button type="button" data-mobile-tab="exames">🧪<span>Exame</span></button>'+
           '<button type="button" data-mobile-tab="acompanhamento">❤️<span>Sinal vital</span></button>'+
-          '<button type="button" data-mobile-tab="acompanhamento">📏<span>Medidas</span></button>'+
-          '<button type="button" data-mobile-tab="nutricao">🥗<span>Alimentação</span></button>'+
-          '<button type="button" data-mobile-tab="sono">😴<span>Sono</span></button>'+
-          '<button type="button" data-mobile-tab="buscar">🔎<span>Buscar</span></button>'+
+          '<button type="button" data-mobile-tab="acompanhamento" data-feature-nav="academia">📏<span>Medidas</span></button>'+
         '</div>'+
-        mobileSection('Principal',[['home','🏠 Início'],['timeline','🕐 Linha do tempo']])+
-        mobileSection('Minha saúde',[
-          ['dor','😣 Sintomas'],['meds','💊 Medicamentos'],['consultas','👨‍⚕️ Consultas'],
-          ['exames','🧪 Exames'],['acompanhamento','❤️ Sinais vitais'],['perfil','👤 Meu perfil']
+        mobileSection('Principal',[['home','🏠 Início'],['timeline','🕐 Linha do tempo'],['perfil','👤 Meu perfil']])+ 
+        mobileSection('Registrar',[
+          ['dor','😣 Sintoma ou dor'],['meds','💊 Medicamentos'],['consultas','👨‍⚕️ Consultas'],
+          ['exames','🧪 Exames'],['acompanhamento','❤️ Sinais vitais'],['acompanhamento','📏 Medidas corporais','academia'],
+          ['nutricao','🥗 Nutrição','nutricao']
         ])+
-        mobileSection('Acompanhamento',[
-          ['acompanhamento','📏 Medidas corporais'],['nutricao','🥗 Nutrição'],
-          ['sono','😴 Sono e bem-estar'],['familia','🧬 Histórico familiar'],['avisos','🔔 Atenção e avisos']
+        mobileSection('Acompanhar',[
+          ['sono','😴 Sono e bem-estar','sonoBem'],['familia','🧬 Histórico familiar'],['avisos','🔔 Atenção e avisos'],
+          ['calendario','📅 Calendário'],['lembretes','⏰ Lembretes']
         ])+
-        mobileSection('Organização',[
-          ['calendario','📅 Calendário'],['lembretes','⏰ Lembretes'],
-          ['documentos','📄 Documentos'],['relatorios','📊 Relatórios']
+        mobileSection('Organizar',[
+          ['documentos','📄 Documentos'],['relatorios','📊 Relatórios'],['carteirinha','🪪 Carteirinha']
         ])+
         mobileSection('IA',[
           ['ia','🤖 Assistente'],['importar','⚡ Importar com IA'],['perguntas','❓ Preparar consulta']
         ])+
         mobileSection('Dados e segurança',[
-          ['carteirinha','🪪 Carteirinha'],['exportar','📤 Exportar'],
-          ['backup','💾 Backup e segurança'],['configuracoes','⚙️ Configurações']
+          ['exportar','📤 Exportar e compartilhar'],['backup','💾 Backup e restauração'],['configuracoes','⚙️ Configurações']
         ])+
-        '<div class="msa-mobile-section"><div class="msa-mobile-section-title">Ação especial</div>'+
-          '<div class="msa-mobile-links"><button type="button" class="danger" data-mobile-emergency="1">🚨 Modo emergência</button>'+
-          '<button type="button" data-mobile-tab="perfil" data-mobile-ciclo="1" data-feature-nav="ciclo">🌸 Ciclo menstrual</button></div></div>'+
+        '<div class="msa-mobile-section"><div class="msa-mobile-section-title">Ação especial</div>'+ 
+          '<div class="msa-mobile-links"><button type="button" class="danger" data-mobile-emergency="1">🚨 Modo emergência</button>'+ 
+          '<button type="button" data-mobile-tab="perfil" data-mobile-ciclo="1" data-feature-nav="ciclo">🌸 Ciclo menstrual</button></div></div>'+ 
       '</div>';
 
     var bar=document.createElement('nav');
