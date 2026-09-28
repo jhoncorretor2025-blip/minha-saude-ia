@@ -984,7 +984,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 </div>
 </div>
 <div class="card" style="margin-top:13px">
-<h2>📈 Resumo do período</h2><div id="rResumo" class="muted">Selecione um período para visualizar.</div>
+<h2>📈 Resumo do período</h2><div id="rResumo" class="muted">Selecione um período para visualizar.</div><div id="rSistemaInfo" class="report-system-info" style="margin-top:13px"></div>
 </div>
 </section>
 
@@ -1575,6 +1575,9 @@ function openReport(title,body){
  if(!w){alert('Permita pop-ups para gerar o relatório.');return}
  const safeTitle=esc(title);
  const safeBody=String(body||'');
+ const c=typeof calcularCompletudeSaude==='function'?calcularCompletudeSaude():{percentual:0,preenchidos:0,total:0};
+ const appVersion='V5.45';
+ const reportMeta='<div class="box" style="border:1px solid #dbeafe;background:#eff6ff"><b>📌 Identificação do sistema</b><br>Versão: <b>'+appVersion+'</b><br>Completude da ficha: <b>'+c.percentual+'%</b> ('+c.preenchidos+'/'+c.total+' itens avaliados)<br>Gerado em: '+new Date().toLocaleString('pt-BR')+'</div>';
  w.document.open();
  w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+safeTitle+'</title><style>'+
  'body{font-family:Arial,sans-serif;max-width:850px;margin:30px auto;padding:0 16px;color:#172033;line-height:1.55}'+
@@ -1615,6 +1618,9 @@ function relatorioConsultas(){let {start,end,c}=rangeData();openReport('Relatór
 function updateReportSummary(){
  if(!$('rResumo'))return;
  const {start,end,d,c,m,e}=rangeData();
+ const comp=calcularCompletudeSaude();
+ const ri=$('rSistemaInfo');
+ if(ri)ri.innerHTML='<div class="alert safe"><b>🩺 Identificação do relatório</b><br>Versão do sistema: <b>V5.45</b> · Ficha preenchida: <b>'+comp.percentual+'%</b> ('+comp.preenchidos+'/'+comp.total+')</div>';
  const avg=d.length?(d.reduce((a,x)=>a+x.int,0)/d.length).toFixed(1):'—';
  $('rResumo').innerHTML=`<div class="grid4"><div><b>${d.length}</b><br><span class="muted">Sintomas</span></div><div><b>${c.length}</b><br><span class="muted">Consultas</span></div><div><b>${m.length}</b><br><span class="muted">Medicamentos</span></div><div><b>${e.length}</b><br><span class="muted">Exames</span></div></div><p style="margin-top:12px"><b>Intensidade média registrada:</b> ${avg}/10</p><p class="muted">Período: ${start} → ${end}</p>`;
 }
