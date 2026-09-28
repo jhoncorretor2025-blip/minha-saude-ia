@@ -1,5 +1,5 @@
 {
-  "version":"V5.41",
+  "version":"V5.44",
   "updatedAt":"2026-09-28T05:45:00Z",
   "changes":"Revisão do fluxo do perfil: um único salvamento direto, sem submit duplicado, com confirmação real da persistência."
 }
