@@ -1,5 +1,13 @@
 # Changelog — Minha Saúde IA
 
+## V5.64 — Revisão de UX e dados
+- 📅 Próximos cuidados agora mostram somente datas futuras ou de hoje.
+- 🧹 Corrigido identificador duplicado na Home que poderia causar comportamento inconsistente no JavaScript.
+- 🔄 Referências de cache, scripts e versão atualizadas para V5.64.
+- 🛡️ Mantida a estrutura de armazenamento e os recursos existentes.
+
+# Changelog — Minha Saúde IA
+
 ## V5.63 — Auditoria funcional e correções
 - 🔧 Corrigidas funções visíveis que estavam sem implementação no código atual.
 - 📅 Calendário agora possui navegação de mês, botão Hoje e visualização de registros por dia.
