@@ -278,6 +278,27 @@ footer{padding-bottom:20px}
  #cicloMenuBtn{width:100%;padding:9px 6px;font-size:12px;overflow:hidden;text-overflow:ellipsis}
 }
 @media(max-width:430px){#cicloMenuBtn{font-size:11px}}
+
+/* V5.31 — experiência adaptável */
+.experience-setting{grid-column:1/-1;border:1px solid #cfdcf8;border-radius:16px;padding:14px;background:linear-gradient(135deg,#f5f8ff,#fbf9ff)}
+.experience-setting-title{font-size:17px;font-weight:900;margin-bottom:5px}
+.msa-experience-off{display:none!important}
+body.msa-exp-simple input,body.msa-exp-simple select,body.msa-exp-simple textarea{min-height:50px}
+body.msa-exp-simple .btn{min-height:50px;font-size:15px}
+body.msa-exp-simple .nav-toggle{min-height:48px;font-size:14px}
+body.msa-exp-simple .action{min-height:125px;padding:18px}
+body.msa-exp-simple .home-command-side{display:none}
+body.msa-exp-simple .home-secondary-actions{display:none}
+body.msa-exp-simple .home-command-main>p{font-size:15px;line-height:1.55}
+body.msa-exp-advanced .btn.small{min-height:36px;padding:7px 9px}
+body.msa-exp-advanced .card{border-radius:15px;padding:15px}
+body.msa-exp-advanced .action{min-height:94px;padding:13px}
+body.msa-exp-advanced .home-secondary-actions{display:flex}
+@media(max-width:760px){
+ body.msa-exp-simple .msa-mobile-bar button{min-height:58px;font-size:12px}
+ body.msa-exp-simple .msa-mobile-links button{min-height:54px;font-size:14px}
+ body.msa-exp-simple .msa-mobile-quick button{min-height:78px}
+}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/design-system.css?v=V5.30">
@@ -545,7 +566,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
    <button type="button" data-tab="calendario">📅 Calendário</button>
    <button type="button" data-tab="lembretes">⏰ Lembretes</button>
    <button type="button" data-tab="exportar">📤 Exportar</button>
-   <button type="button" data-tab="backup">🔐 Segurança</button>
+   <button type="button" data-tab="backup">💾 Backup e segurança</button>
    <button type="button" data-tab="configuracoes">⚙️ Configurações</button>
   </div>
  </div>
@@ -564,9 +585,9 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
  </div>
 </nav>
 
-<section id="configuracoes"><div class="card"><h2>⚙️ Configurações e personalização</h2><div class="muted">Controle quais recursos aparecem no seu Minha Saúde IA. Desativar um recurso apenas oculta sua interface; seus dados continuam guardados.</div>
+<section id="configuracoes"><div class="card"><h2>⚙️ Configurações e personalização</h2><div class="muted">O aplicativo pode se adaptar ao jeito que cada pessoa prefere usar tecnologia. Escolha a experiência e os recursos que fazem sentido para você.</div>
 <div id="settingsPreferences" class="grid2" style="margin-top:14px"></div>
-<div class="alert safe" style="margin-top:12px">💡 Você pode ativar novamente qualquer recurso quando quiser.</div></div></section>
+<div class="alert safe" style="margin-top:12px">💡 Você pode mudar essas escolhas quando quiser. Elas não alteram nem apagam seus registros.</div></div></section>
 
 <section id="home" class="active"><div id="homeProfileHero" class="home-profile-hero"><div class="home-avatar" id="homeAvatar"><span>👤</span></div><div class="home-profile-main"><div class="home-greeting">👋 Olá!</div><h2 id="homeProfileName">Seu nome</h2><div class="home-profile-stats"><span>🎂 <b id="homeProfileAge">—</b> anos</span><span>⚖️ <b id="homeProfileWeight">—</b> kg</span><span>📏 <b id="homeProfileHeight">—</b></span><span>🩸 <b id="homeProfileBlood">—</b></span></div></div><button class="home-profile-edit" type="button" onclick="go('perfil')">✏️ Editar</button></div>
 
@@ -1009,6 +1030,17 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <input id="arquivoBackup" type="file" accept=".json" style="display:none" onchange="restaurarBackup(event)">
 </div>
 <div class="alert warn" style="margin-top:13px">⚠️ O backup contém informações pessoais. Guarde o arquivo em local seguro e não o envie para pessoas ou serviços desconhecidos.</div>
+</div>
+<div class="card" style="margin-top:13px">
+<h2>📱💻 Transferir entre dispositivos</h2>
+<div class="muted">Use esta opção para levar a ficha de um celular para outro ou do celular para o computador. O aplicativo cria um pacote com o histórico e você importa no outro aparelho.</div>
+<div class="row" style="margin-top:12px">
+<button class="btn green" type="button" onclick="window.msaExportSyncPackage?.()">📦 Exportar pacote completo</button>
+<button class="btn secondary" type="button" onclick="document.getElementById('msaBackupTransferFile').click()">📥 Importar pacote</button>
+<input id="msaBackupTransferFile" type="file" accept=".json,application/json" style="display:none" onchange="window.msaImportSyncPackage?.(this.files[0]);this.value=''">
+</div>
+<div class="alert safe" style="margin-top:12px">🔄 A importação mescla os registros e não apaga automaticamente o histórico existente.</div>
+<div class="alert warn" style="margin-top:10px">☁️ A sincronização automática em tempo real entre aparelhos ainda será uma etapa futura, com conta e armazenamento seguro em servidor.</div>
 </div>
 
 <div class="card" style="margin-top:13px">
