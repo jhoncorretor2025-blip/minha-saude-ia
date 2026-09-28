@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Saúde IA — V5.31</title>
+<title>Minha Saúde IA — V5.32</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -40,7 +40,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
  .nav-menu{min-width:210px;max-width:calc(100vw - 24px)}
 }
 
-/* V5.31 — Ferramentas em 2 colunas para reduzir a altura do menu */
+/* V5.32 — Ferramentas em 2 colunas para reduzir a altura do menu */
 .tools-menu{
  grid-template-columns:repeat(2,minmax(0,1fr));
  min-width:430px;
@@ -63,7 +63,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
  }
 }
  
-/* V5.31 — experiência mobile dedicada, sem alterar o desktop */
+/* V5.32 — experiência mobile dedicada, sem alterar o desktop */
 .msa-mobile-bar,.msa-mobile-drawer,.msa-mobile-backdrop{display:none}
 @media(max-width:760px){
   body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
@@ -279,7 +279,7 @@ footer{padding-bottom:20px}
 }
 @media(max-width:430px){#cicloMenuBtn{font-size:11px}}
 
-/* V5.31 — experiência adaptável */
+/* V5.32 — experiência adaptável */
 .experience-setting{grid-column:1/-1;border:1px solid #cfdcf8;border-radius:16px;padding:14px;background:linear-gradient(135deg,#f5f8ff,#fbf9ff)}
 .experience-setting-title{font-size:17px;font-weight:900;margin-bottom:5px}
 .msa-experience-off{display:none!important}
@@ -301,10 +301,10 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
 }
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V5.31">
+  <link rel="stylesheet" href="css/design-system.css?v=V5.32">
 
 <style id="v519-progressive-ui">
-/* V5.31 — melhorias progressivas de dashboard, favoritos e alertas */
+/* V5.32 — melhorias progressivas de dashboard, favoritos e alertas */
 .progressive-hub{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:13px}
 .progressive-card{background:#fff;border:1px solid #e6eaf1;border-radius:20px;padding:17px;box-shadow:0 8px 24px rgba(15,23,42,.06)}
 .progressive-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.progressive-head h2{margin:0 0 4px}
@@ -527,7 +527,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V5.31</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V5.32</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 <nav id="nav" class="grouped-nav">
  <div class="nav-group">
@@ -1386,7 +1386,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V5.31. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V5.32. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -1407,12 +1407,12 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V5.31" defer></script>
-<script src="js/core/storage.js?v=V5.31" defer></script>
-<script src="js/core/utils.js?v=V5.31" defer></script>
-<script src="js/menu.js?v=V5.31" defer></script>
-<script src="js/app.js?v=V5.31" defer></script>
-<script src="js/recursos.js?v=V5.31" defer></script>
+<script src="js/core/constants.js?v=V5.32" defer></script>
+<script src="js/core/storage.js?v=V5.32" defer></script>
+<script src="js/core/utils.js?v=V5.32" defer></script>
+<script src="js/menu.js?v=V5.32" defer></script>
+<script src="js/app.js?v=V5.32" defer></script>
+<script src="js/recursos.js?v=V5.32" defer></script>
 
 
 <script>
@@ -1429,11 +1429,11 @@ function iniciarImportacao(){
  },80);
 }
 </script>
-<script src="js/importacao.js?v=V5.31" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/melhorias-primeiras.js?v=V5.31" defer></script>
-<script src="js/expansoes.js?v=V5.31" defer></script>
-<script src="js/importacao-fluxo-v514.js?v=V5.31" defer></script>
-<script src="js/melhorias-v513.js?v=V5.31" defer></script>
+<script src="js/importacao.js?v=V5.32" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/melhorias-primeiras.js?v=V5.32" defer></script>
+<script src="js/expansoes.js?v=V5.32" defer></script>
+<script src="js/importacao-fluxo-v514.js?v=V5.32" defer></script>
+<script src="js/melhorias-v513.js?v=V5.32" defer></script>
 
 
 <script>
@@ -1596,7 +1596,7 @@ async function verificarNovaVersao(){
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
   const data=await r.json();
-  if(data.version && data.version!=='V5.31'){
+  if(data.version && data.version!=='V5.32'){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
@@ -1726,7 +1726,7 @@ initReports();render();setTimeout(verificarNovaVersao,700);
 
 
 
-<!-- V5.31 — melhorias gráficas e funções de personalização -->
+<!-- V5.32 — melhorias gráficas e funções de personalização -->
 <style id="v520-visual">
 body.msa-dark{--bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--border:#263244;--shadow:0 8px 24px rgba(0,0,0,.28);background:#0b1220;color:#e5e7eb}
 body.msa-dark .card,body.msa-dark .box,body.msa-dark .progressive-card,body.msa-dark .modal-card,body.msa-dark .msa-fab-action{background:#111827!important;color:#e5e7eb!important;border-color:#263244!important}
@@ -1757,7 +1757,7 @@ body.msa-dark .msa-theme-toggle{background:#1f2937;color:#f8fafc;border-color:#3
  });
 })();
 </script>
-<!-- V5.31 — ações rápidas globais -->
+<!-- V5.32 — ações rápidas globais -->
 <style id="v518-quick-actions">
 .msa-fab-wrap{position:fixed;right:22px;bottom:22px;z-index:11900;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .msa-fab-menu{display:none;flex-direction:column;gap:7px;align-items:flex-end;margin-bottom:2px}
