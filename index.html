@@ -560,6 +560,14 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 
 <section id="home" class="active"><div id="homeProfileHero" class="home-profile-hero"><div class="home-avatar" id="homeAvatar"><span>👤</span></div><div class="home-profile-main"><div class="home-greeting">👋 Olá!</div><h2 id="homeProfileName">Seu nome</h2><div class="home-profile-stats"><span>🎂 <b id="homeProfileAge">—</b> anos</span><span>⚖️ <b id="homeProfileWeight">—</b> kg</span><span>📏 <b id="homeProfileHeight">—</b></span><span>🩸 <b id="homeProfileBlood">—</b></span></div></div><button class="home-profile-edit" type="button" onclick="go('perfil')">✏️ Editar</button></div>
 
+<div class="home-missing-info-card" id="homeMissingInfoCard">
+ <div class="home-missing-info-main">
+  <div class="home-missing-info-kicker">📋 CHECK-UP DO CADASTRO</div>
+  <h2>🔎 O que ainda falta preencher?</h2>
+  <p id="homeMissingInfoText">Veja rapidamente quais informações do seu histórico ainda não foram preenchidas.</p>
+ </div>
+ <button class="btn green" type="button" onclick="abrirPendenciasPreenchimento()">✏️ Ver o que falta</button>
+</div>
 <div class="home-command-center" id="homeCommandCenter">
  <div class="home-command-main">
   <div class="home-command-kicker">✨ Comece por aqui</div>
