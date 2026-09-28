@@ -137,8 +137,87 @@ function experienciaPadrao(){
 }
 function preferenciasPadrao(){
  const p=get(K.p)[0]||{},saved=get(K.preferencias)[0];
- if(saved&&typeof saved==='object')return Object.assign({academia:'on',nutricao:'on',sonoBem:'on',ciclo:'on',experiencia:'comfortable'},saved);
- return {academia:p.academia==='Não'?'off':'on',nutricao:'on',sonoBem:'on',ciclo:'on',experiencia:'comfortable'};
+ const base={academia:p.academia==='Não'?'off':'on',nutricao:'on',sonoBem:'on',ciclo:'on',experiencia:'comfortable',ias:iaPadrao()};
+ if(saved&&typeof saved==='object')return Object.assign(base,saved);
+ return base;
+}
+function iaPadrao(){
+ const saved=get(K.preferencias)[0];
+ if(saved&&typeof saved==='object'&&Array.isArray(saved.ias)&&saved.ias.length)return saved.ias;
+ return [
+  {id:'chatgpt',nome:'ChatGPT',icone:'🟢',web:'https://chatgpt.com/',app:'intent://chatgpt.com/#Intent;scheme=https;package=com.openai.chatgpt;end',ativo:true,principal:true,oficial:true},
+  {id:'gemini',nome:'Gemini',icone:'🔵',web:'https://gemini.google.com/app',app:'intent://gemini.google.com/app#Intent;scheme=https;package=com.google.android.apps.bard;end',ativo:true,principal:false,oficial:true},
+  {id:'notebooklm',nome:'NotebookLM',icone:'🟣',web:'https://notebooklm.google.com/',app:'',ativo:false,principal:false,oficial:true}
+ ];
+}
+function salvarMinhasIAs(ias){
+ const atuais=Array.isArray(ias)?ias:[];
+ salvarPreferenciasObjeto({ias:atuais});
+}
+function escaparAttrIA(v){return String(v??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function dispositivoMovel(){return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent||'')}
+window.msaGetPromptIA=function(){const el=document.getElementById('promptIA');return el?el.value:''};
+function abrirMinhaIA(id){
+ const ia=preferenciasPadrao().ias.find(x=>x.id===id&&x.ativo);
+ if(!ia)return;
+ const prompt=window.msaGetPromptIA?window.msaGetPromptIA():'';
+ if(prompt){
+  try{navigator.clipboard?.writeText(prompt)}catch(e){}
+ }
+ const web=ia.web||'';
+ const app=ia.app||'';
+ let abriu=false;
+ if(dispositivoMovel()&&app){
+  try{
+   const a=document.createElement('a');a.href=app;a.style.display='none';document.body.appendChild(a);a.click();a.remove();abriu=true;
+  }catch(e){}
+ }
+ if(!abriu&&web){
+  const sep=web.includes('?')?'&':'?';
+  const url=prompt&&ia.id==='chatgpt'?web+sep+'q='+encodeURIComponent(prompt):web;
+  window.open(url,'_blank');
+ }
+ const msg=$('copiado');
+ if(msg)msg.textContent=prompt?'✅ Informações preparadas e copiadas. Abrindo '+ia.nome+'…':'🚀 Abrindo '+ia.nome+'…';
+}
+function adicionarIAConfigurada(){
+ const nome=prompt('Nome da inteligência artificial:');
+ if(!nome||!nome.trim())return;
+ const web=prompt('Endereço web da IA (https://...):');
+ if(!web||!/^https?:\\/\\//i.test(web.trim())){alert('Informe um endereço web válido começando com https:// ou http://.');return}
+ const app=prompt('Link para tentar abrir o aplicativo (opcional). No Android pode ser um link intent:// ou esquema do aplicativo:');
+ const id='ia_'+Date.now().toString(36);
+ const ias=preferenciasPadrao().ias.map(x=>Object.assign({},x,{principal:false}));
+ ias.push({id,nome:nome.trim(),icone:'🤖',web:web.trim(),app:(app||'').trim(),ativo:true,principal:ias.length===0});
+ salvarMinhasIAs(ias);
+ alert('🤖 '+nome.trim()+' foi adicionada às suas IAs.');
+}
+function definirIAPrincipal(id){
+ const ias=preferenciasPadrao().ias.map(x=>Object.assign({},x,{principal:x.id===id}));
+ salvarMinhasIAs(ias);
+}
+function alternarIA(id){
+ const ias=preferenciasPadrao().ias.map(x=>x.id===id?Object.assign({},x,{ativo:!x.ativo,principal:x.ativo?false:x.principal}):x);
+ if(!ias.some(x=>x.ativo))ias[0].ativo=true;
+ if(!ias.some(x=>x.ativo&&x.principal)){const first=ias.find(x=>x.ativo);if(first)first.principal=true}
+ salvarMinhasIAs(ias);
+}
+function removerIA(id){
+ const ia=preferenciasPadrao().ias.find(x=>x.id===id);
+ if(!ia||ia.oficial){alert('As IAs oficiais podem ser desativadas, mas não removidas.');return}
+ salvarMinhasIAs(preferenciasPadrao().ias.filter(x=>x.id!==id));
+}
+function editarIA(id){
+ const ia=preferenciasPadrao().ias.find(x=>x.id===id);if(!ia)return;
+ const web=prompt('Endereço web da IA:',ia.web||'');if(!web||!/^https?:\\/\\//i.test(web.trim()))return;
+ const app=prompt('Link para tentar abrir o aplicativo (opcional):',ia.app||'');
+ salvarMinhasIAs(preferenciasPadrao().ias.map(x=>x.id===id?Object.assign({},x,{web:web.trim(),app:(app||'').trim()}):x));
+}
+function renderMinhasIAs(){
+ const box=$('settingsAI');if(!box)return;
+ const ias=preferenciasPadrao().ias;
+ const principal=ias.find(x=>x.principal&&x.ativo);
+ box.innerHTML='<div class="experience-setting-title">🤖 Minhas IAs</div><div class="muted">Escolha quais inteligências artificiais você usa. O aplicativo não fica preso a uma IA específica.</div><div class="alert info" style="margin-top:10px">📱 No celular, o sistema tenta usar o aplicativo quando você cadastrar um link de app. Se não conseguir, usa o endereço web.</div><div class="ai-config-list" style="display:grid;gap:8px;margin-top:12px">'+ias.map(ia=>'<div style="border:1px solid #dbe4f0;border-radius:14px;padding:12px;background:#fff"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><b>'+esc(ia.icone||'🤖')+' '+esc(ia.nome)+'</b><span class="tag">'+(ia.ativo?'Ativada':'Desativada')+(ia.principal?' · ⭐ Principal':'')+'</span></div><small class="muted" style="display:block;margin-top:5px">'+esc(ia.web||'Sem endereço web')+'</small><div class="row" style="margin-top:9px"><button class="btn small '+(ia.ativo?'secondary':'green')+'" type="button" onclick="alternarIA(\''+escaparAttrIA(ia.id)+'\')">'+(ia.ativo?'Desativar':'Ativar')+'</button>'+(ia.ativo&&!ia.principal?'<button class="btn small secondary" type="button" onclick="definirIAPrincipal(\''+escaparAttrIA(ia.id)+'\')">⭐ Tornar principal</button>':'')+(ia.oficial?'':'<button class="btn small secondary" type="button" onclick="editarIA(\''+escaparAttrIA(ia.id)+'\')">✏️ Editar</button><button class="btn small red" type="button" onclick="removerIA(\''+escaparAttrIA(ia.id)+'\')">🗑️ Remover</button>')+'</div></div>').join('')+'</div><div class="row" style="margin-top:12px"><button class="btn green" type="button" onclick="adicionarIAConfigurada()">➕ Adicionar minha IA</button></div><div style="margin-top:12px;padding:11px;border-radius:13px;background:#f8fafc;font-size:12px;color:#687386">⭐ IA principal: '+esc(principal?principal.nome:'Nenhuma')+'. Você poderá usar esta IA como atalho em fluxos futuros.</div>';
 }
 function salvarPreferenciasObjeto(pref){
  set(K.preferencias,[Object.assign({},preferenciasPadrao(),pref)]);
@@ -159,6 +238,8 @@ function salvarExperiencia(){
 }
 function renderConfiguracoes(){
  const pref=preferenciasPadrao(),box=$('settingsPreferences');
+ const aiBox=$('settingsAI');
+ if(aiBox)renderMinhasIAs();
  if(box){
   const exp='<div class="experience-setting"><div class="experience-setting-title">🎚️ Experiência do aplicativo</div><div class="muted">Escolha quanto de informação, atalhos e opções você prefere ver. Isso não depende da sua idade.</div><select id="prefExperiencia" style="margin-top:8px"><option value="simple">🔰 Simples — poucos caminhos, botões maiores e mais orientação</option><option value="comfortable">🙂 Confortável — equilíbrio entre simplicidade e recursos</option><option value="advanced">⚡ Avançado — mais atalhos, detalhes e acesso rápido</option></select><button class="btn secondary" type="button" style="margin-top:8px" onclick="salvarExperiencia()">💾 Aplicar experiência</button></div>';
   box.innerHTML=exp+RECURSOS_PERSONALIZAVEIS.map(r=>'<label style="display:flex;flex-direction:column;gap:6px;border:1px solid #dbe4f0;border-radius:14px;padding:12px;background:#fff"><span style="font-weight:900">'+r.icon+' '+r.label+'</span><small class="muted">'+r.desc+'</small><select data-pref-key="'+r.key+'"><option value="on" '+(pref[r.key]==='on'?'selected':'')+'>Ativado</option><option value="off" '+(pref[r.key]==='off'?'selected':'')+'>Desativado</select></label>').join('');
