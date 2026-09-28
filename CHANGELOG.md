@@ -1,3 +1,12 @@
+## V5.68 — Jornada principal e ações rápidas
+- 🎯 Adicionado um bloco **Próximo passo** na Home, adaptado ao estado real do cadastro e dos registros.
+- ↩️ Importações com rascunho pendente ganham acesso direto para continuar sem perder o trabalho preparado.
+- 👤 Perfil incompleto recebe orientação clara para completar os dados essenciais.
+- 🚀 Usuário com perfil pronto e sem registros recebe atalho para importar histórico ou fazer o primeiro registro.
+- ➕ Ações rápidas foram ampliadas para medidas corporais e alimentação.
+- 📱 O menu mobile passa a oferecer mais ações de registro sem criar uma nova área duplicada.
+- 🛡️ Alteração aditiva: chaves, formatos de dados e recursos existentes foram preservados.
+
 # Changelog — Minha Saúde IA
 
 ## V5.67 — Confirmação dos salvamentos principais
