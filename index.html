@@ -637,7 +637,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <div class="progress-track"><div id="profileProgress" class="progress-fill"></div></div>
 <div id="profileMissing" class="progress-missing">Vamos começar pelo seu cadastro.</div>
 <div class="row" style="margin-top:10px">
-<button class="btn secondary small" type="button" onclick="gerarChecklistCompartilhamento()">📋 Copiar lista do que falta</button> <button class="btn secondary small" type="button" onclick="copiarLinkNovoUsuario()">🔗 Link zerado para outra pessoa</button>
+<button class="btn green small" type="button" onclick="abrirPendenciasPreenchimento()">✏️ Preencher informações que faltam</button> <button class="btn secondary small" type="button" onclick="gerarChecklistCompartilhamento()">📋 Copiar lista do que falta</button> <button class="btn secondary small" type="button" onclick="copiarLinkNovoUsuario()">🔗 Link zerado para outra pessoa</button>
 </div>
 <div class="streak-row"><div><b>🔥 <span id="streakDays">0</span> dias</b><small>de acompanhamento</small></div><div><b>🌳 <span id="healthLevel">Começando</span></b><small>organização do histórico</small></div></div>
 </div>
@@ -1389,7 +1389,7 @@ REGRAS:
 <script src="js/core/storage.js?v=V5.45" defer></script>
 <script src="js/core/utils.js?v=V5.45" defer></script>
 <script src="js/menu.js?v=V5.45" defer></script>
-<script src="js/app.js?v=V5.45" defer></script>
+<script src="js/app.js?v=V5.47" defer></script>
 <script src="js/perfil-save.js?v=V5.45" defer></script>
 <script src="js/recursos.js?v=V5.45" defer></script>
 
@@ -1576,7 +1576,7 @@ function openReport(title,body){
  const safeTitle=esc(title);
  const safeBody=String(body||'');
  const c=typeof calcularCompletudeSaude==='function'?calcularCompletudeSaude():{percentual:0,preenchidos:0,total:0};
- const appVersion='V5.46';
+ const appVersion='V5.47';
  const reportMeta='<div class="box" style="border:1px solid #dbeafe;background:#eff6ff"><b>📌 Identificação do sistema</b><br>Versão: <b>'+appVersion+'</b><br>Completude da ficha: <b>'+c.percentual+'%</b> ('+c.preenchidos+'/'+c.total+' itens avaliados)<br>Gerado em: '+new Date().toLocaleString('pt-BR')+'</div>';
  w.document.open();
  w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+safeTitle+'</title><style>'+
@@ -1593,7 +1593,17 @@ function openReport(title,body){
  '@media(max-width:700px){body{margin:16px auto;padding:0 10px}h1{font-size:24px}h2{font-size:19px}table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap}th,td{font-size:12px;padding:8px}.box{padding:12px}}'+
  '</style></head><body><h1>🩺 '+safeTitle+'</h1>'+safeBody+
  '<div class="foot">Gerado pelo Minha Saúde IA. Este documento organiza informações registradas pelo usuário e não constitui diagnóstico, prescrição ou laudo médico.</div>'+
- '</body></html>');
+ '<style id="msaV547Pendencias">
+.msa-pendencias-overlay{position:fixed;inset:0;z-index:25000;background:rgba(15,23,42,.52);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
+.msa-pendencias-card{width:min(720px,100%);max-height:min(88vh,820px);overflow:hidden;background:#fff;border:1px solid #dfe7f2;border-radius:22px;box-shadow:0 24px 70px rgba(15,23,42,.28)}
+.msa-pendencias-head{display:flex;justify-content:space-between;gap:14px;padding:20px;border-bottom:1px solid #e8edf4;background:linear-gradient(135deg,#f8fbff,#fff)}
+.msa-pendencias-kicker{font-size:11px;font-weight:900;color:#2563eb;text-transform:uppercase;letter-spacing:.07em}.msa-pendencias-head h2{margin:5px 0 4px;font-size:22px}.msa-pendencias-head p{margin:0;color:#64748b;font-size:13px;line-height:1.45}
+.msa-pendencias-close{width:40px;height:40px;border:0;border-radius:12px;background:#f1f5f9;font-size:18px;font-weight:900;cursor:pointer;flex:0 0 auto}
+.msa-pendencias-progress{margin:14px 20px 8px;padding:11px 13px;border-radius:13px;background:#eff6ff;color:#1e40af;border:1px solid #dbeafe;font-size:13px}
+.msa-pendencias-list{overflow:auto;padding:0 20px 20px;max-height:calc(min(88vh,820px) - 175px)}.msa-pendencias-group{margin-top:16px}.msa-pendencias-group h3{font-size:13px;color:#64748b;margin:0 0 7px}
+.msa-pendencia-item{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 13px;margin:6px 0;border:1px solid #e3e8f0;background:#fff;border-radius:13px;text-align:left;cursor:pointer;font:inherit}.msa-pendencia-item:hover{border-color:#a9c4f3;background:#f8fbff}.msa-pendencia-item span{font-weight:800;color:#334155}.msa-pendencia-item strong{color:#2563eb;font-size:12px;white-space:nowrap}
+@media(max-width:600px){.msa-pendencias-overlay{padding:8px;align-items:flex-end}.msa-pendencias-card{max-height:92vh;border-radius:22px 22px 0 0}.msa-pendencias-head{padding:16px}.msa-pendencias-list{padding:0 14px 18px;max-height:calc(92vh - 175px)}.msa-pendencias-progress{margin:12px 14px 6px}.msa-pendencia-item{min-height:48px}}
+</style></body></html>');
  w.document.close();
  setTimeout(()=>w.print(),300);
 }
@@ -1625,7 +1635,7 @@ function updateReportSummary(){
  const {start,end,d,c,m,e}=rangeData();
  const comp=calcularCompletudeSaude();
  const ri=$('rSistemaInfo');
- if(ri)ri.innerHTML='<div class="alert safe"><b>🩺 Identificação do relatório</b><br>Versão do sistema: <b>V5.46</b> · Ficha preenchida: <b>'+comp.percentual+'%</b> ('+comp.preenchidos+'/'+comp.total+')</div>';
+ if(ri)ri.innerHTML='<div class="alert safe"><b>🩺 Identificação do relatório</b><br>Versão do sistema: <b>V5.47</b> · Ficha preenchida: <b>'+comp.percentual+'%</b> ('+comp.preenchidos+'/'+comp.total+')</div>';
  const avg=d.length?(d.reduce((a,x)=>a+x.int,0)/d.length).toFixed(1):'—';
  $('rResumo').innerHTML=`<div class="grid4"><div><b>${d.length}</b><br><span class="muted">Sintomas</span></div><div><b>${c.length}</b><br><span class="muted">Consultas</span></div><div><b>${m.length}</b><br><span class="muted">Medicamentos</span></div><div><b>${e.length}</b><br><span class="muted">Exames</span></div></div><p style="margin-top:12px"><b>Intensidade média registrada:</b> ${avg}/10</p><p class="muted">Período: ${start} → ${end}</p>`;
 }
