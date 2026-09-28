@@ -1,4 +1,4 @@
-/* Minha Saúde IA - módulo de importação V5.74 */
+/* Minha Saúde IA - módulo de importação V5.75 */
 function obterPromptIA(){
  const t=document.getElementById('promptIA');
  return t?t.value:'';
@@ -295,6 +295,65 @@ async function processarImportacao(){
  }catch(e){if(loading)loading.style.display='none';if(btn){btn.disabled=false;btn.textContent='✨ Importar e salvar'}criarDiagnosticoImportacao('IMPORT_RUNTIME_001','Processando importação',e,raw);$('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui importar. Veja o diagnóstico detalhado logo acima.</div>';return}
  if(loading)loading.style.display='none';if(btn){btn.disabled=false;btn.textContent='✨ Importar e salvar'}
 }
+function executarDiagnosticoImportacao(opcoes){
+ var silencioso=opcoes&&opcoes.silencioso===true,resultado=[],inicio=Date.now();
+ function teste(nome,fn){
+  try{var valor=fn();resultado.push({nome:nome,ok:valor!==false,mensagem:valor===false?'Teste retornou falso':'OK'});}
+  catch(e){resultado.push({nome:nome,ok:false,mensagem:String(e&&e.message||e)})}
+ }
+ teste('Módulo carregado',function(){return typeof window.processarImportacao==='function'});
+ teste('Parser de ficha padrão',function(){
+  var n=normalizarFichaIA('[NOME]\nJhonatan\n\n[DATA_NASCIMENTO]\n29/10/1988\n\n[ALTURA]\n1,84 m\n\n[PESO]\n84 kg');
+  return n.p.nome==='Jhonatan'&&n.p.nasc==='1988-10-29'&&n.p.altura==='184'&&n.p.peso==='84';
+ });
+ teste('Parser com Markdown',function(){
+  var n=normalizarFichaIA('### **[NOME]**\nJhonatan\n\n**[DATA_NASCIMENTO]**: 29/10/1988\n\n- [ALTURA]: 1,84 m');
+  return n.p.nome==='Jhonatan'&&n.p.nasc==='1988-10-29'&&n.p.altura==='184';
+ });
+ teste('Parser com separador =',function(){
+  var n=normalizarFichaIA('[NOME] = Jhonatan\n[PESO] = 84 kg');
+  return n.p.nome==='Jhonatan'&&n.p.peso==='84';
+ });
+ teste('Extração JSON com Markdown',function(){
+  var j=extrairJSONDaResposta('Aqui está:\n\`\`\`json\n{"perfil":{"nome":"Jhonatan","data_nascimento":"29/10/1988"}}\n\`\`\`');
+  return !!j&&j.perfil&&j.perfil.nome==='Jhonatan';
+ });
+ teste('Normalização JSON',function(){
+  var j={perfil:{nome:'Jhonatan',data_nascimento:'29/10/1988',altura:'1,84 m',peso:'84 kg'},medicamentos:[{nome:'Teste'}]};
+  var n=normalizarImport(j);
+  return n.p.nome==='Jhonatan'&&n.p.nasc==='29/10/1988'&&n.meds.length===1;
+ });
+ teste('Validação impede importação vazia',function(){
+  try{validarResultadoImportacao({p:{},dores:[],consultas:[],meds:[],exames:[],vitais:[],vacinas:[],familia:[],lembretes:[],documentos:[]});return false}catch(e){return /Nenhuma informação reconhecida/i.test(String(e.message||e))}
+ });
+ teste('Armazenamento temporário grava e lê',function(){
+  var chave='msa2_import_diagnostic_tmp',valor='diagnostico-'+Date.now(),ok=set(chave,valor);
+  var l=window.msaStorage.getItem(chave),igual=l===JSON.stringify(valor);
+  try{window.msaStorage.removeItem(chave)}catch(e){}
+  return ok&&igual&&window.msaStorage.getItem(chave)===null;
+ });
+ var falhas=resultado.filter(function(x){return !x.ok}),total=resultado.length,tempo=Date.now()-inicio;
+ var resumo={versao:'V5.75',total:total,aprovados:total-falhas.length,falhas:falhas.length,duracaoMs:tempo,resultados:resultado};
+ window._importDiagnostico=resumo;
+ var box=document.getElementById('importDiagnostic');
+ if(box&&!silencioso){
+  box.style.display='block';
+  box.innerHTML='<div class="alert '+(falhas.length?'danger':'safe')+'"><b>'+(falhas.length?'⚠️ Autoteste encontrou problema':'✅ Autoteste da importação aprovado')+'</b><br>Versão: <b>'+esc(resumo.versao)+'</b> · '+resumo.aprovados+'/'+total+' testes aprovados · '+tempo+' ms</div><div class="list">'+resultado.map(function(x){return '<div class="item"><b>'+(x.ok?'✅ ':'❌ ')+esc(x.nome)+'</b><p>'+esc(x.mensagem)+'</p></div>'}).join('')+'</div>';
+ }
+ console[falhas.length?'error':'info']('[Minha Saúde IA] Autoteste importação',resumo);
+ return resumo;
+}
+window.executarDiagnosticoImportacao=executarDiagnosticoImportacao;
+function instalarDiagnosticoImportacao(){
+ if(new URLSearchParams(location.search).get('pagina')!=='importar')return;
+ var btn=document.getElementById('importBtn');if(!btn||document.getElementById('importDiagnosticBtn'))return;
+ var b=document.createElement('button');b.id='importDiagnosticBtn';b.type='button';b.className='btn secondary small';b.textContent='🧪 Testar importador';b.title='Executa testes locais sem alterar seus dados de saúde';
+ b.onclick=function(){executarDiagnosticoImportacao({silencioso:false})};
+ btn.parentNode.insertBefore(b,btn.nextSibling);
+ if(new URLSearchParams(location.search).get('diagnostico')==='importacao')setTimeout(function(){executarDiagnosticoImportacao({silencioso:false})},150);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',instalarDiagnosticoImportacao);else instalarDiagnosticoImportacao();
+
 function limparImportacao(){if($('importIA'))$('importIA').value='';if($('resultadoImport'))$('resultadoImport').innerHTML='';if($('importDiagnostic')){$('importDiagnostic').style.display='none';$('importDiagnostic').innerHTML=''}}
 window.processarImportacao=processarImportacao;
 window.limparImportacao=limparImportacao;
