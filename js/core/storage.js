@@ -23,6 +23,15 @@ function set(k,v){
   const old=window.msaStorage.getItem(k);
   if(old&&old!==json&&old.length<=300000&&!k.startsWith('msa2_backup_'))window.msaStorage.setItem('msa2_backup_'+k,old);
   window.msaStorage.setItem(k,json);
+  // Confirma a gravação lendo o valor de volta. Se houver divergência,
+  // tenta restaurar o valor anterior para evitar uma falsa confirmação.
+  const confirmado=window.msaStorage.getItem(k);
+  if(confirmado!==json){
+   if(old!==null&&old!==undefined)window.msaStorage.setItem(k,old);
+   else window.msaStorage.removeItem(k);
+   console.error('[Minha Saúde IA] gravação não confirmada',k);
+   return false;
+  }
   return true;
  }catch(e){console.error('[Minha Saúde IA] falha ao salvar',k,e);return false}
 }
