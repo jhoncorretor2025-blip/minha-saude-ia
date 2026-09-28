@@ -1120,6 +1120,7 @@ IMPORTANTE:
 - NÃO faça perguntas. Não faça entrevista, não peça confirmação e não aguarde respostas.
 - Use somente as informações que você já possui sobre mim. Se alguma informação não estiver disponível, registre exatamente "Não informado".
 - **DOENÇAS E CONDIÇÕES DE SAÚDE:** use somente o que já estiver disponível no seu contexto/memória. Se não houver informação suficiente, registre "Não informado" em [DOENCAS].
+- **HISTÓRICO FAMILIAR DOS PAIS:** procure especificamente no contexto/memória já disponível informações sobre doenças, condições de saúde ou antecedentes relevantes do **pai** e da **mãe**. Preencha [DOENCAS_PAI] e [DOENCAS_MAE] separadamente. Não confunda doenças do usuário com doenças dos pais, não faça inferências e não invente. Se não houver informação disponível para um dos pais, escreva "Não informado".
 - NÃO me pergunte novamente meu nome, idade, peso ou outros dados que já estejam disponíveis para você.
 - NÃO invente, estime ou complete informações.
 - Se um dado não estiver disponível, escreva "Não informado".
@@ -1190,6 +1191,12 @@ valor
 valor
 
 [DOENCAS]
+valor
+
+[DOENCAS_PAI]
+valor
+
+[DOENCAS_MAE]
 valor
 
 [ALERGIAS]
@@ -1322,7 +1329,7 @@ REGRAS:
 - Para SINAIS_VITAIS, informe data e, quando disponível, peso, pressão, batimentos, temperatura, glicemia, saturação e observações.
 - Para peso e altura, informe somente os valores conhecidos, sem estimar. Para objetivo corporal, academia e atividade física, informe somente o que estiver registrado. Para rotina de trabalho, informe tipo de trabalho e horas sentado/em pé quando disponíveis. Para água, informe o consumo declarado e para frequência urinária, quantas vezes por dia. Para calor/suor, informe o nível registrado. Para alimentação, informe somente hábitos já conhecidos. Para saúde reprodutiva, informe somente se houver dados disponíveis: última menstruação, duração/ciclo, frequência mínima e máxima de relações sexuais por semana, frequência de masturbação por dia, uso de preservativo, gestações, maternidade e histórico reprodutivo.
 - Para VACINAS, informe nome, data e dose/observações.
-- Para HISTORICO_FAMILIAR, informe o parente e a condição/informação.
+- Para HISTORICO_FAMILIAR, informe o parente e a condição/informação. Para os campos [DOENCAS_PAI] e [DOENCAS_MAE], informe somente doenças/condições já conhecidas do pai e da mãe, respectivamente.
 - Para LEMBRETES, informe o que lembrar, data/hora e tipo.
 - Para DOCUMENTOS, informe somente nome/tipo/data ou uma descrição que já tenha sido fornecida; não invente arquivos.
 - Se houver conflito entre informações, mantenha a mais recente e indique a divergência em [INFORMACOES_IMPORTANTES].
@@ -1389,7 +1396,7 @@ REGRAS:
 <script src="js/core/storage.js?v=V5.45" defer></script>
 <script src="js/core/utils.js?v=V5.45" defer></script>
 <script src="js/menu.js?v=V5.45" defer></script>
-<script src="js/app.js?v=V5.47" defer></script>
+<script src="js/app.js?v=V5.48" defer></script>
 <script src="js/perfil-save.js?v=V5.45" defer></script>
 <script src="js/recursos.js?v=V5.45" defer></script>
 
@@ -1576,7 +1583,7 @@ function openReport(title,body){
  const safeTitle=esc(title);
  const safeBody=String(body||'');
  const c=typeof calcularCompletudeSaude==='function'?calcularCompletudeSaude():{percentual:0,preenchidos:0,total:0};
- const appVersion='V5.47';
+ const appVersion='V5.48';
  const reportMeta='<div class="box" style="border:1px solid #dbeafe;background:#eff6ff"><b>📌 Identificação do sistema</b><br>Versão: <b>'+appVersion+'</b><br>Completude da ficha: <b>'+c.percentual+'%</b> ('+c.preenchidos+'/'+c.total+' itens avaliados)<br>Gerado em: '+new Date().toLocaleString('pt-BR')+'</div>';
  w.document.open();
  w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+safeTitle+'</title><style>'+
@@ -1635,7 +1642,7 @@ function updateReportSummary(){
  const {start,end,d,c,m,e}=rangeData();
  const comp=calcularCompletudeSaude();
  const ri=$('rSistemaInfo');
- if(ri)ri.innerHTML='<div class="alert safe"><b>🩺 Identificação do relatório</b><br>Versão do sistema: <b>V5.47</b> · Ficha preenchida: <b>'+comp.percentual+'%</b> ('+comp.preenchidos+'/'+comp.total+')</div>';
+ if(ri)ri.innerHTML='<div class="alert safe"><b>🩺 Identificação do relatório</b><br>Versão do sistema: <b>V5.48</b> · Ficha preenchida: <b>'+comp.percentual+'%</b> ('+comp.preenchidos+'/'+comp.total+')</div>';
  const avg=d.length?(d.reduce((a,x)=>a+x.int,0)/d.length).toFixed(1):'—';
  $('rResumo').innerHTML=`<div class="grid4"><div><b>${d.length}</b><br><span class="muted">Sintomas</span></div><div><b>${c.length}</b><br><span class="muted">Consultas</span></div><div><b>${m.length}</b><br><span class="muted">Medicamentos</span></div><div><b>${e.length}</b><br><span class="muted">Exames</span></div></div><p style="margin-top:12px"><b>Intensidade média registrada:</b> ${avg}/10</p><p class="muted">Período: ${start} → ${end}</p>`;
 }
