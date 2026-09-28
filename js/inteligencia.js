@@ -95,7 +95,7 @@ window.executarConsistenciaSaude=function(){
 };
 window.renderConsistenciaSaude=function(){
  const box=document.getElementById('msaConsistenciaResultado');if(!box)return;
- const p=executarConsistenciaSaude(),cont={alto:p.filter(x=>x.nivel==='alto').length,medio:p.filter(x=>x.nivel==='medio').length,baixo:p.filter(x=>x.nivel==='baixo').length};
+ const p=window.executarConsistenciaSaude(),cont={alto:p.filter(x=>x.nivel==='alto').length,medio:p.filter(x=>x.nivel==='medio').length,baixo:p.filter(x=>x.nivel==='baixo').length};
  if(!p.length){box.innerHTML='<div class="alert safe"><b>✅ Nenhuma inconsistência encontrada.</b><br>A verificação não substitui revisão profissional; ela apenas confere a organização dos dados.</div>';return}
  box.innerHTML='<div class="alert '+(cont.alto?'danger':'warn')+'"><b>🔎 '+p.length+' ponto(s) para revisar</b><br>'+cont.alto+' alto(s) · '+cont.medio+' médio(s) · '+cont.baixo+' baixo(s)</div><div class="list" style="margin-top:10px">'+p.map(x=>'<div class="item"><div class="itemtop"><b>'+({alto:'🚨',medio:'⚠️',baixo:'ℹ️'}[x.nivel]||'🔎')+' '+esc(x.tipo)+'</b><span class="tag">'+esc(x.nivel)+'</span></div><p>'+esc(x.texto)+'</p></div>').join('')+'</div>';
 };
