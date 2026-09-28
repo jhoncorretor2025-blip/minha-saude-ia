@@ -1,5 +1,5 @@
 {
   "version":"V5.41",
-  "updatedAt":"2026-09-28T04:45:00Z",
-  "changes":"Correção crítica do HTML/JavaScript, restauração do salvamento do perfil e atualização forçada do cache."
+  "updatedAt":"2026-09-28T05:25:00Z",
+  "changes":"Salvamento do perfil desacoplado do submit: botão direto, confirmação real da gravação e remoção do handler duplicado."
 }
