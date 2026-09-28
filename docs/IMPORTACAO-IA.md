@@ -14,7 +14,7 @@ O formato principal é uma ficha com marcadores:
 
 Cada marcador representa um campo. O valor pode ocupar uma ou várias linhas.
 
-Também existe suporte para resposta JSON quando a resposta começa com `{`.
+Também existe suporte para resposta JSON mesmo quando o JSON está dentro de Markdown ou acompanhado de texto antes/depois.
 
 ## Regras do importador
 - Aceitar espaços extras e diferenças de maiúsculas/minúsculas nos marcadores.
@@ -30,6 +30,24 @@ A IA deve devolver somente os campos definidos no prompt, sem explicações ante
 
 ## Campos
 O catálogo completo está documentado no prompt oficial em `prompts/importacao-saude.txt` e no parser de `js/importacao.js`.
+
+## Autoteste integrado
+
+Na página de importação existe o botão **🧪 Testar importador**. Ele executa testes locais sem alterar os registros de saúde.
+
+Também é possível abrir a página com `?pagina=importar&diagnostico=importacao` para executar o autoteste automaticamente.
+
+O autoteste verifica:
+- carregamento de `processarImportacao()`;
+- ficha padrão;
+- marcadores com Markdown;
+- separadores `:` e `=`;
+- extração de JSON dentro de Markdown;
+- normalização de JSON;
+- bloqueio de importação vazia;
+- gravação/leitura/remoção de uma chave temporária de diagnóstico.
+
+O teste de armazenamento usa somente uma chave temporária e a remove ao terminar.
 
 ## Teste manual mínimo
 Testar pelo menos:
