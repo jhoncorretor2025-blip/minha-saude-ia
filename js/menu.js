@@ -77,6 +77,8 @@
     try{if(typeof window.aplicarPreferencias==='function')window.aplicarPreferencias()}catch(e){}
     prepararAcessibilidade();
     criarNavegacaoMobile();
+    criarProximoPassoHome();
+    melhorarAcoesRapidas();
 
   }
 
@@ -117,6 +119,9 @@
           '<button type="button" data-mobile-tab="consultas">👨‍⚕️<span>Consulta</span></button>'+
           '<button type="button" data-mobile-tab="exames">🧪<span>Exame</span></button>'+
           '<button type="button" data-mobile-tab="acompanhamento">❤️<span>Sinal vital</span></button>'+
+          '<button type="button" data-mobile-tab="acompanhamento">📏<span>Medidas</span></button>'+
+          '<button type="button" data-mobile-tab="nutricao">🥗<span>Alimentação</span></button>'+
+          '<button type="button" data-mobile-tab="sono">😴<span>Sono</span></button>'+
           '<button type="button" data-mobile-tab="buscar">🔎<span>Buscar</span></button>'+
         '</div>'+
         mobileSection('Principal',[['home','🏠 Início'],['timeline','🕐 Linha do tempo']])+
@@ -221,6 +226,133 @@
     });
     backdrop.addEventListener('click',closeDrawer);
     document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeDrawer();});
+  }
+
+
+  function criarProximoPassoHome(){
+    var home=document.getElementById('home');
+    if(!home || document.getElementById('msaNextStepCard'))return;
+
+    var card=document.createElement('div');
+    card.id='msaNextStepCard';
+    card.className='msa-next-step-card';
+    card.setAttribute('aria-live','polite');
+
+    function ler(key){
+      try{
+        var storage=window.MSAStorage;
+        var v=storage&&typeof storage.get==='function'?storage.get(key):localStorage.getItem(key);
+        if(typeof v==='string')v=JSON.parse(v);
+        return v;
+      }catch(e){return null}
+    }
+    function lista(key){
+      var v=ler(key);
+      return Array.isArray(v)?v:[];
+    }
+    function perfil(){
+      var v=ler('msa2_perfil');
+      return Array.isArray(v)?(v[0]||{}):(v||{});
+    }
+    function atualizar(){
+      var p=perfil();
+      var nome=String(p.nome||'').trim();
+      var sexo=String(p.sexo||'').trim();
+      var altura=String(p.altura||'').trim();
+      var peso=String(p.peso||'').trim();
+      var draft=ler('msa2_importacao_rascunho_v514');
+      var total=lista('msa2_dores').length+lista('msa2_consultas').length+
+        lista('msa2_meds').length+lista('msa2_exames').length+lista('msa2_vitais').length;
+
+      var title='🎯 Seu próximo passo';
+      var text='Vamos deixar seu histórico mais completo.';
+      var primary='Começar agora';
+      var primaryId='perfil';
+      var secondary='Registrar um sintoma';
+      var secondaryId='dor';
+
+      if(draft && typeof draft==='object' && Object.keys(draft).length){
+        title='↩️ Você tem uma importação em andamento';
+        text='Seu rascunho foi preservado. Continue de onde parou, sem perder o que já preparou.';
+        primary='Continuar importação';
+        primaryId='importar';
+        secondary='Preencher manualmente';
+        secondaryId='perfil';
+      }else if(!nome || !sexo || !altura || !peso){
+        title='👤 Complete seu perfil primeiro';
+        text='Com nome, sexo, altura e peso preenchidos, o painel consegue mostrar mais informações úteis.';
+        primary='Completar perfil';
+        primaryId='perfil';
+        secondary='Importar histórico';
+        secondaryId='importar';
+      }else if(total===0){
+        title='🚀 Agora vamos registrar seu histórico';
+        text='Você já tem o perfil. O próximo passo é trazer seu histórico com IA ou fazer o primeiro registro.';
+        primary='Importar histórico';
+        primaryId='importar';
+        secondary='Registrar primeiro dado';
+        secondaryId='dor';
+      }else{
+        title='✅ Seu histórico já está em andamento';
+        text=total+' registro'+(total===1?'':'s')+' principal'+(total===1?'':'is')+' encontrado'+(total===1?'':'s')+'. Continue acompanhando ou registre algo novo.';
+        primary='➕ Registrar agora';
+        primaryId='dor';
+        secondary='Ver meu histórico';
+        secondaryId='timeline';
+      }
+
+      card.innerHTML=
+        '<div class="msa-next-step-icon">✨</div>'+
+        '<div class="msa-next-step-copy"><div class="msa-next-step-kicker">PRÓXIMO PASSO</div>'+
+        '<h2>'+title+'</h2><p>'+text+'</p></div>'+
+        '<div class="msa-next-step-actions">'+
+        '<button type="button" class="btn green" data-next-primary>'+primary+'</button>'+
+        '<button type="button" class="btn secondary" data-next-secondary>'+secondary+'</button></div>';
+
+      var bp=card.querySelector('[data-next-primary]');
+      var bs=card.querySelector('[data-next-secondary]');
+      if(bp)bp.onclick=function(){navegar(primaryId)};
+      if(bs)bs.onclick=function(){navegar(secondaryId)};
+    }
+
+    var anchor=document.getElementById('homeCommandCenter');
+    if(anchor && anchor.parentNode)anchor.parentNode.insertBefore(card,anchor.nextSibling);
+    else home.insertBefore(card,home.firstChild);
+
+    atualizar();
+    window.msaAtualizarProximoPasso=atualizar;
+    document.addEventListener('msa:data-changed',atualizar);
+  }
+
+  function melhorarAcoesRapidas(){
+    var fab=document.getElementById('msaFabMenu');
+    if(fab && !fab.querySelector('[data-v568-extra]')){
+      var extra=document.createElement('button');
+      extra.className='msa-fab-action';
+      extra.type='button';
+      extra.setAttribute('data-v568-extra','1');
+      extra.textContent='📏 Registrar medida corporal';
+      extra.onclick=function(){if(typeof window.toggleMsaFab==='function')window.toggleMsaFab();navegar('acompanhamento')};
+      fab.appendChild(extra);
+
+      var extra2=document.createElement('button');
+      extra2.className='msa-fab-action';
+      extra2.type='button';
+      extra2.setAttribute('data-v568-extra','1');
+      extra2.textContent='🥗 Registrar alimentação';
+      extra2.onclick=function(){if(typeof window.toggleMsaFab==='function')window.toggleMsaFab();navegar('nutricao')};
+      fab.appendChild(extra2);
+    }
+
+    document.addEventListener('click',function(ev){
+      var form=ev.target.closest?ev.target.closest('form'):null;
+      if(form && typeof window.msaAtualizarProximoPasso==='function'){
+        setTimeout(function(){
+          window.msaAtualizarProximoPasso();
+          document.dispatchEvent(new Event('msa:data-changed'));
+        },700);
+      }
+    },true);
   }
 
   if(document.readyState==='loading'){
