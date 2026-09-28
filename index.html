@@ -1372,41 +1372,6 @@ function hasAnyHealthData(){
  const profile=Object.values(p).some(v=>String(v??'').trim()!=='');
  return history||profile;
 }
-function showOnboarding(){
- const o=document.getElementById('onboarding');
- if(o){
-   o.style.display='none';
-   o.style.visibility='hidden';
-   o.style.pointerEvents='none';
- }
- document.body.style.overflow='';
-}
-function naoMostrarMais(){
- localStorage.setItem('msa2_onboarding_hide','1');
- const o=document.getElementById('onboarding');
- if(o)o.style.display='none';
- document.body.style.overflow='';
-}
-function finishOnboarding(mode){
- document.body.style.overflow='';
- const o=document.getElementById('onboarding');if(o)o.style.display='none';
- if(mode==='import')go('importar');
- if(mode==='profile')go('perfil');
-}
-function onboardImport(){finishOnboarding('import')}
-function onboardProfile(){finishOnboarding('profile')}
-async function onboardIA(){
- finishOnboarding('import');
- setTimeout(function(){
-   go('importar');
-   const prompt=$('promptIA')?.value||'';
-   const box=$('iaGuidePrompt');
-   if(box)box.value=prompt;
-   const modal=$('iaGuide');
-   if(modal)modal.style.display='block';
-   document.body.style.overflow='hidden';
- },180);
-}
 function fecharIAGuia(){
  const modal=$('iaGuide');if(modal)modal.style.display='none';
  document.body.style.overflow='';
