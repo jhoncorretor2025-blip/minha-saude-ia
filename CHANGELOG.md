@@ -1,5 +1,17 @@
 # Changelog — Minha Saúde IA
 
+## V5.62 — Navegação e organização
+- 🧭 Menu desktop agora permite pesquisar funções diretamente.
+- ⌨️ Atalho Ctrl+K (ou Cmd+K) foca a busca do menu.
+- ↵ Enter abre a primeira função encontrada.
+- 📌 Navegação desktop permanece acessível durante a rolagem.
+- 📂 Menus longos ganham rolagem própria sem aumentar indefinidamente a página.
+- 🔐 O grupo "Mais" foi renomeado para "Dados e segurança" para deixar seu conteúdo mais claro.
+- 📱 A navegação mobile existente foi preservada.
+- 🛡️ Nenhum recurso existente ou formato de dados foi removido.
+
+# Changelog — Minha Saúde IA
+
 ## V5.14 — Assistente visual de importação IA
 - 🧭 Criado fluxo visual em 5 etapas: Preparar → Conversar → Colar → Revisar → Salvar.
 - 📝 O texto colado é salvo como rascunho local durante a importação.
