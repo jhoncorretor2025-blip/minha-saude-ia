@@ -1,5 +1,5 @@
 {
-  "version": "V5.62",
-  "updatedAt": "2026-09-28T15:20:00-03:00",
-  "changes": "Melhora a navegação, pesquisa de funções no menu desktop e organização visual dos menus."
+  "version": "V5.63",
+  "updatedAt": "2026-09-28T15:45:00-03:00",
+  "changes": "Auditoria funcional: corrige ações órfãs, calendário, avisos, perguntas para consulta e compartilhamento controlado."
 }
