@@ -225,6 +225,11 @@ function salvarPreferenciasObjeto(pref){
  aplicarExperiencia();
  renderConfiguracoes();
 }
+function renderIAChoices(){
+ const box=$('iaChoices');if(!box)return;
+ const ias=preferenciasPadrao().ias.filter(x=>x.ativo);
+ box.innerHTML=ias.length?ias.map(ia=>'<button class="btn '+(ia.principal?'green':'secondary')+'" type="button" onclick="abrirMinhaIA(\''+escaparAttrIA(ia.id)+'\')">'+esc(ia.icone||'🤖')+' '+esc(ia.nome)+(ia.principal?' ⭐':'')+'</button>').join(''):'<span class="muted">Nenhuma IA ativada. Configure em ⚙️ Configurações.</span>';
+}
 function salvarPreferenciasPerfil(){
  const pref={academia:$('prefAcademia')?.value||'on',nutricao:$('prefNutricao')?.value||'on',sonoBem:$('prefSonoBem')?.value||'on',ciclo:$('prefCiclo')?.value||'on'};
  salvarPreferenciasObjeto(pref);
@@ -240,6 +245,7 @@ function renderConfiguracoes(){
  const pref=preferenciasPadrao(),box=$('settingsPreferences');
  const aiBox=$('settingsAI');
  if(aiBox)renderMinhasIAs();
+ renderIAChoices();
  if(box){
   const exp='<div class="experience-setting"><div class="experience-setting-title">🎚️ Experiência do aplicativo</div><div class="muted">Escolha quanto de informação, atalhos e opções você prefere ver. Isso não depende da sua idade.</div><select id="prefExperiencia" style="margin-top:8px"><option value="simple">🔰 Simples — poucos caminhos, botões maiores e mais orientação</option><option value="comfortable">🙂 Confortável — equilíbrio entre simplicidade e recursos</option><option value="advanced">⚡ Avançado — mais atalhos, detalhes e acesso rápido</option></select><button class="btn secondary" type="button" style="margin-top:8px" onclick="salvarExperiencia()">💾 Aplicar experiência</button></div>';
   box.innerHTML=exp+RECURSOS_PERSONALIZAVEIS.map(r=>'<label style="display:flex;flex-direction:column;gap:6px;border:1px solid #dbe4f0;border-radius:14px;padding:12px;background:#fff"><span style="font-weight:900">'+r.icon+' '+r.label+'</span><small class="muted">'+r.desc+'</small><select data-pref-key="'+r.key+'"><option value="on" '+(pref[r.key]==='on'?'selected':'')+'>Ativado</option><option value="off" '+(pref[r.key]==='off'?'selected':'')+'>Desativado</select></label>').join('');
