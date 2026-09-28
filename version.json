@@ -1,5 +1,5 @@
 {
-  "version": "V5.50",
-  "updatedAt": "2026-09-28T07:20:00Z",
-  "changes": "Registro de sono simplificado: remove campo de data da tela e usa automaticamente a data atual ao salvar."
+  "version": "V5.51",
+  "updatedAt": "2026-09-28T07:30:00Z",
+  "changes": "Sono agora registra a rotina habitual: horários normais para dormir e acordar, sem associar o registro a um dia específico."
 }
