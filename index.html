@@ -389,37 +389,10 @@ body.msa-dark .metric-edit-btn{background:#0f172a;color:#93c5fd;border-color:#33
   </div>
  </div>
 </div>
-<div id="msaOnboardingOverlay" class="msa-home-overlay" aria-hidden="true">
- <div class="msa-home-modal">
-  <div class="msa-home-modal-head"><div><div class="home-command-kicker">PRIMEIRO ACESSO</div><h2>👋 Vamos começar</h2><div class="muted">Você não precisa preencher tudo agora.</div></div><button class="msa-close" onclick="finishOnboarding()">✕</button></div>
-  <div class="onboarding-progress"><span></span></div>
-  <p><b>1. Seu perfil</b> — nome, altura e outras informações básicas.</p>
-  <p><b>2. Medicamentos</b> — registre os que quiser acompanhar.</p>
-  <p><b>3. Sintomas, consultas e exames</b> — adicione somente o que fizer sentido.</p>
-  <p><b>4. Pronto!</b> — depois você usa o painel conforme precisar.</p>
-  <div class="row" style="margin-top:15px"><button class="btn green" onclick="onboardingGo('perfil')">👤 Começar pelo perfil</button><button class="btn secondary" onclick="finishOnboarding()">Pular por enquanto</button></div>
- </div>
-</div>
-<script>
-(function(){
- window.openHomeMore=function(){var e=document.getElementById('msaHomeMoreOverlay');if(e){e.classList.add('open');e.setAttribute('aria-hidden','false')}};
- window.openHomeGuide=function(){var e=document.getElementById('msaHomeGuideOverlay');if(e){e.classList.add('open');e.setAttribute('aria-hidden','false')}};
- window.closeHomeModal=function(){document.querySelectorAll('.msa-home-overlay').forEach(function(e){e.classList.remove('open');e.setAttribute('aria-hidden','true')})};
- window.homeGo=function(id){closeHomeModal();setTimeout(function(){if(typeof go==='function')go(id)},40)};
- window.finishOnboarding=function(){localStorage.setItem('msa2_onboarding_done','1');closeHomeModal()};
- window.onboardingGo=function(id){finishOnboarding();setTimeout(function(){if(typeof go==='function')go(id)},40)};
- document.addEventListener('keydown',function(e){if(e.key==='Escape')closeHomeModal()});
- document.addEventListener('DOMContentLoaded',function(){
-  setTimeout(function(){
-   if(!localStorage.getItem('msa2_onboarding_done') && document.getElementById('msaOnboardingOverlay')){
-    document.getElementById('msaOnboardingOverlay').classList.add('open');
-    document.getElementById('msaOnboardingOverlay').setAttribute('aria-hidden','false');
-   }
-  },500);
- });
-})();
-</script>
 <style id="v530-preferences-css">
+/* V5.33: desativa o onboarding duplicado legado que podia bloquear o cadastro */
+#msaOnboardingOverlay{display:none!important;pointer-events:none!important;}
+
 .msa-feature-off{display:none!important}
 body.msa-dark #settingsPreferences label{background:#111827!important;color:#e5e7eb;border-color:#263244!important}
 </style>
