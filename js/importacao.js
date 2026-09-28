@@ -140,9 +140,32 @@ function normalizarFichaIA(raw){
  var dc=field('DOCUMENTOS'),docs=dc&&dc.toLowerCase()!=='não informado'?splitRecords(dc).map(parseDocument):[];
  return {p:p,dores:dores,consultas:consultas,meds:meds,exames:exames,vitais:v,vacinas:vax,familia:fam,lembretes:r,documentos:docs};
 }
+function validarResultadoImportacao(n){
+ if(!n||typeof n!=='object')throw new Error('Resultado de importação inválido.');
+ var grupos=['dores','consultas','meds','exames','vitais','vacinas','familia','lembretes','documentos'];
+ var perfil=n.p&&typeof n.p==='object'?n.p:{};
+ var reconhecidos=Object.keys(perfil).filter(function(k){var v=String(perfil[k]||'').trim();return v&&v.toLowerCase()!=='não informado'}).length;
+ var registros=grupos.reduce(function(total,k){return total+(Array.isArray(n[k])?n[k].length:0)},0);
+ if(!reconhecidos&&!registros)throw new Error('Nenhuma informação reconhecida.');
+ return {perfil:reconhecidos,registros:registros};
+}
+function verificarGravacaoImportacao(n){
+ var checks=[
+  [K.d,n.dores],[K.c,n.consultas],[K.m,n.meds],[K.e,n.exames],
+  [K.v,n.vitais],[K.vax,n.vacinas],[K.fam,n.familia],[K.r,n.lembretes],[K.doc,n.documentos]
+ ];
+ var falhas=[];
+ checks.forEach(function(pair){
+  var esperado=Array.isArray(pair[1])?pair[1].length:0;
+  if(!esperado)return;
+  var atual=get(pair[0]);
+  if(!Array.isArray(atual)||atual.length<esperado)falhas.push(pair[0]);
+ });
+ return falhas;
+}
 function atualizarProgresso(p,step,status){var bar=$('importProgress'),pct=$('importPercent'),st=$('importStep'),msg=$('importStatus');if(bar)bar.style.width=p+'%';if(pct)pct.textContent=p+'%';if(st)st.textContent=step;if(msg)msg.textContent=status}
 function esperar(ms){return new Promise(function(resolve){setTimeout(resolve,ms)})}
-function criarDiagnosticoImportacao(code,step,error,raw){var box=$('importDiagnostic'),diag={versao:'V4.66',codigo:code,etapa:step,mensagem:String(error&&error.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error&&error.stack||'').split('\n').slice(0,4).join('\n')};if(box){box.style.display='block';box.innerHTML='<div class="alert danger"><b>🔎 Diagnóstico da falha</b><br>Versão: '+esc(diag.versao)+' · Etapa: '+esc(diag.etapa)+'<br>Código: <b>'+esc(diag.codigo)+'</b><pre style="white-space:pre-wrap;word-break:break-word">'+esc(JSON.stringify(diag,null,2))+'</pre></div>'}console.error('[Minha Saúde IA]',diag)}
+function criarDiagnosticoImportacao(code,step,error,raw){var box=$('importDiagnostic'),diag={versao:'V5.65',codigo:code,etapa:step,mensagem:String(error&&error.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error&&error.stack||'').split('\n').slice(0,4).join('\n')};if(box){box.style.display='block';box.innerHTML='<div class="alert danger"><b>🔎 Diagnóstico da falha</b><br>Versão: '+esc(diag.versao)+' · Etapa: '+esc(diag.etapa)+'<br>Código: <b>'+esc(diag.codigo)+'</b><pre style="white-space:pre-wrap;word-break:break-word">'+esc(JSON.stringify(diag,null,2))+'</pre></div>'}console.error('[Minha Saúde IA]',diag)}
 function resumirImportacao(n){
  var p=n.p||{},campos=Object.keys(p).filter(function(k){return String(p[k]||'').trim()&&String(p[k]).toLowerCase()!=='não informado'});
  var blocos=[['👤 Perfil',campos.length+' campo(s) reconhecido(s)'],['😣 Sintomas',n.dores.length+' registro(s)'],['👨‍⚕️ Consultas',n.consultas.length+' registro(s)'],['💊 Medicamentos',n.meds.length+' registro(s)'],['🧪 Exames',n.exames.length+' registro(s)'],['📈 Sinais vitais',n.vitais.length+' registro(s)'],['💉 Vacinas',n.vacinas.length+' registro(s)'],['🧬 Histórico familiar',n.familia.length+' registro(s)'],['📌 Lembretes',n.lembretes.length+' registro(s)'],['📄 Documentos',n.documentos.length+' registro(s)']];
@@ -165,8 +188,8 @@ function importarNormalizado(n){
  if(n.documentos.length)set(K.doc,get(K.doc).concat(n.documentos));
  if(pk.some(has)){var old=get(K.p)[0]||{},merged=Object.assign({},old),novos=0,ignorados=0;pk.forEach(function(k){if(has(k)){var atual=String(merged[k]||'').trim().toLowerCase(),novo=String(n.p[k]||'').trim();var provisoria=!atual||atual==='valor'||atual==='value'||atual==='não informado';if(provisoria||k==='sexo'||k==='alerg'||k==='emerg'||k==='tel'){if(atual!==novo.toLowerCase()){merged[k]=n.p[k];novos++}else ignorados++;}else ignorados++;}});set(K.p,[merged]);window._importPerfilNovos=novos;window._importPerfilIgnorados=ignorados}
  try{render();if(typeof loadProfile==='function')loadProfile();if(typeof renderCarteirinha==='function')renderCarteirinha();if(typeof renderNovosModulos==='function')renderNovosModulos()}catch(renderError){console.error('[Minha Saúde IA] render após importação',renderError);window._importRenderWarning=String(renderError&&renderError.message||renderError)}
- var ns=Number(window._importPerfilNovos||0),ig=Number(window._importPerfilIgnorados||0),hist=n.dores.length+n.consultas.length+n.meds.length+n.exames.length+n.vitais.length+n.vacinas.length+n.familia.length+n.lembretes.length+n.documentos.length;
- var aviso=window._importRenderWarning?'⚠️ Os dados foram salvos, mas houve um aviso ao atualizar a tela. Recarregue a página para conferir. ':'';
+ var falhas=verificarGravacaoImportacao(n),ns=Number(window._importPerfilNovos||0),ig=Number(window._importPerfilIgnorados||0),hist=n.dores.length+n.consultas.length+n.meds.length+n.exames.length+n.vitais.length+n.vacinas.length+n.familia.length+n.lembretes.length+n.documentos.length;
+ var aviso=falhas.length?'⚠️ Alguns registros não puderam ser confirmados após o salvamento. Recarregue a página e confira os dados. ':window._importRenderWarning?'⚠️ Os dados foram salvos, mas houve um aviso ao atualizar a tela. Recarregue a página para conferir. ':'';
  $('resultadoImport').innerHTML='<div class="alert safe">✅ <b>Importação concluída!</b> '+ns+' campo(s) novo(s) do perfil e '+hist+' registro(s) novo(s) foram salvos. '+(ig?ig+' campo(s) já preenchido(s) foram preservados. ':'')+aviso+'</div>';
 }
 async function processarImportacao(){
@@ -177,12 +200,12 @@ async function processarImportacao(){
   atualizarProgresso(10,'Lendo resposta','Lendo as informações recebidas da IA…');$('resultadoImport').innerHTML='<div class="alert">⏳ Importação em andamento…</div>';await esperar(250);
   raw=raw.replace(/^\s*```(?:json|text)?\s*/i,'').replace(/\s*```\s*$/,'').trim();
   atualizarProgresso(30,'Organizando perfil','Separando seus dados pessoais e informações de saúde…');await esperar(250);
-  var n=raw.charAt(0)==='{'?normalizarImport(JSON.parse(raw)):normalizarFichaIA(raw);
+  var n=raw.charAt(0)==='{'?normalizarImport(JSON.parse(raw)):normalizarFichaIA(raw);\n  var validacao=validarResultadoImportacao(n);
   var total=n.dores.length+n.consultas.length+n.meds.length+n.exames.length+n.vitais.length+n.vacinas.length+n.familia.length+n.lembretes.length+n.documentos.length+['nome','nasc','idade','sexo','altura','peso','objetivoCorporal','academia','academiaFreq','atividadeFisica','trabalhoTipo','horasSentado','horasPe','aguaDia','urinaDia','calorSuor','alimentacao','cond','alerg','circ','supl','info','emerg','tel','menstruacao','ciclo','duracaoMenstr','sexoFreq','camisinha','engravidou','mae','gestacoes','reproObs','usaAnticoncepcional','anticoncepcionalNome','anticoncepcionalHora','anticoncepcionalInicio','prevColo','mamografia','ist','hpv','prevProx','prevObs','dorcelaxFreq','paracetamolFreq','outrosDor','catapora','cataporaQuando'].filter(function(k){return String(n.p[k]||'').trim()&&String(n.p[k]).toLowerCase()!=='não informado'}).length;
   if(!total)throw new Error('Nenhuma informação reconhecida');
-  atualizarProgresso(55,'Organizando histórico','Preparando sintomas, consultas, medicamentos, exames e novos módulos…');await esperar(250);
-  atualizarProgresso(75,'Salvando informações','Gravando os dados no seu histórico…');await esperar(250);
-  abrirRevisaoImportacao(n);atualizarProgresso(90,'Aguardando revisão','Confira as informações antes de salvar…');await esperar(200);atualizarProgresso(100,'Pronto para revisar','Revise os dados na tela antes de confirmar.');await esperar(300);
+  atualizarProgresso(55,'Organizando histórico','Reconhecidos '+validacao.perfil+' campo(s) de perfil e '+validacao.registros+' registro(s). Preparando a revisão…');await esperar(250);
+  atualizarProgresso(75,'Preparando salvamento','A importação foi analisada. Revise a prévia antes de confirmar o salvamento…');await esperar(250);
+  abrirRevisaoImportacao(n);atualizarProgresso(90,'Aguardando revisão','Confira os dados. Nada será salvo até você confirmar.');await esperar(200);atualizarProgresso(100,'Pronto para revisar','Revise os dados na tela antes de confirmar.');await esperar(300);
  }catch(e){if(loading)loading.style.display='none';if(btn){btn.disabled=false;btn.textContent='✨ Importar e salvar'}criarDiagnosticoImportacao('IMPORT_RUNTIME_001','Processando importação',e,raw);$('resultadoImport').innerHTML='<div class="alert danger">❌ Não consegui importar. Veja o diagnóstico detalhado logo acima.</div>';return}
  if(loading)loading.style.display='none';if(btn){btn.disabled=false;btn.textContent='✨ Importar e salvar'}
 }
