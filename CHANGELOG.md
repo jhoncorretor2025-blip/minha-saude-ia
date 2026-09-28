@@ -1,3 +1,16 @@
+## V5.75 — Blindagem da importação
+
+- 🧪 Adicionado autoteste integrado do módulo de importação.
+- 🔎 Adicionado botão **🧪 Testar importador** na página de importação.
+- 🩺 O autoteste verifica carregamento do módulo, parser de ficha, Markdown, separadores, JSON, validação de entrada vazia e gravação/leitura/remoção temporária.
+- 💾 O teste de armazenamento usa somente uma chave temporária e a remove ao terminar.
+- 🚨 Falhas do autoteste são exibidas com diagnóstico e código/versão no console e na página.
+- 🔄 Mantida a confirmação de gravação existente; nenhuma chave `msa2_*` foi alterada.
+- 📄 Documentação de importação atualizada com o procedimento de diagnóstico.
+- 🔄 Versão e cache do PWA sincronizados para V5.75.
+
+V5.75 — 2026-09-28
+
 ## V5.74 — Importação mais tolerante e inicialização protegida
 
 - 📥 O botão de importação passa a usar uma inicialização protegida que aguarda o módulo carregar antes de executar.
