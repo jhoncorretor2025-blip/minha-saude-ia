@@ -1382,7 +1382,7 @@ REGRAS:
 <div id="documentosSaudeList" class="list" style="margin-top:13px"></div></div>
 </section>
 <section id="ia"><div class="card"><h2>🤖 Assistente de Saúde</h2><div class="muted">Ajuda a organizar informações e preparar perguntas. Não substitui diagnóstico ou atendimento médico.</div><div class="alert safe" style="margin-top:12px"><b>📌 Seus registros podem ser usados como contexto somente quando você pedir.</b> O resumo é preparado no seu navegador para você revisar antes de copiar para uma IA.</div><div class="row" style="margin-top:10px"><button class="btn green" onclick="prepararContextoIA()">📋 Preparar contexto dos meus registros</button></div><div id="chat" class="chat"><div class="bubble bot">Olá! 👋 Conte o que está acontecendo. Posso ajudar a organizar seus sintomas, sugerir perguntas para o médico e lembrar sinais de alerta.</div></div><div class="row"><input id="iaInput" style="flex:1" placeholder="Ex.: Estou com dor abdominal há 2 dias..."><button class="btn" onclick="ask()">Enviar</button></div><div class="alert danger" style="margin-top:12px">🚨 Em uma emergência ou diante de sintomas graves, procure atendimento presencial imediatamente.</div></div>
-<div class="card" style="margin-top:13px"><h2>🩺 Preparar minha consulta</h2><div class="muted">A partir dos seus registros, gere um conjunto de perguntas para conversar com o profissional.</div><button class="btn green" style="margin-top:10px" onclick="perguntasConsulta()">✨ Gerar perguntas</button><div id="perguntas" style="margin-top:12px"></div></div></section>
+<div class="card" style="margin-top:13px"><h2>🩺 Preparar minha consulta</h2><div class="muted">A partir dos seus registros, gere um conjunto de perguntas para conversar com o profissional.</div><button class="btn green" style="margin-top:10px" onclick="perguntasConsulta()">✨ Gerar perguntas</button><div id="perguntasGeradas" style="margin-top:12px"></div></div></section>
 
 <div id="updateNotice" class="alert safe" style="display:none;margin-top:12px"></div>
 <div id="emergencyOverlay" class="emergency-overlay" style="display:none">
@@ -1718,7 +1718,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 .msa-v563-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#2563eb;margin:2px}
 @media(max-width:600px){.msa-v563-day{min-height:48px;padding:5px}.msa-v563-calendar{gap:3px}}
 </style>
-<script id="msaV563Fixes">
+<script id="msaV563FixesScript">
 (function(){
 'use strict';
 const K563=window.MSA_K||window.K||{};
