@@ -1,3 +1,14 @@
+## V5.76 — Inteligência e organização avançadas
+
+- 🧠 **Central de Inteligência:** resumo automático do que está registrado, últimos 30 dias, pendências do perfil e possíveis duplicados.
+- 🕐 **Linha do Tempo inteligente:** reúne sintomas, consultas, medicamentos, exames, vacinas, sinais vitais, lembretes, documentos, família, nutrição e sono em uma única visão filtrável.
+- 📄 **Leitor inteligente:** leitura local de PDF, imagem e TXT; usa extração de texto e OCR quando necessário e envia o conteúdo somente para a etapa de revisão/importação, sem salvar automaticamente.
+- 🔎 **Verificador de Consistência:** identifica datas inválidas/futuras, períodos de medicamento invertidos, retorno de consulta inconsistente e possíveis duplicados.
+- 🔒 Os novos recursos são aditivos e não alteram registros existentes automaticamente.
+- 🔄 Versão e cache PWA sincronizados para V5.76.
+
+V5.76 — 2026-09-28
+
 ## V5.75 — Blindagem da importação
 
 - 🧪 Adicionado autoteste integrado do módulo de importação.
