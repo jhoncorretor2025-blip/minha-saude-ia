@@ -518,22 +518,25 @@ $('dData').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISO
 $('dorForm')?.addEventListener('submit',()=>{});
 $('pForm').onsubmit=e=>{
  e.preventDefault();
- if(!$('pSexo').value){alert('👤 Selecione Masculino, Feminino ou Outro para continuar.');$('pSexo').focus();return;}
+ if(!(($('pSexo')||{}).value||'')){alert('👤 Selecione Masculino, Feminino ou Outro para continuar.');$('pSexo').focus();return;}
  const old=get(K.p)[0]||{};
  const perfil=Object.assign({},old,{
-  nome:$('pNome').value,nasc:$('pNasc').value,idade:$('pIdade').value,peso:$('pPeso').value,sexo:$('pSexo').value,
-  sangue:$('pSangue').value,altura:$('pAltura').value,supl:$('pSupl').value,alerg:$('pAlerg').value,cond:$('pCond').value,
-  circ:$('pCirc').value,info:$('pInfo').value,emerg:$('pEmerg').value,tel:$('pTel').value,
-  menstruacao:$('pMenstruacao').value,ciclo:$('pCiclo').value,duracaoMenstr:$('pDuracaoMenstr').value,regularidade:$('pRegularidade').value,sexoFreqMin:$('pSexoFreqMin').value,sexoFreqMax:$('pSexoFreqMax').value,masturbacaoDia:$('pMasturbacaoDia').value,
-  camisinha:$('pCamisinha').value,engravidou:$('pEngravidou').value,mae:$('pMae').value,gestacoes:$('pGestacoes').value,
-  reproObs:$('pReproObs').value,usaAnticoncepcional:$('pUsaAnticoncepcional').value,anticoncepcionalMetodo:$('pAnticoncepcionalMetodo').value,anticoncepcionalNome:$('pAnticoncepcionalNome').value,anticoncepcionalHora:$('pAnticoncepcionalHora').value,anticoncepcionalInicio:$('pAnticoncepcionalInicio').value,anticoncepcionalRegime:$('pAnticoncepcionalRegime').value,minipilulaTipo:$('pMinipilulaTipo').value,prevColo:$('pPrevColo').value,mamografia:$('pMamografia').value,ist:$('pIST').value,hpv:$('pHPV').value,
-  prevProx:$('pPrevProx').value,prevObs:$('pPrevObs').value,dorcelaxFreq:$('pDorcelaxFreq').value,
-  paracetamolFreq:$('pParacetamolFreq').value,outrosDor:$('pOutrosDor').value,catapora:$('pCatapora').value,cataporaQuando:$('pCataporaQuando').value,
-  academia:$('pAcademia').value,academiaFreq:$('pAcademiaFreq').value,trabalhoTipo:$('pTrabalhoTipo').value,
-  horasSentado:$('pHorasSentado').value,horasPe:$('pHorasPe').value,aguaDia:$('pAguaDia').value,urinaDia:$('pUrinaDia').value,
-  evacuacaoDia:$('pEvacuacaoDia').value,calorSuor:$('pCalorSuor').value
+  nome:(($('pNome')||{}).value||''),nasc:(($('pNasc')||{}).value||''),idade:(($('pIdade')||{}).value||''),peso:(($('pPeso')||{}).value||''),sexo:(($('pSexo')||{}).value||''),
+  sangue:(($('pSangue')||{}).value||''),altura:(($('pAltura')||{}).value||''),supl:(($('pSupl')||{}).value||''),alerg:(($('pAlerg')||{}).value||''),cond:(($('pCond')||{}).value||''),
+  circ:(($('pCirc')||{}).value||''),info:(($('pInfo')||{}).value||''),emerg:(($('pEmerg')||{}).value||''),tel:(($('pTel')||{}).value||''),
+  menstruacao:(($('pMenstruacao')||{}).value||''),ciclo:(($('pCiclo')||{}).value||''),duracaoMenstr:(($('pDuracaoMenstr')||{}).value||''),regularidade:(($('pRegularidade')||{}).value||''),sexoFreqMin:(($('pSexoFreqMin')||{}).value||''),sexoFreqMax:(($('pSexoFreqMax')||{}).value||''),masturbacaoDia:(($('pMasturbacaoDia')||{}).value||''),
+  camisinha:(($('pCamisinha')||{}).value||''),engravidou:(($('pEngravidou')||{}).value||''),mae:(($('pMae')||{}).value||''),gestacoes:(($('pGestacoes')||{}).value||''),
+  reproObs:(($('pReproObs')||{}).value||''),usaAnticoncepcional:(($('pUsaAnticoncepcional')||{}).value||''),anticoncepcionalMetodo:(($('pAnticoncepcionalMetodo')||{}).value||''),anticoncepcionalNome:(($('pAnticoncepcionalNome')||{}).value||''),anticoncepcionalHora:(($('pAnticoncepcionalHora')||{}).value||''),anticoncepcionalInicio:(($('pAnticoncepcionalInicio')||{}).value||''),anticoncepcionalRegime:(($('pAnticoncepcionalRegime')||{}).value||''),minipilulaTipo:(($('pMinipilulaTipo')||{}).value||''),prevColo:(($('pPrevColo')||{}).value||''),mamografia:(($('pMamografia')||{}).value||''),ist:(($('pIST')||{}).value||''),hpv:(($('pHPV')||{}).value||''),
+  prevProx:(($('pPrevProx')||{}).value||''),prevObs:(($('pPrevObs')||{}).value||''),dorcelaxFreq:(($('pDorcelaxFreq')||{}).value||''),
+  paracetamolFreq:(($('pParacetamolFreq')||{}).value||''),outrosDor:(($('pOutrosDor')||{}).value||''),catapora:(($('pCatapora')||{}).value||''),cataporaQuando:(($('pCataporaQuando')||{}).value||''),
+  academia:(($('pAcademia')||{}).value||''),academiaFreq:(($('pAcademiaFreq')||{}).value||''),trabalhoTipo:(($('pTrabalhoTipo')||{}).value||''),
+  horasSentado:(($('pHorasSentado')||{}).value||''),horasPe:(($('pHorasPe')||{}).value||''),aguaDia:(($('pAguaDia')||{}).value||''),urinaDia:(($('pUrinaDia')||{}).value||''),
+  evacuacaoDia:(($('pEvacuacaoDia')||{}).value||''),calorSuor:(($('pCalorSuor')||{}).value||'')
  });
- set(K.p,[perfil]);
+ const salvo=set(K.p,[perfil]);
+ if(!salvo){alert('⚠️ Não foi possível salvar o perfil neste navegador. Verifique o armazenamento do Safari.');return;}
+ const confirmado=get(K.p)[0]||{};
+ if(String(confirmado.nome||'')!==String(perfil.nome||'')){alert('⚠️ O Safari não confirmou o salvamento do perfil. Tente recarregar a página e salvar novamente.');return;}
  try{render();}catch(err){console.error('[Minha Saúde IA] erro ao atualizar o perfil:',err);}
  try{renderCarteirinha();}catch(err){console.error('[Minha Saúde IA] erro ao atualizar a carteirinha:',err);}
  setTimeout(function(){try{renderNovosModulos();}catch(err){console.error('[Minha Saúde IA] erro ao atualizar módulos do perfil:',err);}},0);
