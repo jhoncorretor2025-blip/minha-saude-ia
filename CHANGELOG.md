@@ -1,3 +1,12 @@
+## V5.70 — Correção crítica dos relatórios
+
+- Corrigido o módulo de relatórios que incorporava indevidamente blocos de **CSS e JavaScript do aplicativo** dentro do HTML gerado.
+- Removido o conteúdo contaminante de `openReport()`, evitando que `</script>` encerrasse prematuramente o script principal.
+- Mantidos os relatórios completo, médico, sintomas, medicamentos, exames e consultas.
+- Atualizada a identificação dos relatórios para V5.70.
+- Cache do PWA atualizado para V5.70.
+- Nenhum dado ou chave de armazenamento foi alterado.
+
 ## V5.69 — Navegação reorganizada por objetivo
 
 - Reorganizado o menu principal para separar tarefas por objetivo: **Início, Registrar, Acompanhar, Organizar, IA e Segurança**.
