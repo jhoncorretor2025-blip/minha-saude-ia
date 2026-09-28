@@ -1,5 +1,5 @@
 {
-  "version": "V5.49",
-  "updatedAt": "2026-09-28T07:10:00Z",
-  "changes": "Exportação para PDF corrigida para abrir a impressão diretamente, sem depender de nova janela ou pop-up."
+  "version": "V5.50",
+  "updatedAt": "2026-09-28T07:20:00Z",
+  "changes": "Registro de sono simplificado: remove campo de data da tela e usa automaticamente a data atual ao salvar."
 }
