@@ -16,7 +16,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V5.39</title>
+<title>Minha Saúde IA — V5.40</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -572,8 +572,8 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
    <button onclick="go('exames')"><strong>🧪</strong><span>Exame</span></button>
   </div>
   <div class="home-secondary-actions">
-   <button class="home-more-btn" onclick="openHomeMore()">☰ Mais opções</button>
-   <button class="home-guide-btn" onclick="openHomeGuide()">🤖 Não sei por onde começar</button>
+   <button class="home-more-btn" onclick="openHomeMore()">☰ Ver mais recursos</button>
+   <button class="home-guide-btn" onclick="openHomeGuide()">🤖 Me ajude a escolher</button>
   </div>
  </div>
  <div class="home-command-side">
@@ -1583,7 +1583,46 @@ function openReport(title,body){
  '.foot{color:#777;font-size:11px;margin-top:30px}'+
  '@media(max-width:700px){body{margin:16px auto;padding:0 10px}h1{font-size:24px}table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap}th,td{font-size:12px;padding:8px}.box{padding:12px}}'+
  '</style></head><body><h1>🩺 '+safeTitle+'</h1>'+safeBody+
- '<div class="foot">Gerado pelo Minha Saúde IA. Este documento organiza informações registradas pelo usuário e não constitui diagnóstico, prescrição ou laudo médico.</div><script src="js/avancado.js?v=V5.39" defer></script>\n</body></html>');
+ '<div class="foot">Gerado pelo Minha Saúde IA. Este documento organiza informações registradas pelo usuário e não constitui diagnóstico, prescrição ou laudo médico.</div><script src="js/avancado.js?v=V5.39" defer></script>\n<!-- V5.40 — jornada curta: confirmação e retorno após registros -->
+<style id="msaV540Journey">
+.msa-next-step{margin-top:12px;padding:12px 14px;border:1px solid #dbeafe;background:#f4f8ff;border-radius:15px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.msa-next-step strong{font-size:13px}.msa-next-step span{display:block;color:#64748b;font-size:12px;margin-top:2px}
+@media(max-width:600px){.msa-next-step{align-items:stretch;flex-direction:column}.msa-next-step .btn{width:100%}}
+</style>
+<script id="msaV540JourneyScript">
+(function(){
+'use strict';
+const map={dor:'msa2_dores',meds:'msa2_meds',consultas:'msa2_consultas',exames:'msa2_exames',acompanhamento:'msa2_vitais',agua:'msa2_hidratacao',sono:'msa2_sono',medidas:'msa2_medidas'};
+function arr(k){try{const v=localStorage.getItem(k);const x=v?JSON.parse(v):[];return Array.isArray(x)?x:[]}catch(e){return[]}}
+function sectionFromForm(f){let el=f;while(el&&el!==document.body){if(el.id)return el.id;el=el.parentElement}return''}
+function setup(){
+ document.querySelectorAll('form').forEach(function(form){
+  if(form.dataset.v540)return;
+  const sec=sectionFromForm(form),key=map[sec];if(!key)return;
+  form.dataset.v540='1';
+  form.addEventListener('submit',function(){
+   const before=arr(key).length;
+   setTimeout(function(){
+    const after=arr(key).length;
+    if(after>before){
+      if(window.msaToast)window.msaToast('✅ Registro salvo com sucesso!');
+      let box=document.getElementById('msaV540Next_'+sec);
+      if(!box){
+       box=document.createElement('div');box.id='msaV540Next_'+sec;box.className='msa-next-step';
+       box.innerHTML='<div><strong>Registro salvo</strong><span>Você pode continuar registrando ou voltar ao início.</span></div><button type="button" class="btn secondary">🏠 Voltar ao início</button>';
+       const host=form.parentElement||form;host.appendChild(box);
+       box.querySelector('button').onclick=function(){if(typeof go==='function')go('home')};
+      }
+      if(typeof render==='function')try{render()}catch(e){}
+    }
+   },500);
+  },false);
+ });
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setTimeout(setup,300);
+})();
+</script>
+</body></html>');
  w.document.close();
  setTimeout(()=>w.print(),300);
 }
