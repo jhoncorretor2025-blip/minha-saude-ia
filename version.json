@@ -1,5 +1,5 @@
 {
-  "version": "V5.71",
+  "version": "V5.72",
   "updatedAt": "2026-09-28T17:00:00-03:00",
-  "changes": "Blindagem contra retorno do erro de código aparecendo na página: versão e cache-busting sincronizados, detecção de conteúdo contaminado e limpeza de cache/service worker com recarga controlada."
+  "changes": "Mapeamento da arquitetura atual em docs/MAPA-MODULOS.md, sem mover arquivos, alterar dados ou mudar o comportamento do aplicativo."
 }
