@@ -1,5 +1,5 @@
 {
-  "version": "V5.39",
-  "updatedAt": "2026-09-28T04:10:00Z",
-  "changes": "Refinamento geral da Home, CTAs, navegação desktop/mobile, busca no menu, acessibilidade, privacidade, feedback de salvamento do perfil e experiência responsiva."
+  "version":"V5.40",
+  "updatedAt":"2026-09-28T04:30:00Z",
+  "changes":"Jornada de registro mais curta, confirmação visual após salvar e retorno rápido à Home."
 }
