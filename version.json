@@ -1,5 +1,5 @@
 {
-  "version": "V5.66",
-  "updatedAt": "2026-09-28T16:35:00-03:00",
-  "changes": "Integridade de dados reforçada: o armazenamento agora confirma a gravação após salvar e tenta restaurar o valor anterior em caso de divergência. Melhorias de importação da V5.65 preservadas."
+  "version": "V5.67",
+  "updatedAt": "2026-09-28T14:00:00-03:00",
+  "changes": "Registros principais agora confirmam o salvamento antes de limpar o formulário e exibir sucesso. Falhas de gravação mostram erro sem apagar o que foi digitado."
 }
