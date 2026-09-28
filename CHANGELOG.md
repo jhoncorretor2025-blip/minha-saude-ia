@@ -1,3 +1,17 @@
+## V5.69 — Navegação reorganizada por objetivo
+
+- Reorganizado o menu principal para separar tarefas por objetivo: **Início, Registrar, Acompanhar, Organizar, IA e Segurança**.
+- **Registrar** concentra sintomas, medicamentos, consultas, exames, sinais vitais, medidas corporais e nutrição.
+- **Acompanhar** concentra linha do tempo, sono e bem-estar, histórico familiar, avisos, calendário e lembretes.
+- **Organizar** concentra documentos, relatórios e carteirinha.
+- **IA** mantém assistente, importação e preparação de consulta.
+- **Segurança** concentra exportação/compartilhamento, backup/restauração e configurações.
+- Menu mobile reorganizado com seis ações rápidas e categorias por objetivo.
+- Mantida a barra inferior mobile com **Início, Registrar, Buscar e Menu**.
+- Busca do menu desktop preservada.
+- Corrigida a associação dos recursos opcionais no menu mobile para não esconder sinais vitais quando medidas corporais estiverem desativadas.
+- Nenhum recurso existente foi removido; a alteração é de organização e acesso.
+
 ## V5.68 — Jornada principal e ações rápidas
 - 🎯 Adicionado um bloco **Próximo passo** na Home, adaptado ao estado real do cadastro e dos registros.
 - ↩️ Importações com rascunho pendente ganham acesso direto para continuar sem perder o trabalho preparado.
