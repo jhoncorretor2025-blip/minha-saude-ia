@@ -1,5 +1,13 @@
 # Changelog — Minha Saúde IA
 
+## V5.66 — Integridade do armazenamento
+- 💾 O núcleo de armazenamento agora confirma a gravação lendo o valor salvo novamente.
+- 🛡️ Se houver divergência, tenta restaurar automaticamente o valor anterior.
+- 🔒 Mantidos backups locais anteriores e as chaves de armazenamento existentes.
+- 📥 As melhorias de importação da V5.65 permanecem ativas.
+
+# Changelog — Minha Saúde IA
+
 ## V5.65 — Importação mais segura e clara
 - 🛡️ Importação agora valida se informações foram realmente reconhecidas antes de avançar.
 - 👀 A etapa de progresso deixa claro que os dados **não são salvos antes da revisão**.
