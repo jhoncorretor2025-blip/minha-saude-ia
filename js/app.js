@@ -457,6 +457,8 @@ function exportarPDF(){
  const root=document.createElement('div');
  root.id='msaPdfPrintRoot';
  const raw=healthText();
+ const pessoa=((get(K.p)[0]||{}).nome||'Não informado').trim();
+ const nomeArquivo=pessoa&&pessoa!=='Não informado' ? 'Informações de Saúde - '+pessoa : 'Informações de Saúde - Minha Saúde IA';
  const pdfLines=raw.split(/\\n/);
  const formatted=pdfLines.map(function(line){
    const s=String(line||'').trim();
@@ -467,14 +469,14 @@ function exportarPDF(){
    if(m)return '<p class="msa-pdf-line"><b>'+esc(m[1])+':</b> '+esc(m[2])+'</p>';
    return '<p class="msa-pdf-line">'+esc(s)+'</p>';
  }).join('');
- root.innerHTML='<div class="msa-pdf-sheet"><div class="msa-pdf-brand">🩺 <span>Minha Saúde IA</span></div><h1>Relatório de saúde pessoal</h1><div class="msa-pdf-meta">📄 Documento gerado em '+esc(new Date().toLocaleString('pt-BR'))+' · <b>V5.51</b></div><div class="msa-pdf-content">'+formatted+'</div><div class="msa-pdf-foot">ℹ️ Este documento organiza informações registradas pelo usuário e não constitui diagnóstico, prescrição ou laudo médico.</div></div>';
+ root.innerHTML='<div class="msa-pdf-sheet"><div class="msa-pdf-brand">🩺 <span>Minha Saúde IA</span></div><h1>Informações de Saúde — '+esc(pessoa||'Pessoa')+'</h1><div class="msa-pdf-meta">📄 Documento gerado em '+esc(new Date().toLocaleString('pt-BR'))+' · <b>V5.51</b></div><div class="msa-pdf-content">'+formatted+'</div><div class="msa-pdf-foot">ℹ️ Este documento organiza informações registradas pelo usuário e não constitui diagnóstico, prescrição ou laudo médico.</div></div>';
  const style=document.createElement('style');
  style.id='msaPdfPrintStyle';
  style.textContent='#msaPdfPrintRoot{position:fixed;inset:0;z-index:99999;overflow:auto;background:#fff;padding:24px;color:#172033;font-family:Arial,sans-serif}.msa-pdf-sheet{max-width:900px;margin:0 auto;line-height:1.5}.msa-pdf-brand{font-size:18px;font-weight:800;color:#1d4ed8;padding-bottom:8px;border-bottom:2px solid #dbeafe}.msa-pdf-brand span{margin-left:5px}.msa-pdf-sheet h1{font-size:27px;margin:14px 0 4px;color:#172033}.msa-pdf-meta{color:#64748b;font-size:11px;margin-bottom:18px}.msa-pdf-section{font-size:16px;color:#1d4ed8;background:#eff6ff;border-left:4px solid #2563eb;padding:7px 10px;margin:18px 0 8px;page-break-after:avoid}.msa-pdf-line{font:12px/1.55 Arial,sans-serif;margin:4px 0;page-break-inside:avoid}.msa-pdf-line b{font-weight:700;color:#172033}.msa-pdf-spacer{height:4px}.msa-pdf-foot{margin-top:24px;padding-top:10px;border-top:1px solid #e2e8f0;color:#64748b;font-size:9px}@media print{body>*:not(#msaPdfPrintRoot){display:none!important}#msaPdfPrintRoot{position:static!important;inset:auto!important;overflow:visible!important;padding:8mm 9mm!important;background:#fff!important;color:#000!important}.msa-pdf-sheet{max-width:none!important}.msa-pdf-brand{color:#1d4ed8}.msa-pdf-section{background:#eff6ff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.msa-pdf-line{font-size:10.5px;line-height:1.42}.msa-pdf-foot{font-size:8px}}@media screen{#msaPdfPrintRoot:before{content:"Preparando o PDF…";display:block;font-weight:800;color:#1d4ed8;margin-bottom:12px}}';
  document.head.appendChild(style);
  document.body.appendChild(root);
  const oldTitle=document.title;
- document.title='Minha Saúde IA - Exportação';
+ document.title=nomeArquivo;
  let done=false;
  const cleanup=()=>{
    if(done)return;
