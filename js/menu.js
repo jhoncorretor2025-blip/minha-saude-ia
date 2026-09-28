@@ -405,7 +405,7 @@
     iniciar();
   }
 })();
-/* V5.68-fallback-handlers */
+/* V5.69 — fallback handlers preservados */
 (function(){
   function lista(k){try{var s=window.MSAStorage||{};var v=s.get?s.get(k):[];return Array.isArray(v)?v:[]}catch(e){return[]}}
   function perfil(){var a=lista('msa2_perfil');return a[0]||{}}
@@ -431,12 +431,12 @@
   };
 })();
 
-(function msaV568VersionSync(){
+(function msaV569VersionSync(){
   function sync(){
     try{
-      document.title=document.title.replace(/V5\.67/g,'V5.68');
+      document.title=document.title.replace(/V5\.67/g,'V5.69');
       document.querySelectorAll('body *').forEach(function(el){
-        if(el.children.length===0 && el.textContent.indexOf('V5.67')>=0)el.textContent=el.textContent.replace(/V5\.67/g,'V5.68');
+        if(el.children.length===0 && el.textContent.indexOf('V5.67')>=0)el.textContent=el.textContent.replace(/V5\.67/g,'V5.69');
       });
     }catch(e){}
   }
