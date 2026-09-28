@@ -161,22 +161,21 @@ function abrirMinhaIA(id){
  const ia=preferenciasPadrao().ias.find(x=>x.id===id&&x.ativo);
  if(!ia)return;
  const prompt=window.msaGetPromptIA?window.msaGetPromptIA():'';
- if(prompt){
-  try{navigator.clipboard?.writeText(prompt)}catch(e){}
- }
- const web=ia.web||'';
- const app=ia.app||'';
- let abriu=false;
+ if(prompt){try{navigator.clipboard?.writeText(prompt)}catch(e){}}
+ const web=ia.web||'',app=ia.app||'';
+ const abrirWeb=()=>{if(!web)return;const sep=web.includes('?')?'&':'?';const url=prompt&&ia.id==='chatgpt'?web+sep+'q='+encodeURIComponent(prompt):web;window.open(url,'_blank')};
+ let tentouApp=false;
  if(dispositivoMovel()&&app){
+  tentouApp=true;
+  let voltou=false;
+  const onVis=()=>{voltou=true;document.removeEventListener('visibilitychange',onVis)};
+  document.addEventListener('visibilitychange',onVis);
   try{
-   const a=document.createElement('a');a.href=app;a.style.display='none';document.body.appendChild(a);a.click();a.remove();abriu=true;
+   const a=document.createElement('a');a.href=app;a.style.display='none';document.body.appendChild(a);a.click();a.remove();
   }catch(e){}
+  setTimeout(()=>{document.removeEventListener('visibilitychange',onVis);if(!voltou)abrirWeb()},1100);
  }
- if(!abriu&&web){
-  const sep=web.includes('?')?'&':'?';
-  const url=prompt&&ia.id==='chatgpt'?web+sep+'q='+encodeURIComponent(prompt):web;
-  window.open(url,'_blank');
- }
+ if(!tentouApp)abrirWeb();
  const msg=$('copiado');
  if(msg)msg.textContent=prompt?'✅ Informações preparadas e copiadas. Abrindo '+ia.nome+'…':'🚀 Abrindo '+ia.nome+'…';
 }
