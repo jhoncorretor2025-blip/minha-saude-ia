@@ -1,5 +1,5 @@
 {
-  "version": "V5.69",
-  "updatedAt": "2026-09-28T16:30:00-03:00",
-  "changes": "Navegação reorganizada por objetivo: Registrar, Acompanhar, Organizar, IA e Segurança, com versões específicas para desktop e celular e busca preservada."
+  "version": "V5.70",
+  "updatedAt": "2026-09-28T16:45:00-03:00",
+  "changes": "Correção crítica do módulo de relatórios: removido conteúdo de scripts e estilos do aplicativo que estava sendo incorporado indevidamente ao relatório e aparecendo como texto no final da página."
 }
