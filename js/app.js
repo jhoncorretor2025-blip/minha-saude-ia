@@ -278,8 +278,23 @@ list('listD',d,x=>`<div class="item"><div class="itemtop"><b>😣 ${esc(x.local)
 list('listC',c,x=>`<div class="item"><div class="itemtop"><b>👨‍⚕️ ${esc(x.esp)}</b><span class="tag">${x.data}</span></div><p>${esc(x.med||'Médico não informado')} · ${esc(x.mot||'')}<br><b>Perguntas:</b> ${esc(x.perg||'—')}<br><b>Orientações:</b> ${esc(x.obs||'—')}<br>${x.ret?'Retorno: '+x.ret:''}</p></div>`);
 list('listM',m,x=>`<div class="item"><div class="itemtop"><b>💊 ${esc(x.nome)}</b><span class="tag">${esc(x.dose||'')}</span></div><p>${esc(x.freq||'Frequência não informada')} · ${x.inicio||'—'} até ${x.fim||'—'}<br>Prescrito por: ${esc(x.pres||'—')}<br>${esc(x.obs||'')}</p></div>`);
 list('listE',e,x=>`<div class="item"><div class="itemtop"><b>🧪 ${esc(x.nome)}</b><span class="tag">${x.data}</span></div><p><b>Resultado:</b> ${esc(x.res||'—')}<br>${esc(x.obs||'')}</p></div>`);
-let all=[...d.map(x=>({date:x.data,type:'😣 Sintoma',text:x.local+' — '+x.int+'/10'})),...c.map(x=>({date:x.data,type:'👨‍⚕️ Consulta',text:x.esp})),...m.map(x=>({date:x.inicio,type:'💊 Medicamento',text:x.nome})),...e.map(x=>({date:x.data,type:'🧪 Exame',text:x.nome}))].filter(x=>x.date).sort((a,b)=>new Date(b.date)-new Date(a.date));
-$('tl').innerHTML=all.length?all.map(x=>`<div class="tl"><b>${x.type}</b> <span class="tag">${x.date}</span><p>${esc(x.text)}</p></div>`).join(''):'<div class="empty">Nenhum evento registrado.</div>';
+const dataTimelineValida=v=>{
+ const s=String(v??'').trim();
+ if(!s || /^(valor|data|não informado|nao informado|n\/a|-)$/i.test(s))return false;
+ const t=Date.parse(s);
+ return Number.isFinite(t);
+};
+const textoSintomaTimeline=x=>{
+ const local=String(x.local??'').trim();
+ const localValido=local && !/^(valor|local|não informado|nao informado|n\/a|-)$/i.test(local);
+ const n=Number(x.int);
+ if(localValido && Number.isFinite(n) && n>0)return local+' — intensidade '+n+'/10';
+ if(localValido)return local;
+ if(Number.isFinite(n) && n>0)return 'Intensidade '+n+'/10';
+ return 'Sintoma registrado';
+};
+let all=[...d.map(x=>({date:x.data,type:'😣 Sintoma',text:textoSintomaTimeline(x)})),...c.map(x=>({date:x.data,type:'👨‍⚕️ Consulta',text:x.esp||'Consulta registrada'})),...m.map(x=>({date:x.inicio||x.data,type:'💊 Medicamento',text:x.nome||'Medicamento registrado'})),...e.map(x=>({date:x.data,type:'🧪 Exame',text:x.nome||'Exame registrado'}))].filter(x=>dataTimelineValida(x.date)).sort((a,b)=>Date.parse(b.date)-Date.parse(a.date));
+$('tl').innerHTML=all.length?all.map(x=>`<div class="tl"><b>${x.type}</b> <span class="tag">${esc(fmt(x.date))}</span><p>${esc(x.text)}</p></div>`).join(''):'<div class="empty">Nenhum evento registrado.</div>';
 let last=all[0];$('ultimo').innerHTML=last?`<b>${last.type}</b><br>${esc(last.text)}<br><span class="muted">${last.date}</span>`:'Ainda não há registros.';
 let alert=findAlerts(d);$('alertaHome').className=alert?'danger':'safe';$('alertaHome').innerHTML=alert?alert:'Nenhum sinal de alerta automático encontrado nos registros.';
 let vals=d.slice(-10);$('chart').innerHTML=vals.length?vals.map(x=>`<div class="bar" style="height:${Math.max(8,x.int*10)}%"><span>${x.int}</span><small>${String(x.local).slice(0,7)}</small></div>`).join(''):'<div class="muted" style="margin:auto">Registre sintomas para ver a evolução.</div>';
