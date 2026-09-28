@@ -1,4 +1,4 @@
-/* Minha Saúde IA — salvamento robusto do perfil V5.42 */
+/* Minha Saúde IA — salvamento robusto do perfil V5.44 */
 (function(){
 'use strict';
 
