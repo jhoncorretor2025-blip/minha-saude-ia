@@ -402,6 +402,45 @@ body.msa-dark .metric-edit-btn{background:#0f172a;color:#93c5fd;border-color:#33
   </div>
  </div>
 </div>
+<script>
+/* V5.34 — ações da Central de Comando da Home */
+(function(){
+  window.closeHomeModal=function(){
+    ['msaHomeMoreOverlay','msaHomeGuideOverlay'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el){el.style.display='none';el.setAttribute('aria-hidden','true');}
+    });
+    document.body.style.overflow='';
+  };
+  window.openHomeMore=function(){
+    var el=document.getElementById('msaHomeMoreOverlay');
+    if(!el)return;
+    el.style.display='flex';
+    el.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+  };
+  window.openHomeGuide=function(){
+    var el=document.getElementById('msaHomeGuideOverlay');
+    if(!el)return;
+    el.style.display='flex';
+    el.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+  };
+  window.homeGo=function(id){
+    closeHomeModal();
+    var rotas={dor:'dor',meds:'meds',consultas:'consultas',exames:'exames',timeline:'timeline'};
+    var destino=rotas[id]||id;
+    if(typeof window.go==='function'){
+      window.go(destino);
+    }else{
+      setTimeout(function(){if(typeof window.go==='function')window.go(destino);},0);
+    }
+  };
+  window.addEventListener('keydown',function(ev){
+    if(ev.key==='Escape' && (document.getElementById('msaHomeMoreOverlay')||document.getElementById('msaHomeGuideOverlay'))) closeHomeModal();
+  });
+})();
+</script>
 <style id="v530-preferences-css">
 /* V5.33: onboarding legado totalmente desativado para evitar bloqueio de toque no iPhone */
 /* V5.33 — reforço Safari/iPhone: viewport, área segura e toque */
