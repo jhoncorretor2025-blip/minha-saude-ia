@@ -867,7 +867,11 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <div id="cicloList" class="list" style="margin-top:10px"></div>
 </div>
 <label>🔄 Regularidade do ciclo<select id="pRegularidade"><option value="">Não informado</option><option>Regular</option><option>Irregular</option></select></label>
-<label>💗 Relações sexuais por semana<input id="pSexoFreq" type="number" min="0" max="100" step="0.1" placeholder="Ex.: 2"></label>
+<div class="grid2">
+<label>💗 Mínimo de relações sexuais por semana<input id="pSexoFreqMin" type="number" min="0" max="100" step="0.1" placeholder="Ex.: 1"></label>
+<label>💗 Máximo de relações sexuais por semana<input id="pSexoFreqMax" type="number" min="0" max="100" step="0.1" placeholder="Ex.: 4"></label>
+</div>
+<label>🔞 Masturbação — vezes por dia<input id="pMasturbacaoDia" type="number" min="0" max="50" step="1" placeholder="Ex.: 1"></label>
 <label>🛡️ Uso de preservativo<select id="pCamisinha"><option value="">Prefiro não informar</option><option>Sempre</option><option>Às vezes</option><option>Nunca</option></select></label>
 <label>🤰 Já engravidou?<select id="pEngravidou"><option value="">Prefiro não informar</option><option>Sim</option><option>Não</option></select></label>
 <label>👶 Já foi mãe?<select id="pMae"><option value="">Prefiro não informar</option><option>Sim</option><option>Não</option></select></label>
@@ -1209,7 +1213,13 @@ valor
 [DURACAO_MENSTRUACAO]
 valor
 
-[FREQUENCIA_SEXUAL]
+[FREQUENCIA_SEXUAL_MIN]
+valor
+
+[FREQUENCIA_SEXUAL_MAX]
+valor
+
+[MASTURBACAO_POR_DIA]
 valor
 
 [USO_PRESERVATIVO]
@@ -1310,7 +1320,7 @@ REGRAS:
 - Se houver mais de uma informação relevante, coloque todas no campo correspondente.
 - Para SINAIS_VITAIS, VACINAS, HISTORICO_FAMILIAR, LEMBRETES e DOCUMENTOS, se houver vários registros, separe cada registro por ponto e vírgula.
 - Para SINAIS_VITAIS, informe data e, quando disponível, peso, pressão, batimentos, temperatura, glicemia, saturação e observações.
-- Para peso e altura, informe somente os valores conhecidos, sem estimar. Para objetivo corporal, academia e atividade física, informe somente o que estiver registrado. Para rotina de trabalho, informe tipo de trabalho e horas sentado/em pé quando disponíveis. Para água, informe o consumo declarado e para frequência urinária, quantas vezes por dia. Para calor/suor, informe o nível registrado. Para alimentação, informe somente hábitos já conhecidos. Para saúde reprodutiva, informe somente se houver dados disponíveis: última menstruação, duração/ciclo, frequência sexual, uso de preservativo, gestações, maternidade e histórico reprodutivo.
+- Para peso e altura, informe somente os valores conhecidos, sem estimar. Para objetivo corporal, academia e atividade física, informe somente o que estiver registrado. Para rotina de trabalho, informe tipo de trabalho e horas sentado/em pé quando disponíveis. Para água, informe o consumo declarado e para frequência urinária, quantas vezes por dia. Para calor/suor, informe o nível registrado. Para alimentação, informe somente hábitos já conhecidos. Para saúde reprodutiva, informe somente se houver dados disponíveis: última menstruação, duração/ciclo, frequência mínima e máxima de relações sexuais por semana, frequência de masturbação por dia, uso de preservativo, gestações, maternidade e histórico reprodutivo.
 - Para VACINAS, informe nome, data e dose/observações.
 - Para HISTORICO_FAMILIAR, informe o parente e a condição/informação.
 - Para LEMBRETES, informe o que lembrar, data/hora e tipo.
