@@ -2,7 +2,7 @@
    O menu não depende do restante do aplicativo para abrir e navegar.
 */
 (function(){
-  /* V5.70 — organização por objetivo: registrar, acompanhar, organizar e proteger */
+  /* V5.75 — organização por objetivo: registrar, acompanhar, organizar e proteger */
   function reorganizarMenuV569(){
     var nav=document.getElementById('nav');
     if(!nav || nav.getAttribute('data-menu-v569')==='1')return;
@@ -405,7 +405,7 @@
     iniciar();
   }
 })();
-/* V5.70 — fallback handlers preservados */
+/* V5.75 — fallback handlers preservados */
 (function(){
   function lista(k){try{var s=window.MSAStorage||{};var v=s.get?s.get(k):[];return Array.isArray(v)?v:[]}catch(e){return[]}}
   function perfil(){var a=lista('msa2_perfil');return a[0]||{}}
@@ -434,9 +434,9 @@
 (function msaV569VersionSync(){
   function sync(){
     try{
-      document.title=document.title.replace(/V5\.67/g,'V5.70');
+      document.title=document.title.replace(/V5\.67/g,'V5.75');
       document.querySelectorAll('body *').forEach(function(el){
-        if(el.children.length===0 && el.textContent.indexOf('V5.74')>=0)el.textContent=el.textContent.replace(/V5\.67/g,'V5.70');
+        if(el.children.length===0 && el.textContent.indexOf('V5.75')>=0)el.textContent=el.textContent.replace(/V5\.67/g,'V5.75');
       });
     }catch(e){}
   }
