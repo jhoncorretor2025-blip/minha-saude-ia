@@ -1,5 +1,5 @@
 {
-  "version": "V5.74",
+  "version": "V5.75",
   "updatedAt": "2026-09-28T17:22:00-03:00",
-  "changes": "Blindagem do fluxo de importação: inicialização aguarda o módulo, parser aceita marcadores formatados e separadores, e respostas JSON podem ser extraídas mesmo com texto ou Markdown ao redor."
+  "changes": "Blindagem da importação com autoteste local, diagnóstico, verificação de gravação temporária e compatibilidade de parser."
 }
