@@ -349,6 +349,24 @@ function gerarChecklistCompartilhamento(){
  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>alert('📋 Checklist copiado! Agora você pode enviar para a pessoa preencher o que falta.')).catch(()=>prompt('Copie o checklist:',txt));}
  else prompt('Copie o checklist:',txt);
 }
+function abrirPendenciasPreenchimento(){
+ const c=calcularCompletudeSaude();
+ if(!c.pendentes.length){alert('🎉 Seu cadastro está completo! Não há informações pendentes nos campos avaliados.');return}
+ const ids={'Nome':'pNome','Data de nascimento':'pNasc','Sexo':'pSexo','Altura':'pAltura','Peso':'pPeso','Tipo sanguíneo':'pSangue','Alergias':'pAlerg','Condições de saúde':'pCond','Cirurgias/internações':'pCirc','Contato de emergência':'pEmerg','Atividade física':'pAcademia','Tipo de trabalho':'pTrabalhoTipo','Consumo de água':'pAguaDia','Alimentação':'pAlimentacao','Duração média do ciclo':'pCiclo','Duração média do sangramento':'pDuracaoMenst','Regularidade do ciclo':'pRegularidade','Método anticoncepcional':'pAnticoncepcionalMetodo'};
+ const destinos={'Medicamentos':'meds','Sintomas':'dor','Consultas':'consultas','Exames':'exames','Sinais vitais':'acompanhamento','Vacinas':'acompanhamento','Histórico familiar':'familia','Lembretes':'lembretes','Documentos':'documentos','Diário do ciclo':'acompanhamento'};
+ let old=document.getElementById('msaPendenciasModal');if(old)old.remove();
+ const modal=document.createElement('div');modal.id='msaPendenciasModal';modal.className='msa-pendencias-overlay';
+ const groups={};c.pendentes.forEach(x=>(groups[x[0]]||(groups[x[0]]=[])).push(x));
+ let html='<div class="msa-pendencias-card" role="dialog" aria-modal="true" aria-labelledby="msaPendenciasTitle"><div class="msa-pendencias-head"><div><div class="msa-pendencias-kicker">📋 Preenchimento</div><h2 id="msaPendenciasTitle">Informações que faltam</h2><p>Escolha uma opção para ir direto ao local onde você pode preencher o dado.</p></div><button type="button" class="msa-pendencias-close" aria-label="Fechar">✕</button></div><div class="msa-pendencias-progress"><b>'+c.pendentes.length+'</b> informação(ões) pendente(s) · ficha em <b>'+c.percentual+'%</b></div><div class="msa-pendencias-list">';
+ Object.keys(groups).forEach(cat=>{html+='<div class="msa-pendencias-group"><h3>'+esc(cat)+'</h3>';groups[cat].forEach(x=>{html+='<button type="button" class="msa-pendencia-item" data-cat="'+esc(cat)+'" data-label="'+esc(x[1])+'"><span>⚠️ '+esc(x[1])+'</span><strong>Preencher →</strong></button>'});html+='</div>'});
+ html+='</div></div>';modal.innerHTML=html;document.body.appendChild(modal);
+ const close=()=>modal.remove();modal.querySelector('.msa-pendencias-close').onclick=close;modal.addEventListener('click',e=>{if(e.target===modal)close()});
+ modal.querySelectorAll('.msa-pendencia-item').forEach(btn=>btn.onclick=()=>{
+  const cat=btn.dataset.cat,label=btn.dataset.label;close();const fieldId=cat==='Perfil'?ids[label]:null;const dest=destinos[label];
+  if(fieldId){if(typeof go==='function')go('perfil');setTimeout(()=>{const el=document.getElementById(fieldId);if(el){el.focus();el.scrollIntoView({behavior:'smooth',block:'center'});el.style.boxShadow='0 0 0 4px rgba(37,99,235,.18)';setTimeout(()=>el.style.boxShadow='',1800)}},250)}
+  else if(dest&&typeof go==='function')go(dest);else if(cat==='Rotina'&&typeof go==='function')go('perfil');else if(typeof go==='function')go('perfil');
+ });
+}
 function atualizarEngajamento(){
  const hoje=new Date().toISOString().slice(0,10);
  const h=JSON.parse(window.msaStorage.getItem('msa2_humor')||'null');
