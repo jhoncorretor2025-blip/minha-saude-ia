@@ -1022,12 +1022,12 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <div><b>3️⃣ Copie a resposta</b><span>A IA devolverá sua ficha organizada.</span></div>
 <div><b>4️⃣ Cole aqui</b><span>O Minha Saúde IA identifica e salva os dados.</span></div>
 </div>
-<div class="ai-cta"><div><b>🚀 Quer começar agora?</b><span>Não precisa preencher tudo manualmente. Se faltar uma informação importante, a IA pergunta.</span></div><button class="btn green" onclick="copiarPromptIA()">✨ Copiar prompt e começar</button></div>
+<div class="ai-cta"><div><b>🚀 Quer começar agora?</b><span>Não precisa preencher tudo manualmente. A IA organiza o que já conhece e não fará uma entrevista.</span></div><button class="btn green" onclick="copiarPromptIA()">✨ Copiar prompt e começar</button></div>
 <div class="alert safe" style="margin-top:13px">
 <b>🔄 Novo fluxo — V3:</b><br>
 1️⃣ O prompt é copiado automaticamente.<br>
 2️⃣ Abra o ChatGPT ou Gemini.<br>
-3️⃣ A IA usa o contexto/memória que já possui. Se faltar uma informação importante, <b>ela fará uma pergunta objetiva</b> e aguardará sua resposta.<br>
+3️⃣ A IA usa o contexto/memória que já possui. <b>Ela não fará perguntas nem aguardará respostas.</b> Se faltar alguma informação, registre <b>Não informado</b>.<br>
 4️⃣ Copie a ficha que ela devolver.<br>
 5️⃣ Volte para cá, cole e toque em <b>Importar informações</b>.
 </div>
@@ -1050,7 +1050,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <b>3️⃣ Cole</b><div class="muted" style="font-size:12px;margin-top:3px">Na caixa da IA: <b>Ctrl + V</b> (computador) ou <b>Colar</b> (celular). Depois envie.</div>
 </div>
 <div style="padding:10px 11px;border-radius:12px;background:#f5f3ff;border:1px solid #e5dcff">
-<b>4️⃣ Espere</b><div class="muted" style="font-size:12px;margin-top:3px">A IA organiza o que já conhece. Se faltar uma informação importante, responda à pergunta que ela fizer e depois copie a ficha final.</div>
+<b>4️⃣ Espere</b><div class="muted" style="font-size:12px;margin-top:3px">A IA organiza o que já conhece. <b>Ela não deve fazer perguntas.</b> Se faltar uma informação, ela deve escrever <b>Não informado</b> e entregar a ficha completa.</div>
 </div>
 <div style="padding:10px 11px;border-radius:12px;background:#fefce8;border:1px solid #fde68a">
 <b>5️⃣ Copie a resposta</b><div class="muted" style="font-size:12px;margin-top:3px">Copie <b>toda a ficha</b> que a IA devolver. No computador: <b>Ctrl + A</b> e <b>Ctrl + C</b>.</div>
@@ -1081,9 +1081,9 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 
 IMPORTANTE:
 - Use as informações que você já possui sobre mim nesta conversa e, se estiver disponível, sua memória/contexto autorizado.
-- NÃO faça perguntas sobre dados que já estejam disponíveis para você.
-- Se você não souber uma informação importante para completar a ficha, faça uma pergunta objetiva sobre ela e aguarde a minha resposta antes de montar a ficha final.
-- **DOENÇAS E CONDIÇÕES DE SAÚDE são obrigatórias na verificação:** se você não souber quais doenças ou condições eu tenho ou já tive, pergunte exatamente: "Quais doenças ou condições de saúde você tem ou já teve?". Se eu responder "nenhuma", "não tenho nenhuma" ou equivalente, registre essa resposta em [DOENCAS].
+- NÃO faça perguntas. Não faça entrevista, não peça confirmação e não aguarde respostas.
+- Use somente as informações que você já possui sobre mim. Se alguma informação não estiver disponível, registre exatamente "Não informado".
+- **DOENÇAS E CONDIÇÕES DE SAÚDE:** use somente o que já estiver disponível no seu contexto/memória. Se não houver informação suficiente, registre "Não informado" em [DOENCAS].
 - NÃO me pergunte novamente meu nome, idade, peso ou outros dados que já estejam disponíveis para você.
 - NÃO invente, estime ou complete informações.
 - Se um dado não estiver disponível, escreva "Não informado".
@@ -1091,10 +1091,10 @@ IMPORTANTE:
 - Quero somente organizar informações já conhecidas.
 - Inclua também os dados corporais e de rotina (peso, altura, objetivo corporal, academia, atividade física, trabalho, tempo sentado/em pé, água, frequência urinária, frequência de evacuação, calor/suor e alimentação), além dos módulos de sinais vitais, vacinas, histórico familiar, lembretes e informações do cartão de emergência, quando essas informações estiverem disponíveis. Se a pessoa for mulher, inclua duração média do ciclo, duração média do sangramento e regularidade quando disponíveis. Se usar anticoncepcional, inclua método, nome, horário habitual, data de início e, quando aplicável, regime da pílula (21, 24 ou 28 dias) e tipo de minipílula; não pergunte algo que não esteja disponível.
 - Frequência urinária e frequência de evacuação são informações opcionais. Se ainda não houver esses dados, use "Não informado" e siga sem fazer perguntas.
-- Para doenças/condições, não use "Não informado" sem antes verificar se essa informação está disponível; quando estiver ausente, faça a pergunta objetiva indicada acima.
+- Para doenças/condições, verifique primeiro o contexto/memória disponível. Se não houver informação, use "Não informado". Nunca faça pergunta para completar a ficha.
 - Não invente documentos, fotos ou arquivos. Só mencione documentos se eu tiver informado que existem e puder descrever o que são.
 
-SE PRECISAR DE UMA INFORMAÇÃO IMPORTANTE QUE NÃO ESTIVER DISPONÍVEL, FAÇA PRIMEIRO A PERGUNTA OBJETIVA, AGUARDE A RESPOSTA E SÓ ENTÃO DEVOLVA ESTA FICHA. NÃO FAÇA PERGUNTAS DESNECESSÁRIAS.
+REGRA PRINCIPAL: NÃO FAÇA NENHUMA PERGUNTA. NÃO AGUARDE RESPOSTA. DEVOLVA A FICHA COMPLETA EM UMA ÚNICA RESPOSTA. Para qualquer informação ausente, use "Não informado".
 
 [NOME]
 valor
