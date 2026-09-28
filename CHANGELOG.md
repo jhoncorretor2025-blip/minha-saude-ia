@@ -1,5 +1,12 @@
 # Changelog — Minha Saúde IA
 
+## V5.67 — Confirmação dos salvamentos principais
+- 🛡️ Sintomas, consultas, medicamentos, exames e medidas corporais agora confirmam o resultado da gravação antes de limpar o formulário.
+- ⚠️ Se o armazenamento falhar ou a leitura de confirmação divergir, o sistema informa o problema e mantém os dados digitados.
+- 💾 Nenhuma chave ou formato de registro existente foi alterado.
+- 📱 Interface, navegação e importação da V5.66 foram preservadas.
+
+
 ## V5.66 — Integridade do armazenamento
 - 💾 O núcleo de armazenamento agora confirma a gravação lendo o valor salvo novamente.
 - 🛡️ Se houver divergência, tenta restaurar automaticamente o valor anterior.
