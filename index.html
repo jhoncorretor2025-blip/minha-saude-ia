@@ -390,8 +390,9 @@ body.msa-dark .metric-edit-btn{background:#0f172a;color:#93c5fd;border-color:#33
  </div>
 </div>
 <style id="v530-preferences-css">
-/* V5.33: desativa o onboarding duplicado legado que podia bloquear o cadastro */
-#msaOnboardingOverlay{display:none!important;pointer-events:none!important;}
+/* V5.33: onboarding legado totalmente desativado para evitar bloqueio de toque no iPhone */
+#onboarding,#msaOnboardingOverlay{display:none!important;visibility:hidden!important;pointer-events:none!important;opacity:0!important;}
+body{overflow-x:hidden;}
 
 .msa-feature-off{display:none!important}
 body.msa-dark #settingsPreferences label{background:#111827!important;color:#e5e7eb;border-color:#263244!important}
@@ -1380,16 +1381,12 @@ function hasAnyHealthData(){
 }
 function showOnboarding(){
  const o=document.getElementById('onboarding');
- if(!o)return;
- const naoMostrar=localStorage.getItem('msa2_onboarding_hide')==='1';
- if(!naoMostrar){
-   o.style.display='block';
-   o.style.visibility='visible';
-   document.body.style.overflow='hidden';
- }else{
+ if(o){
    o.style.display='none';
-   document.body.style.overflow='';
+   o.style.visibility='hidden';
+   o.style.pointerEvents='none';
  }
+ document.body.style.overflow='';
 }
 function naoMostrarMais(){
  localStorage.setItem('msa2_onboarding_hide','1');
