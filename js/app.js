@@ -3,6 +3,20 @@
 const K=window.MSA_K||window.K;
 const get=k=>window.MSAStorage.get(k);
 const set=(k,v)=>window.MSAStorage.set(k,v);
+function gravarOuAvisar(k,v){
+ try{
+  const ok=set(k,v);
+  if(ok===false){
+   alert('⚠️ Não foi possível confirmar o salvamento. Nenhuma confirmação será exibida.');
+   return false;
+  }
+  return true;
+ }catch(e){
+  console.error('[Minha Saúde IA] falha ao salvar:',e);
+  alert('⚠️ Não foi possível salvar este registro. Seus dados anteriores foram preservados quando possível.');
+  return false;
+ }
+}
 const $=x=>document.getElementById(x);
 const esc=window.MSAUtils?.esc||function(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))};
 function atualizarURLPagina(id,modo){
@@ -612,14 +626,14 @@ $('medidasForm')?.addEventListener('submit',e=>{
  e.preventDefault();
  const item={id:Date.now(),data:$('medidasData').value,biceps:$('medidasBiceps').value,barriga:$('medidasBarriga').value,gluteos:$('medidasGluteos').value,panturrilha:$('medidasPanturrilha').value,coxa:$('medidasCoxa').value,peito:$('medidasPeito').value,obs:$('medidasObs').value};
  if(!item.biceps&&!item.barriga&&!item.gluteos&&!item.panturrilha&&!item.coxa&&!item.peito){alert('Informe pelo menos uma medida corporal.');return}
- const a=get(K.medidas);a.push(item);set(K.medidas,a);e.target.reset();$('medidasData').value=hojeLocal();render();alert('📏 Medidas corporais salvas!');
+ const a=get(K.medidas);a.push(item);if(!gravarOuAvisar(K.medidas,a))return;e.target.reset();$('medidasData').value=hojeLocal();render();alert('📏 Medidas corporais salvas!');
 });
 $('dData').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
 $('dorForm')?.addEventListener('submit',()=>{});
-$('dorForm').onsubmit=e=>{e.preventDefault();let a=get(K.d);a.push({data:$('dData').value,local:$('dLocal').value,int:+$('dInt').value,tipo:$('dTipo').value,freq:$('dFreq').value,gatilho:$('dGatilho').value,sint:$('dSint').value,obs:$('dObs').value});set(K.d,a);e.target.reset();$('dInt').value=5;$('dScore').textContent=5;render();alert('Sintoma salvo!')};
-$('cForm').onsubmit=e=>{e.preventDefault();let a=get(K.c);a.push({data:$('cData').value,esp:$('cEsp').value,med:$('cMed').value,mot:$('cMot').value,perg:$('cPerg').value,obs:$('cObs').value,ret:$('cRet').value});set(K.c,a);e.target.reset();render();alert('Consulta salva!')};
-$('mForm').onsubmit=e=>{e.preventDefault();let a=get(K.m);a.push({nome:$('mNome').value,dose:$('mDose').value,freq:$('mFreq').value,inicio:$('mInicio').value,fim:$('mFim').value,pres:$('mPres').value,obs:$('mObs').value});set(K.m,a);e.target.reset();render();alert('Medicamento salvo!')};
-$('eForm').onsubmit=e=>{e.preventDefault();let a=get(K.e);a.push({nome:$('eNome').value,data:$('eData').value,res:$('eRes').value,obs:$('eObs').value});set(K.e,a);e.target.reset();render();alert('Exame salvo!')};
+$('dorForm').onsubmit=e=>{e.preventDefault();let a=get(K.d);a.push({data:$('dData').value,local:$('dLocal').value,int:+$('dInt').value,tipo:$('dTipo').value,freq:$('dFreq').value,gatilho:$('dGatilho').value,sint:$('dSint').value,obs:$('dObs').value});if(!gravarOuAvisar(K.d,a))return;e.target.reset();$('dInt').value=5;$('dScore').textContent=5;render();alert('Sintoma salvo!')};
+$('cForm').onsubmit=e=>{e.preventDefault();let a=get(K.c);a.push({data:$('cData').value,esp:$('cEsp').value,med:$('cMed').value,mot:$('cMot').value,perg:$('cPerg').value,obs:$('cObs').value,ret:$('cRet').value});if(!gravarOuAvisar(K.c,a))return;e.target.reset();render();alert('Consulta salva!')};
+$('mForm').onsubmit=e=>{e.preventDefault();let a=get(K.m);a.push({nome:$('mNome').value,dose:$('mDose').value,freq:$('mFreq').value,inicio:$('mInicio').value,fim:$('mFim').value,pres:$('mPres').value,obs:$('mObs').value});if(!gravarOuAvisar(K.m,a))return;e.target.reset();render();alert('Medicamento salvo!')};
+$('eForm').onsubmit=e=>{e.preventDefault();let a=get(K.e);a.push({nome:$('eNome').value,data:$('eData').value,res:$('eRes').value,obs:$('eObs').value});if(!gravarOuAvisar(K.e,a))return;e.target.reset();render();alert('Exame salvo!')};
 
 function hojeLocal(){return new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10)}
 function diasEntre(a,b){
