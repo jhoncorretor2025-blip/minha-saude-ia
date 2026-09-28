@@ -949,7 +949,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 
 <section id="sono" data-feature="sonoBem"><div class="card"><h2>😴 Sono e Bem-estar Mental</h2><div class="muted">Registre sono, estresse, ansiedade e possíveis gatilhos para observar sua evolução ao longo do tempo.</div>
 <div class="grid2" style="margin-top:13px">
-<div class="card"><h3>🌙 Diário do sono — registro rápido</h3><div class="muted">Quanto mais simples, mais fácil manter o hábito. O aplicativo calcula automaticamente o total de horas dormidas.</div><form id="sonoForm" style="margin-top:12px"><div class="grid2"><label>📅 Data<input id="sonoData" type="date" required></label><label>🌙 Horário que dormiu<input id="sonoDormiu" type="time" required></label></div><div class="grid2"><label>☀️ Horário que acordou<input id="sonoAcordou" type="time" required></label><label>🚽 Acordou para fazer xixi<input id="sonoXixi" type="number" min="0" max="20" step="1" value="0"></label></div><div class="grid2"><label>😣 Acordou com dor<input id="sonoDor" type="number" min="0" max="20" step="1" value="0"></label><label>📝 Observação (opcional)<input id="sonoObs" placeholder="Ex.: acordei várias vezes"></label></div><button class="btn green">💾 Registrar sono</button></form><div id="sonoList" class="list" style="margin-top:10px"></div></div>
+<div class="card"><h3>🌙 Diário do sono — registro rápido</h3><div class="muted">Quanto mais simples, mais fácil manter o hábito. O aplicativo calcula automaticamente o total de horas dormidas.</div><form id="sonoForm" style="margin-top:12px"><div class="grid2"><label>🌙 Horário que dormiu<input id="sonoDormiu" type="time" required></label><label>☀️ Horário que acordou<input id="sonoAcordou" type="time" required></label></div><div class="grid2"><label>🚽 Acordou para fazer xixi<input id="sonoXixi" type="number" min="0" max="20" step="1" value="0"></label><label>😣 Acordou com dor<input id="sonoDor" type="number" min="0" max="20" step="1" value="0"></label></div><label>📝 Observação (opcional)<input id="sonoObs" placeholder="Ex.: acordei várias vezes"></label><button class="btn green">💾 Registrar sono</button></form><div id="sonoList" class="list" style="margin-top:10px"></div></div>
 <div class="card"><h3>🧠 Estresse e ansiedade</h3><form id="bemForm"><div class="grid2"><label>Data<input id="bemData" type="date" required></label><label>Estresse (0–10)<input id="bemEstresse" type="number" min="0" max="10"></label></div><label>Ansiedade (0–10)<input id="bemAnsiedade" type="number" min="0" max="10"></label><label>Humor / observação<textarea id="bemObs"></textarea></label><button class="btn">💾 Registrar bem-estar</button></form><div id="bemList" class="list" style="margin-top:10px"></div></div></div>
 <div class="card" style="margin-top:13px"><h3>🎯 Gatilhos emocionais e sintomas</h3><form id="gatilhoForm"><div class="grid2"><label>Data<input id="gatData" type="date" required></label><label>Gatilho<input id="gatNome" required placeholder="Ex.: trabalho, conflito, falta de sono"></label></div><label>Sintoma relacionado<input id="gatSintoma" placeholder="Ex.: dor de cabeça, pele, dor..."></label><label>Observações<textarea id="gatObs"></textarea></label><button class="btn">💾 Registrar gatilho</button></form><div id="gatList" class="list" style="margin-top:10px"></div></div>
 <div class="alert safe" style="margin-top:13px">🧠 Estes registros ajudam a organizar seu histórico. Eles não diagnosticam ansiedade, depressão ou outras condições.</div></div></section>
@@ -1396,7 +1396,7 @@ REGRAS:
 <script src="js/core/storage.js?v=V5.45" defer></script>
 <script src="js/core/utils.js?v=V5.45" defer></script>
 <script src="js/menu.js?v=V5.45" defer></script>
-<script src="js/app.js?v=V5.48" defer></script>
+<script src="js/app.js?v=V5.50" defer></script>
 <script src="js/perfil-save.js?v=V5.45" defer></script>
 <script src="js/recursos.js?v=V5.45" defer></script>
 
@@ -1583,7 +1583,7 @@ function openReport(title,body){
  const safeTitle=esc(title);
  const safeBody=String(body||'');
  const c=typeof calcularCompletudeSaude==='function'?calcularCompletudeSaude():{percentual:0,preenchidos:0,total:0};
- const appVersion='V5.48';
+ const appVersion='V5.50';
  const reportMeta='<div class="box" style="border:1px solid #dbeafe;background:#eff6ff"><b>📌 Identificação do sistema</b><br>Versão: <b>'+appVersion+'</b><br>Completude da ficha: <b>'+c.percentual+'%</b> ('+c.preenchidos+'/'+c.total+' itens avaliados)<br>Gerado em: '+new Date().toLocaleString('pt-BR')+'</div>';
  w.document.open();
  w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+safeTitle+'</title><style>'+
@@ -1642,7 +1642,7 @@ function updateReportSummary(){
  const {start,end,d,c,m,e}=rangeData();
  const comp=calcularCompletudeSaude();
  const ri=$('rSistemaInfo');
- if(ri)ri.innerHTML='<div class="alert safe"><b>🩺 Identificação do relatório</b><br>Versão do sistema: <b>V5.48</b> · Ficha preenchida: <b>'+comp.percentual+'%</b> ('+comp.preenchidos+'/'+comp.total+')</div>';
+ if(ri)ri.innerHTML='<div class="alert safe"><b>🩺 Identificação do relatório</b><br>Versão do sistema: <b>V5.50</b> · Ficha preenchida: <b>'+comp.percentual+'%</b> ('+comp.preenchidos+'/'+comp.total+')</div>';
  const avg=d.length?(d.reduce((a,x)=>a+x.int,0)/d.length).toFixed(1):'—';
  $('rResumo').innerHTML=`<div class="grid4"><div><b>${d.length}</b><br><span class="muted">Sintomas</span></div><div><b>${c.length}</b><br><span class="muted">Consultas</span></div><div><b>${m.length}</b><br><span class="muted">Medicamentos</span></div><div><b>${e.length}</b><br><span class="muted">Exames</span></div></div><p style="margin-top:12px"><b>Intensidade média registrada:</b> ${avg}/10</p><p class="muted">Período: ${start} → ${end}</p>`;
 }
