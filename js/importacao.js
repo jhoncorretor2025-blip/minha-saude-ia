@@ -1,4 +1,4 @@
-/* Minha Saúde IA - módulo de importação V5.73 */
+/* Minha Saúde IA - módulo de importação V5.74 */
 function obterPromptIA(){
  const t=document.getElementById('promptIA');
  return t?t.value:'';
@@ -57,9 +57,9 @@ function limparLinhaFicha(line){
  return String(line||'').trim()
   .replace(/^\s*[-*+]\s+/,'')
   .replace(/^\s*#{1,6}\s*/,'')
-  .replace(/^\s*[>*]\s*/,'')
-  .replace(/^\s*[\`*_]+(?=\[)/,'')
-  .replace(/(?<=\])\s*[\`*_]+(?=\s|$)/g,'')
+  .replace(/^\s*>\s*/,'')
+  .replace(/^\s*[*_\`]+(\[[^\]]+\])[*_\`]+(?=\s*(?:[:=–—-]|$))/,'$1')
+  .replace(/^\s*[*_\`]+|[*_\`]+\s*$/g,'')
   .trim();
 }
 
@@ -182,8 +182,8 @@ function normalizarFichaIA(raw){
   var m=clean.match(/^\[([^\]]+)\]\s*(.*)$/);
   if(!m)m=clean.match(/^([^:=–—-]{2,70})\s*[:=]\s*(.*)$/);
   if(m){
-   var key=canonical(m[1]);
-   if(key){current=key;values[current]=m[2]||'';return}
+   var key=canonical(m[1]),valor=String(m[2]||'').replace(/^\s*[:=–—-]\s*/,'');
+   if(key){current=key;values[current]=valor;return}
   }
   if(current)values[current]+=(values[current]?'\n':'')+line;
  });
