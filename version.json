@@ -1,5 +1,5 @@
 {
-  "version": "V5.52",
-  "updatedAt": "2026-09-28T07:45:00Z",
-  "changes": "PDF reformulado com seções destacadas, textos importantes em negrito, emojis preservados e versão atualizada para V5.51 no conteúdo."
+  "version": "V5.53",
+  "updatedAt": "2026-09-28T07:55:00Z",
+  "changes": "PDF passa a usar o nome da pessoa no título e no nome sugerido do arquivo: Informações de Saúde - Nome."
 }
