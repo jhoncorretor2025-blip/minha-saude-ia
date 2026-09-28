@@ -649,7 +649,7 @@ $('sonoForm')?.addEventListener('submit',e=>{
  let mins=(fh*60+fm)-(ih*60+im);if(mins<=0)mins+=1440;
  const horas=(mins/60).toFixed(1);
  let a=get(K.sono);
- a.push({id:Date.now(),data:$('sonoData').value,dormiu:inicio,acordou:fim,horas:horas,xixi:$('sonoXixi').value||0,dor:$('sonoDor').value||0,obs:$('sonoObs').value});
+ a.push({id:Date.now(),data:hojeLocal(),dormiu:inicio,acordou:fim,horas:horas,xixi:$('sonoXixi').value||0,dor:$('sonoDor').value||0,obs:$('sonoObs').value});
  set(K.sono,a);e.target.reset();$('sonoXixi').value=0;$('sonoDor').value=0;renderNovosModulos();alert('🌙 Sono registrado! Você dormiu cerca de '+horas.replace('.',',')+' horas.');
 });
 $('bemForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.bem);a.push({data:$('bemData').value,estresse:$('bemEstresse').value,ansiedade:$('bemAnsiedade').value,obs:$('bemObs').value});set(K.bem,a);e.target.reset();renderNovosModulos();alert('🧠 Bem-estar registrado!')});
