@@ -607,8 +607,7 @@ function renderNovosModulos(){
 if($('lembAgenda')){const items=[...get(K.r).map(x=>({d:x.data,n:x.nome,t:x.tipo||'Lembrete'})),...get(K.medRot).map(x=>({d:hojeLocal()+'T'+x.hora,n:x.nome,t:'Medicamento'}))].filter(x=>x.d).sort((a,b)=>String(a.d).localeCompare(String(b.d))).slice(0,8);$('lembAgenda').innerHTML=items.length?items.map(x=>'<div class="item"><b>'+esc(x.n)+'</b><p>'+esc(x.d)+' · '+esc(x.t)+'</p></div>').join(''):'<div class="empty">Nenhum próximo cuidado.</div>'}
 }
 function arquivoDataURL(file,cb){if(!file){cb('');return}const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(file)}
-$('cicloForm')?.addEventListener('submit',e=>{
- e.preventDefault();
+$('cicloForm')?.querySelector('button')?.addEventListener('click',e=>{
  const inicio=$('cicloInicio').value,fim=$('cicloFim').value;
  if(!inicio){alert('Informe o início da menstruação.');return}
  if(fim&&fim<inicio){alert('A data de fim não pode ser anterior ao início.');return}
