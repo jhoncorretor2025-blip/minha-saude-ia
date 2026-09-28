@@ -540,7 +540,13 @@ $('pForm').onsubmit=e=>{
  try{render();}catch(err){console.error('[Minha Saúde IA] erro ao atualizar o perfil:',err);}
  try{renderCarteirinha();}catch(err){console.error('[Minha Saúde IA] erro ao atualizar a carteirinha:',err);}
  setTimeout(function(){try{renderNovosModulos();}catch(err){console.error('[Minha Saúde IA] erro ao atualizar módulos do perfil:',err);}},0);
- alert('✅ Perfil salvo!');
+
+ const aviso=document.createElement('div');
+ aviso.textContent='✅ Dados salvos com sucesso!';
+ aviso.setAttribute('role','status');
+ aviso.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:999999;background:#16a34a;color:#fff;padding:14px 22px;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.22);font-weight:800;font-size:16px;text-align:center;';
+ document.body.appendChild(aviso);
+ setTimeout(function(){try{aviso.remove();}catch(e){};go('home');window.scrollTo({top:0,behavior:'smooth'});},1400);
 };
 $('dorForm').onsubmit=e=>{e.preventDefault();let a=get(K.d);a.push({data:$('dData').value,local:$('dLocal').value,int:+$('dInt').value,tipo:$('dTipo').value,freq:$('dFreq').value,gatilho:$('dGatilho').value,sint:$('dSint').value,obs:$('dObs').value});set(K.d,a);e.target.reset();$('dInt').value=5;$('dScore').textContent=5;render();alert('Sintoma salvo!')};
 $('cForm').onsubmit=e=>{e.preventDefault();let a=get(K.c);a.push({data:$('cData').value,esp:$('cEsp').value,med:$('cMed').value,mot:$('cMot').value,perg:$('cPerg').value,obs:$('cObs').value,ret:$('cRet').value});set(K.c,a);e.target.reset();render();alert('Consulta salva!')};
