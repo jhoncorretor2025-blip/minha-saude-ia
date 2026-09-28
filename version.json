@@ -1,5 +1,5 @@
 {
-  "version":"V5.40",
-  "updatedAt":"2026-09-28T04:30:00Z",
-  "changes":"Jornada de registro mais curta, confirmação visual após salvar e retorno rápido à Home."
+  "version":"V5.41",
+  "updatedAt":"2026-09-28T04:45:00Z",
+  "changes":"Correção crítica do HTML/JavaScript, restauração do salvamento do perfil e atualização forçada do cache."
 }
