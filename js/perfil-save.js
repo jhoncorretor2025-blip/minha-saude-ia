@@ -1,4 +1,4 @@
-/* Minha Saúde IA — salvamento robusto do perfil V5.44 */
+/* Minha Saúde IA — salvamento robusto do perfil V5.77 */
 (function(){
 'use strict';
 
@@ -41,7 +41,8 @@ function salvarPerfilRobusto(e){
       paracetamolFreq:val('pParacetamolFreq'),outrosDor:val('pOutrosDor'),catapora:val('pCatapora'),cataporaQuando:val('pCataporaQuando'),
       academia:val('pAcademia'),academiaFreq:val('pAcademiaFreq'),trabalhoTipo:val('pTrabalhoTipo'),
       horasSentado:val('pHorasSentado'),horasPe:val('pHorasPe'),aguaDia:val('pAguaDia'),urinaDia:val('pUrinaDia'),
-      evacuacaoDia:val('pEvacuacaoDia'),calorSuor:val('pCalorSuor')
+      evacuacaoDia:val('pEvacuacaoDia'),calorSuor:val('pCalorSuor'),
+      fuma:val('pFuma'),fumaObs:val('pFumaObs'),alcool:val('pAlcool'),alcoolObs:val('pAlcoolObs')
     });
 
     const ok=storage.set(K.p,[perfil]);
