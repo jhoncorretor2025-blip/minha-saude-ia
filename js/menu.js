@@ -176,7 +176,7 @@
           ['nutricao','🥗 Nutrição','nutricao']
         ])+
         mobileSection('Acompanhar',[
-          ['sono','😴 Sono e bem-estar','sonoBem'],['familia','🧬 Histórico familiar'],['avisos','🔔 Atenção e avisos'],
+          ['sono','😴 Sono e bem-estar','sonoBem'],['familia','🧬 Histórico familiar'],['familiares','👨‍👩‍👧‍👦 Familiares'],['avisos','🔔 Atenção e avisos'],
           ['calendario','📅 Calendário'],['lembretes','⏰ Lembretes']
         ])+
         mobileSection('Organizar',[
