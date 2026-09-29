@@ -60,6 +60,7 @@ function aplicarVisibilidadeFamiliares(){
 function init(){instalarControleFamiliares();aplicarVisibilidadeFamiliares();
  const form=document.getElementById('familiarForm');if(form)form.onsubmit=e=>{e.preventDefault();const p={id:uid('fam'),nome:val('fNome'),parentesco:val('fParentesco'),sexo:val('fSexo'),nasc:val('fNasc'),idade:val('fIdade'),condicao:val('fCondicao'),alergias:val('fAlergias'),sangue:val('fSangue'),contato:val('fContato'),obs:val('fObs'),criadoEm:new Date().toISOString(),medicamentos:[],consultas:[],crises:[]};if(!p.nome){alert('Informe o nome.');return}const list=getList();list.push(p);if(!saveList(list)){alert('Não foi possível salvar.');return}setSelected(p.id);form.reset();renderFamiliares()};
  renderFamiliares();
+ const settings=document.getElementById('settingsPreferences');if(settings){const mo=new MutationObserver(()=>{if(!document.getElementById('prefFamiliares'))instalarControleFamiliares();aplicarVisibilidadeFamiliares()});mo.observe(settings,{childList:true});}
  const obs=new MutationObserver(()=>renderFamiliares());const section=document.getElementById('familiares');if(section)obs.observe(section,{attributes:true,attributeFilter:['class']});
 }
 window.renderFamiliares=renderFamiliares;
