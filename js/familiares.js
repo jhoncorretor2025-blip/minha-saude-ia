@@ -42,7 +42,22 @@ window.excluirFamiliar=id=>{const p=findMember(id);if(!p)return;if(!confirm('Exc
 window.excluirRegistroFamiliar=(memberId,type,recordId)=>{const list=getList(),p=list.find(x=>x.id===memberId);if(!p)return;ensure(p);p[type]=p[type].filter(x=>x.id!==recordId);saveList(list);setSelected(memberId);renderFamiliares()};
 window.copiarResumoFamiliar=id=>{const p=findMember(id);if(!p)return;ensure(p);const t=['RESUMO DO FAMILIAR','Nome: '+(p.nome||'Não informado'),'Parentesco: '+(p.parentesco||'Não informado'),'Idade: '+(p.idade||'Não informada'),'Condição: '+(p.condicao||'Não informada'),'Alergias: '+(p.alergias||'Não informadas'),'Medicamentos:',...(p.medicamentos.length?p.medicamentos.map(x=>'- '+x.nome+(x.dose?' — '+x.dose:'')+(x.frequencia?' — '+x.frequencia:'')):['- Nenhum registrado']),'Consultas:',...(p.consultas.length?p.consultas.map(x=>'- '+fmtDate(x.data)+' — '+(x.especialidade||'Consulta')+' — '+(x.medico||'Não informado')):['- Nenhuma registrada']),'Crises:',...(p.crises.length?p.crises.map(x=>'- '+fmtDate(x.data)+' — '+(x.tipo||'Ocorrência')+' — '+(x.intensidade||'')+' — '+(x.descricao||'')):['- Nenhuma registrada'])].join('\n');if(navigator.clipboard?.writeText)navigator.clipboard.writeText(t).then(()=>alert('📋 Resumo copiado.')).catch(()=>fallback(t));else fallback(t)};
 function fallback(t){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');alert('📋 Resumo copiado.')}catch(e){}a.remove()}
-function init(){
+function instalarControleFamiliares(){
+ const box=document.getElementById('settingsPreferences');if(!box||document.getElementById('prefFamiliares'))return;
+ const pref=(()=>{try{return (window.MSAStorage.get('msa2_preferencias')||[])[0]||{}}catch(e){return{}}})();
+ const wrap=document.createElement('label');wrap.id='prefFamiliares';wrap.style.cssText='display:flex;flex-direction:column;gap:6px;border:1px solid #dbe4f0;border-radius:14px;padding:12px;background:#fff';
+ wrap.innerHTML='<span style="font-weight:900">👨‍👩‍👧‍👦 Familiares</span><small class="muted">Mostra ou oculta a área para acompanhar outras pessoas da família.</small><select id="prefFamiliaresSelect"><option value="on">Ativado</option><option value="off">Ocultado</option></select>';
+ box.appendChild(wrap);
+ const sel=wrap.querySelector('select');sel.value=pref.familiares==='off'?'off':'on';
+ sel.onchange=function(){try{const p=(window.MSAStorage.get('msa2_preferencias')||[])[0]||{};p.familiares=this.value;window.MSAStorage.set('msa2_preferencias',[p]);aplicarVisibilidadeFamiliares()}catch(e){}};
+}
+function aplicarVisibilidadeFamiliares(){
+ let pref={};try{pref=(window.MSAStorage.get('msa2_preferencias')||[])[0]||{}}catch(e){}
+ const off=pref.familiares==='off';
+ document.querySelectorAll('[data-tab="familiares"],[data-mobile-tab="familiares"]').forEach(el=>el.classList.toggle('msa-feature-off',off));
+ const sec=document.getElementById('familiares');if(sec)sec.classList.toggle('msa-feature-off',off);
+}
+function init(){instalarControleFamiliares();aplicarVisibilidadeFamiliares();
  const form=document.getElementById('familiarForm');if(form)form.onsubmit=e=>{e.preventDefault();const p={id:uid('fam'),nome:val('fNome'),parentesco:val('fParentesco'),sexo:val('fSexo'),nasc:val('fNasc'),idade:val('fIdade'),condicao:val('fCondicao'),alergias:val('fAlergias'),sangue:val('fSangue'),contato:val('fContato'),obs:val('fObs'),criadoEm:new Date().toISOString(),medicamentos:[],consultas:[],crises:[]};if(!p.nome){alert('Informe o nome.');return}const list=getList();list.push(p);if(!saveList(list)){alert('Não foi possível salvar.');return}setSelected(p.id);form.reset();renderFamiliares()};
  renderFamiliares();
  const obs=new MutationObserver(()=>renderFamiliares());const section=document.getElementById('familiares');if(section)obs.observe(section,{attributes:true,attributeFilter:['class']});
