@@ -26,6 +26,7 @@
         '<button type="button" data-tab="timeline">🕐 Linha do tempo</button>'+
         '<button type="button" data-tab="sono" data-feature-nav="sonoBem">😴 Sono e bem-estar</button>'+
         '<button type="button" data-tab="familia">🧬 Histórico familiar</button>'+
+        '<button type="button" data-tab="familiares">👨‍👩‍👧‍👦 Familiares</button>'+
         '<button type="button" data-tab="avisos">🔔 Atenção e avisos</button>'+
         '<button type="button" data-tab="calendario">📅 Calendário</button>'+
         '<button type="button" data-tab="lembretes">⏰ Lembretes</button>'+
