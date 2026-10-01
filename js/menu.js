@@ -1,11 +1,11 @@
-/* Minha Saúde IA — menus independentes V5.81
+/* Minha Saúde IA — menus independentes V5.82
    O menu não depende do restante do aplicativo para abrir e navegar.
 */
 (function(){
-  /* V5.81 — organização por objetivo: registrar, acompanhar, organizar e proteger */
+  /* V5.82 — família com acesso próprio; organização por objetivo: registrar, acompanhar, organizar e proteger */
   function reorganizarMenuV569(){
     var nav=document.getElementById('nav');
-    if(!nav || nav.getAttribute('data-menu-v581')==='1')return;
+    if(!nav || nav.getAttribute('data-menu-v582')==='1')return;
     var tools=nav.querySelector('.msa-desktop-nav-tools');
     nav.innerHTML=
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button><div class="nav-menu">'+
@@ -25,11 +25,13 @@
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="followup">📊 Acompanhar ▾</button><div class="nav-menu">'+
         '<button type="button" data-tab="timeline">🕐 Linha do tempo</button>'+
         '<button type="button" data-tab="sono" data-feature-nav="sonoBem">😴 Sono e bem-estar</button>'+
-        '<button type="button" data-tab="familia">🧬 Histórico familiar</button>'+
-        '<button type="button" data-tab="familiares">👨‍👩‍👧‍👦 Familiares</button>'+
         '<button type="button" data-tab="avisos">🔔 Atenção e avisos</button>'+
         '<button type="button" data-tab="calendario">📅 Calendário</button>'+
         '<button type="button" data-tab="lembretes">⏰ Lembretes</button>'+
+      '</div></div>'+
+      '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="family">👨‍👩‍👧 Família ▾</button><div class="nav-menu">'+
+        '<button type="button" data-tab="familia">🧬 Histórico Familiar e Genética</button>'+
+        '<button type="button" data-tab="familiares">👨‍👩‍👧‍👦 Familiares</button>'+
       '</div></div>'+
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="organization">📁 Organizar ▾</button><div class="nav-menu">'+
         '<button type="button" data-tab="documentos">📄 Documentos</button><button type="button" data-tab="leitor">📄 Leitor inteligente</button>'+
@@ -47,7 +49,7 @@
         '<button type="button" data-tab="configuracoes">⚙️ Configurações</button>'+
       '</div></div>';
     if(tools)nav.appendChild(tools);
-    nav.setAttribute('data-menu-v569','1');
+    nav.setAttribute('data-menu-v582','1');
   }
 
   function fechar(){
@@ -177,8 +179,11 @@
           ['nutricao','🥗 Nutrição','nutricao']
         ])+
         mobileSection('Acompanhar',[
-          ['sono','😴 Sono e bem-estar','sonoBem'],['familia','🧬 Histórico familiar'],['familiares','👨‍👩‍👧‍👦 Familiares'],['avisos','🔔 Atenção e avisos'],
+          ['sono','😴 Sono e bem-estar','sonoBem'],['avisos','🔔 Atenção e avisos'],
           ['calendario','📅 Calendário'],['lembretes','⏰ Lembretes']
+        ])+
+        mobileSection('Família',[
+          ['familia','🧬 Histórico Familiar e Genética'],['familiares','👨‍👩‍👧‍👦 Familiares']
         ])+
         mobileSection('Organizar',[
           ['documentos','📄 Documentos'],['leitor','📄 Leitor inteligente'],['relatorios','📊 Relatórios'],['carteirinha','🪪 Carteirinha']
