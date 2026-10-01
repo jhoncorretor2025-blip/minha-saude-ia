@@ -1,3 +1,15 @@
+## V5.81 — Fase 2: UX, componentes e responsividade
+
+- 🏠 Refinada a hierarquia visual da Home sem remover funcionalidades.
+- 📝 Padronizados visualmente controles, formulários, botões e estados.
+- 🖥️ Melhor aproveitamento de telas grandes com grids mais equilibrados.
+- 📱 Ajustes mobile para ações, métricas, painéis e área de toque.
+- 🧭 Menus receberam limites de altura e rolagem interna para evitar páginas excessivamente longas.
+- ♿ Mantidos foco visível, teclado e redução de movimento.
+- 💾 Dados locais, chaves de armazenamento e funcionalidades existentes preservados.
+
+V5.81 — 2026-10-01
+
 ## V5.80 — Refinamento visual e responsividade
 
 - 🎨 Refinamento visual aditivo baseado no design system existente.
