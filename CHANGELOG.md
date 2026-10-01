@@ -1,3 +1,13 @@
+## V5.80 — Refinamento visual e responsividade
+
+- 🎨 Refinamento visual aditivo baseado no design system existente.
+- 🖥️ Melhor aproveitamento de telas grandes sem ampliar excessivamente o conteúdo.
+- 📱 Preservados os comportamentos mobile existentes.
+- ⌨️ Melhorados estados de foco visível e alvos de toque.
+- 🧩 Mantidos dados locais, chaves de armazenamento e funcionalidades existentes.
+
+V5.80 — 2026-10-01
+
 ## V5.76 — Inteligência e organização avançadas
 
 - 🧠 **Central de Inteligência:** resumo automático do que está registrado, últimos 30 dias, pendências do perfil e possíveis duplicados.
