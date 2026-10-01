@@ -400,3 +400,113 @@ button{touch-action:manipulation}
   html{scroll-behavior:auto}
   .action,.msa-card,.msa-card-feature,.msa-btn,.btn{transition:none!important}
 }
+
+
+/* ===== V5.81 — Fase 2: componentes, Home e responsividade ===== */
+:root{
+  --msa-content-max:1180px;
+  --msa-page-gap:18px;
+  --msa-control-height:46px;
+  --msa-radius-card:16px;
+}
+body{overflow-x:hidden}
+main#main-content{min-width:0}
+#home{display:block}
+#home .home-profile-hero,
+#home .home-command-center,
+#home .metric-panel,
+#home .smart-care-card,
+#home .health-dashboard,
+#home .home-secondary-content,
+#home .progressive-hub,
+#home .actions{
+  margin-left:0;
+  margin-right:0;
+}
+#home .home-command-center{
+  border:1px solid var(--msa-border);
+  border-radius:20px;
+  box-shadow:var(--msa-shadow-soft);
+}
+#home .home-primary-actions button,
+#home .home-secondary-actions button,
+#home .home-side-title~button,
+#home .quick-grid button,
+#home .favorite-btn{
+  min-height:46px;
+  border-radius:12px;
+}
+#home .metric-panel,
+#home .grid4,
+#home .progressive-hub,
+#home .dash-grid,
+#home .dash-insights{
+  gap:14px;
+}
+#home .card,
+#home .smart-care-card,
+#home .progressive-card,
+#home .health-dashboard{
+  border-color:var(--msa-border);
+  box-shadow:var(--msa-shadow-soft);
+}
+#home .dash-section-title,
+#home .dash-head,
+#home .eng-head,
+#home .progressive-head{
+  gap:14px;
+}
+form{gap:14px}
+label{line-height:1.35}
+input,select,textarea{
+  min-height:46px;
+  border-color:var(--msa-border-strong);
+  transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;
+}
+input:hover,select:hover,textarea:hover{border-color:#aebbd0}
+input:focus,select:focus,textarea:focus{
+  outline:none;
+  border-color:var(--msa-color-primary);
+  box-shadow:var(--msa-focus);
+}
+.btn,.msa-btn{min-height:46px}
+.btn.small,.msa-btn-sm{min-height:40px}
+.card,.item,.msa-card,.msa-card-feature{overflow-wrap:anywhere}
+.list,.msa-data-list{min-width:0}
+.nav-menu{max-height:min(70vh,520px);overflow:auto;overscroll-behavior:contain}
+.nav-menu button{min-height:42px}
+.grouped-nav{align-items:center}
+.msa-mobile-drawer{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+.msa-mobile-bar{padding-bottom:env(safe-area-inset-bottom)}
+@media(min-width:761px){
+  #home .home-command-center{grid-template-columns:minmax(0,1.45fr) minmax(260px,.55fr)}
+  #home .metric-panel{grid-template-columns:repeat(4,minmax(0,1fr))}
+  #home .progressive-hub{grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr)}
+  #home .dash-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  #home .dash-insights{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  #home .home-profile-hero{align-items:flex-start}
+  #home .home-profile-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}
+  #home .home-profile-actions button{min-height:44px}
+  #home .home-command-center{grid-template-columns:1fr}
+  #home .home-primary-actions{grid-template-columns:1fr 1fr}
+  #home .home-secondary-actions{display:grid;grid-template-columns:1fr}
+  #home .metric-panel{grid-template-columns:1fr 1fr}
+  #home .grid4{grid-template-columns:1fr 1fr}
+  #home .progressive-hub{grid-template-columns:1fr}
+  #home .dash-grid{grid-template-columns:1fr 1fr}
+  #home .dash-insights{grid-template-columns:1fr 1fr}
+  #home .actions{grid-template-columns:1fr 1fr}
+}
+@media(max-width:430px){
+  #home .home-profile-actions,
+  #home .home-primary-actions,
+  #home .metric-panel,
+  #home .grid4,
+  #home .dash-grid,
+  #home .dash-insights,
+  #home .actions{grid-template-columns:1fr}
+  #home .home-command-center{border-radius:16px}
+  #home .card,.card{padding:15px}
+}
