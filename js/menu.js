@@ -1,11 +1,11 @@
-/* Minha Saúde IA — menus independentes V4.55
+/* Minha Saúde IA — menus independentes V5.81
    O menu não depende do restante do aplicativo para abrir e navegar.
 */
 (function(){
-  /* V5.76 — organização por objetivo: registrar, acompanhar, organizar e proteger */
+  /* V5.81 — organização por objetivo: registrar, acompanhar, organizar e proteger */
   function reorganizarMenuV569(){
     var nav=document.getElementById('nav');
-    if(!nav || nav.getAttribute('data-menu-v569')==='1')return;
+    if(!nav || nav.getAttribute('data-menu-v581')==='1')return;
     var tools=nav.querySelector('.msa-desktop-nav-tools');
     nav.innerHTML=
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button><div class="nav-menu">'+
@@ -371,7 +371,7 @@
 
   function melhorarAcoesRapidas(){
     var fab=document.getElementById('msaFabMenu');
-    if(fab && !fab.querySelector('[data-v568-extra]')){
+    if(fab && !fab.querySelector('[data-v581-extra]')){
       var extra=document.createElement('button');
       extra.className='msa-fab-action';
       extra.type='button';
@@ -432,7 +432,7 @@
   };
 })();
 
-(function msaV569VersionSync(){
+(function msaV581VersionSync(){
   function sync(){
     try{
       document.title=document.title.replace(/V5\.67/g,'V5.76');
