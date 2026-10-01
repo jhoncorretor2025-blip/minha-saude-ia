@@ -1,3 +1,12 @@
+# V5.82 — Família com acesso próprio
+
+- Criada a categoria **Família** no menu desktop.
+- Criada a seção **Família** própria no menu mobile.
+- **Histórico Familiar e Genética** e **Familiares** agora ficam juntos e fáceis de localizar.
+- Mantidas as duas áreas, seus formulários, registros e armazenamento.
+- Nenhuma chave de dados locais foi alterada.
+- Atualizada a versão/cache para V5.82.
+
 ## V5.81 — Fase 2: UX, componentes e responsividade
 
 - 🏠 Refinada a hierarquia visual da Home sem remover funcionalidades.
