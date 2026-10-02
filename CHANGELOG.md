@@ -1,3 +1,10 @@
+# V5.85 — Família abre a área de conteúdo
+
+- O botão principal **👨‍👩‍👧 Família** agora abre imediatamente a área de **Histórico Familiar e Genética**.
+- A Home deixa de ficar visível ao entrar na categoria Família.
+- O submenu continua disponível para escolher **Histórico Familiar e Genética** ou **Familiares**.
+- Versão e cache do PWA sincronizados em **V5.85**.
+
 # V5.84 — Família abre no lugar certo
 
 - Ao clicar em **Família > Familiares** ou **Histórico Familiar e Genética**, o aplicativo agora leva a tela diretamente para a seção selecionada.
