@@ -74,15 +74,37 @@
 
   function navegar(id){
     fechar();
+    if(!mostrarSecao(id))return;
+
+    /* V5.83 — o menu navega por conta própria. Assim, Família não depende
+       de window.go nem de ordem/cache de scripts. */
     try{
-      if(typeof window.go==='function'){
-        window.go(id);
-        return;
-      }
+      var u=new URL(window.location.href);
+      u.searchParams.set('pagina',id);
+      window.history.pushState({pagina:id},'',u.toString());
     }catch(e){
-      console.error('[Minha Saúde IA] navegação principal falhou:',e);
+      console.warn('[Minha Saúde IA] não foi possível atualizar a URL:',e);
     }
-    mostrarSecao(id);
+
+    try{
+      if(typeof window.render==='function')window.render();
+    }catch(e){
+      console.error('[Minha Saúde IA] erro ao atualizar a tela:',e);
+    }
+
+    if(id==='familiares'){
+      setTimeout(function(){
+        try{if(typeof window.renderFamiliares==='function')window.renderFamiliares();}catch(e){}
+      },0);
+    }else if(id==='familia'){
+      setTimeout(function(){
+        try{if(typeof window.renderNovosModulos==='function')window.renderNovosModulos();}catch(e){}
+      },0);
+    }
+
+    setTimeout(function(){
+      try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){}
+    },0);
   }
 
   function iniciar(){
