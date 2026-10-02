@@ -40,6 +40,9 @@ function mostrarPaginaDaURL(){
  document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===id));
  fecharMenus();
  try{render()}catch(e){console.error('[Minha Saúde IA] render da URL',e)}
+ setTimeout(function(){
+  try{alvo.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}
+ },40);
 }
 function go(id){
  document.querySelectorAll('nav button[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
