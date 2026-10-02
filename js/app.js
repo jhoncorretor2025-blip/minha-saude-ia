@@ -857,6 +857,15 @@ function iniciarAplicativo(){
   renderCarteirinha();
   renderNovosModulos();
   render();
+
+  /* V5.83 — respeita imediatamente ?pagina=... ao abrir/atualizar a página.
+     Isso corrige links diretos para Família, sem voltar para a Home. */
+  const paginaInicial=paginaDaURL();
+  if(paginaInicial && document.getElementById(paginaInicial)){
+   mostrarPaginaDaURL();
+   renderNovosModulos();
+   if(typeof renderFamiliares==='function')renderFamiliares();
+  }
  }catch(e){
   console.error('[Minha Saúde IA] falha na inicialização',e);
  }
