@@ -1,3 +1,10 @@
+# V5.84 — Família abre no lugar certo
+
+- Ao clicar em **Família > Familiares** ou **Histórico Familiar e Genética**, o aplicativo agora leva a tela diretamente para a seção selecionada.
+- Links diretos com `?pagina=familia` e `?pagina=familiares` também posicionam a tela no conteúdo correto.
+- Isso evita que a pessoa fique na parte superior do site sem perceber que a página selecionada está mais abaixo.
+- Versão e cache do PWA sincronizados em **V5.84**.
+
 # V5.83 — Correção da navegação Família
 
 - Corrigida a abertura das áreas **Histórico Familiar e Genética** e **Familiares** pelo menu.
