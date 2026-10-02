@@ -126,6 +126,37 @@
         ev.stopPropagation();
         var group=toggle.closest('.nav-group');
         if(!group)return;
+
+        /* V5.85 — Família é uma área de conteúdo, não somente um agrupador.
+           Ao clicar no botão principal, a Home sai da tela imediatamente e
+           a área de Histórico Familiar abre como página inicial da categoria. */
+        if(toggle.getAttribute('data-menu')==='family'){
+          var paginaAtual='';
+          try{paginaAtual=new URL(window.location.href).searchParams.get('pagina')||'home'}catch(e){}
+          var abrirFamilia=paginaAtual!=='familia' && paginaAtual!=='familiares';
+          if(abrirFamilia){
+            if(!mostrarSecao('familia'))return;
+            try{
+              var u=new URL(window.location.href);
+              u.searchParams.set('pagina','familia');
+              window.history.pushState({pagina:'familia'},'',u.toString());
+            }catch(e){}
+            try{if(typeof window.render==='function')window.render()}catch(e){}
+            setTimeout(function(){
+              try{document.getElementById('familia')?.scrollIntoView({behavior:'smooth',block:'start'})}catch(e){}
+            },30);
+          }
+
+          var reabrir=!group.classList.contains('open');
+          fechar();
+          if(reabrir || abrirFamilia){
+            group.classList.add('open');
+            toggle.classList.add('open');
+            toggle.setAttribute('aria-expanded','true');
+          }
+          return;
+        }
+
         var abrir=!group.classList.contains('open');
         fechar();
         if(abrir){
