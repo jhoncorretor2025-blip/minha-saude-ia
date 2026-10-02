@@ -1,3 +1,10 @@
+# V5.83 — Correção da navegação Família
+
+- Corrigida a abertura das áreas **Histórico Familiar e Genética** e **Familiares** pelo menu.
+- O menu passa a navegar diretamente, sem depender da função global de navegação.
+- Links com `?pagina=familia` ou `?pagina=familiares` agora abrem na área correta.
+- Versão e cache do PWA sincronizados em **V5.83**.
+
 # V5.82 — Família com acesso próprio
 
 - Criada a categoria **Família** no menu desktop.
