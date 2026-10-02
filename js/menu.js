@@ -103,8 +103,15 @@
     }
 
     setTimeout(function(){
-      try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){}
-    },0);
+      try{
+        var destino=document.getElementById(id);
+        if(destino){
+          destino.scrollIntoView({behavior:'smooth',block:'start'});
+        }else{
+          window.scrollTo({top:0,behavior:'smooth'});
+        }
+      }catch(e){}
+    },30);
   }
 
   function iniciar(){
