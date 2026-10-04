@@ -1,5 +1,5 @@
 {
-  "version": "V5.89",
-  "updatedAt": "2026-10-04T20:20:00-03:00",
-  "changes": "Rascunhos: botão X no canto superior direito para fechar o painel de rascunhos sem apagar os dados."
+  "version": "V5.90",
+  "updatedAt": "2026-10-04T20:30:00-03:00",
+  "changes": "Correções: botão X fecha o painel de rascunhos; Ver o que falta abre corretamente o painel de pendências; scripts com cache atualizado."
 }
