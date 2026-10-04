@@ -1,5 +1,5 @@
 {
-  "version": "V5.93",
-  "updatedAt": "2026-10-04T21:35:00-03:00",
-  "changes": "V5.93: corrigido o modal de Ver o que falta (agora abre sobre a tela); fechamento persistente dos rascunhos; Família/Familiares com fluxo de IA em 2 passos, ChatGPT/Claude/Gemini, entrevista uma pergunta por vez e importação robusta da resposta com preservação dos dados."
+  "version": "V5.94",
+  "updatedAt": "2026-10-04T23:55:00-03:00",
+  "changes": "Família IA: removida a entrevista; o prompt agora manda a IA gerar imediatamente a ficha completa em JSON, sem fazer perguntas, pedir confirmação ou esperar respostas."
 }
