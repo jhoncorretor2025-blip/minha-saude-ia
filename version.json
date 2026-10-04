@@ -1,1 +1,5 @@
-{"version":"V5.85","updatedAt":"2026-10-02T10:42:00-03:00","changes":"Ao clicar em Família no menu principal, a Home é ocultada e a área de Histórico Familiar é aberta imediatamente; versão e cache sincronizados."}
+{
+  "version": "V5.86",
+  "updatedAt": "2026-10-04T10:49:00-03:00",
+  "changes": "Família/Familiares: adicionado botão Perguntar à IA para gerar e copiar um comando exclusivo com os dados do familiar selecionado."
+}
