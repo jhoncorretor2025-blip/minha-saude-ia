@@ -173,6 +173,126 @@ function abrirPromptFamiliaIA(){
  textarea.focus();
 }
 window.abrirPromptFamiliaIA=abrirPromptFamiliaIA;
+
+function normalizarTextoIA(v){return String(v==null?'':v).trim()}
+function extrairJSONFamilia(raw){
+ const txt=normalizarTextoIA(raw).replace(/^\uFEFF/,'');
+ const bloco=txt.replace(/^\`\`\`(?:json)?\s*/i,'').replace(/\s*\`\`\`$/,'').trim();
+ try{return JSON.parse(bloco)}catch(e){}
+ const i=bloco.indexOf('{'),j=bloco.lastIndexOf('}');
+ if(i>=0&&j>i){try{return JSON.parse(bloco.slice(i,j+1))}catch(e){}}
+ const a=bloco.indexOf('['),b=bloco.lastIndexOf(']');
+ if(a>=0&&b>a){try{return JSON.parse(bloco.slice(a,b+1))}catch(e){}}
+ throw new Error('Não encontrei um JSON válido na resposta da IA.');
+}
+function arrFam(v){return Array.isArray(v)?v:[]}
+function normalizarFamiliarImportado(src){
+ const p=src&&typeof src==='object'?src:{};
+ const nome=normalizarTextoIA(p.nome||p.NOME);
+ if(!nome)return null;
+ const meds=arrFam(p.medicamentos||p.MEDICAMENTOS).map(m=>({
+  id:uid('fmed'),nome:normalizarTextoIA(m&& (m.nome||m.NOME||m.medicamento)),
+  dose:normalizarTextoIA(m&& (m.dose||m.DOSE)),hora:normalizarTextoIA(m&& (m.hora||m.HORARIO)),
+  frequencia:normalizarTextoIA(m&& (m.frequencia||m.FREQUENCIA||m.freq)),
+  prescritoPor:normalizarTextoIA(m&& (m.prescritoPor||m.PRESCRITO_POR||m.prescrito_por)),
+  obs:normalizarTextoIA(m&& (m.obs||m.OBS))
+ })).filter(function(x){return x.nome});
+ const cons=arrFam(p.consultas||p.CONSULTAS).map(function(x){return {
+  id:uid('fcon'),data:normalizarTextoIA(x&& (x.data||x.DATA)),
+  especialidade:normalizarTextoIA(x&& (x.especialidade||x.ESPECIALIDADE)),
+  medico:normalizarTextoIA(x&& (x.medico||x.MEDICO)),retorno:normalizarTextoIA(x&& (x.retorno||x.RETORNO)),
+  motivo:normalizarTextoIA(x&& (x.motivo||x.MOTIVO)),obs:normalizarTextoIA(x&& (x.obs||x.OBS||x.orientacoes))
+ }}).filter(function(x){return x.data||x.especialidade||x.medico||x.motivo||x.obs});
+ const crises=arrFam(p.crises||p.CRISES).map(function(x){return {
+  id:uid('fcrise'),data:normalizarTextoIA(x&& (x.data||x.DATA)),hora:normalizarTextoIA(x&& (x.hora||x.HORA)),
+  tipo:normalizarTextoIA(x&& (x.tipo||x.TIPO)),intensidade:normalizarTextoIA(x&& (x.intensidade||x.INTENSIDADE)),
+  descricao:normalizarTextoIA(x&& (x.descricao||x.DESCRICAO||x.o_que_aconteceu)),
+  gatilho:normalizarTextoIA(x&& (x.gatilho||x.GATILHO)),conduta:normalizarTextoIA(x&& (x.conduta||x.CONDUTA))
+ }}).filter(function(x){return x.data||x.tipo||x.descricao});
+ const obs=[];
+ const baseObs=normalizarTextoIA(p.obs||p.OBS);if(baseObs)obs.push(baseObs);
+ const idadeDiag=normalizarTextoIA(p.idadeDiagnostico||p.IDADE_DIAGNOSTICO);if(idadeDiag)obs.push('Idade aproximada ao diagnóstico: '+idadeDiag+' anos');
+ const certeza=normalizarTextoIA(p.certeza||p.CERTEZA);if(certeza)obs.push('Nível de confiança: '+certeza);
+ return {
+  id:normalizarTextoIA(p.id)||uid('fam'),nome:nome,
+  parentesco:normalizarTextoIA(p.parentesco||p.PARENTESCO)||'Outro',
+  sexo:normalizarTextoIA(p.sexo||p.SEXO),nasc:normalizarTextoIA(p.nasc||p.NASC||p.data_nascimento||p.DATA_NASCIMENTO),
+  idade:normalizarTextoIA(p.idade||p.IDADE),condicao:normalizarTextoIA(p.condicao||p.CONDICAO),
+  alergias:normalizarTextoIA(p.alergias||p.ALERGIAS),sangue:normalizarTextoIA(p.sangue||p.SANGUE||p.tipo_sanguineo||p.TIPO_SANGUINEO),
+  contato:normalizarTextoIA(p.contato||p.CONTATO),obs:obs.join(' '),
+  ladoFamilia:normalizarTextoIA(p.ladoFamilia||p.LADO_FAMILIA),criadoEm:normalizarTextoIA(p.criadoEm)||new Date().toISOString(),
+  medicamentos:meds,consultas:cons,crises:crises,dadosImportadosIA:p
+ };
+}
+function salvarImportacaoFamilia(dados){
+ const raiz=dados&&typeof dados==='object'&&!Array.isArray(dados)?dados:{familiares:dados};
+ const entrada=arrFam(raiz.familiares||raiz.FAMILIARES||raiz.family||raiz.members);
+ const importados=entrada.map(normalizarFamiliarImportado).filter(Boolean);
+ if(!importados.length)throw new Error('Nenhum familiar válido encontrado na resposta da IA.');
+ const atuais=getList();let novos=0,atualizados=0;
+ importados.forEach(function(novo){
+  const chave=(String(novo.nome)+'|'+String(novo.parentesco)).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const idx=atuais.findIndex(function(x){
+   const k=(String(x.nome||'')+'|'+String(x.parentesco||'')).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+   return k===chave;
+  });
+  if(idx>=0){
+   const antigo=ensure(atuais[idx]);
+   atuais[idx]=Object.assign({},antigo,novo,{id:antigo.id,
+    medicamentos:novo.medicamentos.length?novo.medicamentos:antigo.medicamentos,
+    consultas:novo.consultas.length?novo.consultas:antigo.consultas,
+    crises:novo.crises.length?novo.crises:antigo.crises});
+   novos+=0;atualizados++;
+  }else{atuais.push(ensure(novo));novos++}
+ });
+ if(!saveList(atuais))throw new Error('Não foi possível gravar os familiares neste navegador.');
+ const antecedentes=arrFam(raiz.historico_familiar||raiz.HISTORICO_FAMILIAR||raiz.antecedentes);
+ if(antecedentes.length){
+  const hist=window.MSAStorage&&window.MSAStorage.get?window.MSAStorage.get(K.fam):[];
+  const h=Array.isArray(hist)?hist:[];
+  antecedentes.forEach(function(a){
+   const par=normalizarTextoIA(a&& (a.parente||a.parentesco||a.PARENTE||a.PARENTESCO))||'Outro';
+   const cond=normalizarTextoIA(a&& (a.cond||a.condicao||a.CONDICAO||a.info||a.INFORMACAO));if(!cond)return;
+   const idade=normalizarTextoIA(a&& (a.idade||a.IDADE)),obs=normalizarTextoIA(a&& (a.obs||a.OBS));
+   const dup=h.some(function(x){return String(x.parente||'').toLowerCase()===par.toLowerCase()&&String(x.info||x.cond||'').toLowerCase()===cond.toLowerCase()&&String(x.idade||'')===idade});
+   if(!dup)h.push({parente:par,cond:cond,info:cond,idade:idade,obs:obs});
+  });
+  if(window.MSAStorage&&window.MSAStorage.set)window.MSAStorage.set(K.fam,h);
+ }
+ setSelected(importados[0].id);renderFamiliares();
+ return {novos:novos,atualizados:atualizados,total:importados.length};
+}
+function abrirImportadorRespostaFamilia(){
+ let old=document.getElementById('msaFamiliaIAImportModal');if(old)old.remove();
+ const modal=document.createElement('div');modal.id='msaFamiliaIAImportModal';modal.className='msa-ava-overlay';
+ modal.innerHTML='<div class="msa-ava-dialog" role="dialog" aria-modal="true" aria-labelledby="msaFamiliaIAImportTitle">'+
+ '<div class="msa-ava-top"><div><div class="msa-fam-kicker">📥 IA · FAMÍLIA</div><h2 id="msaFamiliaIAImportTitle">Colar resposta da IA</h2><p>Cole aqui a resposta gerada pelo ChatGPT, Gemini ou outra IA a partir do prompt da Família.</p></div><button type="button" class="msa-ava-close" id="msaFamiliaIAImportClose">✕</button></div>'+
+ '<textarea id="msaFamiliaIAImportText" style="margin-top:14px;width:100%;min-height:330px;padding:13px;border:1px solid #d6deea;border-radius:14px;font-size:13px;line-height:1.45" placeholder="Cole aqui a resposta da IA..."></textarea>'+
+ '<div class="msa-ava-actions" style="display:grid;grid-template-columns:1fr 1fr"><button type="button" class="btn secondary" id="msaFamiliaIAImportPaste">📋 Colar da área de transferência</button><button type="button" class="btn green" id="msaFamiliaIAImportSave">✅ Importar e salvar</button><button type="button" class="btn secondary" id="msaFamiliaIAImportGo">➡️ Ir para Familiares</button><button type="button" class="btn secondary" id="msaFamiliaIAImportCancel">↩️ Voltar</button></div>'+
+ '<div id="msaFamiliaIAImportStatus" class="alert safe" style="margin-top:12px">Os dados só serão gravados depois de você clicar em “Importar e salvar”.</div></div>';
+ document.body.appendChild(modal);
+ const input=modal.querySelector('#msaFamiliaIAImportText'),status=modal.querySelector('#msaFamiliaIAImportStatus'),fechar=function(){modal.remove()};
+ modal.querySelector('#msaFamiliaIAImportClose').onclick=fechar;modal.querySelector('#msaFamiliaIAImportCancel').onclick=fechar;
+ modal.addEventListener('click',function(e){if(e.target===modal)fechar()});
+ modal.querySelector('#msaFamiliaIAImportPaste').onclick=async function(){
+  try{
+   const t=await navigator.clipboard.readText();
+   if(t){input.value=t;status.textContent='✅ Resposta colada da área de transferência. Confira antes de importar.'}
+   else status.textContent='A área de transferência está vazia.';
+  }catch(e){input.focus();status.textContent='Toque no campo e use Ctrl+V (ou Colar) para inserir a resposta.'}
+ };
+ modal.querySelector('#msaFamiliaIAImportSave').onclick=function(){
+  try{
+   const raw=input.value.trim();if(!raw)throw new Error('Cole primeiro a resposta da IA.');
+   const dados=extrairJSONFamilia(raw),res=salvarImportacaoFamilia(dados);
+   status.className='alert safe';status.innerHTML='✅ <b>Família importada!</b> '+res.total+' familiar(es): '+res.novos+' novo(s) e '+res.atualizados+' atualizado(s).';
+   setTimeout(function(){fechar();if(typeof go==='function')go('familiares');setTimeout(function(){renderFamiliares();document.getElementById('familiares')&&document.getElementById('familiares').scrollIntoView({behavior:'smooth',block:'start'})},120)},250);
+  }catch(e){status.className='alert danger';status.textContent='❌ '+(e.message||'Não foi possível importar a resposta.')}
+ };
+ modal.querySelector('#msaFamiliaIAImportGo').onclick=function(){fechar();if(typeof go==='function')go('familiares');setTimeout(renderFamiliares,100)};
+ input.focus();
+}
+window.abrirImportadorRespostaFamilia=abrirImportadorRespostaFamilia;
 function renderFamiliaInteligencia(){const box=document.getElementById('familiares');if(!box)return;const host=box.querySelector('.card');if(!host)return;let hub=document.getElementById('familiaInteligencia');if(!hub){hub=document.createElement('div');hub.id='familiaInteligencia';host.insertBefore(hub,host.firstChild)}const list=familiaArray();hub.innerHTML='<div class="msa-fam-actions"><button type="button" class="msa-fam-action primary" onclick="iniciarEntrevistaAvaFamilia()"><strong>🤖</strong><span>Adicionar com a Ava</span><small>Ela faz perguntas uma por vez.</small></button><button type="button" class="msa-fam-action" onclick="document.getElementById(\'msa-fam-map\')?.scrollIntoView({behavior:\'smooth\',block:\'start\'})"><strong>🧬</strong><span>Ver mapa da família</span><small>Materno, paterno e núcleo próximo.</small></button><button type="button" class="msa-fam-action" onclick="document.getElementById(\'msa-fam-analysis\')?.scrollIntoView({behavior:\'smooth\',block:\'start\'})"><strong>📊</strong><span>Ver padrões</span><small>Condições que aparecem mais de uma vez.</small></button></div><div id="msa-fam-map" class="msa-fam-anchor">'+familiaMapaHTML(list)+'</div><div id="msa-fam-analysis" class="msa-fam-anchor">'+familiaAnaliseHTML(list)+'</div>'}
 function instalarCampoLadoFamilia(){const form=document.getElementById('familiarForm');if(!form||document.getElementById('fLadoFamilia'))return;const wrap=document.createElement('label');wrap.innerHTML='🧬 Lado da família<select id="fLadoFamilia"><option value="">Não informado</option><option>Materno</option><option>Paterno</option><option>Ambos / não sei</option></select>';const alvo=document.getElementById('fCondicao');if(alvo&&alvo.parentElement)alvo.parentElement.parentElement.insertBefore(wrap,alvo.parentElement);else form.appendChild(wrap)}
 const avaQuestions=[{key:'nome',title:'Quem é esse familiar?',help:'Digite o nome da pessoa que você quer adicionar.',type:'text',placeholder:'Ex.: Maria'},{key:'parentesco',title:'Qual é o parentesco?',help:'Ava vai usar isso para organizar o mapa da família.',type:'select',options:['Pai','Mãe','Irmão/irmã','Filho(a)','Avô/avó','Tio/tia','Marido','Esposa','Companheiro(a)','Outro']},{key:'sexo',title:'Qual é o sexo?',help:'Pode deixar como “Não informado” se preferir.',type:'select',options:['Não informado','Masculino','Feminino','Outro']},{key:'idade',title:'Qual é a idade aproximada?',help:'Pode informar apenas uma estimativa.',type:'number',placeholder:'Ex.: 68'},{key:'ladoFamilia',title:'De qual lado da família?',help:'Isso ajuda a organizar o mapa em materno e paterno.',type:'select',options:['Não informado','Materno','Paterno','Ambos / não sei']},{key:'condicao',title:'Ele(a) tem alguma doença ou condição diagnosticada?',help:'Informe somente o que você sabe. Pode escrever várias.',type:'text',placeholder:'Ex.: diabetes e hipertensão'},{key:'idadeDiagnostico',title:'Você sabe com que idade foi diagnosticada?',help:'Pode deixar em branco ou informar uma idade aproximada.',type:'number',placeholder:'Ex.: 55'},{key:'recorrencia',title:'Essa condição aparece em outros familiares?',help:'Ex.: “sim, em duas tias” ou “não sei”.',type:'text',placeholder:'Ex.: Sim, em duas tias'},{key:'certeza',title:'Quanto você confia nessa informação?',help:'Diferencie o que foi confirmado do que é apenas lembrança familiar.',type:'select',options:['Confirmado por profissional','Informado pela família','Suspeita / não confirmado','Não sei']},{key:'obs',title:'Existe mais alguma informação importante?',help:'Cirurgias, infarto, AVC, câncer, internações ou outras observações.',type:'text',placeholder:'Pode deixar em branco'}];
