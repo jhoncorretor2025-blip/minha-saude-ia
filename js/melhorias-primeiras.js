@@ -99,12 +99,14 @@ function renderDraftPanel(){
   const box=document.createElement('div');
   box.id='msaDraftPanel';box.className='card';
   box.style.cssText='margin:0 0 14px;border:1px solid #bfdbfe;background:#eff6ff;position:relative';
-  box.innerHTML='<div class="dash-section-title" style="position:relative;padding-right:44px"><div><h2 style="margin:0;font-size:18px">📝 Rascunhos salvos automaticamente</h2><div class="muted">Informações que você começou a preencher, mas ainda não salvou.</div></div><button type="button" class="btn secondary small" aria-label="Fechar rascunhos" title="Fechar" onclick="fecharPainelRascunhos()" style="position:absolute;right:0;top:0;width:34px;height:34px;min-width:34px;padding:0;border-radius:50%;font-size:18px;font-weight:800;line-height:1">✕</button></div>'+
+  box.innerHTML='<div class="dash-section-title" style="position:relative;padding-right:44px"><div><h2 style="margin:0;font-size:18px">📝 Rascunhos salvos automaticamente</h2><div class="muted">Informações que você começou a preencher, mas ainda não salvou.</div></div><button type="button" class="btn secondary small" aria-label="Fechar rascunhos" title="Fechar" data-msa-close-drafts="1" style="position:absolute;right:0;top:0;width:34px;height:34px;min-width:34px;padding:0;border-radius:50%;font-size:18px;font-weight:800;line-height:1">✕</button></div>'+
     '<div class="list">'+drafts.map(d=>{
       const when=new Date(d.updatedAt),dt=isNaN(when)?d.updatedAt:when.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});
       return '<div class="item msa-draft-row"><div class="itemtop"><b>📝 '+esc(d.label)+'</b><span class="tag">'+esc(dt)+'</span></div><p>Este rascunho fica apenas neste navegador.</p><div class="row" style="margin-top:9px"><button class="btn green small" type="button" data-msa-draft-action="restore" data-msa-draft-id="'+esc(d.id)+'">↩️ Continuar preenchendo</button><button class="btn secondary small" type="button" data-msa-draft-action="ignore" data-msa-draft-id="'+esc(d.id)+'">🗑️ Apagar rascunho</button></div></div>';
     }).join('')+'</div>';
   host.insertBefore(box,host.firstChild);
+  const closeBtn=box.querySelector('[data-msa-close-drafts]');
+  if(closeBtn)closeBtn.addEventListener('click',fecharPainelRascunhos);
 }
 function snapshotKey(key){
   if(!key)return '';
