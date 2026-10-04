@@ -1,5 +1,5 @@
 {
-  "version": "V5.88",
-  "updatedAt": "2026-10-04T20:00:00-03:00",
-  "changes": "Medidas corporais: adicionar edição e exclusão de registros, com atualização sem duplicar medições."
+  "version": "V5.89",
+  "updatedAt": "2026-10-04T20:20:00-03:00",
+  "changes": "Rascunhos: botão X no canto superior direito para fechar o painel de rascunhos sem apagar os dados."
 }
