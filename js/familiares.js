@@ -54,6 +54,125 @@ function familiaIdade(p){if(p.idade!==undefined&&p.idade!==null&&String(p.idade)
 function familiaPatterns(list){const defs=[['Diabetes',/\bdiabet(?:e|es|ica|ico|icos|icas)\b/i],['Hipertensão',/\bhipertens(?:ão|ao|ivo|iva|ivos|ivas)\b/i],['Doenças cardíacas',/\b(infarto|cardíac|coronar|insufici[eê]ncia card|angina)\b/i],['AVC',/\b(avc|acidente vascular cerebral|derrame)\b/i],['Câncer',/\b(câncer|cancer|tumor|neoplas)\b/i],['Colesterol',/\b(colesterol|dislipidem)\b/i],['Tireoide',/\b(tireoide|hipotireoid|hipertireoid)\b/i],['Doença renal',/\b(renal|rim|insufici[eê]ncia renal)\b/i],['Doença hepática',/\b(fígado|figado|hepat|cirrose)\b/i],['Autoimune / reumatológica',/\b(autoimun|artrite|lúpus|lupus|psorías|psorias|espondil|reumat)\b/i],['Demência / Alzheimer',/\b(demência|demencia|alzheimer|parkinson)\b/i],['Saúde mental',/\b(depress[aã]o|ansiedade|bipolar|esquizofren|transtorno mental)\b/i]];return defs.map(d=>{const members=list.filter(p=>d[1].test(familiaCondicaoTexto(p)+' '+String(p.obs||'')));return {nome:d[0],count:members.length,members}}).filter(x=>x.count>0).sort((a,b)=>b.count-a.count||a.nome.localeCompare(b.nome))}
 function familiaMapaHTML(list){const groups={Materno:[],Paterno:[],'Núcleo próximo':[],'Não informado':[]};list.forEach(p=>{const l=familiaLado(p);groups[l==='Materno'?'Materno':l==='Paterno'?'Paterno':(['Pai','Mãe','Filho(a)','Filho/filha','Irmão/irmã','Marido','Esposa','Companheiro(a)'].includes(p.parentesco)?'Núcleo próximo':'Não informado')].push(p)});const group=(title,icon,arr)=>'<div class="msa-fam-map-group"><div class="msa-fam-map-title">'+icon+' '+title+' <span>'+arr.length+'</span></div>'+(arr.length?'<div class="msa-fam-map-list">'+arr.map(p=>{const c=familiaCondicaoTexto(p)||'Sem condição informada',med=(p.medicamentos||[]).length,con=(p.consultas||[]).length;return '<button type="button" class="msa-fam-map-person" onclick="selecionarFamiliar(\''+esc(p.id)+'\')"><span class="msa-fam-avatar">'+(p.sexo==='Feminino'?'👩':'👤')+'</span><span><b>'+esc(p.nome||'Sem nome')+'</b><small>'+esc(p.parentesco||'Parentesco não informado')+'</small><em>'+esc(c)+'</em><small>'+med+' 💊 · '+con+' 👨‍⚕️</small></span></button>'}).join('')+'</div>':'<div class="msa-fam-empty">Nenhum familiar neste grupo.</div>')+'</div>';const total=list.length,withCond=list.filter(p=>familiaCondicaoTexto(p)).length,withData=list.filter(p=>familiaCondicaoTexto(p)||p.alergias||p.sangue||p.obs).length;return '<div class="msa-fam-map-card"><div class="msa-fam-map-head"><div><div class="msa-fam-kicker">MAPA DE SAÚDE DA FAMÍLIA</div><h3>🧬 Quem está no seu histórico?</h3><p>Uma visão rápida dos familiares registrados e das informações de saúde já conhecidas.</p></div><button type="button" class="btn secondary small" onclick="iniciarEntrevistaAvaFamilia()">🤖 Falar com a Ava</button></div><div class="msa-fam-map-stats"><div><b>'+total+'</b><span>familiares</span></div><div><b>'+withCond+'</b><span>com condição</span></div><div><b>'+Math.max(0,total-withData)+'</b><span>com poucos dados</span></div></div><div class="msa-fam-map-tree"><div class="msa-fam-you">👤 <b>Você</b><small>perfil principal</small></div>'+group('Lado materno','🌷',groups.Materno)+group('Lado paterno','🧭',groups.Paterno)+group('Núcleo próximo','🏠',groups['Núcleo próximo'])+group('Lado não informado','❔',groups['Não informado'])+'</div></div>'}
 function familiaAnaliseHTML(list){const patterns=familiaPatterns(list),relevant=patterns.filter(x=>x.count>=2),missing=list.filter(p=>!familiaCondicaoTexto(p)||!p.sangue||!familiaIdade(p)).length;let body='';if(patterns.length){body='<div class="msa-fam-patterns">'+patterns.slice(0,8).map(x=>'<div class="msa-fam-pattern"><div><b>'+esc(x.nome)+'</b><small>'+x.count+' familiar'+(x.count===1?'':'es')+'</small></div><div class="msa-fam-members">'+x.members.map(p=>'<button type="button" onclick="selecionarFamiliar(\''+esc(p.id)+'\')">'+esc(p.nome||'Sem nome')+'</button>').join('')+'</div></div>').join('')+'</div>'}else body='<div class="msa-fam-empty">Ainda não há condições suficientes registradas para encontrar padrões.</div>';return '<div class="msa-fam-analysis-card"><div class="msa-fam-kicker">ANÁLISE DO HISTÓRICO</div><h3>📊 Padrões familiares registrados</h3><p>O sistema agrupa informações que você registrou. Isso não significa que você terá a mesma condição.</p><div class="msa-fam-analysis-kpis"><div><b>'+relevant.length+'</b><span>padrões repetidos</span></div><div><b>'+patterns.length+'</b><span>categorias encontradas</span></div><div><b>'+missing+'</b><span>fichas com dados faltantes</span></div></div>'+body+'<div class="alert warn" style="margin-top:10px">⚠️ Esta análise é apenas organizacional. Histórico familiar não é diagnóstico nem previsão individual de risco.</div></div>'}
+
+function dadosFamiliaParaIA(){
+ const historico=(window.MSAStorage?.get(K.fam)||[]); 
+ const familiares=familiaArray();
+ return {
+  historico:Array.isArray(historico)?historico:[],
+  familiares:Array.isArray(familiares)?familiares:[]
+ };
+}
+function gerarPromptCompletoFamilia(pergunta){
+ const d=dadosFamiliaParaIA();
+ const lines=[
+  'PROMPT — HISTÓRICO FAMILIAR E GENÉTICA',
+  '',
+  'Você é um assistente especializado em organizar e analisar informações de saúde da família.',
+  'Analise EXCLUSIVAMENTE os dados familiares abaixo.',
+  'Não misture informações do meu perfil pessoal, sintomas, medicamentos, exames ou outros dados que não pertençam à família.',
+  'Não invente informações. Quando um dado não estiver informado, diga que não foi informado.',
+  'Não faça diagnóstico e não afirme que uma condição será herdada. Diferencie histórico familiar, possibilidade e diagnóstico.',
+  '',
+  'PERGUNTA:',
+  String(pergunta||'Faça uma análise geral do histórico familiar, destacando padrões, informações relevantes e perguntas úteis para levar ao médico.'),
+  '',
+  '=== HISTÓRICO FAMILIAR / ANTECEDENTES ==='
+ ];
+ if(d.historico.length){
+  d.historico.forEach((x,i)=>{
+   lines.push(
+    'Registro '+(i+1)+':',
+    '- Parente: '+(x.parente||'Não informado'),
+    '- Condição: '+(x.condicao||x.info||'Não informado'),
+    '- Idade ao diagnóstico: '+(x.idade||'Não informada'),
+    '- Observação: '+(x.obs||'Não informada'),
+    ''
+   );
+  });
+ }else lines.push('- Nenhum antecedente familiar cadastrado.','');
+ lines.push('=== FAMILIARES CADASTRADOS ===');
+ if(d.familiares.length){
+  d.familiares.forEach((p,i)=>{
+   lines.push(
+    'Familiar '+(i+1)+':',
+    '- Nome: '+(p.nome||'Não informado'),
+    '- Parentesco: '+(p.parentesco||'Não informado'),
+    '- Sexo: '+(p.sexo||'Não informado'),
+    '- Data de nascimento: '+(p.nasc||'Não informada'),
+    '- Idade: '+(p.idade||'Não informada'),
+    '- Lado da família: '+(p.ladoFamilia||'Não informado'),
+    '- Condição principal: '+(p.condicao||'Não informada'),
+    '- Alergias: '+(p.alergias||'Não informadas'),
+    '- Tipo sanguíneo: '+(p.sangue||'Não informado'),
+    '- Contato/responsável: '+(p.contato||'Não informado'),
+    '- Observações: '+(p.obs||'Não informadas')
+   );
+   const meds=Array.isArray(p.medicamentos)?p.medicamentos:[];
+   const cons=Array.isArray(p.consultas)?p.consultas:[];
+   const crises=Array.isArray(p.crises)?p.crises:[];
+   if(meds.length){
+    lines.push('- Medicamentos:');
+    meds.forEach(m=>lines.push('  • '+(m.nome||'Não informado')+(m.dose?' — dose: '+m.dose:'')+(m.hora?' — horário: '+m.hora:'')+(m.frequencia?' — frequência: '+m.frequencia:'')+(m.prescritoPor?' — prescrito por: '+m.prescritoPor:'')+(m.obs?' — '+m.obs:'')));
+   }else lines.push('- Medicamentos: Nenhum registrado.');
+   if(cons.length){
+    lines.push('- Consultas:');
+    cons.forEach(x=>lines.push('  • '+(x.data||'Data não informada')+' — '+(x.especialidade||'Consulta')+(x.medico?' — médico: '+x.medico:'')+(x.retorno?' — retorno: '+x.retorno:'')+(x.motivo?' — motivo: '+x.motivo:'')+(x.obs?' — orientações: '+x.obs:'')));
+   }else lines.push('- Consultas: Nenhuma registrada.');
+   if(crises.length){
+    lines.push('- Crises/intercorrências:');
+    crises.forEach(x=>lines.push('  • '+(x.data||'Data não informada')+(x.hora?' '+x.hora:'')+' — '+(x.tipo||'Ocorrência')+' — intensidade: '+(x.intensidade||'não informada')+' — '+(x.descricao||'')+(x.gatilho?' — gatilho: '+x.gatilho:'')+(x.conduta?' — conduta: '+x.conduta:'')));
+   }else lines.push('- Crises/intercorrências: Nenhuma registrada.');
+   lines.push('');
+  });
+ }else lines.push('- Nenhum familiar cadastrado.','');
+ lines.push(
+  '=== COMO RESPONDER ===',
+  '1. Responda primeiro à pergunta solicitada.',
+  '2. Depois organize os principais padrões encontrados no histórico familiar.',
+  '3. Destaque informações que podem ser úteis para uma conversa com um profissional de saúde.',
+  '4. Aponte dados familiares que ainda estão faltando ou precisam ser confirmados.',
+  '5. Não transforme histórico familiar em diagnóstico ou previsão individual.'
+ );
+ return lines.join('\n');
+}
+function copiarTextoFamiliaIA(txt,okMsg){
+ const done=()=>alert(okMsg||'📋 Prompt familiar copiado. Agora você pode colar na IA.');
+ if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackIAFamiliar(txt));
+ else fallbackIAFamiliar(txt);
+}
+function abrirPromptFamiliaIA(){
+ const pergunta='Faça uma análise geral do histórico familiar, destacando padrões, informações relevantes e perguntas úteis para levar ao médico.';
+ let old=document.getElementById('msaFamiliaIAPromptModal');if(old)old.remove();
+ const modal=document.createElement('div');modal.id='msaFamiliaIAPromptModal';modal.className='msa-ava-overlay';
+ modal.innerHTML='<div class="msa-ava-dialog" role="dialog" aria-modal="true" aria-labelledby="msaFamiliaIATitle">'+
+  '<div class="msa-ava-top"><div><div class="msa-fam-kicker">🤖 IA · FAMÍLIA</div><h2 id="msaFamiliaIATitle">Perguntar para IA sobre a família</h2><p>O prompt abaixo usa somente as informações cadastradas em Histórico Familiar e Familiares.</p></div><button type="button" class="msa-ava-close" id="msaFamiliaIAClose">✕</button></div>'+
+  '<label class="msa-ava-field">❓ O que você quer perguntar?<textarea id="msaFamiliaIAPergunta" style="margin-top:7px;min-height:90px" placeholder="Ex.: Existe algum padrão de doenças que aparece em mais de uma geração?">'+esc(pergunta)+'</textarea></label>'+
+  '<label class="msa-ava-field">📋 Prompt completo<textarea id="msaFamiliaIATexto" readonly style="margin-top:7px;min-height:260px;font-size:12px;line-height:1.4"></textarea></label>'+
+  '<div class="msa-ava-actions" style="display:grid;grid-template-columns:1fr 1fr"><button type="button" class="btn green" id="msaFamiliaIACopiar">📋 Copiar prompt</button><button type="button" class="btn" id="msaFamiliaIAChatGPT">🟢 Copiar e abrir ChatGPT</button><button type="button" class="btn secondary" id="msaFamiliaIAGemini">🔵 Copiar e abrir Gemini</button><button type="button" class="btn secondary" id="msaFamiliaIAFechar">↩️ Voltar</button></div>'+
+  '<div class="alert safe" style="margin-top:12px">🔒 Nada é enviado automaticamente. Você decide quando copiar e compartilhar essas informações.</div>'+
+  '</div>';
+ document.body.appendChild(modal);
+ const textarea=modal.querySelector('#msaFamiliaIAPergunta'),out=modal.querySelector('#msaFamiliaIATexto');
+ const atualizar=()=>{out.value=gerarPromptCompletoFamilia(textarea.value)};
+ atualizar();
+ textarea.addEventListener('input',atualizar);
+ const fechar=()=>modal.remove();
+ modal.querySelector('#msaFamiliaIAClose').onclick=fechar;
+ modal.querySelector('#msaFamiliaIAFechar').onclick=fechar;
+ modal.addEventListener('click',e=>{if(e.target===modal)fechar()});
+ modal.querySelector('#msaFamiliaIACopiar').onclick=()=>copiarTextoFamiliaIA(out.value);
+ modal.querySelector('#msaFamiliaIAChatGPT').onclick=()=>{
+   const txt=out.value;copiarTextoFamiliaIA(txt,'✅ Prompt copiado. Abrindo o ChatGPT…');
+   window.open('https://chatgpt.com/?q='+encodeURIComponent(txt),'_blank');
+ };
+ modal.querySelector('#msaFamiliaIAGemini').onclick=()=>{
+   const txt=out.value;copiarTextoFamiliaIA(txt,'✅ Prompt copiado. Abrindo o Gemini…');
+   window.open('https://gemini.google.com/app','_blank');
+ };
+ textarea.focus();
+}
+window.abrirPromptFamiliaIA=abrirPromptFamiliaIA;
 function renderFamiliaInteligencia(){const box=document.getElementById('familiares');if(!box)return;const host=box.querySelector('.card');if(!host)return;let hub=document.getElementById('familiaInteligencia');if(!hub){hub=document.createElement('div');hub.id='familiaInteligencia';host.insertBefore(hub,host.firstChild)}const list=familiaArray();hub.innerHTML='<div class="msa-fam-actions"><button type="button" class="msa-fam-action primary" onclick="iniciarEntrevistaAvaFamilia()"><strong>🤖</strong><span>Adicionar com a Ava</span><small>Ela faz perguntas uma por vez.</small></button><button type="button" class="msa-fam-action" onclick="document.getElementById(\'msa-fam-map\')?.scrollIntoView({behavior:\'smooth\',block:\'start\'})"><strong>🧬</strong><span>Ver mapa da família</span><small>Materno, paterno e núcleo próximo.</small></button><button type="button" class="msa-fam-action" onclick="document.getElementById(\'msa-fam-analysis\')?.scrollIntoView({behavior:\'smooth\',block:\'start\'})"><strong>📊</strong><span>Ver padrões</span><small>Condições que aparecem mais de uma vez.</small></button></div><div id="msa-fam-map" class="msa-fam-anchor">'+familiaMapaHTML(list)+'</div><div id="msa-fam-analysis" class="msa-fam-anchor">'+familiaAnaliseHTML(list)+'</div>'}
 function instalarCampoLadoFamilia(){const form=document.getElementById('familiarForm');if(!form||document.getElementById('fLadoFamilia'))return;const wrap=document.createElement('label');wrap.innerHTML='🧬 Lado da família<select id="fLadoFamilia"><option value="">Não informado</option><option>Materno</option><option>Paterno</option><option>Ambos / não sei</option></select>';const alvo=document.getElementById('fCondicao');if(alvo&&alvo.parentElement)alvo.parentElement.parentElement.insertBefore(wrap,alvo.parentElement);else form.appendChild(wrap)}
 const avaQuestions=[{key:'nome',title:'Quem é esse familiar?',help:'Digite o nome da pessoa que você quer adicionar.',type:'text',placeholder:'Ex.: Maria'},{key:'parentesco',title:'Qual é o parentesco?',help:'Ava vai usar isso para organizar o mapa da família.',type:'select',options:['Pai','Mãe','Irmão/irmã','Filho(a)','Avô/avó','Tio/tia','Marido','Esposa','Companheiro(a)','Outro']},{key:'sexo',title:'Qual é o sexo?',help:'Pode deixar como “Não informado” se preferir.',type:'select',options:['Não informado','Masculino','Feminino','Outro']},{key:'idade',title:'Qual é a idade aproximada?',help:'Pode informar apenas uma estimativa.',type:'number',placeholder:'Ex.: 68'},{key:'ladoFamilia',title:'De qual lado da família?',help:'Isso ajuda a organizar o mapa em materno e paterno.',type:'select',options:['Não informado','Materno','Paterno','Ambos / não sei']},{key:'condicao',title:'Ele(a) tem alguma doença ou condição diagnosticada?',help:'Informe somente o que você sabe. Pode escrever várias.',type:'text',placeholder:'Ex.: diabetes e hipertensão'},{key:'idadeDiagnostico',title:'Você sabe com que idade foi diagnosticada?',help:'Pode deixar em branco ou informar uma idade aproximada.',type:'number',placeholder:'Ex.: 55'},{key:'recorrencia',title:'Essa condição aparece em outros familiares?',help:'Ex.: “sim, em duas tias” ou “não sei”.',type:'text',placeholder:'Ex.: Sim, em duas tias'},{key:'certeza',title:'Quanto você confia nessa informação?',help:'Diferencie o que foi confirmado do que é apenas lembrança familiar.',type:'select',options:['Confirmado por profissional','Informado pela família','Suspeita / não confirmado','Não sei']},{key:'obs',title:'Existe mais alguma informação importante?',help:'Cirurgias, infarto, AVC, câncer, internações ou outras observações.',type:'text',placeholder:'Pode deixar em branco'}];
