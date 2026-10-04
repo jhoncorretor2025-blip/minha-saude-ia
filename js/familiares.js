@@ -198,15 +198,45 @@ function abrirPromptFamiliaIA(){
 window.abrirPromptFamiliaIA=abrirPromptFamiliaIA;
 
 function normalizarTextoIA(v){return String(v==null?'':v).trim()}
+function tentarParseJSON(txt){
+ const s=String(txt||'').trim();
+ if(!s)return null;
+ try{return JSON.parse(s)}catch(e){}
+ return null;
+}
 function extrairJSONFamilia(raw){
  const txt=normalizarTextoIA(raw).replace(/^\uFEFF/,'');
- const bloco=txt.replace(/^\`\`\`(?:json)?\s*/i,'').replace(/\s*\`\`\`$/,'').trim();
- try{return JSON.parse(bloco)}catch(e){}
- const i=bloco.indexOf('{'),j=bloco.lastIndexOf('}');
- if(i>=0&&j>i){try{return JSON.parse(bloco.slice(i,j+1))}catch(e){}}
- const a=bloco.indexOf('['),b=bloco.lastIndexOf(']');
- if(a>=0&&b>a){try{return JSON.parse(bloco.slice(a,b+1))}catch(e){}}
- throw new Error('Não encontrei um JSON válido na resposta da IA.');
+ const candidatos=[];
+ const blocos=[...txt.matchAll(/\`\`\`(?:json)?\s*([\s\S]*?)\`\`\`/gi)];
+ blocos.forEach(m=>candidatos.push(m[1]));
+ candidatos.push(txt);
+ // Procura o objeto principal mesmo quando existe texto explicativo antes/depois.
+ const inicioFamilia=txt.search(/\{\s*["']?familiares["']?\s*:/i);
+ if(inicioFamilia>=0)candidatos.push(txt.slice(inicioFamilia));
+ const inicioHistorico=txt.search(/\{\s*["']?historico_familiar["']?\s*:/i);
+ if(inicioHistorico>=0)candidatos.push(txt.slice(inicioHistorico));
+ for(const candidato of candidatos){
+  const parsed=tentarParseJSON(candidato.replace(/^\s*json\s*/i,'').trim());
+  if(parsed && (Array.isArray(parsed)||typeof parsed==='object'))return parsed;
+  const clean=String(candidato).trim().replace(/^\`\`\`(?:json)?/i,'').replace(/\`\`\`$/,'').trim();
+  const objStart=clean.search(/\{\s*["']?familiares["']?\s*:/i);
+  if(objStart>=0){
+   for(let end=clean.length;end>objStart+10;end--){
+    if(clean[end-1]!=='}')continue;
+    const parsed2=tentarParseJSON(clean.slice(objStart,end));
+    if(parsed2&&typeof parsed2==='object'&&!Array.isArray(parsed2)&&parsed2.familiares)return parsed2;
+   }
+  }
+  const arrStart=clean.indexOf('[');
+  if(arrStart>=0){
+   for(let end=clean.length;end>arrStart+2;end--){
+    if(clean[end-1]!==']')continue;
+    const parsed3=tentarParseJSON(clean.slice(arrStart,end));
+    if(Array.isArray(parsed3)&&parsed3.some(x=>x&&typeof x==='object'&&x.nome))return {familiares:parsed3};
+   }
+  }
+ }
+ throw new Error('Não encontrei um JSON válido da família. Na IA, finalize dizendo "pode gerar" e copie a resposta completa.');
 }
 function arrFam(v){return Array.isArray(v)?v:[]}
 function normalizarFamiliarImportado(src){
@@ -243,7 +273,7 @@ function normalizarFamiliarImportado(src){
   idade:normalizarTextoIA(p.idade||p.IDADE),condicao:normalizarTextoIA(p.condicao||p.CONDICAO),
   alergias:normalizarTextoIA(p.alergias||p.ALERGIAS),sangue:normalizarTextoIA(p.sangue||p.SANGUE||p.tipo_sanguineo||p.TIPO_SANGUINEO),
   contato:normalizarTextoIA(p.contato||p.CONTATO),obs:obs.join(' '),
-  ladoFamilia:normalizarTextoIA(p.ladoFamilia||p.LADO_FAMILIA),criadoEm:normalizarTextoIA(p.criadoEm)||new Date().toISOString(),
+  ladoFamilia:normalizarTextoIA(p.ladoFamilia||p.LADO_FAMILIA),idadeDiagnostico:normalizarTextoIA(p.idadeDiagnostico||p.IDADE_DIAGNOSTICO),certeza:normalizarTextoIA(p.certeza||p.CERTEZA),criadoEm:normalizarTextoIA(p.criadoEm)||new Date().toISOString(),
   medicamentos:meds,consultas:cons,crises:crises,dadosImportadosIA:p
  };
 }
@@ -261,10 +291,15 @@ function salvarImportacaoFamilia(dados){
   });
   if(idx>=0){
    const antigo=ensure(atuais[idx]);
-   atuais[idx]=Object.assign({},antigo,novo,{id:antigo.id,
-    medicamentos:novo.medicamentos.length?novo.medicamentos:antigo.medicamentos,
-    consultas:novo.consultas.length?novo.consultas:antigo.consultas,
-    crises:novo.crises.length?novo.crises:antigo.crises});
+   const merged=Object.assign({},antigo);
+   ['nome','parentesco','sexo','nasc','idade','condicao','alergias','sangue','contato','obs','ladoFamilia','idadeDiagnostico','certeza'].forEach(function(k){
+    if(String(novo[k]||'').trim())merged[k]=novo[k];
+   });
+   merged.medicamentos=novo.medicamentos.length?novo.medicamentos:antigo.medicamentos;
+   merged.consultas=novo.consultas.length?novo.consultas:antigo.consultas;
+   merged.crises=novo.crises.length?novo.crises:antigo.crises;
+   merged.dadosImportadosIA=Object.assign({},antigo.dadosImportadosIA||{},novo.dadosImportadosIA||{});
+   atuais[idx]=ensure(merged);
    if(!primeiroId)primeiroId=antigo.id;atualizados++;
   }else{atuais.push(ensure(novo));if(!primeiroId)primeiroId=novo.id;novos++}
  });
