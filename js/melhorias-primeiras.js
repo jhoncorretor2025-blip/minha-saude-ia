@@ -8,7 +8,8 @@ const K=window.MSA_K||window.K||{};
 const storage=window.MSAStorage;
 const rawStorage=window.msaStorage;
 const DRAFT_KEY='msa2_rascunhos_formularios';
-let draftPanelClosed=false;
+const DRAFT_PANEL_CLOSED_KEY='msa2_rascunhos_painel_fechado';
+let draftPanelClosed=rawStorage.getItem(DRAFT_PANEL_CLOSED_KEY)==='1';
 
 const FORMS={
   dorForm:{page:'dor',label:'Sintoma ou dor',dataKey:K.d},
@@ -55,7 +56,13 @@ const collectForm=form=>{
 const formHasContent=form=>Object.values(collectForm(form)).some(v=>typeof v==='boolean'?v:String(v||'').trim()!=='');
 const saveDraft=form=>{
   const cfg=FORMS[form.id];if(!cfg||!formHasContent(form))return;
-  const drafts=readDrafts();drafts[form.id]={id:form.id,label:cfg.label,page:cfg.page,updatedAt:new Date().toISOString(),fields:collectForm(form)};
+  const drafts=readDrafts();
+  const wasExisting=!!drafts[form.id];
+  drafts[form.id]={id:form.id,label:cfg.label,page:cfg.page,updatedAt:new Date().toISOString(),fields:collectForm(form)};
+  if(!wasExisting){
+    draftPanelClosed=false;
+    rawStorage.removeItem(DRAFT_PANEL_CLOSED_KEY);
+  }
   writeDrafts(drafts);renderDraftPanel();
 };
 const removeDraft=id=>{
@@ -86,6 +93,7 @@ window.msaIgnorarRascunho=function(id){
 };
 function fecharPainelRascunhos(){
   draftPanelClosed=true;
+  rawStorage.setItem(DRAFT_PANEL_CLOSED_KEY,'1');
   const panel=byId('msaDraftPanel');
   if(panel)panel.remove();
 }
