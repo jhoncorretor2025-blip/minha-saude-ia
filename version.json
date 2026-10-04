@@ -1,5 +1,5 @@
 {
-  "version": "V5.86",
-  "updatedAt": "2026-10-04T10:49:00-03:00",
-  "changes": "Família/Familiares: adicionado botão Perguntar à IA para gerar e copiar um comando exclusivo com os dados do familiar selecionado."
+  "version": "V5.87",
+  "updatedAt": "2026-10-04T11:00:00-03:00",
+  "changes": "Família/Familiares: entrevista guiada da Ava, mapa de saúde da família, análise de padrões e campo de lado da família."
 }
