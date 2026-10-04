@@ -412,6 +412,7 @@ function abrirPendenciasPreenchimento(){
   else if(dest&&typeof go==='function')go(dest);else if(cat==='Rotina'&&typeof go==='function')go('perfil');else if(typeof go==='function')go('perfil');
  });
 }
+window.abrirPendenciasPreenchimento=abrirPendenciasPreenchimento;
 function atualizarEngajamento(){
  const hoje=new Date().toISOString().slice(0,10);
  const h=JSON.parse(window.msaStorage.getItem('msa2_humor')||'null');
