@@ -8,6 +8,7 @@ const K=window.MSA_K||window.K||{};
 const storage=window.MSAStorage;
 const rawStorage=window.msaStorage;
 const DRAFT_KEY='msa2_rascunhos_formularios';
+let draftPanelClosed=false;
 
 const FORMS={
   dorForm:{page:'dor',label:'Sintoma ou dor',dataKey:K.d},
@@ -83,16 +84,22 @@ window.msaRestaurarRascunho=function(id){
 window.msaIgnorarRascunho=function(id){
   if(confirm('Ignorar e apagar este rascunho?'))removeDraft(id);
 };
+function fecharPainelRascunhos(){
+  draftPanelClosed=true;
+  const panel=byId('msaDraftPanel');
+  if(panel)panel.remove();
+}
 function renderDraftPanel(){
   const existing=byId('msaDraftPanel');
   if(existing)existing.remove();
+  if(draftPanelClosed)return;
   const drafts=Object.values(readDrafts()).sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
   if(!drafts.length)return;
   const host=document.getElementById('main-content')||document.querySelector('.wrap')||document.body;
   const box=document.createElement('div');
   box.id='msaDraftPanel';box.className='card';
-  box.style.cssText='margin:0 0 14px;border:1px solid #bfdbfe;background:#eff6ff';
-  box.innerHTML='<div class="dash-section-title"><div><h2 style="margin:0;font-size:18px">📝 Rascunhos salvos automaticamente</h2><div class="muted">Informações que você começou a preencher, mas ainda não salvou.</div></div></div>'+
+  box.style.cssText='margin:0 0 14px;border:1px solid #bfdbfe;background:#eff6ff;position:relative';
+  box.innerHTML='<div class="dash-section-title" style="position:relative;padding-right:44px"><div><h2 style="margin:0;font-size:18px">📝 Rascunhos salvos automaticamente</h2><div class="muted">Informações que você começou a preencher, mas ainda não salvou.</div></div><button type="button" class="btn secondary small" aria-label="Fechar rascunhos" title="Fechar" onclick="fecharPainelRascunhos()" style="position:absolute;right:0;top:0;width:34px;height:34px;min-width:34px;padding:0;border-radius:50%;font-size:18px;font-weight:800;line-height:1">✕</button></div>'+
     '<div class="list">'+drafts.map(d=>{
       const when=new Date(d.updatedAt),dt=isNaN(when)?d.updatedAt:when.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});
       return '<div class="item msa-draft-row"><div class="itemtop"><b>📝 '+esc(d.label)+'</b><span class="tag">'+esc(dt)+'</span></div><p>Este rascunho fica apenas neste navegador.</p><div class="row" style="margin-top:9px"><button class="btn green small" type="button" data-msa-draft-action="restore" data-msa-draft-id="'+esc(d.id)+'">↩️ Continuar preenchendo</button><button class="btn secondary small" type="button" data-msa-draft-action="ignore" data-msa-draft-id="'+esc(d.id)+'">🗑️ Apagar rascunho</button></div></div>';
