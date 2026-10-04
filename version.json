@@ -1,5 +1,5 @@
 {
-  "version": "V5.91",
-  "updatedAt": "2026-10-04T20:45:00-03:00",
-  "changes": "Família: novo botão de IA no menu e na página; gera prompt completo usando somente Histórico Familiar e Familiares, permite editar a pergunta, copiar e abrir ChatGPT/Gemini."
+  "version": "V5.92",
+  "updatedAt": "2026-10-04T21:10:00-03:00",
+  "changes": "Correções e Família: Ver o que falta funcional; X para fechar rascunhos; prompt exclusivo da Família com resposta estruturada; importação da resposta da IA salva todos os familiares, histórico, medicamentos, consultas e crises e redireciona para Familiares."
 }
