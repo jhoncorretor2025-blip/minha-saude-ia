@@ -67,37 +67,56 @@ function dadosFamiliaParaIA(){
 function gerarPromptCompletoFamilia(pergunta){
  const d=dadosFamiliaParaIA();
  const lines=[
-  'PROMPT — ENTREVISTA COMPLETA DA FAMÍLIA',
+  'PROMPT — FAMÍLIA PRONTO PARA COPIAR E COLAR',
   '',
   'Você é a assistente de organização do histórico familiar do Minha Saúde IA.',
-  'Seu objetivo é conduzir uma entrevista guiada, uma pergunta por vez, para completar e organizar os dados de TODOS os familiares cadastrados.',
-  'Analise e use somente informações da família. Não misture com o perfil pessoal do usuário nem com outros módulos de saúde.',
-  'Não invente dados. Quando algo não for conhecido, registre como não informado.',
-  'Não faça diagnóstico e não transforme histórico familiar em previsão individual de doença.',
+  'Sua tarefa é analisar todo o contexto familiar fornecido e devolver imediatamente uma ficha estruturada para importação.',
+  'ATENÇÃO: NÃO faça entrevista.',
+  'ATENÇÃO: NÃO faça perguntas ao usuário.',
+  'ATENÇÃO: NÃO peça informações adicionais.',
+  'ATENÇÃO: NÃO espere uma segunda mensagem do usuário.',
+  'ATENÇÃO: responda tudo em uma única resposta.',
   '',
-  '=== COMO CONDUZIR A ENTREVISTA ===',
-  '1. Primeiro, leia todo o contexto familiar já cadastrado abaixo.',
-  '2. Trabalhe um familiar por vez. Comece pelo primeiro familiar e percorra TODOS os familiares.',
-  '3. Faça APENAS UMA PERGUNTA POR MENSAGEM.',
-  '4. Priorize campos que estejam vazios ou pouco detalhados: doenças/condições, idade do diagnóstico, lado da família, alergias, medicamentos, consultas, crises/intercorrências e outras informações relevantes.',
-  '5. Pergunte também sobre familiares importantes que possam estar faltando, quando isso fizer sentido (pai, mãe, irmãos, avós e outros parentes próximos).',
-  '6. Aproveite respostas anteriores para não repetir perguntas já respondidas.',
-  '7. Quando a resposta for incerta, registre a incerteza em vez de assumir.',
-  '8. Continue perguntando até que o usuário diga uma frase como "pode gerar", "gerar ficha", "finalizar" ou equivalente.',
-  '9. NÃO gere o JSON antes do usuário pedir para gerar/finalizar.',
+  'Use somente informações relacionadas à família.',
+  'Não misture informações do perfil pessoal do usuário nem de outros módulos, a menos que um dado esteja explicitamente identificado como pertencente a um familiar.',
+  'Nunca invente dados.',
+  'Quando uma informação não estiver disponível, use "" ou [] e siga em frente.',
+  'Preserve informações incertas como foram informadas e não transforme suspeitas em certezas.',
+  'Não faça diagnóstico e não faça previsão individual de doenças.',
   '',
-  '=== QUANDO O USUÁRIO DISSER "PODE GERAR" ===',
-  '1. Faça uma consolidação final de tudo que foi informado na conversa.',
-  '2. Preserve os dados já existentes no contexto e acrescente as novas informações obtidas na entrevista.',
-  '3. Gere um objeto JSON válido contendo "familiares" e "historico_familiar".',
-  '4. Para cada familiar, preserve nome, parentesco, sexo, data_nascimento, idade, ladoFamilia, condicao, alergias, tipo_sanguineo, contato, obs, idadeDiagnostico, certeza, medicamentos, consultas e crises.',
-  '5. Cada medicamento deve preservar nome, dose, horario, frequencia, prescrito_por e obs.',
-  '6. Cada consulta deve preservar data, especialidade, medico, retorno, motivo e obs.',
-  '7. Cada crise deve preservar data, hora, tipo, intensidade, descricao, gatilho e conduta.',
-  '8. Não omita informações. Use "" ou [] quando um dado não existir.',
+  '=== O QUE VOCÊ DEVE FAZER AGORA ===',
+  '1. Leia todo o contexto familiar abaixo.',
+  '2. Organize TODOS os familiares já cadastrados.',
+  '3. Preserve todos os dados disponíveis de cada familiar.',
+  '4. Preserve doenças, condições, alergias, tipo sanguíneo, medicamentos, consultas, crises/intercorrências e observações.',
+  '5. Preserve também o histórico familiar que não puder ser atribuído a uma pessoa específica.',
+  '6. NÃO pergunte nada, mesmo que existam informações faltantes.',
+  '7. Preencha os campos ausentes com "" ou [] conforme a estrutura.',
+  '8. Gere imediatamente o resultado final.',
   '',
-  '=== CONTEXTO JÁ CADASTRADO ===',
-  'FAMÍLIA / ANTECEDENTES:'
+  '=== FORMATO DA RESPOSTA ===',
+  'A resposta final deve conter SOMENTE um objeto JSON válido.',
+  'Não escreva explicações antes do JSON.',
+  'Não escreva explicações depois do JSON.',
+  'Não use comentários.',
+  'Use aspas duplas válidas para JSON.',
+  'A estrutura principal obrigatória é:',
+  '{"familiares":[],"historico_familiar":[]}',
+  '',
+  'Cada familiar deve preservar:',
+  'nome, parentesco, sexo, data_nascimento, idade, ladoFamilia, condicao, alergias, tipo_sanguineo, contato, obs, idadeDiagnostico, certeza, medicamentos, consultas e crises.',
+  '',
+  'Cada medicamento deve preservar:',
+  'nome, dose, horario, frequencia, prescrito_por e obs.',
+  '',
+  'Cada consulta deve preservar:',
+  'data, especialidade, medico, retorno, motivo e obs.',
+  '',
+  'Cada crise deve preservar:',
+  'data, hora, tipo, intensidade, descricao, gatilho e conduta.',
+  '',
+  '=== CONTEXTO FAMILIAR ===',
+  'HISTÓRICO FAMILIAR / ANTECEDENTES:'
  ];
  if(d.historico.length){
   d.historico.forEach((x,i)=>{
@@ -111,7 +130,7 @@ function gerarPromptCompletoFamilia(pergunta){
    );
   });
  }else lines.push('- Nenhum antecedente familiar cadastrado.','');
- lines.push('FAMILIARES:');
+ lines.push('FAMILIARES CADASTRADOS:');
  if(d.familiares.length){
   d.familiares.forEach((p,i)=>{
    lines.push(
@@ -149,9 +168,12 @@ function gerarPromptCompletoFamilia(pergunta){
   });
  }else lines.push('- Nenhum familiar cadastrado.','');
  lines.push(
-  '=== REGRA FINAL ===',
-  'Depois que o usuário pedir para gerar, responda com uma breve confirmação e, em seguida, o objeto JSON completo.',
-  'O JSON precisa ser autocontido e pronto para o botão "Colar resposta da IA" do Minha Saúde IA.'
+  '=== FINALIZAÇÃO OBRIGATÓRIA ===',
+  'Agora gere imediatamente o JSON completo.',
+  'NÃO faça nenhuma pergunta.',
+  'NÃO peça confirmação.',
+  'NÃO peça mais dados.',
+  'Entregue somente o JSON válido pronto para copiar e colar no botão "Colar resposta da IA" do Minha Saúde IA.'
  );
  return lines.join('\\n');
 }
@@ -361,7 +383,7 @@ function renderFamiliaInteligencia(){
   '<div class="msa-fam-ai-card">'+
    '<div class="msa-fam-ai-head"><div><div class="msa-fam-kicker">🤖 FAMÍLIA COM IA</div><h3>Organize a família em 2 passos</h3><p>Copie o prompt, converse com a IA e depois cole a resposta para salvar tudo aqui.</p></div></div>'+
    '<div class="msa-fam-ai-steps">'+
-    '<button type="button" class="msa-fam-ai-step" onclick="abrirPromptFamiliaIA()"><strong>1️⃣</strong><span>Copiar e abrir a IA</span><small>ChatGPT, Claude ou Gemini · entrevista uma pergunta por vez.</small></button>'+
+    '<button type="button" class="msa-fam-ai-step" onclick="abrirPromptFamiliaIA()"><strong>1️⃣</strong><span>Copiar e abrir a IA</span><small>ChatGPT, Claude ou Gemini · gera tudo de uma vez, sem fazer perguntas.</small></button>'+
     '<button type="button" class="msa-fam-ai-step" onclick="abrirImportadorRespostaFamilia()"><strong>2️⃣</strong><span>Colar resposta e salvar tudo</span><small>Importa familiares, doenças, remédios, consultas e crises.</small></button>'+
    '</div>'+
   '</div>'+
