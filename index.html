@@ -491,7 +491,63 @@ body{overflow-x:hidden;}
 .msa-feature-off{display:none!important}
 body.msa-dark #settingsPreferences label{background:#111827!important;color:#e5e7eb;border-color:#263244!important}
 </style>
-<style>.familiar-people-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.familiar-person-card{display:flex;align-items:center;gap:10px;text-align:left;width:100%;padding:12px;border:1px solid #e3e8f0;background:#fff;border-radius:15px;cursor:pointer;font:inherit;color:var(--text)}.familiar-person-card:hover,.familiar-person-card.selected{border-color:#8fb0ff;background:#f5f8ff}.familiar-person-icon{font-size:28px;flex:0 0 34px}.familiar-person-info{display:grid;gap:2px;min-width:0;flex:1}.familiar-person-info b,.familiar-person-info small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.familiar-person-info small{color:var(--muted);font-size:12px}.familiar-person-count{font-size:11px;font-weight:900;color:#64748b;text-align:right}.familiar-detail-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}.familiar-kicker{font-size:10px;font-weight:900;letter-spacing:.08em;color:#2563eb}.familiar-alert{padding:13px;border:1px solid #dbe5ff;background:#f5f8ff;border-radius:15px;line-height:1.5}.familiar-alert span{color:#64748b;font-size:13px}.familiar-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:12px 0}.familiar-summary-grid>div{padding:12px;border:1px solid #e5eaf2;border-radius:14px;background:#fff}.familiar-summary-grid span{display:block;color:#687386;font-size:11px;margin-bottom:5px}.familiar-summary-grid b{font-size:13px;word-break:break-word}.familiar-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.familiar-subcard{margin:0!important}@media(max-width:760px){.familiar-people-list,.familiar-grid{grid-template-columns:1fr}.familiar-summary-grid{grid-template-columns:1fr 1fr}.familiar-detail-head{flex-direction:column}.familiar-detail-head .row{width:100%}.familiar-detail-head .row .btn{flex:1}}</style></head>
+<style>.familiar-people-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.familiar-person-card{display:flex;align-items:center;gap:10px;text-align:left;width:100%;padding:12px;border:1px solid #e3e8f0;background:#fff;border-radius:15px;cursor:pointer;font:inherit;color:var(--text)}.familiar-person-card:hover,.familiar-person-card.selected{border-color:#8fb0ff;background:#f5f8ff}.familiar-person-icon{font-size:28px;flex:0 0 34px}.familiar-person-info{display:grid;gap:2px;min-width:0;flex:1}.familiar-person-info b,.familiar-person-info small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.familiar-person-info small{color:var(--muted);font-size:12px}.familiar-person-count{font-size:11px;font-weight:900;color:#64748b;text-align:right}.familiar-detail-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}.familiar-kicker{font-size:10px;font-weight:900;letter-spacing:.08em;color:#2563eb}.familiar-alert{padding:13px;border:1px solid #dbe5ff;background:#f5f8ff;border-radius:15px;line-height:1.5}.familiar-alert span{color:#64748b;font-size:13px}.familiar-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:12px 0}.familiar-summary-grid>div{padding:12px;border:1px solid #e5eaf2;border-radius:14px;background:#fff}.familiar-summary-grid span{display:block;color:#687386;font-size:11px;margin-bottom:5px}.familiar-summary-grid b{font-size:13px;word-break:break-word}.familiar-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.familiar-subcard{margin:0!important}@media(max-width:760px){.familiar-people-list,.familiar-grid{grid-template-columns:1fr}.familiar-summary-grid{grid-template-columns:1fr 1fr}.familiar-detail-head{flex-direction:column}.familiar-detail-head .row{width:100%}.familiar-detail-head .row .btn{flex:1}}</style><style id="v593-pendencias-fix">
+/* V5.93 — Pendências: o modal precisa ficar sobre a tela, não no final do documento. */
+#msaPendenciasModal{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:200000 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100vw !important;
+  height:100dvh !important;
+  padding:18px !important;
+  margin:0 !important;
+  background:rgba(15,23,42,.72) !important;
+  overflow:auto !important;
+}
+#msaPendenciasModal .msa-pendencias-card{
+  position:relative !important;
+  width:min(720px,100%) !important;
+  max-height:calc(100dvh - 36px) !important;
+  margin:0 !important;
+  padding:20px !important;
+  background:#fff !important;
+  border:1px solid #dbe5ff !important;
+  border-radius:22px !important;
+  box-shadow:0 25px 80px rgba(15,23,42,.30) !important;
+  overflow:auto !important;
+}
+#msaPendenciasModal .msa-pendencias-head{
+  display:flex !important;
+  justify-content:space-between !important;
+  align-items:flex-start !important;
+  gap:12px !important;
+}
+#msaPendenciasModal .msa-pendencias-close{
+  flex:0 0 auto !important;
+  width:42px !important;
+  height:42px !important;
+  border:0 !important;
+  border-radius:12px !important;
+  background:#f1f5f9 !important;
+  color:#172033 !important;
+  font-size:20px !important;
+  font-weight:900 !important;
+  cursor:pointer !important;
+}
+@media(max-width:600px){
+  #msaPendenciasModal{padding:10px !important;align-items:flex-end !important;}
+  #msaPendenciasModal .msa-pendencias-card{
+    max-height:90dvh !important;
+    width:100% !important;
+    border-radius:22px 22px 14px 14px !important;
+    padding:16px !important;
+  }
+}
+</style>
+</head>
 <body>
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
 <div id="importDiagnostic" style="display:none;margin-top:12px"></div>
