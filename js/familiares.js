@@ -240,7 +240,7 @@ function salvarImportacaoFamilia(dados){
  const entrada=arrFam(raiz.familiares||raiz.FAMILIARES||raiz.family||raiz.members);
  const importados=entrada.map(normalizarFamiliarImportado).filter(Boolean);
  if(!importados.length)throw new Error('Nenhum familiar válido encontrado na resposta da IA.');
- const atuais=getList();let novos=0,atualizados=0;
+ const atuais=getList();let novos=0,atualizados=0,primeiroId='';
  importados.forEach(function(novo){
   const chave=(String(novo.nome)+'|'+String(novo.parentesco)).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   const idx=atuais.findIndex(function(x){
@@ -253,8 +253,8 @@ function salvarImportacaoFamilia(dados){
     medicamentos:novo.medicamentos.length?novo.medicamentos:antigo.medicamentos,
     consultas:novo.consultas.length?novo.consultas:antigo.consultas,
     crises:novo.crises.length?novo.crises:antigo.crises});
-   novos+=0;atualizados++;
-  }else{atuais.push(ensure(novo));novos++}
+   if(!primeiroId)primeiroId=antigo.id;atualizados++;
+  }else{atuais.push(ensure(novo));if(!primeiroId)primeiroId=novo.id;novos++}
  });
  if(!saveList(atuais))throw new Error('Não foi possível gravar os familiares neste navegador.');
  const antecedentes=arrFam(raiz.historico_familiar||raiz.HISTORICO_FAMILIAR||raiz.antecedentes);
@@ -270,7 +270,7 @@ function salvarImportacaoFamilia(dados){
   });
   if(window.MSAStorage&&window.MSAStorage.set)window.MSAStorage.set(K.fam,h);
  }
- setSelected(importados[0].id);renderFamiliares();
+ setSelected(primeiroId||importados[0].id);renderFamiliares();
  return {novos:novos,atualizados:atualizados,total:importados.length};
 }
 function abrirImportadorRespostaFamilia(){
