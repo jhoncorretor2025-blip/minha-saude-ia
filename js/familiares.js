@@ -89,7 +89,7 @@ function gerarPromptCompletoFamilia(pergunta){
   '=== QUANDO O USUÁRIO DISSER "PODE GERAR" ===',
   '1. Faça uma consolidação final de tudo que foi informado na conversa.',
   '2. Preserve os dados já existentes no contexto e acrescente as novas informações obtidas na entrevista.',
-  '3. Gere um JSON válido em bloco \`json contendo "familiares" e "historico_familiar".',
+  '3. Gere um objeto JSON válido contendo "familiares" e "historico_familiar".',
   '4. Para cada familiar, preserve nome, parentesco, sexo, data_nascimento, idade, ladoFamilia, condicao, alergias, tipo_sanguineo, contato, obs, idadeDiagnostico, certeza, medicamentos, consultas e crises.',
   '5. Cada medicamento deve preservar nome, dose, horario, frequencia, prescrito_por e obs.',
   '6. Cada consulta deve preservar data, especialidade, medico, retorno, motivo e obs.',
@@ -150,7 +150,7 @@ function gerarPromptCompletoFamilia(pergunta){
  }else lines.push('- Nenhum familiar cadastrado.','');
  lines.push(
   '=== REGRA FINAL ===',
-  'Depois que o usuário pedir para gerar, responda com uma breve confirmação e, em seguida, o JSON completo em bloco \`json.',
+  'Depois que o usuário pedir para gerar, responda com uma breve confirmação e, em seguida, o objeto JSON completo.',
   'O JSON precisa ser autocontido e pronto para o botão "Colar resposta da IA" do Minha Saúde IA.'
  );
  return lines.join('\\n');
@@ -168,7 +168,7 @@ function abrirPromptFamiliaIA(){
   '<div class="msa-ava-top"><div><div class="msa-fam-kicker">🤖 IA · FAMÍLIA</div><h2 id="msaFamiliaIATitle">Perguntar para IA sobre a família</h2><p>O prompt abaixo usa somente as informações cadastradas em Histórico Familiar e Familiares.</p></div><button type="button" class="msa-ava-close" id="msaFamiliaIAClose">✕</button></div>'+
   '<label class="msa-ava-field">❓ O que você quer perguntar?<textarea id="msaFamiliaIAPergunta" style="margin-top:7px;min-height:90px" placeholder="Ex.: Existe algum padrão de doenças que aparece em mais de uma geração?">'+esc(pergunta)+'</textarea></label>'+
   '<label class="msa-ava-field">📋 Prompt completo<textarea id="msaFamiliaIATexto" readonly style="margin-top:7px;min-height:260px;font-size:12px;line-height:1.4"></textarea></label>'+
-  '<div class="msa-ava-actions" style="display:grid;grid-template-columns:1fr 1fr"><button type="button" class="btn green" id="msaFamiliaIACopiar">📋 Copiar prompt</button><button type="button" class="btn" id="msaFamiliaIAChatGPT">🟢 Copiar e abrir ChatGPT</button><button type="button" class="btn secondary" id="msaFamiliaIAGemini">🔵 Copiar e abrir Gemini</button><button type="button" class="btn secondary" id="msaFamiliaIAImportar">📥 Colar resposta da IA</button><button type="button" class="btn secondary" id="msaFamiliaIAFechar">↩️ Voltar</button></div>'+
+  '<div class="msa-ava-actions" style="display:grid;grid-template-columns:1fr 1fr"><button type="button" class="btn green" id="msaFamiliaIACopiar">📋 Copiar prompt</button><button type="button" class="btn" id="msaFamiliaIAChatGPT">🟢 Copiar e abrir ChatGPT</button><button type="button" class="btn secondary" id="msaFamiliaIAClaude">🟣 Copiar e abrir Claude</button><button type="button" class="btn secondary" id="msaFamiliaIAGemini">🔵 Copiar e abrir Gemini</button><button type="button" class="btn secondary" id="msaFamiliaIAImportar">📥 Colar resposta da IA</button><button type="button" class="btn secondary" id="msaFamiliaIAFechar">↩️ Voltar</button></div>'+
   '<div class="alert safe" style="margin-top:12px">🔒 Nada é enviado automaticamente. Você decide quando copiar e compartilhar essas informações.</div>'+
   '</div>';
  document.body.appendChild(modal);
@@ -181,7 +181,11 @@ function abrirPromptFamiliaIA(){
  modal.querySelector('#msaFamiliaIAFechar').onclick=fechar;
  modal.addEventListener('click',e=>{if(e.target===modal)fechar()});
  modal.querySelector('#msaFamiliaIACopiar').onclick=()=>copiarTextoFamiliaIA(out.value);
- modal.querySelector('#msaFamiliaIAImportar').onclick=()=>{fechar();abrirImportadorRespostaFamilia()}; modal.querySelector('#msaFamiliaIAChatGPT').onclick=()=>{
+ modal.querySelector('#msaFamiliaIAImportar').onclick=()=>{fechar();abrirImportadorRespostaFamilia()}; modal.querySelector('#msaFamiliaIAClaude').onclick=()=>{
+   const txt=out.value;copiarTextoFamiliaIA(txt,'✅ Prompt copiado. Abrindo o Claude…');
+   window.open('https://claude.ai/new','_blank');
+ };
+ modal.querySelector('#msaFamiliaIAChatGPT').onclick=()=>{
    const txt=out.value;copiarTextoFamiliaIA(txt,'✅ Prompt copiado. Abrindo o ChatGPT…');
    window.open('https://chatgpt.com/?q='+encodeURIComponent(txt),'_blank');
  };
