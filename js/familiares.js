@@ -132,7 +132,17 @@ function gerarPromptCompletoFamilia(pergunta){
   '2. Depois organize os principais padrões encontrados no histórico familiar.',
   '3. Destaque informações que podem ser úteis para uma conversa com um profissional de saúde.',
   '4. Aponte dados familiares que ainda estão faltando ou precisam ser confirmados.',
-  '5. Não transforme histórico familiar em diagnóstico ou previsão individual.'
+  '5. Não transforme histórico familiar em diagnóstico ou previsão individual.',
+  '',
+  '=== FORMATO OBRIGATÓRIO PARA IMPORTAÇÃO ===',
+  'Depois da análise, gere um JSON válido dentro de um bloco \`json. O JSON deve conter o array "familiares".',
+  'Para cada familiar, preserve todas as informações disponíveis: nome, parentesco, sexo, data_nascimento, idade, ladoFamilia, condicao, alergias, tipo_sanguineo, contato, obs, idadeDiagnostico, certeza, medicamentos, consultas e crises.',
+  'Cada medicamento deve preservar nome, dose, horario, frequencia, prescrito_por e obs.',
+  'Cada consulta deve preservar data, especialidade, medico, retorno, motivo e obs.',
+  'Cada crise deve preservar data, hora, tipo, intensidade, descricao, gatilho e conduta.',
+  'Não omita informações existentes no contexto e não invente valores. Use "" ou [] quando um dado não existir.',
+  'Exemplo: {"familiares":[{"nome":"Maria","parentesco":"Mãe","idade":"","ladoFamilia":"Materno","condicao":"","medicamentos":[],"consultas":[],"crises":[],"obs":""}],"historico_familiar":[]}',
+  'O JSON deve aparecer no final da resposta para ser importado pelo Minha Saúde IA.'
  );
  return lines.join('\n');
 }
