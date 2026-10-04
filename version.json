@@ -1,5 +1,5 @@
 {
-  "version": "V5.90",
-  "updatedAt": "2026-10-04T20:30:00-03:00",
-  "changes": "Correções: botão X fecha o painel de rascunhos; Ver o que falta abre corretamente o painel de pendências; scripts com cache atualizado."
+  "version": "V5.91",
+  "updatedAt": "2026-10-04T20:45:00-03:00",
+  "changes": "Família: novo botão de IA no menu e na página; gera prompt completo usando somente Histórico Familiar e Familiares, permite editar a pergunta, copiar e abrir ChatGPT/Gemini."
 }
