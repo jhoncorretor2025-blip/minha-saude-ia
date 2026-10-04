@@ -564,8 +564,45 @@ function renderMedidasCorporais(){
    x.coxa?'🦵 Coxa: '+esc(x.coxa)+' cm':'',
    x.peito?'🫁 Peito/tórax: '+esc(x.peito)+' cm':''
   ].filter(Boolean).join(' · ');
-  return '<div class="item"><div class="itemtop"><b>📏 '+esc(formatDateBR(x.data))+'</b><button class="btn red small" type="button" onclick="removerMedidaCorporal(\''+esc(String(x.id))+'\')">Excluir</button></div><p>'+vals+(x.obs?'<br>📝 '+esc(x.obs):'')+'</p></div>';
+  return '<div class="item"><div class="itemtop"><b>📏 '+esc(formatDateBR(x.data))+'</b><div class="row" style="gap:6px;justify-content:flex-end"><button class="btn secondary small" type="button" onclick="editarMedidaCorporal(\''+esc(String(x.id))+'\')">✏️ Editar</button><button class="btn red small" type="button" onclick="removerMedidaCorporal(\''+esc(String(x.id))+'\')">🗑️ Excluir</button></div></div><p>'+vals+(x.obs?'<br>📝 '+esc(x.obs):'')+'</p></div>';
  }).join(''):'<div class="empty">Nenhuma medida corporal registrada ainda.</div>';
+}
+function editarMedidaCorporal(id){
+ const item=get(K.medidas).find(x=>String(x.id)===String(id));
+ if(!item)return;
+ const form=$('medidasForm');
+ if(!form)return;
+ form.dataset.editId=String(id);
+ $('medidasData').value=item.data||'';
+ $('medidasBiceps').value=item.biceps||'';
+ $('medidasBarriga').value=item.barriga||'';
+ $('medidasGluteos').value=item.gluteos||'';
+ $('medidasPanturrilha').value=item.panturrilha||'';
+ $('medidasCoxa').value=item.coxa||'';
+ $('medidasPeito').value=item.peito||'';
+ $('medidasObs').value=item.obs||'';
+ const btn=form.querySelector('button[type="submit"]');
+ if(btn)btn.textContent='💾 Atualizar medidas';
+ let cancel=form.querySelector('.cancelar-edicao-medidas');
+ if(!cancel){
+  cancel=document.createElement('button');
+  cancel.type='button';
+  cancel.className='btn secondary small cancelar-edicao-medidas';
+  cancel.textContent='✖️ Cancelar edição';
+  cancel.onclick=cancelarEdicaoMedidaCorporal;
+  btn?.parentNode?.insertBefore(cancel,btn.nextSibling);
+ }
+ form.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function cancelarEdicaoMedidaCorporal(){
+ const form=$('medidasForm');
+ if(!form)return;
+ delete form.dataset.editId;
+ form.reset();
+ $('medidasData').value=hojeLocal();
+ const btn=form.querySelector('button[type="submit"]');
+ if(btn)btn.textContent='💾 Salvar medidas';
+ form.querySelector('.cancelar-edicao-medidas')?.remove();
 }
 function removerMedidaCorporal(id){
  if(!confirm('Excluir esta medição corporal?'))return;
@@ -627,9 +664,21 @@ function prepararContextoIA(){
 function findAlerts(d){for(let x of d){let s=(x.sint||'').toLowerCase();if(x.int>=9)return '🔴 Há registro de dor muito intensa (9–10/10). Se for atual, súbita, piorando ou acompanhada de outros sinais importantes, procure avaliação médica.';if(/falta de ar|desmaio|convuls|confusão|fraqueza de um lado|sangramento importante/.test(s))return '🔴 Foi registrado um possível sinal de alerta. Se estiver acontecendo agora, procure atendimento médico rapidamente.'}return ''}
 $('medidasForm')?.addEventListener('submit',e=>{
  e.preventDefault();
- const item={id:Date.now(),data:$('medidasData').value,biceps:$('medidasBiceps').value,barriga:$('medidasBarriga').value,gluteos:$('medidasGluteos').value,panturrilha:$('medidasPanturrilha').value,coxa:$('medidasCoxa').value,peito:$('medidasPeito').value,obs:$('medidasObs').value};
+ const editId=e.target.dataset.editId||'';
+ const item={id:editId?Number(editId):Date.now(),data:$('medidasData').value,biceps:$('medidasBiceps').value,barriga:$('medidasBarriga').value,gluteos:$('medidasGluteos').value,panturrilha:$('medidasPanturrilha').value,coxa:$('medidasCoxa').value,peito:$('medidasPeito').value,obs:$('medidasObs').value};
  if(!item.biceps&&!item.barriga&&!item.gluteos&&!item.panturrilha&&!item.coxa&&!item.peito){alert('Informe pelo menos uma medida corporal.');return}
- const a=get(K.medidas);a.push(item);if(!gravarOuAvisar(K.medidas,a))return;e.target.reset();$('medidasData').value=hojeLocal();render();alert('📏 Medidas corporais salvas!');
+ const a=get(K.medidas);
+ if(editId){
+  const idx=a.findIndex(x=>String(x.id)===String(editId));
+  if(idx<0){alert('Medição não encontrada.');cancelarEdicaoMedidaCorporal();return}
+  a[idx]=item;
+ }else{
+  a.push(item);
+ }
+ if(!gravarOuAvisar(K.medidas,a))return;
+ cancelarEdicaoMedidaCorporal();
+ render();
+ alert(editId?'📏 Medidas corporais atualizadas!':'📏 Medidas corporais salvas!');
 });
 $('dData').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
 $('dorForm')?.addEventListener('submit',()=>{});
