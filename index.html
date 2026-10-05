@@ -17,7 +17,7 @@
 </script>
 
 <script>
-/* V5.94 — proteção contra conteúdo de código aparecendo na interface. */
+/* V5.95 — proteção contra conteúdo de código aparecendo na interface. */
 (function(){
   function detectarContaminacao(){
     try{
@@ -38,7 +38,7 @@
       limpar.then(function(){
         var u=new URL(window.location.href);
         u.searchParams.set('cb',Date.now().toString());
-        u.searchParams.set('v','V5.94');
+        u.searchParams.set('v','V5.95');
         window.location.replace(u.toString());
       });
     }catch(e){}
@@ -48,7 +48,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V5.94</title>
+<title>Minha Saúde IA — V5.95</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -85,7 +85,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
  .nav-menu{min-width:210px;max-width:calc(100vw - 24px)}
 }
 
-/* V5.94 — Ferramentas em 2 colunas para reduzir a altura do menu */
+/* V5.95 — Ferramentas em 2 colunas para reduzir a altura do menu */
 .tools-menu{
  grid-template-columns:repeat(2,minmax(0,1fr));
  min-width:430px;
@@ -108,7 +108,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
  }
 }
  
-/* V5.94 — experiência mobile dedicada, sem alterar o desktop */
+/* V5.95 — experiência mobile dedicada, sem alterar o desktop */
 .msa-mobile-bar,.msa-mobile-drawer,.msa-mobile-backdrop{display:none}
 @media(max-width:760px){
   body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
@@ -324,7 +324,7 @@ footer{padding-bottom:20px}
 }
 @media(max-width:430px){#cicloMenuBtn{font-size:11px}}
 
-/* V5.94 — experiência adaptável */
+/* V5.95 — experiência adaptável */
 .experience-setting{grid-column:1/-1;border:1px solid #cfdcf8;border-radius:16px;padding:14px;background:linear-gradient(135deg,#f5f8ff,#fbf9ff)}
 .experience-setting-title{font-size:17px;font-weight:900;margin-bottom:5px}
 .msa-experience-off{display:none!important}
@@ -344,15 +344,15 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
  body.msa-exp-simple .msa-mobile-links button{min-height:54px;font-size:14px}
  body.msa-exp-simple .msa-mobile-quick button{min-height:78px}
 }
-/* V5.94 — navegação reorganizada */
+/* V5.95 — navegação reorganizada */
 @media(min-width:761px){.grouped-nav{justify-content:flex-start;align-items:center;gap:6px}.grouped-nav .nav-group{flex:0 0 auto}.grouped-nav .nav-group:last-child .nav-menu{left:auto;right:0}}
 @media(max-width:760px){.msa-mobile-menu-fab{display:none!important}.msa-mobile-bar{grid-template-columns:repeat(4,1fr)}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V5.94">
+  <link rel="stylesheet" href="css/design-system.css?v=V5.95">
 
 <style id="v519-progressive-ui">
-/* V5.94 — melhorias progressivas de dashboard, favoritos e alertas */
+/* V5.95 — melhorias progressivas de dashboard, favoritos e alertas */
 .progressive-hub{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:13px}
 .progressive-card{background:#fff;border:1px solid #e6eaf1;border-radius:20px;padding:17px;box-shadow:0 8px 24px rgba(15,23,42,.06)}
 .progressive-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.progressive-head h2{margin:0 0 4px}
@@ -435,7 +435,7 @@ body.msa-dark .metric-edit-btn{background:#0f172a;color:#93c5fd;border-color:#33
  </div>
 </div>
 <script>
-/* V5.94 — ações da Central de Comando da Home */
+/* V5.95 — ações da Central de Comando da Home */
 (function(){
   window.closeHomeModal=function(){
     ['msaHomeMoreOverlay','msaHomeGuideOverlay'].forEach(function(id){
@@ -474,8 +474,8 @@ body.msa-dark .metric-edit-btn{background:#0f172a;color:#93c5fd;border-color:#33
 })();
 </script>
 <style id="v530-preferences-css">
-/* V5.94: onboarding legado totalmente desativado para evitar bloqueio de toque no iPhone */
-/* V5.94 — reforço Safari/iPhone: viewport, área segura e toque */
+/* V5.95: onboarding legado totalmente desativado para evitar bloqueio de toque no iPhone */
+/* V5.95 — reforço Safari/iPhone: viewport, área segura e toque */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden}
 body{min-height:100dvh;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
 button,a,input,select,textarea{touch-action:manipulation}
@@ -492,7 +492,7 @@ body{overflow-x:hidden;}
 body.msa-dark #settingsPreferences label{background:#111827!important;color:#e5e7eb;border-color:#263244!important}
 </style>
 <style>.familiar-people-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.familiar-person-card{display:flex;align-items:center;gap:10px;text-align:left;width:100%;padding:12px;border:1px solid #e3e8f0;background:#fff;border-radius:15px;cursor:pointer;font:inherit;color:var(--text)}.familiar-person-card:hover,.familiar-person-card.selected{border-color:#8fb0ff;background:#f5f8ff}.familiar-person-icon{font-size:28px;flex:0 0 34px}.familiar-person-info{display:grid;gap:2px;min-width:0;flex:1}.familiar-person-info b,.familiar-person-info small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.familiar-person-info small{color:var(--muted);font-size:12px}.familiar-person-count{font-size:11px;font-weight:900;color:#64748b;text-align:right}.familiar-detail-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}.familiar-kicker{font-size:10px;font-weight:900;letter-spacing:.08em;color:#2563eb}.familiar-alert{padding:13px;border:1px solid #dbe5ff;background:#f5f8ff;border-radius:15px;line-height:1.5}.familiar-alert span{color:#64748b;font-size:13px}.familiar-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:12px 0}.familiar-summary-grid>div{padding:12px;border:1px solid #e5eaf2;border-radius:14px;background:#fff}.familiar-summary-grid span{display:block;color:#687386;font-size:11px;margin-bottom:5px}.familiar-summary-grid b{font-size:13px;word-break:break-word}.familiar-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.familiar-subcard{margin:0!important}@media(max-width:760px){.familiar-people-list,.familiar-grid{grid-template-columns:1fr}.familiar-summary-grid{grid-template-columns:1fr 1fr}.familiar-detail-head{flex-direction:column}.familiar-detail-head .row{width:100%}.familiar-detail-head .row .btn{flex:1}}</style><style id="v593-pendencias-fix">
-/* V5.94 — Pendências: o modal precisa ficar sobre a tela, não no final do documento. */
+/* V5.95 — Pendências: o modal precisa ficar sobre a tela, não no final do documento. */
 #msaPendenciasModal{
   position:fixed !important;
   inset:0 !important;
@@ -624,7 +624,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V5.94</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V5.95</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 <nav id="nav" class="grouped-nav" aria-label="Navegação principal">
  <div class="nav-group"><button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button><div class="nav-menu"><button type="button" data-tab="home">🏠 Visão geral</button><button type="button" data-tab="timeline">🕐 Linha do tempo</button></div></div>
@@ -1545,7 +1545,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V5.94. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="btn secondary" style="margin-bottom:8px" onclick="forcarAtualizacao()">🔄 Forçar atualização</button><br>🔒 V5.95. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -1566,14 +1566,14 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V5.94" defer></script>
-<script src="js/core/storage.js?v=V5.94" defer></script>
-<script src="js/core/utils.js?v=V5.94" defer></script>
-<script src="js/menu.js?v=V5.94" defer></script>
-<script src="js/app.js?v=V5.94" defer></script>
-<script src="js/perfil-save.js?v=V5.94" defer></script>
-<script src="js/familiares.js?v=V5.94" defer></script>
-<script src="js/recursos.js?v=V5.94" defer></script>
+<script src="js/core/constants.js?v=V5.95" defer></script>
+<script src="js/core/storage.js?v=V5.95" defer></script>
+<script src="js/core/utils.js?v=V5.95" defer></script>
+<script src="js/menu.js?v=V5.95" defer></script>
+<script src="js/app.js?v=V5.95" defer></script>
+<script src="js/perfil-save.js?v=V5.95" defer></script>
+<script src="js/familiares.js?v=V5.95" defer></script>
+<script src="js/recursos.js?v=V5.95" defer></script>
 
 
 <script>
@@ -1596,12 +1596,12 @@ function iniciarImportacao(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="js/inteligencia.js?v=V5.94" defer></script>
-<script src="js/importacao.js?v=V5.94" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/melhorias-primeiras.js?v=V5.94" defer></script>
-<script src="js/expansoes.js?v=V5.94" defer></script>
-<script src="js/importacao-fluxo-v514.js?v=V5.94" defer></script>
-<script src="js/melhorias-v513.js?v=V5.94" defer></script>
+<script src="js/inteligencia.js?v=V5.95" defer></script>
+<script src="js/importacao.js?v=V5.95" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/melhorias-primeiras.js?v=V5.95" defer></script>
+<script src="js/expansoes.js?v=V5.95" defer></script>
+<script src="js/importacao-fluxo-v514.js?v=V5.95" defer></script>
+<script src="js/melhorias-v513.js?v=V5.95" defer></script>
 
 
 <script>
@@ -1723,7 +1723,7 @@ async function verificarNovaVersao(){
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
   const data=await r.json();
-  if(data.version && data.version!=='V5.94'){
+  if(data.version && data.version!=='V5.95'){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
@@ -1767,7 +1767,7 @@ function openReport(title,body){
  const safeTitle=esc(title);
  const safeBody=String(body||'');
  const c=typeof calcularCompletudeSaude==='function'?calcularCompletudeSaude():{percentual:0,preenchidos:0,total:0};
- const appVersion='V5.94';
+ const appVersion='V5.95';
  const reportMeta='<div class="box" style="border:1px solid #dbeafe;background:#eff6ff"><b>📌 Identificação do sistema</b><br>Versão: <b>'+appVersion+'</b><br>Completude da ficha: <b>'+c.percentual+'%</b> ('+c.preenchidos+'/'+c.total+' itens avaliados)<br>Gerado em: '+new Date().toLocaleString('pt-BR')+'</div>';
  w.document.open();
  w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+safeTitle+'</title><style>'+
@@ -1816,7 +1816,7 @@ function updateReportSummary(){
  const {start,end,d,c,m,e}=rangeData();
  const comp=calcularCompletudeSaude();
  const ri=$('rSistemaInfo');
- if(ri)ri.innerHTML='<div class="alert safe"><b>🩺 Identificação do relatório</b><br>Versão do sistema: <b>V5.94</b> · Ficha preenchida: <b>'+comp.percentual+'%</b> ('+comp.preenchidos+'/'+comp.total+')</div>';
+ if(ri)ri.innerHTML='<div class="alert safe"><b>🩺 Identificação do relatório</b><br>Versão do sistema: <b>V5.95</b> · Ficha preenchida: <b>'+comp.percentual+'%</b> ('+comp.preenchidos+'/'+comp.total+')</div>';
  const avg=d.length?(d.reduce((a,x)=>a+x.int,0)/d.length).toFixed(1):'—';
  $('rResumo').innerHTML=`<div class="grid4"><div><b>${d.length}</b><br><span class="muted">Sintomas</span></div><div><b>${c.length}</b><br><span class="muted">Consultas</span></div><div><b>${m.length}</b><br><span class="muted">Medicamentos</span></div><div><b>${e.length}</b><br><span class="muted">Exames</span></div></div><p style="margin-top:12px"><b>Intensidade média registrada:</b> ${avg}/10</p><p class="muted">Período: ${start} → ${end}</p>`;
 }
@@ -1868,7 +1868,7 @@ initReports();render();setTimeout(verificarNovaVersao,700);
 
 
 
-<!-- V5.94 — melhorias gráficas e funções de personalização -->
+<!-- V5.95 — melhorias gráficas e funções de personalização -->
 <style id="v520-visual">
 body.msa-dark{--bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--border:#263244;--shadow:0 8px 24px rgba(0,0,0,.28);background:#0b1220;color:#e5e7eb}
 body.msa-dark .card,body.msa-dark .box,body.msa-dark .progressive-card,body.msa-dark .modal-card,body.msa-dark .msa-fab-action{background:#111827!important;color:#e5e7eb!important;border-color:#263244!important}
@@ -1899,7 +1899,7 @@ body.msa-dark .msa-theme-toggle{background:#1f2937;color:#f8fafc;border-color:#3
  });
 })();
 </script>
-<!-- V5.94 — ações rápidas globais -->
+<!-- V5.95 — ações rápidas globais -->
 <style id="v518-quick-actions">
 .msa-fab-wrap{position:fixed;right:22px;bottom:22px;z-index:11900;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .msa-fab-menu{display:none;flex-direction:column;gap:7px;align-items:flex-end;margin-bottom:2px}
@@ -1929,7 +1929,7 @@ function msaFabGo(id){toggleMsaFab();if(typeof go==='function')go(id)}
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){const m=document.getElementById('msaFabMenu');if(m&&m.classList.contains('open'))toggleMsaFab()}});
 </script>
 <style id="msaV539Enhancements">
-/* V5.94 — refinamento geral de UX, acessibilidade e Home */
+/* V5.95 — refinamento geral de UX, acessibilidade e Home */
 :root{--msa-focus:0 0 0 4px rgba(37,99,235,.22)}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #7aa2ff;outline-offset:2px;box-shadow:var(--msa-focus)}
 button[disabled]{cursor:not-allowed;opacity:.55}
@@ -2047,7 +2047,7 @@ function boot(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else setTimeout(boot,0);
 })();
 </script>
-<!-- V5.94 — jornada curta: confirmação e retorno após registros -->
+<!-- V5.95 — jornada curta: confirmação e retorno após registros -->
 <style id="msaV540Journey">
 .msa-next-step{margin-top:12px;padding:12px 14px;border:1px solid #dbeafe;background:#f4f8ff;border-radius:15px;display:flex;align-items:center;justify-content:space-between;gap:10px}
 .msa-next-step strong{font-size:13px}.msa-next-step span{display:block;color:#64748b;font-size:12px;margin-top:2px}
@@ -2087,7 +2087,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
-<!-- V5.94 — refinamento visual profissional e amigável -->
+<!-- V5.95 — refinamento visual profissional e amigável -->
 <style id="msaV545Design">
 :root{
  --msa-primary:#2563eb;
