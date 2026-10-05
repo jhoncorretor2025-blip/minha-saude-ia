@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V5.81 */
+/* Minha Saúde IA — aplicação principal V5.97 */
 
 const K=window.MSA_K||window.K;
 const get=k=>window.MSAStorage.get(k);
@@ -318,8 +318,8 @@ function mostrarBoasVindasSeNecessario(){
 function render(){
 mostrarBoasVindasSeNecessario();
 let d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
-$('nD').textContent=d.length;$('nC').textContent=c.length;$('nM').textContent=m.length;$('nE').textContent=e.length;
-list('listD',d,x=>`<div class="item"><div class="itemtop"><b>😣 ${esc(x.local)}</b><span class="tag">${x.int}/10</span></div><p>${fmt(x.data)} · ${esc(x.tipo)} · ${esc(x.freq)}<br>${esc(x.sint||'Sem sintomas associados')}<br>${esc(x.gatilho||'')} ${esc(x.obs||'')}</p></div>`);
+const tlTodos=buildTimeline('todos');$('nD').textContent=tlTodos.filter(x=>x.type==='sintomas').length;$('nC').textContent=tlTodos.filter(x=>x.type==='consultas').length;$('nM').textContent=tlTodos.filter(x=>x.type==='medicamentos').length;$('nE').textContent=tlTodos.filter(x=>x.type==='exames').length;
+list('listD',d,x=>{const n=Number(x.int),invalid=!x.data||!x.local||!Number.isFinite(n)||n<1||n>10;return `<div class="item ${invalid?'timeline-row-invalid':''}"><div class="itemtop"><b>😣 ${esc(x.local||'Local não informado')}</b><span class="tag">${invalid?'⚠️ Revisar':n+'/10'}</span></div><p>${x.data?fmt(x.data):'⚠️ Data não informada'} · ${esc(x.tipo||'Tipo não informado')} · ${esc(x.freq||'Frequência não informada')}<br>${esc(x.sint||'Sem sintomas associados')}<br>${esc(x.gatilho||'')} ${esc(x.obs||'')}</p></div>`});
 list('listC',c,x=>`<div class="item"><div class="itemtop"><b>👨‍⚕️ ${esc(x.esp)}</b><span class="tag">${x.data}</span></div><p>${esc(x.med||'Médico não informado')} · ${esc(x.mot||'')}<br><b>Perguntas:</b> ${esc(x.perg||'—')}<br><b>Orientações:</b> ${esc(x.obs||'—')}<br>${x.ret?'Retorno: '+x.ret:''}</p></div>`);
 list('listM',m,x=>`<div class="item"><div class="itemtop"><b>💊 ${esc(x.nome)}</b><span class="tag">${esc(x.dose||'')}</span></div><p>${esc(x.freq||'Frequência não informada')} · ${x.inicio||'—'} até ${x.fim||'—'}<br>Prescrito por: ${esc(x.pres||'—')}<br>${esc(x.obs||'')}</p></div>`);
 list('listE',e,x=>`<div class="item"><div class="itemtop"><b>🧪 ${esc(x.nome)}</b><span class="tag">${x.data}</span></div><p><b>Resultado:</b> ${esc(x.res||'—')}<br>${esc(x.obs||'')}</p></div>`);
