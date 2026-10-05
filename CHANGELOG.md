@@ -1,3 +1,16 @@
+# V5.97 - Importacao e linha do tempo mais confiaveis
+
+- Campos ausentes, placeholders e datas invalidas nao viram valores clinicos preenchidos automaticamente.
+- Intensidade de sintoma nao informada permanece ausente; a data de hoje deixa de ser inventada para registros historicos.
+- A revisao da importacao lista os registros reconhecidos e destaca dados ausentes antes de salvar.
+- A linha do tempo inclui registros sem data com rotulo explicito e conta cada sinal vital individualmente.
+- Verificador de consistencia sinaliza sintomas importados com data/local ausente ou intensidade zero para revisao manual.
+- Frequencia urinaria em texto livre deixa de receber automaticamente o sufixo x/dia.
+- Estimativa de agua identificada como automatica e nao prescritiva.
+- Confirmacao antes de copiar dados de saude da familia para uso em IA.
+- Corrigido o plural de "registros principais".
+- Atualizados numero de versao e cache offline.
+
 # V5.85 — Família abre a área de conteúdo
 
 - O botão principal **👨‍👩‍👧 Família** agora abre imediatamente a área de **Histórico Familiar e Genética**.

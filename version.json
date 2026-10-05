@@ -1,5 +1,5 @@
 {
-  "version": "V5.96",
-  "updatedAt": "2026-10-04T21:45:00-03:00",
-  "changes": "Familiares: nova barra de filtros para separar Todos, Cadastros, Consultas, Medicamentos, Crises e IA/Análise; áreas são exibidas conforme o filtro sem apagar nem alterar os dados."
+  "version": "V5.97",
+  "updatedAt": "2026-10-04T21:48:00-03:00",
+  "changes": "Importacao preserva lacunas; revisao detalha registros; timeline mostra itens sem data; textos de rotina corrigidos; confirmacao ao copiar dados familiares para IA."
 }
