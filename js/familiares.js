@@ -15,7 +15,14 @@ function setSelected(id){try{storage.set(SELECTED,id||'')}catch(e){}}
 function findMember(id){return getList().find(x=>x.id===id)||null}
 function ensure(p){p.medicamentos=Array.isArray(p.medicamentos)?p.medicamentos:[];p.consultas=Array.isArray(p.consultas)?p.consultas:[];p.crises=Array.isArray(p.crises)?p.crises:[];return p}
 let __msaFamFiltro=window.__msaFamFiltro||'todos';
+function instalarEstilosFiltroFamilia(){
+ if(document.getElementById('msaFamFilterStyles'))return;
+ const s=document.createElement('style');s.id='msaFamFilterStyles';
+ s.textContent='.msa-fam-filter{margin:13px 0 4px;padding:12px;border:1px solid #e3e8f0;border-radius:16px;background:#f8fafc}.msa-fam-filter-title{font-size:11px;font-weight:900;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}.msa-fam-filter-buttons{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px}.msa-fam-filter-buttons button{flex:0 0 auto;border:1px solid #dbe3ee;background:#fff;color:#536174;border-radius:999px;padding:9px 12px;font:inherit;font-size:12px;font-weight:900;cursor:pointer;white-space:nowrap}.msa-fam-filter-buttons button.active{background:#eaf1ff;border-color:#9bb8ff;color:#2457c5}.msa-fam-filter-buttons button:active{transform:scale(.98)}@media(max-width:600px){.msa-fam-filter{padding:10px}.msa-fam-filter-buttons{margin-right:-4px}.msa-fam-filter-buttons button{min-height:42px}}';
+ document.head.appendChild(s);
+}
 function instalarFiltroFamilia(){
+ instalarEstilosFiltroFamilia();
  const root=document.getElementById('familiares');if(!root)return;
  const card=root.querySelector('.card');if(!card)return;
  let bar=document.getElementById('msaFamiliaFiltro');
