@@ -1,5 +1,5 @@
 {
-  "version": "V5.95",
-  "updatedAt": "2026-10-04T21:20:00-03:00",
-  "changes": "Família IA: corrigida importação quando a resposta contém apenas historico_familiar; histórico agora é salvo mesmo com familiares vazio, observacao/idadeDiagnostico são preservados e Pai/Mãe reconhecidos no histórico também aparecem em Familiares."
+  "version": "V5.96",
+  "updatedAt": "2026-10-04T21:45:00-03:00",
+  "changes": "Familiares: nova barra de filtros para separar Todos, Cadastros, Consultas, Medicamentos, Crises e IA/Análise; áreas são exibidas conforme o filtro sem apagar nem alterar os dados."
 }
