@@ -1,4 +1,4 @@
-/* Minha Saúde IA — V5.14 — Assistente visual de importação */
+/* Minha Saúde IA — V5.97 — Assistente visual de importação */
 (function(){
 'use strict';
 const KEY='msa2_importacao_rascunho_v514';
@@ -33,7 +33,7 @@ function addFlow(){
  const copy=$('promptIA')?.closest('.card')?.querySelector('button[onclick*="copiarPrompt"]');
  if(copy)copy.addEventListener('click',()=>setStep(2,'Converse com sua IA','Cole o prompt no ChatGPT, Gemini ou outra IA e responda as perguntas necessárias.'));
  const openers=document.querySelectorAll('a[onclick*="copiarPromptAntesDeAbrir"]');
- openers.forEach(a=>a.addEventListener('click',()=>setStep(2,'Converse com sua IA','A IA pode fazer perguntas. Continue até ela informar que a ficha está pronta.')));
+ openers.forEach(a=>a.addEventListener('click',()=>setStep(2,'Converse com sua IA','A IA organiza o contexto disponível e deve entregar a ficha sem inventar dados.')));
 }
 function hookImport(){
  if(typeof window.processarImportacao==='function'&&!window.__msa514Wrapped){
@@ -49,7 +49,13 @@ function hookImport(){
  if(typeof window.confirmarImportacaoPendente==='function'&&!window.__msa514ConfirmWrapped){
   const original=window.confirmarImportacaoPendente;window.__msa514ConfirmWrapped=true;
   window.confirmarImportacaoPendente=function(){
-   const r=original.apply(this,arguments);saveDraft('');setStep(5,'Importação concluída','✅ Seus dados foram salvos. Você pode conferir a ficha de saúde.');return r;
+   const r=original.apply(this,arguments);
+   if(!window._importPendente){
+    saveDraft('');setStep(5,'Importação concluída','✅ Seus dados foram salvos. Você pode conferir a ficha de saúde.');
+   }else{
+    setStep(4,'Correção necessária','⚠️ A importação continua aguardando revisão. Nada incompleto foi salvo.');
+   }
+   return r;
   };
  }
  if(typeof window.cancelarImportacaoPendente==='function'&&!window.__msa514CancelWrapped){
