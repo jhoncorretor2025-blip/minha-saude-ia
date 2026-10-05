@@ -302,18 +302,24 @@ function normalizarFamiliarImportado(src){
 function salvarImportacaoFamilia(dados){
  const raiz=dados&&typeof dados==='object'&&!Array.isArray(dados)?dados:{familiares:dados};
  const entrada=arrFam(raiz.familiares||raiz.FAMILIARES||raiz.family||raiz.members);
+ const antecedentes=arrFam(raiz.historico_familiar||raiz.HISTORICO_FAMILIAR||raiz.antecedentes);
  const importados=entrada.map(normalizarFamiliarImportado).filter(Boolean);
- if(!importados.length)throw new Error('Nenhum familiar válido encontrado na resposta da IA.');
- const atuais=getList();let novos=0,atualizados=0,primeiroId='';
+ const atuais=getList();
+ let novos=0,atualizados=0,primeiroId='';
+
+ // 1) Importa/atualiza os familiares completos enviados pela IA.
  importados.forEach(function(novo){
   const chave=(String(novo.nome)+'|'+String(novo.parentesco)).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  const idx=atuais.findIndex(function(x){
+  let idx=atuais.findIndex(function(x){
    const k=(String(x.nome||'')+'|'+String(x.parentesco||'')).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
    return k===chave;
   });
+  // Se não houver nome igual, tenta pelo parentesco quando a IA mandou "Pai", "Mãe" etc.
+  if(idx<0 && /^(pai|mãe|mae|irmão|irmao|irmã|irma|filho|filha|avô|avo|avó|tia|tio|marido|esposa|companheiro|companheira)$/i.test(novo.nome||'')){
+   idx=atuais.findIndex(function(x){return String(x.parentesco||'').toLowerCase()===String(novo.parentesco||'').toLowerCase()});
+  }
   if(idx>=0){
-   const antigo=ensure(atuais[idx]);
-   const merged=Object.assign({},antigo);
+   const antigo=ensure(atuais[idx]),merged=Object.assign({},antigo);
    ['nome','parentesco','sexo','nasc','idade','condicao','alergias','sangue','contato','obs','ladoFamilia','idadeDiagnostico','certeza'].forEach(function(k){
     if(String(novo[k]||'').trim())merged[k]=novo[k];
    });
@@ -322,25 +328,89 @@ function salvarImportacaoFamilia(dados){
    merged.crises=novo.crises.length?novo.crises:antigo.crises;
    merged.dadosImportadosIA=Object.assign({},antigo.dadosImportadosIA||{},novo.dadosImportadosIA||{});
    atuais[idx]=ensure(merged);
-   if(!primeiroId)primeiroId=antigo.id;atualizados++;
-  }else{atuais.push(ensure(novo));if(!primeiroId)primeiroId=novo.id;novos++}
+   if(!primeiroId)primeiroId=antigo.id;
+   atualizados++;
+  }else{
+   atuais.push(ensure(novo));
+   if(!primeiroId)primeiroId=novo.id;
+   novos++;
+  }
  });
- if(!saveList(atuais))throw new Error('Não foi possível gravar os familiares neste navegador.');
- const antecedentes=arrFam(raiz.historico_familiar||raiz.HISTORICO_FAMILIAR||raiz.antecedentes);
+
+ // 2) Importa SEMPRE o histórico familiar, mesmo quando "familiares" vier vazio.
  if(antecedentes.length){
-  const hist=window.MSAStorage&&window.MSAStorage.get?window.MSAStorage.get(K.fam):[];
-  const h=Array.isArray(hist)?hist:[];
-  antecedentes.forEach(function(a){
-   const par=normalizarTextoIA(a&& (a.parente||a.parentesco||a.PARENTE||a.PARENTESCO))||'Outro';
-   const cond=normalizarTextoIA(a&& (a.cond||a.condicao||a.CONDICAO||a.info||a.INFORMACAO));if(!cond)return;
-   const idade=normalizarTextoIA(a&& (a.idade||a.IDADE)),obs=normalizarTextoIA(a&& (a.obs||a.OBS));
-   const dup=h.some(function(x){return String(x.parente||'').toLowerCase()===par.toLowerCase()&&String(x.info||x.cond||'').toLowerCase()===cond.toLowerCase()&&String(x.idade||'')===idade});
-   if(!dup)h.push({parente:par,cond:cond,info:cond,idade:idade,obs:obs});
+  antecedentes.forEach(function(x){
+   const a=x&&typeof x==='object'?x:{};
+   const par=normalizarTextoIA(a.parente||a.parentesco||a.PARENTE||a.PARENTESCO)||'';
+   const cond=normalizarTextoIA(a.cond||a.condicao||a.CONDICAO||a.info||a.INFORMACAO)||'';
+   const idade=normalizarTextoIA(a.idade||a.idadeDiagnostico||a.IDADE||a.IDADE_DIAGNOSTICO);
+   const obs=normalizarTextoIA(a.obs||a.observacao||a.observação||a.OBS||a.OBSERVACAO);
+   const lado=normalizarTextoIA(a.ladoFamilia||a.LADO_FAMILIA);
+   const certeza=normalizarTextoIA(a.certeza||a.CERTEZA);
+   if(!par && !cond && !idade && !obs)return;
+
+   // Guarda o registro bruto na seção de histórico familiar.
+   const histAtual=window.MSAStorage&&window.MSAStorage.get?window.MSAStorage.get(K.fam):[];
+   const h=Array.isArray(histAtual)?histAtual:[];
+   const dup=h.some(function(z){
+    return String(z.parente||'').toLowerCase()===par.toLowerCase() &&
+           String(z.info||z.cond||'').toLowerCase()===cond.toLowerCase() &&
+           String(z.idade||z.idadeDiagnostico||'')===idade &&
+           String(z.obs||z.observacao||'').toLowerCase()===obs.toLowerCase();
+   });
+   if(!dup){
+    h.push({parente:par||'Não informado',cond:cond,info:cond,idade:idade,idadeDiagnostico:idade,obs:obs,observacao:obs,ladoFamilia:lado,certeza:certeza});
+    if(window.MSAStorage&&window.MSAStorage.set)window.MSAStorage.set(K.fam,h);
+   }
+
+   // Se a IA identificar o parente (Pai/Mãe/etc.), cria/atualiza também uma ficha visível em "Familiares".
+   const rel=/^(pai|mãe|mae|irmão|irmao|irmã|irma|filho|filha|avô|avo|avó|tia|tio|marido|esposa|companheiro|companheira)$/i.test(par);
+   if(rel){
+    const nome=par;
+    let idxFam=atuais.findIndex(function(z){
+     return String(z.nome||'').toLowerCase()===nome.toLowerCase() ||
+            String(z.parentesco||'').toLowerCase()===nome.toLowerCase();
+    });
+    const novoFam=normalizarFamiliarImportado({
+      nome:nome,parentesco:par,condicao:cond,idadeDiagnostico:idade,ladoFamilia:lado,certeza:certeza,
+      obs:obs,medicamentos:[],consultas:[],crises:[]
+    });
+    if(novoFam){
+     if(idxFam>=0){
+      const antigo=ensure(atuais[idxFam]),merged=Object.assign({},antigo,novoFam);
+      merged.id=antigo.id;
+      merged.medicamentos=antigo.medicamentos;
+      merged.consultas=antigo.consultas;
+      merged.crises=antigo.crises;
+      atuais[idxFam]=ensure(merged);
+      if(!primeiroId)primeiroId=antigo.id;
+      atualizados++;
+     }else{
+      atuais.push(ensure(novoFam));
+      if(!primeiroId)primeiroId=novoFam.id;
+      novos++;
+     }
+    }
+   }
   });
-  if(window.MSAStorage&&window.MSAStorage.set)window.MSAStorage.set(K.fam,h);
  }
- setSelected(primeiroId||importados[0].id);renderFamiliares();
- return {novos:novos,atualizados:atualizados,total:importados.length};
+
+ // 3) Só falha se a resposta não tiver absolutamente nenhum dado familiar utilizável.
+ if(!importados.length && !antecedentes.length){
+  throw new Error('Nenhum dado familiar válido encontrado na resposta da IA.');
+ }
+ if(!saveList(atuais))throw new Error('Não foi possível gravar os familiares neste navegador.');
+
+ if(!primeiroId && atuais.length)primeiroId=atuais[atuais.length-1].id;
+ if(primeiroId)setSelected(primeiroId);
+ renderFamiliares();
+
+ return {
+  novos:novos,
+  atualizados:atualizados,
+  totalFamiliares:importados.length,
+  totalHistorico:antecedentes.length
+ };
 }
 function abrirImportadorRespostaFamilia(){
  let old=document.getElementById('msaFamiliaIAImportModal');if(old)old.remove();
