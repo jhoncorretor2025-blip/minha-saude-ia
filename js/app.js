@@ -63,7 +63,7 @@ const formatDateBR=window.MSAUtils?.formatDateBR||function(v){if(!v)return 'Data
 function getNextCare(){
  const p=get(K.p)[0]||{},c=get(K.c),e=get(K.e),vax=get(K.vax),r=get(K.r),items=[];
  const hoje=new Date();hoje.setHours(0,0,0,0);
- const add=(date,icon,title,sub)=>{if(!date)return;const s=String(date).slice(0,10);if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(s))return;const dt=new Date(s+'T00:00:00');if(dt>=hoje)items.push({date:s,icon,title,sub});};
+ const add=(date,icon,title,sub)=>{if(!date)return;const s=String(date).slice(0,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(s))return;const dt=new Date(s+'T00:00:00');if(dt>=hoje)items.push({date:s,icon,title,sub})};
  c.forEach(x=>add(x.ret,'👨‍⚕️','Retorno de consulta',x.esp||x.med||'Consulta'));
  e.forEach(x=>add(x.data,'🧪',x.nome||'Exame','Exame registrado'));
  vax.forEach(x=>add(x.data,'💉',x.nome||'Vacina',x.obs||'Vacinação registrada'));
@@ -71,44 +71,87 @@ function getNextCare(){
  add(p.prevProx,'🌸','Acompanhamento preventivo','Data registrada no perfil');
  return items.sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(0,6);
 }
+function registroProblemas(tipo,x){
+ const r=x&&typeof x==='object'?x:{},issues=[],empty=v=>!v||/^(valor|não informado|nao informado|não disponível|nao disponivel|n\/a|-)$/i.test(String(v).trim());
+ const req=(label,val)=>{if(empty(val))issues.push(label)};
+ if(tipo==='sintomas'){req('data de início',r.data);req('local do sintoma',r.local);const n=Number(r.int);if(!Number.isFinite(n)||n<1||n>10)issues.push('intensidade 1–10')}
+ else if(tipo==='consultas'){req('data',r.data);if(empty(r.esp)&&empty(r.med)&&empty(r.mot))issues.push('especialidade, médico ou motivo')}
+ else if(tipo==='medicamentos'){req('nome do medicamento',r.nome)}
+ else if(tipo==='exames'){req('nome do exame',r.nome);req('data',r.data)}
+ else if(tipo==='sinais'){req('data',r.data)}
+ else if(tipo==='vacinas'){req('nome da vacina',r.nome);req('data',r.data)}
+ else if(tipo==='lembretes'){req('nome do lembrete',r.nome);req('data/hora',r.data)}
+ else if(tipo==='nutricao'){req('data',r.data);req('conteúdo',r.texto)}
+ else if(tipo==='suplementos'){req('nome do suplemento',r.nome)}
+ else if(tipo==='reacoes'){req('alimento',r.nome);req('reação',r.reacao)}
+ else if(tipo==='agua'){req('data',r.data);const q=Number(r.qtd);if(!Number.isFinite(q)||q<=0)issues.push('quantidade maior que zero')}
+ else if(tipo==='bemestar'){req('data',r.data)}
+ else if(tipo==='gatilhos'){req('data',r.data);if(empty(r.gatilho)&&empty(r.sintoma))issues.push('gatilho ou sintoma')}
+ else if(tipo==='familia'){req('parente',r.parente);if(empty(r.info||r.cond||r.condicao))issues.push('condição/informação')}
+ else if(tipo==='documentos'){if(empty(r.nome)||/^documento informado$/i.test(String(r.nome).trim()))issues.push('nome do documento')}
+ else if(tipo==='medidas'){req('data',r.data)}
+ else if(tipo==='ciclo'){req('início do ciclo',r.inicio)}
+ return issues;
+}
+function obterQualidadeRegistros(){
+ const defs=[['sintomas',K.d,'😣 Sintomas'],['consultas',K.c,'👨‍⚕️ Consultas'],['medicamentos',K.m,'💊 Medicamentos'],['exames',K.e,'🧪 Exames'],['sinais',K.v,'📈 Sinais vitais'],['vacinas',K.vax,'💉 Vacinas'],['lembretes',K.r,'📌 Lembretes'],['nutricao',K.nutri,'🍎 Alimentação'],['suplementos',K.suplReg,'💊 Suplementos'],['reacoes',K.food,'⚠️ Reações alimentares'],['agua',K.agua,'💧 Água'],['bemestar',K.bem,'🧠 Bem-estar'],['gatilhos',K.gat,'🎯 Gatilhos'],['familia',K.fam,'🧬 Histórico familiar'],['documentos',K.doc,'📄 Documentos'],['medidas',K.medidas,'📏 Medidas corporais'],['ciclo',K.ciclo,'🩸 Ciclos']];
+ const problemas=[];defs.forEach(d=>get(d[1]).forEach((x,i)=>{const issues=registroProblemas(d[0],x);if(issues.length)problemas.push({tipo:d[0],label:d[2],indice:i,issues:issues,record:x})}));
+ return problemas;
+}
+function timelineItem(type,date,icon,title,sub,record){return {type:type,date:date?String(date):'',icon:icon,title:title,sub:sub||'',record:record||null,invalid:registroProblemas(type,record).length>0}}
+function getTimelineRecords(){
+ const out=[],add=(type,date,icon,title,sub,record)=>out.push(timelineItem(type,date,icon,title,sub,record));
+ get(K.d).forEach(x=>{const n=Number(x.int),loc=String(x.local||'').trim(),validLoc=loc&&!/^(valor|local|não informado|nao informado|n\/a|-)$/i.test(loc);let sub='';if(validLoc&&Number.isFinite(n)&&n>0)sub=loc+' — intensidade '+n+'/10';else if(validLoc)sub=loc;else if(Number.isFinite(n)&&n>0)sub='Intensidade '+n+'/10';add('sintomas',x.data,'😣','Sintoma',sub,x)});
+ get(K.c).forEach(x=>add('consultas',x.data,'👨‍⚕️','Consulta',x.esp||x.med||x.mot||'',x));
+ get(K.m).forEach(x=>add('medicamentos',x.inicio||x.data,'💊','Medicamento',x.nome||'',x));
+ get(K.e).forEach(x=>add('exames',x.data,'🧪','Exame',x.nome||'',x));
+ get(K.v).forEach(x=>add('sinais',x.data,'📈','Sinal vital',(x.peso||x.pressao||x.fc||x.temp||x.glic||x.sat)?'Valores registrados':'',x));
+ get(K.vax).forEach(x=>add('vacinas',x.data,'💉','Vacina',x.nome||'',x));
+ get(K.r).forEach(x=>add('lembretes',x.data,'📌','Lembrete',x.nome||'',x));
+ get(K.nutri).forEach(x=>add('nutricao',x.data,'🍎','Alimentação',x.texto||'',x));
+ get(K.suplReg).forEach(x=>add('suplementos',x.data,'💊','Suplemento',x.nome||'',x));
+ get(K.food).forEach(x=>add('reacoes',x.data,'⚠️','Reação alimentar',(x.nome||'')+(x.reacao?' — '+x.reacao:''),x));
+ get(K.agua).forEach(x=>add('agua',x.data,'💧','Água',x.qtd?String(x.qtd)+' ml':'',x));
+ get(K.sono).forEach(x=>add('sono',x.data,'😴','Sono',x.horas?String(x.horas)+' h':(x.habitual?'Rotina habitual':''),x));
+ get(K.bem).forEach(x=>add('bemestar',x.data,'🧠','Bem-estar',(x.estresse!=null?'Estresse '+x.estresse+'/10':'')+(x.ansiedade!=null?' · ansiedade '+x.ansiedade+'/10':''),x));
+ get(K.gat).forEach(x=>add('gatilhos',x.data,'🎯','Gatilho',(x.gatilho||'')+(x.sintoma?' — '+x.sintoma:''),x));
+ get(K.fam).forEach(x=>add('familia',x.data||'','🧬','Histórico familiar',x.parente||x.cond||x.info||'',x));
+ get(K.doc).forEach(x=>add('documentos',x.data,'📄','Documento',x.nome||'',x));
+ get(K.medidas).forEach(x=>add('medidas',x.data,'📏','Medida corporal',(x.peso?x.peso+' kg ':'')+(x.abdomen?x.abdomen+' cm abdômen':''),x));
+ get(K.ciclo).forEach(x=>add('ciclo',x.inicio,'🩸','Ciclo menstrual','Início registrado',x));
+ return out;
+}
+function buildTimeline(filtro){
+ const f=filtro||window.__msaTimelineFiltro||'todos',all=getTimelineRecords(),filtered=f==='todos'?all:(f==='outros'?all.filter(x=>!['sintomas','consultas','medicamentos','exames'].includes(x.type)):all.filter(x=>x.type===f));
+ return filtered.sort((a,b)=>{const ad=a.date?String(a.date):'',bd=b.date?String(b.date):'';if(!ad&&!bd)return 0;if(!ad)return 1;if(!bd)return -1;return bd.localeCompare(ad)});
+}
+function renderTimelineFiltros(){
+ const box=$('timelineFilters');if(!box)return;
+ const defs=[['todos','📋 Todos'],['sintomas','😣 Sintomas'],['consultas','👨‍⚕️ Consultas'],['medicamentos','💊 Medicamentos'],['exames','🧪 Exames'],['sinais','📈 Sinais'],['acompanhamento','📈 Acompanhamento'],['outros','🗂️ Outros']];
+ box.innerHTML=defs.map(d=>'<button type="button" class="btn secondary small" data-timeline-filter="'+d[0]+'">'+d[1]+'</button>').join('');
+ box.querySelectorAll('[data-timeline-filter]').forEach(b=>{b.classList.toggle('active',(window.__msaTimelineFiltro||'todos')===b.dataset.timelineFilter);b.onclick=()=>window.definirFiltroTimeline(b.dataset.timelineFilter)});
+}
+window.definirFiltroTimeline=function(f){window.__msaTimelineFiltro=f||'todos';renderTimelineFiltros();const el=$('timelineFull');if(el)el.innerHTML=buildTimeline().map(timelineHTML).join('')||'<div class="muted">Nenhum registro neste filtro.</div>'};
+function timelineHTML(x){
+ const dateLabel=x.date?formatDateBR(x.date):'⚠️ Data não informada',issue=x.invalid?'<span class="timeline-review-tag">⚠️ Revisar</span>':'';
+ return '<div class="timeline-row '+(x.invalid?'timeline-row-invalid':'')+'"><div class="timeline-date">'+esc(dateLabel)+'</div><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title"><b>'+x.icon+' '+esc(x.title)+'</b>'+issue+'</div><small>'+esc(x.sub||'Sem detalhes informados')+'</small></div></div>';
+}
 function atualizarSmartHome(){
- const p=get(K.p)[0]||{},d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e),v=get(K.v),vax=get(K.vax),r=get(K.r);
- const next=getNextCare(),box=$('nextCareList');
- if(box)box.innerHTML=next.length?next.map(x=>'<div class="smart-item"><div class="smart-item-main"><span class="smart-icon">'+x.icon+'</span><div><b>'+esc(x.title)+'</b><small>'+esc(x.sub)+'</small></div></div><span class="smart-date">'+esc(formatDateBR(x.date))+'</span></div>').join(''):'<div class="muted">Nenhum próximo cuidado registrado. Você pode adicionar consultas, lembretes ou acompanhamentos.</div>';
- const s=$('smartSummary');if(s)s.innerHTML='<div class="smart-kpi"><b>'+d.length+'</b><span>😣 Sintomas</span></div><div class="smart-kpi"><b>'+c.length+'</b><span>👨‍⚕️ Consultas</span></div><div class="smart-kpi"><b>'+m.length+'</b><span>💊 Medicamentos</span></div><div class="smart-kpi"><b>'+e.length+'</b><span>🧪 Exames</span></div><div class="smart-kpi"><b>'+v.length+'</b><span>📈 Sinais vitais</span></div><div class="smart-kpi"><b>'+vax.length+'</b><span>💉 Vacinas</span></div><div class="smart-kpi"><b>'+r.length+'</b><span>📌 Lembretes</span></div><div class="smart-kpi"><b>'+Object.keys(p).filter(k=>String(p[k]||'').trim()).length+'</b><span>👤 Dados do perfil</span></div>';
- const tp=$('timelinePreview');if(tp)tp.innerHTML=buildTimeline().slice(0,5).map(timelineHTML).join('')||'<div class="muted">Ainda não há registros suficientes para mostrar a timeline.</div>';
- const tf=$('timelineFull');if(tf)tf.innerHTML=buildTimeline().map(timelineHTML).join('')||'<div class="muted">Nenhum registro ainda.</div>';
+ const issues=obterQualidadeRegistros(),next=getNextCare(),box=$('nextCareList'),timeline=buildTimeline('todos');
+ if(box){
+  let html=next.length?next.map(x=>'<div class="smart-item"><div class="smart-item-main"><span class="smart-icon">'+x.icon+'</span><div><b>'+esc(x.title)+'</b><small>'+esc(x.sub)+'</small></div></div><span class="smart-date">'+esc(formatDateBR(x.date))+'</span></div>').join(''):'';
+  if(issues.length)html+='<div class="smart-review-panel"><div><b>⚠️ '+issues.length+' registro(s) precisam de revisão de dados</b><small>Há campos incompletos ou inconsistentes. Isso é uma revisão de qualidade do registro, não uma interpretação clínica.</small></div><button class="btn secondary small" onclick="go(\'timeline\')">🔎 Revisar</button></div>';
+  if(!html)html='<div class="muted">Nenhum próximo item ou revisão de dados registrado.</div>';
+  box.innerHTML=html;
+ }
+ const primary=[['sintomas','😣 Sintomas'],['consultas','👨‍⚕️ Consultas'],['medicamentos','💊 Medicamentos'],['exames','🧪 Exames'],['sinais','📈 Sinais vitais'],['vacinas','💉 Vacinas']];
+ const counts=Object.fromEntries(primary.map(p0=>[p0[0],timeline.filter(x=>x.type===p0[0]).length])),outras=timeline.filter(x=>!primary.some(p0=>p0[0]===x.type)).length;
+ const s=$('smartSummary');
+ if(s)s.innerHTML=primary.map(p0=>'<div class="smart-kpi"><b>'+counts[p0[0]]+'</b><span>'+p0[1]+'</span></div>').join('')+'<div class="smart-kpi"><b>'+outras+'</b><span>🗂️ Outros tipos</span></div><div class="smart-kpi"><b>'+timeline.length+'</b><span>📚 Total na timeline</span></div>';
+ const tp=$('timelinePreview');if(tp)tp.innerHTML=timeline.slice(0,5).map(timelineHTML).join('')||'<div class="muted">Ainda não há registros para mostrar.</div>';
+ renderTimelineFiltros();
+ const tf=$('timelineFull');if(tf)tf.innerHTML=buildTimeline().map(timelineHTML).join('')||'<div class="muted">Nenhum registro neste filtro.</div>';
 }
-function buildTimeline(){
- const out=[],push=(date,icon,title,sub)=>{if(date)out.push({date:String(date),icon:icon,title:title,sub:sub||''})};
- const vazio=v=>!v||/^(valor|não informado|nao informado|n\/a|-)$/i.test(String(v).trim());
- get(K.d).forEach(x=>{
-  const local=vazio(x.local)?'':String(x.local).trim();
-  const intensidade=Number(x.int);
-  let sub='';
-  if(local && intensidade>0)sub=local+' — intensidade '+intensidade+'/10';
-  else if(local)sub=local;
-  else if(intensidade>0)sub='Intensidade '+intensidade+'/10';
-  push(x.data,'😣','Sintoma',sub);
- });
- get(K.c).forEach(x=>push(x.data,'👨‍⚕️','Consulta',vazio(x.esp)?(vazio(x.med)?(vazio(x.mot)?'':x.mot):x.med):x.esp));
- get(K.m).forEach(x=>push(x.inicio||x.data,'💊','Medicamento',vazio(x.nome)?'':x.nome));
- get(K.e).forEach(x=>push(x.data,'🧪','Exame',vazio(x.nome)?'':x.nome));
- // Sinais vitais aparecem na timeline apenas como evento.
- // Valores como peso, pressão, FC, temperatura, glicemia e saturação
- // permanecem somente na área de Acompanhamento, evitando exposição
- // de dados sensíveis no resumo cronológico.
- const diasVitais={};
- get(K.v).forEach(x=>{
-  const dia=String(x.data||'').slice(0,10);
-  if(!dia || diasVitais[dia])return;
-  diasVitais[dia]=true;
-  push(x.data,'📈','Sinal vital','');
- });
- get(K.vax).forEach(x=>push(x.data,'💉','Vacina',vazio(x.nome)?'':x.nome));
- return out.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
-}
-function timelineHTML(x){return '<div class="timeline-row"><div class="timeline-date">'+esc(formatDateBR(x.date))+'</div><div class="timeline-dot"></div><div class="timeline-content"><b>'+x.icon+' '+esc(x.title)+'</b><small>'+esc(x.sub)+'</small></div></div>'}
 function prepararConsulta(){
  const p=get(K.p)[0]||{},d=get(K.d),m=get(K.m),e=get(K.e),c=get(K.c);
  const preview=$('consultPrepPreview');
@@ -133,7 +176,28 @@ function calcularIMC(p){
  return{bmi,cls,min:18.5*h*h,max:24.99*h*h}
 } 
 function estimarAgua(p){const peso=parseFloat(String(p.peso||'').replace(',','.'));if(!peso)return null;let ml=peso*35;if(p.academia==='Sim')ml+=300;if(p.calorSuor==='Moderada')ml+=300;if(p.calorSuor==='Alta')ml+=600;if(p.trabalhoTipo==='Em pé'||p.trabalhoTipo==='Ativo / em movimento')ml+=200;return Math.round(ml/50)*50}
-function atualizarMetricasCorporais(){const p=get(K.p)[0]||{},x=calcularIMC(p),agua=estimarAgua(p);if($('dashBMI'))$('dashBMI').textContent=x?x.bmi.toFixed(1):'—';if($('dashBMIClass'))$('dashBMIClass').textContent=x?(x.cls+' • faixa de peso de referência: '+x.min.toFixed(1)+'–'+x.max.toFixed(1)+' kg'):'Informe peso e altura';if($('dashWater'))$('dashWater').textContent=agua?(agua/1000).toFixed(2).replace('.',',')+' L/dia':'—';if($('dashActivity'))$('dashActivity').textContent=p.academia==='Sim'?(p.academiaFreq||'—')+'x/semana':p.academia==='Não'?'Não pratica':'Não informado';if($('dashActivityDetail'))$('dashActivityDetail').textContent=(p.trabalhoTipo||'Rotina não informada')+(p.horasSentado?' • '+p.horasSentado+'h sentado':'')+(p.horasPe?' • '+p.horasPe+'h em pé':'');if($('dashActivityEdit'))$('dashActivityEdit').textContent=(p.academia||p.academiaFreq||p.trabalhoTipo||p.horasSentado||p.horasPe)?'✏️ Editar':'➕ Informar';if($('dashUrine'))$('dashUrine').textContent=p.urinaDia?p.urinaDia+'x/dia':'Não informado';if($('dashUrineEdit'))$('dashUrineEdit').textContent=p.urinaDia?'✏️ Editar':'➕ Informar';if($('bodyMetrics'))$('bodyMetrics').innerHTML=x?'<div class="metric-kpi"><span>⚖️ IMC</span><b>'+x.bmi.toFixed(1)+'</b><small>'+esc(x.cls)+'</small></div><div class="metric-kpi"><span>📏 Faixa de referência</span><b>'+x.min.toFixed(1)+'–'+x.max.toFixed(1)+' kg</b><small>pela classificação de IMC adulto</small></div><div class="metric-kpi"><span>💧 Estimativa de água</span><b>'+((agua||0)/1000).toFixed(2).replace('.',',')+' L</b><small>ajuste pela atividade/clima</small></div>':''}
+function detalhesEstimativaAgua(p,agua){
+ const peso=parseFloat(String(p.peso||'').replace(',','.')),base=Number.isFinite(peso)?peso*35:0,ajustes=[];
+ if(p.academia==='Sim')ajustes.push('academia +300 ml');
+ if(p.calorSuor==='Moderada')ajustes.push('calor/suor moderado +300 ml');
+ if(p.calorSuor==='Alta')ajustes.push('calor/suor alto +600 ml');
+ if(p.trabalhoTipo==='Em pé'||p.trabalhoTipo==='Ativo / em movimento')ajustes.push('trabalho em pé/ativo +200 ml');
+ return {peso:peso,base:base,ajustes:ajustes,total:agua};
+}
+function formatarTextoLegado(v){return String(v??'').replace(/\bvariasx\s*\/\s*dia\b/gi,'Várias vezes / não consigo contar').replace(/\bprincipalis\b/gi,'Principais')}
+function atualizarMetricasCorporais(){
+ const p=get(K.p)[0]||{},x=calcularIMC(p),agua=estimarAgua(p),det=detalhesEstimativaAgua(p,agua);
+ if($('dashBMI'))$('dashBMI').textContent=x?x.bmi.toFixed(1):'—';
+ if($('dashBMIClass'))$('dashBMIClass').textContent=x?(x.cls+' • faixa de peso de referência: '+x.min.toFixed(1)+'–'+x.max.toFixed(1)+' kg'):'Informe peso e altura';
+ if($('dashWater'))$('dashWater').textContent=agua?(agua/1000).toFixed(2).replace('.',',')+' L/dia':'—';
+ if($('dashActivity'))$('dashActivity').textContent=p.academia==='Sim'?(p.academiaFreq||'—')+'x/semana':p.academia==='Não'?'Não pratica':'Não informado';
+ if($('dashActivityDetail'))$('dashActivityDetail').textContent=(p.trabalhoTipo||'Rotina não informada')+(p.horasSentado?' • '+p.horasSentado+'h sentado':'')+(p.horasPe?' • '+p.horasPe+'h em pé':'');
+ if($('dashActivityEdit'))$('dashActivityEdit').textContent=(p.academia||p.academiaFreq||p.trabalhoTipo||p.horasSentado||p.horasPe)?'✏️ Editar':'➕ Informar';
+ if($('dashUrine'))$('dashUrine').textContent=p.urinaDia?(formatarTextoLegado(p.urinaDia).match(/^Várias vezes/i)?formatarTextoLegado(p.urinaDia):formatarTextoLegado(p.urinaDia)+'x/dia'):'Não informado';
+ if($('dashUrineEdit'))$('dashUrineEdit').textContent=p.urinaDia?'✏️ Editar':'➕ Informar';
+ if($('dashWaterDetailsBody'))$('dashWaterDetailsBody').innerHTML=agua?'<b>Base:</b> '+det.peso+' kg × 35 ml/kg = '+Math.round(det.base)+' ml/dia<br><b>Ajustes considerados:</b> '+(det.ajustes.length?det.ajustes.join(' · '):'nenhum')+'<br><b>Resultado arredondado:</b> '+agua+' ml/dia ('+(agua/1000).toFixed(2).replace('.',',')+' L)<br><span class="muted">É uma estimativa pessoal de organização da rotina; não é uma prescrição ou meta médica.</span>':'Informe seu peso para calcular uma estimativa pessoal.';
+ if($('bodyMetrics'))$('bodyMetrics').innerHTML=x?'<div class="metric-kpi"><span>⚖️ IMC</span><b>'+x.bmi.toFixed(1)+'</b><small>'+esc(x.cls)+'</small></div><div class="metric-kpi"><span>📏 Faixa de referência</span><b>'+x.min.toFixed(1)+'–'+x.max.toFixed(1)+' kg</b><small>pela classificação de IMC adulto</small></div><div class="metric-kpi"><span>💧 Estimativa de água</span><b>'+((agua||0)/1000).toFixed(2).replace('.',',')+' L</b><small>ver “Como foi calculada” abaixo</small></div>':'';
+}
 function abrirEdicaoRotina(campo){
  const alvo=campo==='urina'?'pUrinaDia':'pAcademia';
  go('perfil');
