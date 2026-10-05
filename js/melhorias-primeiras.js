@@ -409,10 +409,11 @@ function renderFilteredTimeline(){
   const to=String(byId('msaTimelineTo')?.value||'');
   let rows=typeof window.buildTimeline==='function'?window.buildTimeline():[];
   rows=rows.filter(x=>{
-    const date=String(x.date||'').slice(0,10);
+    const raw=String(x.date||'').slice(0,10),iso=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/),br=raw.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    const date=iso?raw:br?br[3]+'-'+br[2]+'-'+br[1]:'';
     if(type&&String(x.title)!==type)return false;
-    if(from&&date<from)return false;
-    if(to&&date>to)return false;
+    if(from&&(!date||date<from))return false;
+    if(to&&(!date||date>to))return false;
     if(search&&!((String(x.title||'')+' '+String(x.sub||'')).toLowerCase().includes(search)))return false;
     return true;
   });

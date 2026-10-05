@@ -404,7 +404,7 @@
         secondaryId='dor';
       }else{
         title='✅ Seu histórico já está em andamento';
-        text=total+' registro'+(total===1?'':'s')+' principal'+(total===1?'':'is')+' encontrado'+(total===1?'':'s')+'. Continue acompanhando ou registre algo novo.';
+        text=total+' '+(total===1?'registro principal encontrado.':'registros principais encontrados.')+' Continue acompanhando ou registre algo novo.';
         primary='➕ Registrar agora';
         primaryId='dor';
         secondary='Ver meu histórico';

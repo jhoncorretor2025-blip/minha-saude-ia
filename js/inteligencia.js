@@ -11,7 +11,12 @@ const esc=window.MSAUtils&&window.MSAUtils.esc?window.MSAUtils.esc:(s)=>String(s
 const br=d=>{if(!d)return '—';const s=String(d).slice(0,10),m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?m[3]+'/'+m[2]+'/'+m[1]:s};
 const nowDate=()=>new Date();
 const dateOnly=x=>String(x||'').slice(0,10);
-const validDate=s=>/^\d{4}-\d{2}-\d{2}$/.test(String(s||''))&&!isNaN(new Date(String(s)+'T12:00:00').getTime());
+const validDate=s=>{
+ const raw=String(s||'').slice(0,10),iso=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/),br=raw.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+ if(iso){const d=new Date(+iso[1],+iso[2]-1,+iso[3]);return d.getFullYear()===+iso[1]&&d.getMonth()===+iso[2]-1&&d.getDate()===+iso[3]}
+ if(br){const d=new Date(+br[3],+br[2]-1,+br[1]);return d.getFullYear()===+br[3]&&d.getMonth()===+br[2]-1&&d.getDate()===+br[1]}
+ return false;
+};
 function profile(){return read(K.p)[0]||{}}
 function allData(){
  return [
@@ -87,6 +92,12 @@ window.executarConsistenciaSaude=function(){
   read(key).forEach((x,i)=>{const d=dateOnly(x[field]);if(d&&!validDate(d))problemas.push({tipo:'Data inválida',nivel:'alto',texto:label+' #'+(i+1)+' possui uma data inválida.'});else if(d&&d>hoje)problemas.push({tipo:'Data futura',nivel:'medio',texto:label+' #'+(i+1)+' está datado no futuro: '+br(d)+'.'})});
  }
  checkDates('Sintoma',K.d,'data');checkDates('Consulta',K.c,'data');checkDates('Exame',K.e,'data');checkDates('Vacina',K.vax,'data');checkDates('Sinal vital',K.v,'data');checkDates('Lembrete',K.r,'data');
+ read(K.d).forEach((x,i)=>{
+  if(!/importado da ia/i.test(String(x.obs||'')))return;
+  const semData=!validDate(x.data),semIntensidade=x.int===null||x.int===undefined||x.int===''||Number(x.int)===0;
+  const vazio=v=>!v||/^(valor|local|data|n\/?a|não informado|nao informado|undefined|null|-)$/i.test(String(v).trim());
+  if(semData||semIntensidade||vazio(x.local))problemas.push({tipo:'Importação para revisar',nivel:'medio',texto:'Sintoma importado #'+(i+1)+' tem data, local ou intensidade ausente/zerada. Confira a informação original; o aplicativo não corrigiu esses dados automaticamente.'});
+ });
  read(K.m).forEach((x,i)=>{if(validDate(x.inicio)&&validDate(x.fim)&&x.fim<x.inicio)problemas.push({tipo:'Período invertido',nivel:'alto',texto:'Medicamento #'+(i+1)+' termina antes de começar.'})});
  read(K.c).forEach((x,i)=>{if(validDate(x.data)&&validDate(x.ret)&&x.ret<x.data)problemas.push({tipo:'Retorno inconsistente',nivel:'medio',texto:'Consulta #'+(i+1)+' possui retorno anterior à consulta.'})});
  const dup=detectarDuplicados();dup.forEach(x=>problemas.push({tipo:'Possível duplicado',nivel:'baixo',texto:x.cat+' possui registros idênticos nas posições '+(x.indices[0]+1)+' e '+(x.indices[1]+1)+'.'}));

@@ -80,35 +80,46 @@ function atualizarSmartHome(){
  const tf=$('timelineFull');if(tf)tf.innerHTML=buildTimeline().map(timelineHTML).join('')||'<div class="muted">Nenhum registro ainda.</div>';
 }
 function buildTimeline(){
- const out=[],push=(date,icon,title,sub)=>{if(date)out.push({date:String(date),icon:icon,title:title,sub:sub||''})};
- const vazio=v=>!v||/^(valor|não informado|nao informado|n\/a|-)$/i.test(String(v).trim());
+ const vazio=v=>!v||/^(valor|local|data|não informado|nao informado|n\/a|undefined|null|-)$/i.test(String(v).trim());
+ const dataValida=v=>{
+  const raw=String(v??'').trim();if(vazio(raw))return false;
+  const iso=raw.match(/^(\d{4})-(\d{2})-(\d{2})(?:T.*)?$/),br=raw.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if(iso){const d=new Date(Date.UTC(+iso[1],+iso[2]-1,+iso[3]));return d.getUTCFullYear()===+iso[1]&&d.getUTCMonth()===+iso[2]-1&&d.getUTCDate()===+iso[3]}
+  if(br){const d=new Date(+br[3],+br[2]-1,+br[1]);return d.getFullYear()===+br[3]&&d.getMonth()===+br[2]-1&&d.getDate()===+br[1]}
+  return Number.isFinite(Date.parse(raw));
+ };
+ const out=[],push=(date,icon,title,sub)=>{
+  const raw=String(date??'').trim();
+  const valid=dataValida(raw);
+  out.push({date:valid?raw:'',icon:icon,title:title,sub:sub||''});
+ };
  get(K.d).forEach(x=>{
   const local=vazio(x.local)?'':String(x.local).trim();
   const intensidade=Number(x.int);
   let sub='';
-  if(local && intensidade>0)sub=local+' — intensidade '+intensidade+'/10';
+   if(local && intensidade>0)sub=local+' — intensidade '+intensidade+'/10';
   else if(local)sub=local;
   else if(intensidade>0)sub='Intensidade '+intensidade+'/10';
   push(x.data,'😣','Sintoma',sub);
  });
  get(K.c).forEach(x=>push(x.data,'👨‍⚕️','Consulta',vazio(x.esp)?(vazio(x.med)?(vazio(x.mot)?'':x.mot):x.med):x.esp));
- get(K.m).forEach(x=>push(x.inicio||x.data,'💊','Medicamento',vazio(x.nome)?'':x.nome));
+ get(K.m).forEach(x=>push(x.inicio||x.data||x.fim,'💊','Medicamento',vazio(x.nome)?'':x.nome));
  get(K.e).forEach(x=>push(x.data,'🧪','Exame',vazio(x.nome)?'':x.nome));
  // Sinais vitais aparecem na timeline apenas como evento.
  // Valores como peso, pressão, FC, temperatura, glicemia e saturação
  // permanecem somente na área de Acompanhamento, evitando exposição
  // de dados sensíveis no resumo cronológico.
- const diasVitais={};
- get(K.v).forEach(x=>{
-  const dia=String(x.data||'').slice(0,10);
-  if(!dia || diasVitais[dia])return;
-  diasVitais[dia]=true;
-  push(x.data,'📈','Sinal vital','');
- });
+ get(K.v).forEach(x=>push(x.data,'📈','Sinal vital',''));
  get(K.vax).forEach(x=>push(x.data,'💉','Vacina',vazio(x.nome)?'':x.nome));
- return out.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+ const ordenar=d=>{
+  const s=String(d||'').slice(0,10),iso=s.match(/^(\d{4})-(\d{2})-(\d{2})$/),br=s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if(iso)return iso[1]+iso[2]+iso[3];
+  if(br)return br[3]+br[2]+br[1];
+  const parsed=Date.parse(s);return Number.isFinite(parsed)?String(parsed).padStart(16,'0'):'';
+ };
+ return out.map((x,i)=>Object.assign({order:i},x)).sort((a,b)=>ordenar(b.date).localeCompare(ordenar(a.date))||a.order-b.order).map(({order,...x})=>x);
 }
-function timelineHTML(x){return '<div class="timeline-row"><div class="timeline-date">'+esc(formatDateBR(x.date))+'</div><div class="timeline-dot"></div><div class="timeline-content"><b>'+x.icon+' '+esc(x.title)+'</b><small>'+esc(x.sub)+'</small></div></div>'}
+function timelineHTML(x){return '<div class="timeline-row"><div class="timeline-date">'+esc(x.date?formatDateBR(x.date):'Data não informada')+'</div><div class="timeline-dot"></div><div class="timeline-content"><b>'+x.icon+' '+esc(x.title)+'</b><small>'+esc(x.sub||'Detalhes não informados')+'</small></div></div>'}
 function prepararConsulta(){
  const p=get(K.p)[0]||{},d=get(K.d),m=get(K.m),e=get(K.e),c=get(K.c);
  const preview=$('consultPrepPreview');
@@ -132,8 +143,9 @@ function calcularIMC(p){
  let cls=bmi<18.5?'Abaixo do peso':bmi<25?'Faixa considerada adequada':bmi<30?'Sobrepeso':bmi<35?'Obesidade grau I':bmi<40?'Obesidade grau II':'Obesidade grau III';
  return{bmi,cls,min:18.5*h*h,max:24.99*h*h}
 } 
+function formatFrequencyPerDay(v){const s=String(v||'').trim();if(!s||/^(valor|n\u00e3o informado|nao informado|n\/?a|-)$/i.test(s))return 'N\u00e3o informado';if(/^\d+(?:[.,]\d+)?$/.test(s))return s+'x/dia';if(/^v[a\u00e1]rias?x\s*\/?\s*dia$/i.test(s))return 'V\u00e1rias vezes/dia';if(/x\s*\/?\s*dia|vez(?:es)?\s*(?:por|\/)\s*dia/i.test(s))return s;if(/^v[a\u00e1]rias?$/i.test(s))return 'V\u00e1rias vezes/dia';return s}
 function estimarAgua(p){const peso=parseFloat(String(p.peso||'').replace(',','.'));if(!peso)return null;let ml=peso*35;if(p.academia==='Sim')ml+=300;if(p.calorSuor==='Moderada')ml+=300;if(p.calorSuor==='Alta')ml+=600;if(p.trabalhoTipo==='Em pé'||p.trabalhoTipo==='Ativo / em movimento')ml+=200;return Math.round(ml/50)*50}
-function atualizarMetricasCorporais(){const p=get(K.p)[0]||{},x=calcularIMC(p),agua=estimarAgua(p);if($('dashBMI'))$('dashBMI').textContent=x?x.bmi.toFixed(1):'—';if($('dashBMIClass'))$('dashBMIClass').textContent=x?(x.cls+' • faixa de peso de referência: '+x.min.toFixed(1)+'–'+x.max.toFixed(1)+' kg'):'Informe peso e altura';if($('dashWater'))$('dashWater').textContent=agua?(agua/1000).toFixed(2).replace('.',',')+' L/dia':'—';if($('dashActivity'))$('dashActivity').textContent=p.academia==='Sim'?(p.academiaFreq||'—')+'x/semana':p.academia==='Não'?'Não pratica':'Não informado';if($('dashActivityDetail'))$('dashActivityDetail').textContent=(p.trabalhoTipo||'Rotina não informada')+(p.horasSentado?' • '+p.horasSentado+'h sentado':'')+(p.horasPe?' • '+p.horasPe+'h em pé':'');if($('dashActivityEdit'))$('dashActivityEdit').textContent=(p.academia||p.academiaFreq||p.trabalhoTipo||p.horasSentado||p.horasPe)?'✏️ Editar':'➕ Informar';if($('dashUrine'))$('dashUrine').textContent=p.urinaDia?p.urinaDia+'x/dia':'Não informado';if($('dashUrineEdit'))$('dashUrineEdit').textContent=p.urinaDia?'✏️ Editar':'➕ Informar';if($('bodyMetrics'))$('bodyMetrics').innerHTML=x?'<div class="metric-kpi"><span>⚖️ IMC</span><b>'+x.bmi.toFixed(1)+'</b><small>'+esc(x.cls)+'</small></div><div class="metric-kpi"><span>📏 Faixa de referência</span><b>'+x.min.toFixed(1)+'–'+x.max.toFixed(1)+' kg</b><small>pela classificação de IMC adulto</small></div><div class="metric-kpi"><span>💧 Estimativa de água</span><b>'+((agua||0)/1000).toFixed(2).replace('.',',')+' L</b><small>ajuste pela atividade/clima</small></div>':''}
+function atualizarMetricasCorporais(){const p=get(K.p)[0]||{},x=calcularIMC(p),agua=estimarAgua(p);if($('dashBMI'))$('dashBMI').textContent=x?x.bmi.toFixed(1):'—';if($('dashBMIClass'))$('dashBMIClass').textContent=x?(x.cls+' • faixa de peso de referência: '+x.min.toFixed(1)+'–'+x.max.toFixed(1)+' kg'):'Informe peso e altura';if($('dashWater'))$('dashWater').textContent=agua?(agua/1000).toFixed(2).replace('.',',')+' L/dia':'—';if($('dashActivity'))$('dashActivity').textContent=p.academia==='Sim'?(p.academiaFreq||'—')+'x/semana':p.academia==='Não'?'Não pratica':'Não informado';if($('dashActivityDetail'))$('dashActivityDetail').textContent=(p.trabalhoTipo||'Rotina não informada')+(p.horasSentado?' • '+p.horasSentado+'h sentado':'')+(p.horasPe?' • '+p.horasPe+'h em pé':'');if($('dashActivityEdit'))$('dashActivityEdit').textContent=(p.academia||p.academiaFreq||p.trabalhoTipo||p.horasSentado||p.horasPe)?'✏️ Editar':'➕ Informar';if($('dashUrine'))$('dashUrine').textContent=formatFrequencyPerDay(p.urinaDia);if($('dashUrineEdit'))$('dashUrineEdit').textContent=p.urinaDia?'✏️ Editar':'➕ Informar';if($('bodyMetrics'))$('bodyMetrics').innerHTML=x?'<div class="metric-kpi"><span>⚖️ IMC</span><b>'+x.bmi.toFixed(1)+'</b><small>'+esc(x.cls)+'</small></div><div class="metric-kpi"><span>📏 Faixa de referência</span><b>'+x.min.toFixed(1)+'–'+x.max.toFixed(1)+' kg</b><small>pela classificação de IMC adulto</small></div><div class="metric-kpi"><span>💧 Estimativa de água</span><b>'+((agua||0)/1000).toFixed(2).replace('.',',')+' L</b><small>estimativa autom\u00e1tica; n\u00e3o \u00e9 prescri\u00e7\u00e3o. Consulte um profissional se tiver restri\u00e7\u00e3o de l\u00edquidos.</small></div>':''}
 function abrirEdicaoRotina(campo){
  const alvo=campo==='urina'?'pUrinaDia':'pAcademia';
  go('perfil');
@@ -315,17 +327,27 @@ function mostrarBoasVindasSeNecessario(){
  modal.querySelector('#msaStartManual').onclick=()=>{finish();if(typeof go==='function')go('perfil')};
  modal.querySelector('#msaWelcomeClose').onclick=finish;
 }
+function nivelDorLabel(x){
+ const v=x&&x.int;
+ if(v===null||v===undefined||v==='')return 'Intensidade não informada';
+ const n=Number(v);
+ if(!Number.isFinite(n)||n<0||n>10)return 'Intensidade inválida';
+ return n+'/10'+(n===0&&/importado da ia/i.test(String(x.obs||''))?' · conferir importação':'');
+}
+function valorVisivel(v,label){return !v||/^(valor|local|data|não informado|nao informado|n\/a|undefined|null|-)$/i.test(String(v).trim())?(label||'Não informado'):String(v)}
 function render(){
 mostrarBoasVindasSeNecessario();
 let d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
 $('nD').textContent=d.length;$('nC').textContent=c.length;$('nM').textContent=m.length;$('nE').textContent=e.length;
-list('listD',d,x=>`<div class="item"><div class="itemtop"><b>😣 ${esc(x.local)}</b><span class="tag">${x.int}/10</span></div><p>${fmt(x.data)} · ${esc(x.tipo)} · ${esc(x.freq)}<br>${esc(x.sint||'Sem sintomas associados')}<br>${esc(x.gatilho||'')} ${esc(x.obs||'')}</p></div>`);
+list('listD',d,x=>`<div class="item"><div class="itemtop"><b>😣 ${esc(valorVisivel(x.local,'Local não informado'))}</b><span class="tag">${esc(nivelDorLabel(x))}</span></div><p>${x.data?esc(fmt(x.data)):'Data n\u00e3o informada'} · ${esc(valorVisivel(x.tipo,'Tipo não informado'))} · ${esc(valorVisivel(x.freq,'Frequência não informada'))}<br>${esc(valorVisivel(x.sint,'Sintomas associados não informados'))}<br>${esc(valorVisivel(x.gatilho,''))} ${esc(x.obs||'')}</p></div>`);
 list('listC',c,x=>`<div class="item"><div class="itemtop"><b>👨‍⚕️ ${esc(x.esp)}</b><span class="tag">${x.data}</span></div><p>${esc(x.med||'Médico não informado')} · ${esc(x.mot||'')}<br><b>Perguntas:</b> ${esc(x.perg||'—')}<br><b>Orientações:</b> ${esc(x.obs||'—')}<br>${x.ret?'Retorno: '+x.ret:''}</p></div>`);
 list('listM',m,x=>`<div class="item"><div class="itemtop"><b>💊 ${esc(x.nome)}</b><span class="tag">${esc(x.dose||'')}</span></div><p>${esc(x.freq||'Frequência não informada')} · ${x.inicio||'—'} até ${x.fim||'—'}<br>Prescrito por: ${esc(x.pres||'—')}<br>${esc(x.obs||'')}</p></div>`);
 list('listE',e,x=>`<div class="item"><div class="itemtop"><b>🧪 ${esc(x.nome)}</b><span class="tag">${x.data}</span></div><p><b>Resultado:</b> ${esc(x.res||'—')}<br>${esc(x.obs||'')}</p></div>`);
 const dataTimelineValida=v=>{
  const s=String(v??'').trim();
  if(!s || /^(valor|data|não informado|nao informado|n\/a|-)$/i.test(s))return false;
+ const br=s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+ if(br){const d=new Date(+br[3],+br[2]-1,+br[1]);return d.getFullYear()===+br[3]&&d.getMonth()===+br[2]-1&&d.getDate()===+br[1]}
  const t=Date.parse(s);
  return Number.isFinite(t);
 };
@@ -342,7 +364,7 @@ let all=[...d.map(x=>({date:x.data,type:'😣 Sintoma',text:textoSintomaTimeline
 $('tl').innerHTML=all.length?all.map(x=>`<div class="tl"><b>${x.type}</b> <span class="tag">${esc(fmt(x.date))}</span><p>${esc(x.text)}</p></div>`).join(''):'<div class="empty">Nenhum evento registrado.</div>';
 let last=all[0];$('ultimo').innerHTML=last?`<b>${last.type}</b><br>${esc(last.text)}<br><span class="muted">${last.date}</span>`:'Ainda não há registros.';
 let alert=findAlerts(d);$('alertaHome').className=alert?'danger':'safe';$('alertaHome').innerHTML=alert?alert:'Nenhum sinal de alerta automático encontrado nos registros.';
-let vals=d.slice(-10);$('chart').innerHTML=vals.length?vals.map(x=>`<div class="bar" style="height:${Math.max(8,x.int*10)}%"><span>${x.int}</span><small>${String(x.local).slice(0,7)}</small></div>`).join(''):'<div class="muted" style="margin:auto">Registre sintomas para ver a evolução.</div>';
+let vals=d.filter(x=>x.int!==null&&x.int!==undefined&&x.int!==''&&Number.isFinite(Number(x.int))&&Number(x.int)>=0&&Number(x.int)<=10).slice(-10);$('chart').innerHTML=vals.length?vals.map(x=>`<div class="bar" style="height:${Math.max(8,Number(x.int)*10)}%"><span>${Number(x.int)}</span><small>${String(valorVisivel(x.local,'Sem local')).slice(0,7)}</small></div>`).join(''):'<div class="muted" style="margin:auto">Registre sintomas com intensidade para ver a evolução.</div>';
 if($('homeSummary')){
  const p=get(K.p)[0]||{}, all=[...d,...c,...m,...e].map(x=>x.data||x.inicio||x.fim).filter(Boolean).sort().reverse();
  const nome=p.nome||'Seu perfil ainda não foi preenchido';
@@ -482,9 +504,9 @@ function atualizarDashboard(){
 function healthText(){
  const p=get(K.p)[0]||{},d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e),v=get(K.v),r=get(K.r),vax=get(K.vax),fam=get(K.fam);
  const completude=calcularCompletudeSaude();
- const appVersion='V5.61';
+ const appVersion='V5.97';
  const lines=['MINHA SAÚDE IA — RESUMO DE DADOS','Versão do sistema: '+appVersion,'Completude da ficha: '+completude.percentual+'% ('+completude.preenchidos+'/'+completude.total+' itens avaliados)','Gerado em: '+new Date().toLocaleString('pt-BR'),'','[PERFIL]','Nome: '+(p.nome||'Não informado'),'Nascimento: '+(p.nasc||'Não informado'),'Idade: '+(p.idade||'Não informado'),'Sexo: '+(p.sexo||'Não informado'),'Tipo sanguíneo: '+(p.sangue||'Não informado'),'Altura: '+(p.altura||'Não informado'),'Peso: '+(p.peso||'Não informado'),'Objetivo corporal: '+(p.objetivoCorporal||'Não informado'),'Academia: '+(p.academia||'Não informado'),'Frequência academia: '+(p.academiaFreq||'Não informado'),'Atividade física: '+(p.atividadeFisica||'Não informado'),'Trabalho: '+(p.trabalhoTipo||'Não informado'),'Horas sentado: '+(p.horasSentado||'Não informado'),'Horas em pé: '+(p.horasPe||'Não informado'),'Água por dia: '+(p.aguaDia||'Não informado'),'Frequência urinária (opcional): '+(p.urinaDia||'Não informado'),'Frequência de evacuação (opcional): '+(p.evacuacaoDia||'Não informado'),'Exposição a calor/suor: '+(p.calorSuor||'Não informado'),'Alimentação: '+(p.alimentacao||'Não informado'),'Alergias: '+(p.alerg||'Não informado'),'Condições: '+(p.cond||'Não informado'),'Cirurgias/internações: '+(p.circ||'Não informado'),'Informações importantes: '+(p.info||'Não informado'),'Uso de Dorcelax: '+(p.dorcelaxFreq||'Não informado'),'Uso de paracetamol: '+(p.paracetamolFreq||'Não informado'),'Outros remédios para dor/febre: '+(p.outrosDor||'Não informado'),'Já teve catapora: '+(p.catapora||'Não informado'),'Quando teve catapora: '+(p.cataporaQuando||'Não informado'),'','[SINTOMAS]'];
- lines.push(...(d.length?d.map(x=>x.data+' | '+x.local+' | intensidade '+x.int+'/10 | '+x.tipo+' | '+(x.sint||'')):['Nenhum registro.']));
+ lines.push(...(d.length?d.map(x=>(x.data||'Data n\u00e3o informada')+' | '+valorVisivel(x.local,'Local n\u00e3o informado')+' | intensidade '+nivelDorLabel(x)+' | '+x.tipo+' | '+(x.sint||'')):['Nenhum registro.']));
  lines.push('','[CONSULTAS]');lines.push(...(c.length?c.map(x=>x.data+' | '+x.esp+' | '+(x.med||'')+' | Motivo: '+(x.mot||'')+' | Perguntas: '+(x.perg||'')+' | Orientações: '+(x.obs||'')+' | Retorno: '+(x.ret||'')):['Nenhum registro.']));
  lines.push('','[MEDICAMENTOS]');lines.push(...(m.length?m.map(x=>x.nome+' | Dose: '+(x.dose||'')+' | Frequência: '+(x.freq||'')+' | Início: '+(x.inicio||'')+' | Fim: '+(x.fim||'')+' | Prescrito por: '+(x.pres||'')):['Nenhum registro.']));
  lines.push('','[EXAMES]');lines.push(...(e.length?e.map(x=>x.data+' | '+x.nome+' | Resultado: '+(x.res||'')+' | Observações: '+(x.obs||'')):['Nenhum registro.']));
@@ -631,11 +653,11 @@ function salvarDocumento(){const f=$('docFile')?.files?.[0];if(!f)return alert('
 function verificarLembretes(){const now=Date.now();const a=get(K.r);a.forEach(x=>{if(x.alertado)return;const t=new Date(x.data).getTime();if(t&&t<=now+30000&&t>=now-60000){x.alertado=true;set(K.r,a);if('Notification' in window&&Notification.permission==='granted')new Notification('🩺 Minha Saúde IA',{body:x.nome});else alert('🔔 Lembrete: '+x.nome)}})}
 async function pedirNotificacao(){if('Notification' in window){try{await Notification.requestPermission();alert(Notification.permission==='granted'?'🔔 Notificações ativadas.':'Notificações não ativadas.')}catch(e){}}}
 function compartilharResumo(){const text=healthText();if(navigator.share){navigator.share({title:'Minha Saúde IA — Resumo',text:text}).catch(()=>{})}else copiarParaIA()}
-function resumoInteligente(){const p=get(K.p)[0]||{},d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e),v=get(K.v);const txt='RESUMO INTELIGENTE\nNome: '+(p.nome||'Não informado')+'\nRegistros: '+d.length+' sintomas, '+c.length+' consultas, '+m.length+' medicamentos, '+e.length+' exames, '+v.length+' sinais vitais.\nCondições: '+(p.cond||'Não informado')+'\nAlergias: '+(p.alerg||'Não informado')+'\nÚltimos sintomas: '+d.slice(-5).map(x=>x.data+' — '+x.local+' — '+x.int+'/10').join(' | ')+'\nÚltimos exames: '+e.slice(-5).map(x=>x.data+' — '+x.nome).join(' | ')+'\n\nEste resumo é baseado apenas nos registros locais e não é diagnóstico.';const box=$('resumoIA');if(box)box.textContent=txt}
+function resumoInteligente(){const p=get(K.p)[0]||{},d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e),v=get(K.v);const txt='RESUMO INTELIGENTE\nNome: '+(p.nome||'Não informado')+'\nRegistros: '+d.length+' sintomas, '+c.length+' consultas, '+m.length+' medicamentos, '+e.length+' exames, '+v.length+' sinais vitais.\nCondições: '+(p.cond||'Não informado')+'\nAlergias: '+(p.alerg||'Não informado')+'\nÚltimos sintomas: '+d.slice(-5).map(x=>x.data+' — '+x.local+' — '+nivelDorLabel(x)).join(' | ')+'\nÚltimos exames: '+e.slice(-5).map(x=>x.data+' — '+x.nome).join(' | ')+'\n\nEste resumo é baseado apenas nos registros locais e não é diagnóstico.';const box=$('resumoIA');if(box)box.textContent=txt}
 
 function prepararContextoIA(){
  const p=get(K.p)[0]||{},d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
- const recent=[...d.map(x=>({data:x.data,tipo:'Sintoma',texto:x.local+' — intensidade '+x.int+'/10 — '+(x.sint||'')})),...c.map(x=>({data:x.data,tipo:'Consulta',texto:x.esp+' — '+(x.mot||'')})),...m.map(x=>({data:x.inicio||x.fim,tipo:'Medicamento',texto:x.nome+' — '+(x.dose||'') })),...e.map(x=>({data:x.data,tipo:'Exame',texto:x.nome+' — '+(x.res||'')}))].filter(x=>x.data).sort((a,b)=>String(b.data).localeCompare(String(a.data))).slice(0,15);
+ const recent=[...d.map(x=>({data:x.data||'Data n\u00e3o informada',tipo:'Sintoma',texto:valorVisivel(x.local,'')+' - intensidade '+nivelDorLabel(x)+' - '+(x.sint||'')})),...c.map(x=>({data:x.data||'Data n\u00e3o informada',tipo:'Consulta',texto:x.esp+' - '+(x.mot||'')})),...m.map(x=>({data:x.inicio||x.fim||'Data n\u00e3o informada',tipo:'Medicamento',texto:x.nome+' - '+(x.dose||'')})),...e.map(x=>({data:x.data||'Data n\u00e3o informada',tipo:'Exame',texto:x.nome+' - '+(x.res||'')}))].sort((a,b)=>{const am=String(a.data).startsWith('Data '),bm=String(b.data).startsWith('Data ');return am===bm?String(b.data).localeCompare(String(a.data)):am?1:-1}).slice(0,15);
  const ficha=[
  'Contexto de saúde pessoal para análise e organização — Minha Saúde IA.',
  'IMPORTANTE: use somente as informações abaixo. Não invente, não complete lacunas e não faça diagnóstico. Se algo exigir avaliação, sinalize como assunto para discutir com profissional de saúde.',
@@ -897,7 +919,7 @@ chat.innerHTML+=`<div class="bubble bot">${ans}</div>`;$('iaInput').value='';cha
 function perguntasConsulta(){try{let d=get(K.d),e=get(K.e),m=get(K.m);let q=[];if(d.length)q.push('Quais podem ser as causas possíveis dos sintomas que registrei e quais sinais devo observar?');if(e.length)q.push('Há algum resultado dos meus exames que devo discutir com mais atenção?');if(m.length)q.push('Os medicamentos que estou usando devem ser mantidos, ajustados ou revisados?');q.push('Quais exames ou acompanhamentos podem ser necessários?','Em quais situações devo procurar atendimento antes do retorno?');const box=$('perguntas');if(box)box.innerHTML='<div class="alert safe"><b>Perguntas sugeridas:</b><ol>'+q.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol></div>';}catch(err){console.error('[Minha Saúde IA] erro ao gerar perguntas:',err);const box=$('perguntas');if(box)box.innerHTML='<div class="alert danger">❌ Não foi possível gerar as perguntas agora. Tente novamente.</div>';}}function gerarRelatorio(){
  const p=get(K.p)[0]||{},d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
  const body=`<div class="box"><b>Nome:</b> ${esc(p.nome||'Não informado')}<br><b>Informações importantes:</b> ${esc(p.info||'—')}<br><b>Alergias:</b> ${esc(p.alerg||'—')}</div>
- <h2>Sintomas</h2><ul>${d.length?d.map(x=>`<li>${x.data} — ${esc(x.local)}, intensidade ${x.int}/10, ${esc(x.tipo)}. ${esc(x.sint||'')}</li>`).join(''):'<li>Nenhum registrado.</li>'}</ul>
+ <h2>Sintomas</h2><ul>${d.length?d.map(x=>`<li>${x.data} — ${esc(x.local)}, intensidade ${esc(nivelDorLabel(x))}, ${esc(x.tipo)}. ${esc(x.sint||'')}</li>`).join(''):'<li>Nenhum registrado.</li>'}</ul>
  <h2>Consultas</h2><ul>${c.length?c.map(x=>`<li>${x.data} — ${esc(x.esp)}, ${esc(x.med||'')}. ${esc(x.obs||'')}</li>`).join(''):'<li>Nenhuma registrada.</li>'}</ul>
  <h2>Medicamentos</h2><ul>${m.length?m.map(x=>`<li>${esc(x.nome)} — ${esc(x.dose||'')} — ${esc(x.freq||'')}</li>`).join(''):'<li>Nenhum registrado.</li>'}</ul>
  <h2>Exames</h2><ul>${e.length?e.map(x=>`<li>${x.data} — ${esc(x.nome)}: ${esc(x.res||'')}</li>`).join(''):'<li>Nenhum registrado.</li>'}</ul>`;
