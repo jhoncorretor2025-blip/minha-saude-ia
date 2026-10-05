@@ -1,5 +1,5 @@
 {
-  "version": "V5.94",
-  "updatedAt": "2026-10-04T23:55:00-03:00",
-  "changes": "Família IA: removida a entrevista; o prompt agora manda a IA gerar imediatamente a ficha completa em JSON, sem fazer perguntas, pedir confirmação ou esperar respostas."
+  "version": "V5.95",
+  "updatedAt": "2026-10-04T21:20:00-03:00",
+  "changes": "Família IA: corrigida importação quando a resposta contém apenas historico_familiar; histórico agora é salvo mesmo com familiares vazio, observacao/idadeDiagnostico são preservados e Pai/Mãe reconhecidos no histórico também aparecem em Familiares."
 }
