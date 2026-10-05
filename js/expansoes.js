@@ -430,8 +430,11 @@ window.abrirRevisaoImportacao=function(n){
  const plan=buildImportConflictPlan(n);
  window._importPendente=n;window._msaImportConflictPlan=plan;
  const box=byId('importReviewContent');
- let base=typeof window.resumirImportacao==='function'?window.resumirImportacao(n):'<div class="msa-feedback msa-feedback-info">Revise os dados recebidos da IA.</div>';
- if(box)box.innerHTML=base+importConflictSummary(plan);
+ if(typeof window.msaRenderRevisaoImportacao==='function')window.msaRenderRevisaoImportacao(n);
+ if(box){
+  const base=box.innerHTML||'<div class="msa-feedback msa-feedback-info">Revise os dados recebidos da IA.</div>';
+  box.innerHTML=base+importConflictSummary(plan);
+ }
  const modal=byId('importReviewOverlay');if(modal)modal.style.display='flex';
 };
 window.cancelarImportacaoPendente=function(){
@@ -441,23 +444,50 @@ window.cancelarImportacaoPendente=function(){
 };
 window.confirmarImportacaoPendente=function(){
  const n=window._importPendente,plan=window._msaImportConflictPlan;if(!n)return;
- const chosen=JSON.parse(JSON.stringify(n));
+ let revisado=n;
+ if(typeof window.confirmarImportacaoPendenteCore==='function'){
+  revisado=window.confirmarImportacaoPendenteCore();
+  if(!revisado)return;
+ }else if(typeof window.msaLerImportacaoRevisada==='function'){
+  try{
+   const r=window.msaLerImportacaoRevisada();
+   if(r.q.invalidos)throw new Error('Existem '+r.q.invalidos+' registro(s) incompleto(s) ou inválido(s). Corrija-os ou exclua-os antes de salvar.');
+   revisado=r.n;
+  }catch(e){
+   const msg=byId('importReviewValidation');if(msg){msg.className='alert danger';msg.textContent='❌ '+e.message}
+   return;
+  }
+ }
+ const chosen=JSON.parse(JSON.stringify(revisado));
  (plan?.records||[]).forEach(x=>{
   const el=document.querySelector('input[name="ic_'+x.id+'"]:checked'),choice=el?.value||'skip';
   if(choice==='skip'&&Array.isArray(chosen[x.prop]))chosen[x.prop]=chosen[x.prop].filter((_,i)=>i!==x.index);
  });
+ // Revalida depois das escolhas de conflito para garantir que nada incompleto entre.
+ if(typeof window.validarResultadoImportacao==='function'){
+  try{
+   const v=window.validarResultadoImportacao(chosen);
+   if(v.qualidade&&v.qualidade.invalidos){
+    const msg=byId('importReviewValidation');if(msg){msg.className='alert danger';msg.innerHTML='❌ <b>Não foi salvo.</b> Ainda existem '+v.qualidade.invalidos+' registro(s) inválido(s) após a revisão.'}
+    return;
+   }
+  }catch(e){
+   const msg=byId('importReviewValidation');if(msg){msg.className='alert danger';msg.textContent='❌ '+e.message}
+   return;
+  }
+ }
  const modal=byId('importReviewOverlay');if(modal)modal.style.display='none';
  try{
   if(typeof window.importarNormalizado==='function')window.importarNormalizado(chosen);
   else if(typeof importarNormalizado==='function')importarNormalizado(chosen);
   (plan?.profile||[]).forEach(x=>{
-    const el=document.querySelector('input[name="ic_'+CSS.escape(x.id)+'"]:checked');
-    if(el && el.value==='import'){
-      const p=storage.get(K.p)[0]||{};p[x.field]=x.valueIncoming;storage.set(K.p,[p]);
-    }
+   const el=document.querySelector('input[name="ic_'+x.id+'"]:checked');
+   if(el && el.value==='import'){
+    const p=storage.get(K.p)[0]||{};p[x.field]=x.valueIncoming;storage.set(K.p,[p]);
+   }
   });
   try{render();if(typeof loadProfile==='function')loadProfile();if(typeof renderCarteirinha==='function')renderCarteirinha();if(typeof renderNovosModulos==='function')renderNovosModulos()}catch(e){}
-  const msg=byId('resultadoImport');if(msg)msg.innerHTML='<div class="alert safe">✅ <b>Importação concluída com revisão.</b> Conflitos foram tratados conforme suas escolhas.</div>';
+  const msg=byId('resultadoImport');if(msg)msg.innerHTML='<div class="alert safe">✅ <b>Importação concluída com revisão.</b> Os registros foram conferidos antes do salvamento.</div>';
  }catch(e){
   console.error('[Minha Saúde IA] confirmação da importação',e);
   const msg=byId('resultadoImport');if(msg)msg.innerHTML='<div class="alert danger">❌ Não foi possível concluir a importação revisada.</div>';
