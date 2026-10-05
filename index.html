@@ -48,7 +48,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V5.96</title>
+<title>Minha Saúde IA — V5.97</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -349,7 +349,7 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
 @media(max-width:760px){.msa-mobile-menu-fab{display:none!important}.msa-mobile-bar{grid-template-columns:repeat(4,1fr)}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V5.96">
+  <link rel="stylesheet" href="css/design-system.css?v=V5.97">
 
 <style id="v519-progressive-ui">
 /* V5.96 — melhorias progressivas de dashboard, favoritos e alertas */
@@ -624,7 +624,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V5.96</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V5.97</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 <nav id="nav" class="grouped-nav" aria-label="Navegação principal">
  <div class="nav-group"><button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button><div class="nav-menu"><button type="button" data-tab="home">🏠 Visão geral</button><button type="button" data-tab="timeline">🕐 Linha do tempo</button></div></div>
@@ -695,11 +695,11 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
   <span>🚽 Urina</span><b id="dashUrine">—</b><small>registro diário</small>
   <button type="button" class="metric-edit-btn" id="dashUrineEdit" onclick="abrirEdicaoRotina('urina')">➕ Informar</button>
  </div>
-</div><div class="grid4">
+</div><details id="dashWaterDetails" style="margin-top:10px;padding:12px 14px;border:1px solid #dbe5ff;border-radius:15px;background:#fbfdff"><summary style="cursor:pointer;font-weight:900">💧 Como foi calculada a estimativa de água?</summary><div id="dashWaterDetailsBody" class="muted" style="margin-top:9px;line-height:1.5">Informe seu peso para calcular uma estimativa pessoal.</div></details><div class="grid4">
 <div class="card stat"><span>😣 Sintomas</span><b id="nD">0</b></div><div class="card stat"><span>👨‍⚕️ Consultas</span><b id="nC">0</b></div><div class="card stat"><span>💊 Medicamentos</span><b id="nM">0</b></div><div class="card stat"><span>🧪 Exames</span><b id="nE">0</b></div>
 </div>
 <div class="card smart-care-card">
-<div class="dash-section-title"><div><h2>🎯 Próximos cuidados</h2><div class="muted">Tudo que você registrou e pode precisar de acompanhamento.</div></div><button class="btn secondary" onclick="go('acompanhamento')">Ver tudo</button></div>
+<div class="dash-section-title"><div><h2>🎯 Próximos cuidados e revisões</h2><div class="muted">Datas futuras registradas e itens que precisam apenas de revisão dos dados.</div></div><button class="btn secondary" onclick="go('acompanhamento')">Ver tudo</button></div>
 <div id="nextCareList" class="smart-list"></div>
 </div>
 <div class="card smart-care-card">
@@ -712,7 +712,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 </div>
 <div class="card smart-care-card">
 <div class="dash-section-title"><div><h2>🕐 Linha do tempo</h2><div class="muted">Veja sua evolução em ordem cronológica.</div></div><button class="btn secondary" onclick="go('timeline')">Abrir timeline</button></div>
-<div id="timelinePreview" class="timeline-mini"></div>
+<div id="timelineFilters" class="row" style="margin-top:10px;gap:7px;flex-wrap:wrap"></div><div id="timelinePreview" class="timeline-mini"></div>
 </div>
 <div class="home-secondary-content"><div class="card" style="margin-top:13px"><h2>Como você está hoje?</h2><div class="muted">Registre uma informação ou prepare-se para uma consulta.</div>
 <div class="card" style="margin-top:13px;background:linear-gradient(135deg,#eef4ff,#f7f2ff);border-color:#dbe5ff">
@@ -1112,7 +1112,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <div class="card" style="margin-top:13px"><h3>🎯 Gatilhos emocionais e sintomas</h3><form id="gatilhoForm"><div class="grid2"><label>Data<input id="gatData" type="date" required></label><label>Gatilho<input id="gatNome" required placeholder="Ex.: trabalho, conflito, falta de sono"></label></div><label>Sintoma relacionado<input id="gatSintoma" placeholder="Ex.: dor de cabeça, pele, dor..."></label><label>Observações<textarea id="gatObs"></textarea></label><button class="btn">💾 Registrar gatilho</button></form><div id="gatList" class="list" style="margin-top:10px"></div></div>
 <div class="alert safe" style="margin-top:13px">🧠 Estes registros ajudam a organizar seu histórico. Eles não diagnosticam ansiedade, depressão ou outras condições.</div></div></section>
 
-<section id="familiares"><div class="card"><h2>👨‍👩‍👧‍👦 Familiares</h2><div class="muted">Cadastre pessoas da família separadamente do seu perfil. Assim, uma cuidadora pode acompanhar marido, filhos, pais ou outra pessoa com medicamentos, consultas e crises sem misturar os dados.</div><div class="alert safe" style="margin-top:12px">🔒 Os dados desta área ficam separados do seu perfil principal e armazenados neste navegador.</div><div class="card" id="familiaCadastroCard" style="margin-top:13px"><h3>➕ Cadastrar familiar</h3><form id="familiarForm" style="margin-top:10px"><div class="grid2"><label>Nome <span style="color:#dc2626">*</span><input id="fNome" required placeholder="Ex.: João"></label><label>Parentesco<select id="fParentesco"><option>Marido</option><option>Esposa</option><option>Companheiro(a)</option><option>Filho(a)</option><option>Pai</option><option>Mãe</option><option>Irmão/irmã</option><option>Avô/avó</option><option>Outro</option></select></label></div><div class="grid2"><label>Sexo<select id="fSexo"><option value="">Não informado</option><option>Masculino</option><option>Feminino</option><option>Outro</option></select></label><label>Data de nascimento<input id="fNasc" type="date"></label></div><div class="grid2"><label>Idade<input id="fIdade" type="number" min="0" max="130"></label><label>Tipo sanguíneo<select id="fSangue"><option value="">Não informado</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></label></div><label>🧠 Condição principal<input id="fCondicao" placeholder="Ex.: Alzheimer / demência"></label><label>🚨 Alergias<textarea id="fAlergias" placeholder="Medicamentos, alimentos ou outras alergias..."></textarea></label><label>📞 Contato / responsável<input id="fContato" placeholder="Telefone ou pessoa de referência"></label><label>📌 Observações importantes<textarea id="fObs" placeholder="Informações úteis para consultas e cuidados."></textarea></label><button class="btn green">💾 Cadastrar familiar</button></form></div><div class="card" id="familiaPessoasCard" style="margin-top:13px"><h3>👥 Pessoas cadastradas</h3><div id="familiaresList" class="familiar-people-list" style="margin-top:10px"></div></div><div id="familiarDetalhe" style="margin-top:13px"></div></div></section>
+<section id="familiares"><div class="card"><h2>👨‍👩‍👧‍👦 Familiares</h2><div class="muted">Cadastre pessoas da família separadamente do seu perfil. Assim, uma cuidadora pode acompanhar marido, filhos, pais ou outra pessoa com medicamentos, consultas e crises sem misturar os dados.</div><div class="alert safe" style="margin-top:12px">🔒 Os dados desta área ficam separados do seu perfil principal e armazenados neste navegador. Ao abrir uma IA externa, o aplicativo mostrará uma prévia e pedirá sua confirmação antes do compartilhamento.</div><div class="card" id="familiaCadastroCard" style="margin-top:13px"><h3>➕ Cadastrar familiar</h3><form id="familiarForm" style="margin-top:10px"><div class="grid2"><label>Nome <span style="color:#dc2626">*</span><input id="fNome" required placeholder="Ex.: João"></label><label>Parentesco<select id="fParentesco"><option>Marido</option><option>Esposa</option><option>Companheiro(a)</option><option>Filho(a)</option><option>Pai</option><option>Mãe</option><option>Irmão/irmã</option><option>Avô/avó</option><option>Outro</option></select></label></div><div class="grid2"><label>Sexo<select id="fSexo"><option value="">Não informado</option><option>Masculino</option><option>Feminino</option><option>Outro</option></select></label><label>Data de nascimento<input id="fNasc" type="date"></label></div><div class="grid2"><label>Idade<input id="fIdade" type="number" min="0" max="130"></label><label>Tipo sanguíneo<select id="fSangue"><option value="">Não informado</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></label></div><label>🧠 Condição principal<input id="fCondicao" placeholder="Ex.: Alzheimer / demência"></label><label>🚨 Alergias<textarea id="fAlergias" placeholder="Medicamentos, alimentos ou outras alergias..."></textarea></label><label>📞 Contato / responsável<input id="fContato" placeholder="Telefone ou pessoa de referência"></label><label>📌 Observações importantes<textarea id="fObs" placeholder="Informações úteis para consultas e cuidados."></textarea></label><button class="btn green">💾 Cadastrar familiar</button></form></div><div class="card" id="familiaPessoasCard" style="margin-top:13px"><h3>👥 Pessoas cadastradas</h3><div id="familiaresList" class="familiar-people-list" style="margin-top:10px"></div></div><div id="familiarDetalhe" style="margin-top:13px"></div></div></section>
 <section id="familia"><div class="card"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap"><div><h2>👨‍👩‍👧 Histórico Familiar e Genética</h2><div class="muted">Organize antecedentes familiares para levar informações mais completas às consultas.</div></div><div class="row"><button type="button" class="btn" onclick="abrirPromptFamiliaIA()">🤖 Perguntar à IA — Família</button><button type="button" class="btn secondary" onclick="abrirImportadorRespostaFamilia()">📥 Colar resposta da IA</button></div></div>
 <div class="card" style="margin-top:13px;background:linear-gradient(135deg,#f5f8ff,#faf7ff);border-color:#dbe5ff">
  <div class="dash-section-title"><div><div style="font-size:11px;font-weight:900;letter-spacing:.06em;color:#2563eb">🤖 FAMÍLIA COM IA</div><h3 style="margin:4px 0">Organize a família em 2 passos</h3><div class="muted">A IA recebe os dados familiares e gera a ficha completa de uma vez. Depois você cola a resposta e salva tudo nos Familiares.</div></div></div>
@@ -1566,14 +1566,14 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V5.96" defer></script>
-<script src="js/core/storage.js?v=V5.96" defer></script>
-<script src="js/core/utils.js?v=V5.96" defer></script>
-<script src="js/menu.js?v=V5.96" defer></script>
-<script src="js/app.js?v=V5.96" defer></script>
-<script src="js/perfil-save.js?v=V5.96" defer></script>
-<script src="js/familiares.js?v=V5.96" defer></script>
-<script src="js/recursos.js?v=V5.96" defer></script>
+<script src="js/core/constants.js?v=V5.97" defer></script>
+<script src="js/core/storage.js?v=V5.97" defer></script>
+<script src="js/core/utils.js?v=V5.97" defer></script>
+<script src="js/menu.js?v=V5.97" defer></script>
+<script src="js/app.js?v=V5.97" defer></script>
+<script src="js/perfil-save.js?v=V5.97" defer></script>
+<script src="js/familiares.js?v=V5.97" defer></script>
+<script src="js/recursos.js?v=V5.97" defer></script>
 
 
 <script>
@@ -1596,12 +1596,12 @@ function iniciarImportacao(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="js/inteligencia.js?v=V5.96" defer></script>
-<script src="js/importacao.js?v=V5.96" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/melhorias-primeiras.js?v=V5.96" defer></script>
-<script src="js/expansoes.js?v=V5.96" defer></script>
-<script src="js/importacao-fluxo-v514.js?v=V5.96" defer></script>
-<script src="js/melhorias-v513.js?v=V5.96" defer></script>
+<script src="js/inteligencia.js?v=V5.97" defer></script>
+<script src="js/importacao.js?v=V5.97" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/melhorias-primeiras.js?v=V5.97" defer></script>
+<script src="js/expansoes.js?v=V5.97" defer></script>
+<script src="js/importacao-fluxo-v514.js?v=V5.97" defer></script>
+<script src="js/melhorias-v513.js?v=V5.97" defer></script>
 
 
 <script>
@@ -1957,7 +1957,7 @@ body.msa-dark .msa-save-bar{background:linear-gradient(180deg,rgba(17,24,39,0),#
  .msa-home-more-toggle{min-height:48px}
  .msa-toast{bottom:calc(92px + env(safe-area-inset-bottom))}
 }
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+.timeline-title{display:flex;justify-content:space-between;gap:8px;align-items:center}.timeline-review-tag{display:inline-flex;align-items:center;padding:4px 7px;border-radius:999px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:10px;font-weight:900}.timeline-row-invalid .timeline-content{border-color:#fed7aa;background:#fffaf5}.smart-review-panel{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px;border:1px solid #fed7aa;background:#fffaf5;border-radius:15px}.smart-review-panel small{display:block;color:#7c5a32;margin-top:3px;line-height:1.35}@media(max-width:600px){.smart-review-panel{align-items:stretch;flex-direction:column}.smart-review-panel .btn{width:100%}}\n@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style>
 <script id="msaV539EnhancementsScript">
 (function(){
