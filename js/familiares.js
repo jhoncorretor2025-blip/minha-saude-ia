@@ -160,7 +160,7 @@ function gerarPromptCompletoFamilia(pergunta){
   'Cada crise deve preservar:',
   'data, hora, tipo, intensidade, descricao, gatilho e conduta.',
   '',
-  '=== CONTEXTO FAMILIAR ===',
+  '=== PERGUNTA DO USUÁRIO ===',''+String(pergunta||'').trim(),'','=== CONTEXTO FAMILIAR ===',
   'HISTÓRICO FAMILIAR / ANTECEDENTES:'
  ];
  if(d.historico.length){
