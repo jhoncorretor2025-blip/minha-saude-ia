@@ -91,10 +91,12 @@ function registroProblemas(tipo,x){
  else if(tipo==='documentos'){if(empty(r.nome)||/^documento informado$/i.test(String(r.nome).trim()))issues.push('nome do documento')}
  else if(tipo==='medidas'){req('data',r.data)}
  else if(tipo==='ciclo'){req('início do ciclo',r.inicio)}
+ else if(tipo==='anticoncepcional'){req('data',r.data)}
+ else if(tipo==='doses'){req('data',r.data)}
  return issues;
 }
 function obterQualidadeRegistros(){
- const defs=[['sintomas',K.d,'😣 Sintomas'],['consultas',K.c,'👨‍⚕️ Consultas'],['medicamentos',K.m,'💊 Medicamentos'],['exames',K.e,'🧪 Exames'],['sinais',K.v,'📈 Sinais vitais'],['vacinas',K.vax,'💉 Vacinas'],['lembretes',K.r,'📌 Lembretes'],['nutricao',K.nutri,'🍎 Alimentação'],['suplementos',K.suplReg,'💊 Suplementos'],['reacoes',K.food,'⚠️ Reações alimentares'],['agua',K.agua,'💧 Água'],['bemestar',K.bem,'🧠 Bem-estar'],['gatilhos',K.gat,'🎯 Gatilhos'],['familia',K.fam,'🧬 Histórico familiar'],['documentos',K.doc,'📄 Documentos'],['medidas',K.medidas,'📏 Medidas corporais'],['ciclo',K.ciclo,'🩸 Ciclos']];
+ const defs=[['sintomas',K.d,'😣 Sintomas'],['consultas',K.c,'👨‍⚕️ Consultas'],['medicamentos',K.m,'💊 Medicamentos'],['exames',K.e,'🧪 Exames'],['sinais',K.v,'📈 Sinais vitais'],['vacinas',K.vax,'💉 Vacinas'],['lembretes',K.r,'📌 Lembretes'],['nutricao',K.nutri,'🍎 Alimentação'],['suplementos',K.suplReg,'💊 Suplementos'],['reacoes',K.food,'⚠️ Reações alimentares'],['agua',K.agua,'💧 Água'],['bemestar',K.bem,'🧠 Bem-estar'],['gatilhos',K.gat,'🎯 Gatilhos'],['familia',K.fam,'🧬 Histórico familiar'],['documentos',K.doc,'📄 Documentos'],['medidas',K.medidas,'📏 Medidas corporais'],['ciclo',K.ciclo,'🩸 Ciclos'],['anticoncepcional',K.anticoncepcional,'🛡️ Anticoncepcional'],['doses',K.medTaken,'✅ Doses registradas']];
  const problemas=[];defs.forEach(d=>get(d[1]).forEach((x,i)=>{const issues=registroProblemas(d[0],x);if(issues.length)problemas.push({tipo:d[0],label:d[2],indice:i,issues:issues,record:x})}));
  return problemas;
 }
@@ -119,10 +121,12 @@ function getTimelineRecords(){
  get(K.doc).forEach(x=>add('documentos',x.data,'📄','Documento',x.nome||'',x));
  get(K.medidas).forEach(x=>add('medidas',x.data,'📏','Medida corporal',(x.peso?x.peso+' kg ':'')+(x.abdomen?x.abdomen+' cm abdômen':''),x));
  get(K.ciclo).forEach(x=>add('ciclo',x.inicio,'🩸','Ciclo menstrual','Início registrado',x));
+ get(K.anticoncepcional).forEach(x=>add('anticoncepcional',x.data,'🛡️','Anticoncepcional',x.nome||x.metodo||'Registro de uso',x));
+ get(K.medTaken).forEach(x=>add('doses',x.data,'✅','Dose registrada',x.medId?'Medicamento da rotina':'Dose',x));
  return out;
 }
 function buildTimeline(filtro){
- const f=filtro||window.__msaTimelineFiltro||'todos',all=getTimelineRecords(),filtered=f==='todos'?all:(f==='outros'?all.filter(x=>!['sintomas','consultas','medicamentos','exames'].includes(x.type)):all.filter(x=>x.type===f));
+ const f=filtro||window.__msaTimelineFiltro||'todos',all=getTimelineRecords(),primary=['sintomas','consultas','medicamentos','exames'],acomp=['sinais','vacinas','nutricao','suplementos','reacoes','agua','sono','bemestar','gatilhos','medidas','ciclo','anticoncepcional','doses'],filtered=f==='todos'?all:(f==='acompanhamento'?all.filter(x=>acomp.includes(x.type)):(f==='outros'?all.filter(x=>!primary.includes(x.type)&&!acomp.includes(x.type)):all.filter(x=>x.type===f)));
  return filtered.sort((a,b)=>{const ad=a.date?String(a.date):'',bd=b.date?String(b.date):'';if(!ad&&!bd)return 0;if(!ad)return 1;if(!bd)return -1;return bd.localeCompare(ad)});
 }
 function renderTimelineFiltros(){
