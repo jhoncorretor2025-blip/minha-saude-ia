@@ -298,7 +298,7 @@ function verificarGravacaoImportacao(n){
 }
 function atualizarProgresso(p,step,status){var bar=$('importProgress'),pct=$('importPercent'),st=$('importStep'),msg=$('importStatus');if(bar)bar.style.width=p+'%';if(pct)pct.textContent=p+'%';if(st)st.textContent=step;if(msg)msg.textContent=status}
 function esperar(ms){return new Promise(function(resolve){setTimeout(resolve,ms)})}
-function criarDiagnosticoImportacao(code,step,error,raw){var box=$('importDiagnostic'),diag={versao:'V5.97',codigo:code,etapa:step,mensagem:String(error&&error.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error&&error.stack||'').split('\n').slice(0,4).join('\n')};if(box){box.style.display='block';box.innerHTML='<div class="alert danger"><b>🔎 Diagnóstico da falha</b><br>Versão: '+esc(diag.versao)+' · Etapa: '+esc(diag.etapa)+'<br>Código: <b>'+esc(diag.codigo)+'</b><pre style="white-space:pre-wrap;word-break:break-word">'+esc(JSON.stringify(diag,null,2))+'</pre></div>'}console.error('[Minha Saúde IA]',diag)}
+function criarDiagnosticoImportacao(code,step,error,raw){var box=$('importDiagnostic'),diag={versao:'V5.99',codigo:code,etapa:step,mensagem:String(error&&error.message||error||'Erro desconhecido'),tamanhoResposta:String(raw||'').length,navegador:navigator.userAgent,data:new Date().toISOString(),stack:String(error&&error.stack||'').split('\n').slice(0,4).join('\n')};if(box){box.style.display='block';box.innerHTML='<div class="alert danger"><b>🔎 Diagnóstico da falha</b><br>Versão: '+esc(diag.versao)+' · Etapa: '+esc(diag.etapa)+'<br>Código: <b>'+esc(diag.codigo)+'</b><pre style="white-space:pre-wrap;word-break:break-word">'+esc(JSON.stringify(diag,null,2))+'</pre></div>'}console.error('[Minha Saúde IA]',diag)}
 function resumirImportacao(n){
  var p=n.p||{},campos=Object.keys(p).filter(function(k){return String(p[k]||'').trim()&&String(p[k]).toLowerCase()!=='não informado'});
  var blocos=[['👤 Perfil',campos.length+' campo(s) reconhecido(s)'],['😣 Sintomas',n.dores.length+' registro(s)'],['👨‍⚕️ Consultas',n.consultas.length+' registro(s)'],['💊 Medicamentos',n.meds.length+' registro(s)'],['🧪 Exames',n.exames.length+' registro(s)'],['📈 Sinais vitais',n.vitais.length+' registro(s)'],['💉 Vacinas',n.vacinas.length+' registro(s)'],['🧬 Histórico familiar',n.familia.length+' registro(s)'],['📌 Lembretes',n.lembretes.length+' registro(s)'],['📄 Documentos',n.documentos.length+' registro(s)']];
@@ -398,7 +398,7 @@ function executarDiagnosticoImportacao(opcoes){
   return ok&&igual&&window.msaStorage.getItem(chave)===null;
  });
  var falhas=resultado.filter(function(x){return !x.ok}),total=resultado.length,tempo=Date.now()-inicio;
- var resumo={versao:'V5.75',total:total,aprovados:total-falhas.length,falhas:falhas.length,duracaoMs:tempo,resultados:resultado};
+ var resumo={versao:'V5.99',total:total,aprovados:total-falhas.length,falhas:falhas.length,duracaoMs:tempo,resultados:resultado};
  window._importDiagnostico=resumo;
  var box=document.getElementById('importDiagnostic');
  if(box&&!silencioso){
