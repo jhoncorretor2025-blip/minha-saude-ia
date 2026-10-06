@@ -1,5 +1,4 @@
-/* Minha Saúde IA — Relatórios e segurança operacional V5.99 */
-(function(){
+/* Minha Saúde IA — Relatórios V5.99 */
 'use strict';
 /* V4.4: auto-update and force-refresh */
 function forcarAtualizacao(){
@@ -164,4 +163,3 @@ const oldRender=render;
 render=function(){oldRender();updateReportSummary();updatePinStatus();};
 initReports();render();setTimeout(verificarNovaVersao,700);
 
-})();
