@@ -241,24 +241,6 @@
     document.body.appendChild(backdrop);
     document.body.appendChild(drawer);
     document.body.appendChild(bar);
-    var closeBtn=drawer.querySelector('.msa-mobile-drawer-close');
-    if(closeBtn)closeBtn.addEventListener('click',fecharDrawerAcessivel);
-    backdrop.addEventListener('click',fecharDrawerAcessivel);
-    bar.querySelectorAll('[data-mobile-action="menu"]').forEach(function(b){b.addEventListener('click',abrirDrawerAcessivel)});
-
-    function fecharDrawerAcessivel(){
-      drawer.setAttribute('aria-hidden','true');
-      backdrop.setAttribute('aria-hidden','true');
-      if(previousFocus&&document.contains(previousFocus)){try{previousFocus.focus();}catch(e){}}
-      previousFocus=null;
-    }
-    function abrirDrawerAcessivel(){
-      previousFocus=document.activeElement;
-      drawer.setAttribute('aria-hidden','false');
-      backdrop.setAttribute('aria-hidden','false');
-      var close=drawer.querySelector('.msa-mobile-drawer-close');
-      setTimeout(function(){try{(close||drawer).focus();}catch(e){}},0);
-    }
     function mobileSection(title,items){
       return '<div class="msa-mobile-section"><div class="msa-mobile-section-title">'+title+'</div><div class="msa-mobile-links">'+
         items.map(function(x){
@@ -271,8 +253,11 @@
       drawer.setAttribute('aria-hidden','true');
       backdrop.setAttribute('aria-hidden','true');
       document.body.classList.remove('msa-mobile-menu-open');
+      if(previousFocus&&document.contains(previousFocus)){try{previousFocus.focus();}catch(e){}}
+      previousFocus=null;
     }
     function openDrawer(){
+      previousFocus=document.activeElement;
       drawer.setAttribute('aria-hidden','false');
       backdrop.setAttribute('aria-hidden','false');
       document.body.classList.add('msa-mobile-menu-open');
@@ -321,7 +306,16 @@
       if(ev.target.closest('.msa-mobile-drawer-close'))closeDrawer();
     });
     backdrop.addEventListener('click',closeDrawer);
-    document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeDrawer();});
+    document.addEventListener('keydown',function(ev){
+      if(drawer.getAttribute('aria-hidden')!=='false')return;
+      if(ev.key==='Escape'){ev.preventDefault();closeDrawer();return;}
+      if(ev.key!=='Tab')return;
+      var focusables=Array.prototype.slice.call(drawer.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled])'));
+      if(!focusables.length)return;
+      var first=focusables[0],last=focusables[focusables.length-1];
+      if(ev.shiftKey&&document.activeElement===first){ev.preventDefault();last.focus();}
+      else if(!ev.shiftKey&&document.activeElement===last){ev.preventDefault();first.focus();}
+    });
   }
 
 
