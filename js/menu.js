@@ -139,16 +139,6 @@
         return;
       }
 
-        var abrir=!group.classList.contains('open');
-        fechar();
-        if(abrir){
-          group.classList.add('open');
-          toggle.classList.add('open');
-          toggle.setAttribute('aria-expanded','true');
-        }
-        return;
-      }
-
       var item=ev.target.closest ? ev.target.closest('button[data-tab]') : null;
       if(item && nav.contains(item)){
         ev.preventDefault();
