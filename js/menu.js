@@ -72,7 +72,7 @@
     return true;
   }
 
-  function navegar(id){
+  function navegar(id,feature){
     fechar();
     if(!mostrarSecao(id))return;
 
@@ -105,6 +105,7 @@
     setTimeout(function(){
       try{
         var destino=document.getElementById(id);
+        if(feature){var mapa={academia:'medidasCorporaisCard',nutricao:'nutricao',sonoBem:'sono',ciclo:'cicloForm'};destino=document.getElementById(mapa[feature]||feature)||destino;}
         if(destino){
           destino.scrollIntoView({behavior:'smooth',block:'start'});
         }else{
@@ -127,35 +128,16 @@
         var group=toggle.closest('.nav-group');
         if(!group)return;
 
-        /* V5.85 — Família é uma área de conteúdo, não somente um agrupador.
-           Ao clicar no botão principal, a Home sai da tela imediatamente e
-           a área de Histórico Familiar abre como página inicial da categoria. */
-        if(toggle.getAttribute('data-menu')==='family'){
-          var paginaAtual='';
-          try{paginaAtual=new URL(window.location.href).searchParams.get('pagina')||'home'}catch(e){}
-          var abrirFamilia=paginaAtual!=='familia' && paginaAtual!=='familiares';
-          if(abrirFamilia){
-            if(!mostrarSecao('familia'))return;
-            try{
-              var u=new URL(window.location.href);
-              u.searchParams.set('pagina','familia');
-              window.history.pushState({pagina:'familia'},'',u.toString());
-            }catch(e){}
-            try{if(typeof window.render==='function')window.render()}catch(e){}
-            setTimeout(function(){
-              try{document.getElementById('familia')?.scrollIntoView({behavior:'smooth',block:'start'})}catch(e){}
-            },30);
-          }
-
-          var reabrir=!group.classList.contains('open');
-          fechar();
-          if(reabrir || abrirFamilia){
-            group.classList.add('open');
-            toggle.classList.add('open');
-            toggle.setAttribute('aria-expanded','true');
-          }
-          return;
+        /* V5.99 — Família é um agrupador como os demais. */
+        var abrir=!group.classList.contains('open');
+        fechar();
+        if(abrir){
+          group.classList.add('open');
+          toggle.classList.add('open');
+          toggle.setAttribute('aria-expanded','true');
         }
+        return;
+      }
 
         var abrir=!group.classList.contains('open');
         fechar();
@@ -171,7 +153,7 @@
       if(item && nav.contains(item)){
         ev.preventDefault();
         ev.stopPropagation();
-        navegar(item.getAttribute('data-tab'));
+        navegar(item.getAttribute('data-tab'),item.getAttribute('data-feature-nav')||'');
       }
     });
 
@@ -300,9 +282,9 @@
         if(input){input.focus();input.scrollIntoView({behavior:'smooth',block:'center'});}
       },100);
     }
-    function doMobileTab(id){
+    function doMobileTab(id,feature){
       closeDrawer();
-      navegar(id);
+      navegar(id,feature||'');
       setTimeout(function(){window.scrollTo({top:0,behavior:'smooth'});},30);
     }
 
@@ -321,7 +303,7 @@
       if(tab){
         ev.preventDefault();
         var id=tab.getAttribute('data-mobile-tab');
-        doMobileTab(id);
+        doMobileTab(id,tab.getAttribute('data-feature-nav')||'');
         if(tab.hasAttribute('data-mobile-ciclo')){
           setTimeout(function(){var f=document.getElementById('cicloForm');if(f)f.scrollIntoView({behavior:'smooth',block:'start'});},140);
         }
