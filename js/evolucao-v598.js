@@ -1,4 +1,4 @@
-/* Minha Saúde IA V5.98 — Evolução, gráficos e resumo inteligente */
+/* Minha Saúde IA V5.99 — Evolução, gráficos e resumo inteligente */
 (function(){
 'use strict';
 const K=window.MSA_K||window.K||{};
