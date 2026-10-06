@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V5.97 */
+/* Minha Saúde IA — aplicação principal V5.99 */
 
 const K=window.MSA_K||window.K;
 const get=k=>window.MSAStorage.get(k);
@@ -23,9 +23,10 @@ function atualizarURLPagina(id,modo){
  try{
   const u=new URL(window.location.href);
   const pagina=id||'home';
+  const atual=paginaDaURL();
   u.searchParams.set('pagina',pagina);
   const state={pagina:pagina};
-  if(modo==='replace') history.replaceState(state,'',u.toString());
+  if(modo==='replace'||pagina===atual) history.replaceState(state,'',u.toString());
   else history.pushState(state,'',u.toString());
  }catch(e){console.warn('[Minha Saúde IA] URL da página indisponível:',e)}
 }
@@ -74,7 +75,7 @@ function getNextCare(){
 function registroProblemas(tipo,x){
  const r=x&&typeof x==='object'?x:{},issues=[],empty=v=>!v||/^(valor|não informado|nao informado|não disponível|nao disponivel|n\/a|-)$/i.test(String(v).trim());
  const req=(label,val)=>{if(empty(val))issues.push(label)};
- if(tipo==='sintomas'){req('data de início',r.data);req('local do sintoma',r.local);const n=Number(r.int);if(!Number.isFinite(n)||n<1||n>10)issues.push('intensidade 1–10')}
+ if(tipo==='sintomas'){req('data de início',r.data);req('local do sintoma',r.local);const n=Number(r.int);if(!Number.isFinite(n)||n<0||n>10)issues.push('intensidade 0–10')}
  else if(tipo==='consultas'){req('data',r.data);if(empty(r.esp)&&empty(r.med)&&empty(r.mot))issues.push('especialidade, médico ou motivo')}
  else if(tipo==='medicamentos'){req('nome do medicamento',r.nome)}
  else if(tipo==='exames'){req('nome do exame',r.nome);req('data',r.data)}
