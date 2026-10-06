@@ -1,4 +1,4 @@
-/* Minha Saúde IA — menus independentes V5.82
+/* Minha Saúde IA — menus independentes V5.99
    O menu não depende do restante do aplicativo para abrir e navegar.
 */
 (function(){
@@ -173,6 +173,7 @@
   function criarNavegacaoMobile(){
     if(document.getElementById('msaMobileBar'))return;
 
+    var previousFocus=null;
     var backdrop=document.createElement('div');
     backdrop.id='msaMobileBackdrop';
     backdrop.className='msa-mobile-backdrop';
@@ -182,6 +183,8 @@
     drawer.id='msaMobileDrawer';
     drawer.className='msa-mobile-drawer';
     drawer.setAttribute('aria-hidden','true');
+    drawer.setAttribute('role','dialog');
+    drawer.setAttribute('aria-modal','true');
     drawer.setAttribute('aria-label','Menu principal');
 
     drawer.innerHTML=
@@ -238,7 +241,24 @@
     document.body.appendChild(backdrop);
     document.body.appendChild(drawer);
     document.body.appendChild(bar);
+    var closeBtn=drawer.querySelector('.msa-mobile-drawer-close');
+    if(closeBtn)closeBtn.addEventListener('click',fecharDrawerAcessivel);
+    backdrop.addEventListener('click',fecharDrawerAcessivel);
+    bar.querySelectorAll('[data-mobile-action="menu"]').forEach(function(b){b.addEventListener('click',abrirDrawerAcessivel)});
 
+    function fecharDrawerAcessivel(){
+      drawer.setAttribute('aria-hidden','true');
+      backdrop.setAttribute('aria-hidden','true');
+      if(previousFocus&&document.contains(previousFocus)){try{previousFocus.focus();}catch(e){}}
+      previousFocus=null;
+    }
+    function abrirDrawerAcessivel(){
+      previousFocus=document.activeElement;
+      drawer.setAttribute('aria-hidden','false');
+      backdrop.setAttribute('aria-hidden','false');
+      var close=drawer.querySelector('.msa-mobile-drawer-close');
+      setTimeout(function(){try{(close||drawer).focus();}catch(e){}},0);
+    }
     function mobileSection(title,items){
       return '<div class="msa-mobile-section"><div class="msa-mobile-section-title">'+title+'</div><div class="msa-mobile-links">'+
         items.map(function(x){
