@@ -1,4 +1,4 @@
-/* Minha Saúde IA - módulo de importação V5.97 */
+/* Minha Saúde IA - módulo de importação V5.99 */
 function obterPromptIA(){
  const t=document.getElementById('promptIA');
  return t?t.value:'';
