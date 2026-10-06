@@ -74,22 +74,16 @@
 
   function navegar(id,feature){
     fechar();
-    if(!mostrarSecao(id))return;
+    if(!document.getElementById(id))return;
 
-    /* V5.83 — o menu navega por conta própria. Assim, Família não depende
-       de window.go nem de ordem/cache de scripts. */
+    /* V5.99 — existe um único controlador de navegação: window.go.
+       O menu apenas informa a página; isso evita divergência de URL, estado e renderização. */
     try{
-      var u=new URL(window.location.href);
-      u.searchParams.set('pagina',id);
-      window.history.pushState({pagina:id},'',u.toString());
+      if(typeof window.go==='function')window.go(id);
+      else mostrarSecao(id);
     }catch(e){
-      console.warn('[Minha Saúde IA] não foi possível atualizar a URL:',e);
-    }
-
-    try{
-      if(typeof window.render==='function')window.render();
-    }catch(e){
-      console.error('[Minha Saúde IA] erro ao atualizar a tela:',e);
+      console.error('[Minha Saúde IA] erro ao navegar:',e);
+      mostrarSecao(id);
     }
 
     if(id==='familiares'){
