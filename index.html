@@ -551,6 +551,11 @@ body.msa-dark #settingsPreferences label{background:#111827!important;color:#e5e
 <style id="msa99-stability-style">
 .msa-update-fab{position:fixed;right:16px;bottom:16px;z-index:11000;width:42px;height:42px;border:1px solid #dbe3f0;border-radius:50%;background:#fff;color:#2563eb;box-shadow:0 8px 22px rgba(15,23,42,.16);font-size:22px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .18s ease,box-shadow .18s ease}.msa-update-fab:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(15,23,42,.20)}.msa-update-fab:focus-visible{outline:3px solid rgba(37,99,235,.28);outline-offset:3px}@media(max-width:760px){.msa-update-fab{right:12px;bottom:calc(88px + env(safe-area-inset-bottom));width:40px;height:40px}}
 </style>
+
+<style id="msa99-status-style">
+#msa99-status{position:fixed;left:12px;bottom:12px;z-index:10999;display:none;max-width:min(420px,calc(100vw - 24px));padding:10px 12px;border:1px solid #fecaca;border-radius:12px;background:#fff7f7;color:#991b1b;box-shadow:0 8px 24px rgba(15,23,42,.14);font:600 13px/1.4 system-ui,-apple-system,Segoe UI,sans-serif}
+</style>
+<div id="msa99-status" role="status" aria-live="polite"></div>
 </head>
 <body>
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
@@ -1599,7 +1604,7 @@ function iniciarImportacao(){
  })();
 }
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
 <script src="js/inteligencia.js?v=V5.99" defer></script>
 <script src="js/importacao.js?v=V5.99" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
 <script src="js/melhorias-primeiras.js?v=V5.99" defer></script>
