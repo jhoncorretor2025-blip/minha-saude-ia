@@ -6,7 +6,9 @@ function run(){
   ['armazenamento',!!window.msaStorage&&!!window.MSAStorage],
   ['constantes',!!window.MSA_K],
   ['navegação',typeof window.go==='function'],
-  ['renderização',typeof window.render==='function']
+  ['renderização',typeof window.render==='function'],
+  ['relatórios',typeof window.relatorioCompleto==='function'&&typeof window.relatorioMedico==='function'&&typeof window.relatorioSintomas==='function'],
+  ['atualização',typeof window.forcarAtualizacao==='function']
  ];
  var falhas=checks.filter(function(x){return !x[1]}).map(function(x){return x[0]});
  if(falhas.length){
