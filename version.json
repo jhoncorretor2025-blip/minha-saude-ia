@@ -1,5 +1,5 @@
 {
-  "version": "V5.98",
-  "updatedAt": "2026-10-06T18:25:00-03:00",
-  "changes": "Novo painel de evolução da saúde com KPIs, gráficos de peso e cintura, linha do tempo e resumo inteligente baseado nos registros do usuário."
+  "version": "V5.99",
+  "releasedAt": "2026-10-06",
+  "minimumVersion": "V5.99"
 }
