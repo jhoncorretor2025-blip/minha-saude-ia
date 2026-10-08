@@ -2,7 +2,7 @@
 
 Aplicativo web pessoal para organizar informações de saúde de forma simples.
 
-## Estrutura do projeto
+## Estrutura do projeto (V6.00)
 
 ```
 minha-saude-ia/
@@ -77,7 +77,7 @@ O Minha Saúde IA é uma ferramenta de organização de informações. Não subs
 - 🚨 Modo Emergência
 - 📄 Cofre local de documentos
 - 💾 Exportação JSON estruturada
-- 🧩 módulo separado `js/recursos.js`
+- 🧩 módulo separado `js/features/recursos.js`
 
 Para manutenção, prefira adicionar funcionalidades novas em módulos separados quando isso evitar alterações desnecessárias em `app.js`.
 
