@@ -29,7 +29,7 @@ Também existe suporte para resposta JSON mesmo quando o JSON está dentro de Ma
 A IA deve devolver somente os campos definidos no prompt, sem explicações antes ou depois. Quando um dado não estiver disponível, usar exatamente **Não informado**.
 
 ## Campos
-O catálogo completo está documentado no prompt oficial em `prompts/importacao-saude.txt` e no parser de `js/importacao.js`.
+O catálogo completo está documentado no prompt oficial em `prompts/importacao-saude.txt` e no parser de `js/ai/importacao.js`.
 
 ## Autoteste integrado
 
