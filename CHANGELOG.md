@@ -1,3 +1,15 @@
+## V6.00 — 08/10/2026
+- Reorganização física do JavaScript para uma estrutura por responsabilidade, sem alterar as chaves de armazenamento `msa2_*` nem o formato dos dados.
+- `js/app.js` → `js/core/app.js`.
+- `js/menu.js` → `js/navigation/menu.js`.
+- Recursos → `js/features/`.
+- Importação por IA → `js/ai/`.
+- Relatórios → `js/reports/`.
+- Módulos históricos de melhorias → `js/legacy/`; continuam ativos e não foram removidos do runtime.
+- `index.html` e `sw.js` atualizados para os novos caminhos.
+- Service Worker/cache e `version.json` sincronizados para V6.00.
+- Corrigida uma falha de sintaxe preexistente em `js/features/avancado.js` causada por aspas dentro dos handlers HTML gerados.
+- Criado o branch de segurança `backup/antes-refactor-estrutura` apontando para o estado anterior à reorganização.
 # V5.85 — Família abre a área de conteúdo
 
 - O botão principal **👨‍👩‍👧 Família** agora abre imediatamente a área de **Histórico Familiar e Genética**.
