@@ -1,7 +1,7 @@
 # Mapa de Módulos — Minha Saúde IA
 
-**Versão de referência:** V5.76  
-**Objetivo:** documentar a estrutura atual antes de qualquer reorganização física dos arquivos.
+**Versão de referência:** V6.00  
+**Objetivo:** documentar a estrutura organizada após a migração física dos arquivos.
 
 > Esta documentação é um mapa de manutenção. Ela não altera a arquitetura em runtime, não move arquivos e não altera chaves ou formatos de armazenamento.
 
@@ -26,7 +26,7 @@ index.html
    └── melhorias-v513.js
 ```
 
-## 2. Estrutura atual
+## 2. Estrutura organizada (V6.00)
 
 ### Raiz
 
@@ -58,23 +58,23 @@ index.html
 
 | Arquivo | Papel |
 |---|---|
-| `js/menu.js` | Menu desktop/mobile, navegação por página, busca e organização dos acessos |
+| `js/navigation/menu.js` | Menu desktop/mobile, navegação por página, busca e organização dos acessos |
 
 ### Núcleo da aplicação
 
 | Arquivo | Papel |
 |---|---|
-| `js/app.js` | Inicialização, estado, formulários, renderização e grande parte das regras da aplicação |
-| `js/perfil-save.js` | Salvamento e atualização relacionados ao perfil |
-| `js/recursos.js` | Recursos complementares, emergência, documentos e exportações estruturadas |
-| `js/avancado.js` | Funções adicionais/avançadas ainda mantidas em arquivo próprio |
+| `js/core/app.js` | Inicialização, estado, formulários, renderização e grande parte das regras da aplicação |
+| `js/features/perfil-save.js` | Salvamento e atualização relacionados ao perfil |
+| `js/features/recursos.js` | Recursos complementares, emergência, documentos e exportações estruturadas |
+| `js/features/avancado.js` | Funções adicionais/avançadas ainda mantidas em arquivo próprio |
 
 ### Importação por IA
 
 | Arquivo | Papel |
 |---|---|
-| `js/importacao.js` | Parser, normalização, revisão e persistência da importação |
-| `js/importacao-fluxo-v514.js` | Camada histórica do fluxo visual da importação |
+| `js/ai/importacao.js` | Parser, normalização, revisão e persistência da importação |
+| `js/ai/importacao-fluxo-v514.js` | Camada histórica do fluxo visual da importação |
 | `prompts/importacao-saude.txt` | Prompt oficial utilizado no processo de importação |
 | `docs/IMPORTACAO-IA.md` | Documentação do fluxo e regras da importação |
 
@@ -82,10 +82,10 @@ index.html
 
 | Arquivo | Papel | Observação |
 |---|---|---|
-| `js/expansoes.js` | Conjunto grande de funcionalidades adicionadas ao longo do projeto | Principal candidato a divisão futura |
-| `js/melhorias.js` | Busca, avisos, calendário e perguntas/recursos complementares | Mistura funcionalidades de acompanhamento e UX |
-| `js/melhorias-primeiras.js` | Melhorias adicionadas em etapas anteriores | Arquivo histórico que ainda participa do runtime |
-| `js/melhorias-v513.js` | Recursos introduzidos no ciclo V5.13 | Deve ser consolidado somente após mapeamento |
+| `js/features/expansoes.js` | Conjunto grande de funcionalidades adicionadas ao longo do projeto | Principal candidato a divisão futura |
+| `js/legacy/melhorias.js` | Busca, avisos, calendário e perguntas/recursos complementares | Mistura funcionalidades de acompanhamento e UX |
+| `js/legacy/melhorias-primeiras.js` | Melhorias adicionadas em etapas anteriores | Arquivo histórico que ainda participa do runtime |
+| `js/legacy/melhorias-v513.js` | Recursos introduzidos no ciclo V5.13 | Deve ser consolidado somente após mapeamento |
  
 ## 3. Onde estão os principais acoplamentos
 
@@ -214,3 +214,7 @@ Reduzir `app.js` por domínio, sempre mantendo uma camada de compatibilidade dur
 > **Preservar → mapear → isolar → verificar → só então remover.**
 
 O objetivo da reorganização não é apenas deixar a árvore de arquivos mais bonita. É reduzir o risco de que uma alteração em uma funcionalidade afete outra e tornar o projeto mais fácil de manter por futuras IAs e desenvolvedores.
+
+
+## V6.00 — Migração concluída
+Os arquivos foram agrupados em `core`, `navigation`, `features`, `ai`, `reports` e `legacy`. A lógica interna não foi reescrita nesta etapa.
