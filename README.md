@@ -11,19 +11,35 @@ minha-saude-ia/
 │   └── design-system.css
 ├── js/
 │   ├── core/
+│   │   ├── app.js
 │   │   ├── constants.js
 │   │   ├── storage.js
-│   │   └── utils.js
-│   ├── app.js
-│   ├── importacao.js
-│   ├── menu.js
-│   ├── melhorias.js
-│   ├── melhorias-primeiras.js
-│   └── recursos.js
+│   │   ├── utils.js
+│   │   └── stability-v599.js
+│   ├── navigation/
+│   │   └── menu.js
+│   ├── features/
+│   │   ├── perfil-save.js
+│   │   ├── familiares.js
+│   │   ├── recursos.js
+│   │   ├── inteligencia.js
+│   │   ├── avancado.js
+│   │   └── expansoes.js
+│   ├── ai/
+│   │   ├── importacao.js
+│   │   └── importacao-fluxo-v514.js
+│   ├── reports/
+│   │   ├── evolucao-v599.js
+│   │   └── relatorios-v599.js
+│   └── legacy/
+│       ├── melhorias.js
+│       ├── melhorias-primeiras.js
+│       └── melhorias-v513.js
 ├── prompts/
 │   └── importacao-saude.txt
 ├── docs/
 │   ├── ARQUITETURA.md
+│   ├── MAPA-MODULOS.md
 │   └── IMPORTACAO-IA.md
 ├── version.json
 ├── CHANGELOG.md
@@ -79,7 +95,7 @@ O Minha Saúde IA é uma ferramenta de organização de informações. Não subs
 - 💾 Exportação JSON estruturada
 - 🧩 módulo separado `js/features/recursos.js`
 
-Para manutenção, prefira adicionar funcionalidades novas em módulos separados quando isso evitar alterações desnecessárias em `app.js`.
+Para manutenção, prefira adicionar funcionalidades novas em módulos separados quando isso evitar alterações desnecessárias em `js/core/app.js`.
 
 
 ## V4.71 — Instalação
