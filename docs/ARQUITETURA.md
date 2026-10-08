@@ -1,23 +1,23 @@
 # Minha Saúde IA — Arquitetura
 
 ## V5.08 — FHIR
-- `js/expansoes.js` gera um `Bundle` FHIR R4 para portabilidade dos registros.
+- `js/features/expansoes.js` gera um `Bundle` FHIR R4 para portabilidade dos registros.
 - O exportador é deliberadamente não clínico: ele mapeia fatos já registrados sem inferir diagnósticos ou recomendações.
 
 
 ## V4.93 — Compatibilidade
-- O módulo `js/melhorias.js` mantém o acesso à API de armazenamento bruto necessária ao gerenciamento de perguntas.
-- `js/melhorias-primeiras.js` acrescenta recursos de dados de forma aditiva.
+- O módulo `js/legacy/melhorias.js` mantém o acesso à API de armazenamento bruto necessária ao gerenciamento de perguntas.
+- `js/legacy/melhorias-primeiras.js` acrescenta recursos de dados de forma aditiva.
 
 
 ## Objetivo
 Aplicativo web pessoal para organizar informações de saúde no navegador.
 
-## Estrutura atual
+## Estrutura organizada (V6.00)
 - `index.html` — interface, telas e estrutura visual principal.
-- `js/app.js` — estado, armazenamento local, renderização e regras gerais do aplicativo.
-- `js/importacao.js` — importação de dados vindos do ChatGPT/Gemini e normalização da ficha.
-- `js/menu.js` — navegação e menus.\n- `js/melhorias.js` — busca geral, avisos, calendário, perguntas e compartilhamento controlado.\n- `js/recursos.js` — modo emergência, documentos locais e exportações estruturadas.\n- `manifest.json` + `sw.js` — instalação PWA e cache da interface.
+- `js/core/app.js` — estado, armazenamento local, renderização e regras gerais do aplicativo.
+- `js/ai/importacao.js` — importação de dados vindos do ChatGPT/Gemini e normalização da ficha.
+- `js/navigation/menu.js` — navegação e menus.\n- `js/legacy/melhorias.js` — busca geral, avisos, calendário, perguntas e compartilhamento controlado.\n- `js/features/recursos.js` — modo emergência, documentos locais e exportações estruturadas.\n- `manifest.json` + `sw.js` — instalação PWA e cache da interface.
 - `version.json` — versão oficial do aplicativo.
 - `docs/` — documentação para manutenção e continuidade por pessoas ou IAs.
 - `prompts/` — prompts oficiais usados pelo aplicativo.
@@ -28,7 +28,7 @@ Aplicativo web pessoal para organizar informações de saúde no navegador.
 3. A IA organiza o contexto disponível em uma ficha estruturada.
 4. O usuário copia a resposta da IA.
 5. O usuário cola a resposta em **Importar informações**.
-6. `js/importacao.js` reconhece o formato, normaliza os campos e salva no armazenamento local.
+6. `js/ai/importacao.js` reconhece o formato, normaliza os campos e salva no armazenamento local.
 7. A interface é atualizada.
 
 ## Regra importante
@@ -47,7 +47,7 @@ Antes de alterar funcionalidades:
 
 
 ## V4.61 — Recursos complementares
-O módulo `js/recursos.js` concentra funcionalidades adicionais para evitar que `app.js` cresça desnecessariamente:
+O módulo `js/features/recursos.js` concentra funcionalidades adicionais para evitar que `app.js` cresça desnecessariamente:
 - modo emergência;
 - exportação JSON estruturada;
 - cofre local de documentos;
@@ -73,7 +73,7 @@ Cada tela principal pode ser aberta diretamente usando `?pagina=ID`. O parâmetr
 
 
 ## V4.69 — Melhorias de navegação e acompanhamento
-O módulo `js/melhorias.js` concentra busca, avisos, calendário e perguntas para consulta. Essas funções leem e gravam somente no armazenamento local do perfil atual.
+O módulo `js/legacy/melhorias.js` concentra busca, avisos, calendário e perguntas para consulta. Essas funções leem e gravam somente no armazenamento local do perfil atual.
 
 
 ## V4.71 — PWA e offline
@@ -108,3 +108,7 @@ O registro principal de sono usa horários de início/fim e calcula a duração.
 - O menu **🌸 Ciclo menstrual** é um acesso principal separado e deve continuar condicionado ao perfil feminino pelo comportamento existente.
 - A navegação por teclado deve manter foco visível nos controles principais.
 - Ao melhorar a interface, priorizar ajustes incrementais em vez de reescrever o aplicativo inteiro.
+
+
+## V6.00 — Reorganização física
+Os módulos JavaScript foram organizados por responsabilidade sem alterar o formato dos dados locais ou as chaves `msa2_*`. O runtime continua carregando os mesmos arquivos, agora pelos novos caminhos; `js/legacy/` mantém temporariamente módulos históricos ainda utilizados.
