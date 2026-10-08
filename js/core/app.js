@@ -1,0 +1,996 @@
+/* Minha Saúde IA — aplicação principal V5.99 */
+
+const K=window.MSA_K||window.K;
+const get=k=>window.MSAStorage.get(k);
+const set=(k,v)=>window.MSAStorage.set(k,v);
+function gravarOuAvisar(k,v){
+ try{
+  const ok=set(k,v);
+  if(ok===false){
+   alert('⚠️ Não foi possível confirmar o salvamento. Nenhuma confirmação será exibida.');
+   return false;
+  }
+  return true;
+ }catch(e){
+  console.error('[Minha Saúde IA] falha ao salvar:',e);
+  alert('⚠️ Não foi possível salvar este registro. Seus dados anteriores foram preservados quando possível.');
+  return false;
+ }
+}
+const $=x=>document.getElementById(x);
+const esc=window.MSAUtils?.esc||function(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))};
+function atualizarURLPagina(id,modo){
+ try{
+  const u=new URL(window.location.href);
+  const pagina=id||'home';
+  const atual=paginaDaURL();
+  u.searchParams.set('pagina',pagina);
+  const state={pagina:pagina};
+  if(modo==='replace'||pagina===atual) history.replaceState(state,'',u.toString());
+  else history.pushState(state,'',u.toString());
+ }catch(e){console.warn('[Minha Saúde IA] URL da página indisponível:',e)}
+}
+function paginaDaURL(){
+ try{return new URL(window.location.href).searchParams.get('pagina')||'home'}catch(e){return 'home'}
+}
+function mostrarPaginaDaURL(){
+ const id=paginaDaURL();
+ const alvo=document.getElementById(id);
+ if(!alvo){atualizarURLPagina('home','replace');return}
+ document.querySelectorAll('nav button[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+ document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===id));
+ fecharMenus();
+ try{render()}catch(e){console.error('[Minha Saúde IA] render da URL',e)}
+ setTimeout(function(){
+  try{alvo.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}
+ },40);
+}
+function go(id){
+ document.querySelectorAll('nav button[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+ document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===id));
+ atualizarURLPagina(id,'push');
+ fecharMenus();
+ try{render()}catch(e){console.error('[Minha Saúde IA] render ao navegar',e)}
+}
+window.addEventListener('popstate',function(){mostrarPaginaDaURL()});
+function fecharMenus(){
+ document.querySelectorAll('#nav .nav-group').forEach(g=>g.classList.remove('open'));
+ document.querySelectorAll('#nav .nav-toggle').forEach(b=>{b.classList.remove('open');b.setAttribute('aria-expanded','false')});
+}
+function bodyPick(el,v){$('dLocal').value=v;document.querySelectorAll('.bodymap button').forEach(x=>x.classList.remove('sel'));el.classList.add('sel')}
+function fmt(d){if(!d)return '—';let x=new Date(d);return isNaN(x)?d:x.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}
+function list(id,a,fn){$(id).innerHTML=a.length?a.slice().reverse().map(fn).join(''):'<div class="empty">Nenhum registro ainda.</div>'}
+const formatDateBR=window.MSAUtils?.formatDateBR||function(v){if(!v)return 'Data não informada';var s=String(v);var m=s.match(/^(\\d{4})-(\\d{2})-(\\d{2})/);return m?m[3]+'/'+m[2]+'/'+m[1]:s};
+function getNextCare(){
+ const p=get(K.p)[0]||{},c=get(K.c),e=get(K.e),vax=get(K.vax),r=get(K.r),items=[];
+ const hoje=new Date();hoje.setHours(0,0,0,0);
+ const add=(date,icon,title,sub)=>{if(!date)return;const s=String(date).slice(0,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(s))return;const dt=new Date(s+'T00:00:00');if(dt>=hoje)items.push({date:s,icon,title,sub})};
+ c.forEach(x=>add(x.ret,'👨‍⚕️','Retorno de consulta',x.esp||x.med||'Consulta'));
+ e.forEach(x=>add(x.data,'🧪',x.nome||'Exame','Exame registrado'));
+ vax.forEach(x=>add(x.data,'💉',x.nome||'Vacina',x.obs||'Vacinação registrada'));
+ r.forEach(x=>add(x.data,'📌',x.nome||'Lembrete',x.tipo||'Lembrete'));
+ add(p.prevProx,'🌸','Acompanhamento preventivo','Data registrada no perfil');
+ return items.sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(0,6);
+}
+function registroProblemas(tipo,x){
+ const r=x&&typeof x==='object'?x:{},issues=[],empty=v=>!v||/^(valor|não informado|nao informado|não disponível|nao disponivel|n\/a|-)$/i.test(String(v).trim());
+ const req=(label,val)=>{if(empty(val))issues.push(label)};
+ if(tipo==='sintomas'){req('data de início',r.data);req('local do sintoma',r.local);const n=Number(r.int);if(!Number.isFinite(n)||n<0||n>10)issues.push('intensidade 0–10')}
+ else if(tipo==='consultas'){req('data',r.data);if(empty(r.esp)&&empty(r.med)&&empty(r.mot))issues.push('especialidade, médico ou motivo')}
+ else if(tipo==='medicamentos'){req('nome do medicamento',r.nome)}
+ else if(tipo==='exames'){req('nome do exame',r.nome);req('data',r.data)}
+ else if(tipo==='sinais'){req('data',r.data)}
+ else if(tipo==='vacinas'){req('nome da vacina',r.nome);req('data',r.data)}
+ else if(tipo==='lembretes'){req('nome do lembrete',r.nome);req('data/hora',r.data)}
+ else if(tipo==='nutricao'){req('data',r.data);req('conteúdo',r.texto)}
+ else if(tipo==='suplementos'){req('nome do suplemento',r.nome)}
+ else if(tipo==='reacoes'){req('alimento',r.nome);req('reação',r.reacao)}
+ else if(tipo==='agua'){req('data',r.data);const q=Number(r.qtd);if(!Number.isFinite(q)||q<=0)issues.push('quantidade maior que zero')}
+ else if(tipo==='bemestar'){req('data',r.data)}
+ else if(tipo==='gatilhos'){req('data',r.data);if(empty(r.gatilho)&&empty(r.sintoma))issues.push('gatilho ou sintoma')}
+ else if(tipo==='familia'){req('parente',r.parente);if(empty(r.info||r.cond||r.condicao))issues.push('condição/informação')}
+ else if(tipo==='documentos'){if(empty(r.nome)||/^documento informado$/i.test(String(r.nome).trim()))issues.push('nome do documento')}
+ else if(tipo==='medidas'){req('data',r.data)}
+ else if(tipo==='ciclo'){req('início do ciclo',r.inicio)}
+ else if(tipo==='anticoncepcional'){req('data',r.data)}
+ else if(tipo==='doses'){req('data',r.data)}
+ return issues;
+}
+function obterQualidadeRegistros(){
+ const defs=[['sintomas',K.d,'😣 Sintomas'],['consultas',K.c,'👨‍⚕️ Consultas'],['medicamentos',K.m,'💊 Medicamentos'],['exames',K.e,'🧪 Exames'],['sinais',K.v,'📈 Sinais vitais'],['vacinas',K.vax,'💉 Vacinas'],['lembretes',K.r,'📌 Lembretes'],['nutricao',K.nutri,'🍎 Alimentação'],['suplementos',K.suplReg,'💊 Suplementos'],['reacoes',K.food,'⚠️ Reações alimentares'],['agua',K.agua,'💧 Água'],['bemestar',K.bem,'🧠 Bem-estar'],['gatilhos',K.gat,'🎯 Gatilhos'],['familia',K.fam,'🧬 Histórico familiar'],['documentos',K.doc,'📄 Documentos'],['medidas',K.medidas,'📏 Medidas corporais'],['ciclo',K.ciclo,'🩸 Ciclos'],['anticoncepcional',K.anticoncepcional,'🛡️ Anticoncepcional'],['doses',K.medTaken,'✅ Doses registradas']];
+ const problemas=[];defs.forEach(d=>get(d[1]).forEach((x,i)=>{const issues=registroProblemas(d[0],x);if(issues.length)problemas.push({tipo:d[0],label:d[2],indice:i,issues:issues,record:x})}));
+ return problemas;
+}
+function timelineItem(type,date,icon,title,sub,record){return {type:type,date:date?String(date):'',icon:icon,title:title,sub:sub||'',record:record||null,invalid:registroProblemas(type,record).length>0}}
+function getTimelineRecords(){
+ const out=[],add=(type,date,icon,title,sub,record)=>out.push(timelineItem(type,date,icon,title,sub,record));
+ get(K.d).forEach(x=>{const n=Number(x.int),loc=String(x.local||'').trim(),validLoc=loc&&!/^(valor|local|não informado|nao informado|n\/a|-)$/i.test(loc);let sub='';if(validLoc&&Number.isFinite(n)&&n>0)sub=loc+' — intensidade '+n+'/10';else if(validLoc)sub=loc;else if(Number.isFinite(n)&&n>0)sub='Intensidade '+n+'/10';add('sintomas',x.data,'😣','Sintoma',sub,x)});
+ get(K.c).forEach(x=>add('consultas',x.data,'👨‍⚕️','Consulta',x.esp||x.med||x.mot||'',x));
+ get(K.m).forEach(x=>add('medicamentos',x.inicio||x.data,'💊','Medicamento',x.nome||'',x));
+ get(K.e).forEach(x=>add('exames',x.data,'🧪','Exame',x.nome||'',x));
+ get(K.v).forEach(x=>add('sinais',x.data,'📈','Sinal vital',(x.peso||x.pressao||x.fc||x.temp||x.glic||x.sat)?'Valores registrados':'',x));
+ get(K.vax).forEach(x=>add('vacinas',x.data,'💉','Vacina',x.nome||'',x));
+ get(K.r).forEach(x=>add('lembretes',x.data,'📌','Lembrete',x.nome||'',x));
+ get(K.nutri).forEach(x=>add('nutricao',x.data,'🍎','Alimentação',x.texto||'',x));
+ get(K.suplReg).forEach(x=>add('suplementos',x.data,'💊','Suplemento',x.nome||'',x));
+ get(K.food).forEach(x=>add('reacoes',x.data,'⚠️','Reação alimentar',(x.nome||'')+(x.reacao?' — '+x.reacao:''),x));
+ get(K.agua).forEach(x=>add('agua',x.data,'💧','Água',x.qtd?String(x.qtd)+' ml':'',x));
+ get(K.sono).forEach(x=>add('sono',x.data,'😴','Sono',x.horas?String(x.horas)+' h':(x.habitual?'Rotina habitual':''),x));
+ get(K.bem).forEach(x=>add('bemestar',x.data,'🧠','Bem-estar',(x.estresse!=null?'Estresse '+x.estresse+'/10':'')+(x.ansiedade!=null?' · ansiedade '+x.ansiedade+'/10':''),x));
+ get(K.gat).forEach(x=>add('gatilhos',x.data,'🎯','Gatilho',(x.gatilho||'')+(x.sintoma?' — '+x.sintoma:''),x));
+ get(K.fam).forEach(x=>add('familia',x.data||'','🧬','Histórico familiar',x.parente||x.cond||x.info||'',x));
+ get(K.doc).forEach(x=>add('documentos',x.data,'📄','Documento',x.nome||'',x));
+ get(K.medidas).forEach(x=>add('medidas',x.data,'📏','Medida corporal',(x.peso?x.peso+' kg ':'')+(x.abdomen?x.abdomen+' cm abdômen':''),x));
+ get(K.ciclo).forEach(x=>add('ciclo',x.inicio,'🩸','Ciclo menstrual','Início registrado',x));
+ get(K.anticoncepcional).forEach(x=>add('anticoncepcional',x.data,'🛡️','Anticoncepcional',x.nome||x.metodo||'Registro de uso',x));
+ get(K.medTaken).forEach(x=>add('doses',x.data,'✅','Dose registrada',x.medId?'Medicamento da rotina':'Dose',x));
+ return out;
+}
+function buildTimeline(filtro){
+ const f=filtro||window.__msaTimelineFiltro||'todos',all=getTimelineRecords(),primary=['sintomas','consultas','medicamentos','exames'],acomp=['sinais','vacinas','nutricao','suplementos','reacoes','agua','sono','bemestar','gatilhos','medidas','ciclo','anticoncepcional','doses'],filtered=f==='todos'?all:(f==='acompanhamento'?all.filter(x=>acomp.includes(x.type)):(f==='outros'?all.filter(x=>!primary.includes(x.type)&&!acomp.includes(x.type)):all.filter(x=>x.type===f)));
+ return filtered.sort((a,b)=>{const ad=a.date?String(a.date):'',bd=b.date?String(b.date):'';if(!ad&&!bd)return 0;if(!ad)return 1;if(!bd)return -1;return bd.localeCompare(ad)});
+}
+function renderTimelineFiltros(){
+ const box=$('timelineFilters');if(!box)return;
+ const defs=[['todos','📋 Todos'],['sintomas','😣 Sintomas'],['consultas','👨‍⚕️ Consultas'],['medicamentos','💊 Medicamentos'],['exames','🧪 Exames'],['sinais','📈 Sinais'],['acompanhamento','📈 Acompanhamento'],['outros','🗂️ Outros']];
+ box.innerHTML=defs.map(d=>'<button type="button" class="btn secondary small" data-timeline-filter="'+d[0]+'">'+d[1]+'</button>').join('');
+ box.querySelectorAll('[data-timeline-filter]').forEach(b=>{b.classList.toggle('active',(window.__msaTimelineFiltro||'todos')===b.dataset.timelineFilter);b.onclick=()=>window.definirFiltroTimeline(b.dataset.timelineFilter)});
+}
+window.definirFiltroTimeline=function(f){window.__msaTimelineFiltro=f||'todos';renderTimelineFiltros();const el=$('timelineFull');if(el)el.innerHTML=buildTimeline().map(timelineHTML).join('')||'<div class="muted">Nenhum registro neste filtro.</div>'};
+function timelineHTML(x){
+ const dateLabel=x.date?formatDateBR(x.date):'⚠️ Data não informada',issue=x.invalid?'<span class="timeline-review-tag">⚠️ Revisar</span>':'';
+ return '<div class="timeline-row '+(x.invalid?'timeline-row-invalid':'')+'"><div class="timeline-date">'+esc(dateLabel)+'</div><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title"><b>'+x.icon+' '+esc(x.title)+'</b>'+issue+'</div><small>'+esc(x.sub||'Sem detalhes informados')+'</small></div></div>';
+}
+function atualizarSmartHome(){
+ const issues=obterQualidadeRegistros(),next=getNextCare(),box=$('nextCareList'),timeline=buildTimeline('todos');
+ if(box){
+  let html=next.length?next.map(x=>'<div class="smart-item"><div class="smart-item-main"><span class="smart-icon">'+x.icon+'</span><div><b>'+esc(x.title)+'</b><small>'+esc(x.sub)+'</small></div></div><span class="smart-date">'+esc(formatDateBR(x.date))+'</span></div>').join(''):'';
+  if(issues.length)html+='<div class="smart-review-panel"><div><b>⚠️ '+issues.length+' registro(s) precisam de revisão de dados</b><small>Há campos incompletos ou inconsistentes. Isso é uma revisão de qualidade do registro, não uma interpretação clínica.</small></div><button class="btn secondary small" onclick="go(\'timeline\')">🔎 Revisar</button></div>';
+  if(!html)html='<div class="muted">Nenhum próximo item ou revisão de dados registrado.</div>';
+  box.innerHTML=html;
+ }
+ const primary=[['sintomas','😣 Sintomas'],['consultas','👨‍⚕️ Consultas'],['medicamentos','💊 Medicamentos'],['exames','🧪 Exames'],['sinais','📈 Sinais vitais'],['vacinas','💉 Vacinas']];
+ const counts=Object.fromEntries(primary.map(p0=>[p0[0],timeline.filter(x=>x.type===p0[0]).length])),outras=timeline.filter(x=>!primary.some(p0=>p0[0]===x.type)).length;
+ const s=$('smartSummary');
+ if(s)s.innerHTML=primary.map(p0=>'<div class="smart-kpi"><b>'+counts[p0[0]]+'</b><span>'+p0[1]+'</span></div>').join('')+'<div class="smart-kpi"><b>'+outras+'</b><span>🗂️ Outros tipos</span></div><div class="smart-kpi"><b>'+timeline.length+'</b><span>📚 Total na timeline</span></div>';
+ const tp=$('timelinePreview');if(tp)tp.innerHTML=timeline.slice(0,5).map(timelineHTML).join('')||'<div class="muted">Ainda não há registros para mostrar.</div>';
+ renderTimelineFiltros();
+ const tf=$('timelineFull');if(tf)tf.innerHTML=buildTimeline().map(timelineHTML).join('')||'<div class="muted">Nenhum registro neste filtro.</div>';
+}
+function prepararConsulta(){
+ const p=get(K.p)[0]||{},d=get(K.d),m=get(K.m),e=get(K.e),c=get(K.c);
+ const preview=$('consultPrepPreview');
+ if(preview)preview.innerHTML='<div class="prep-box"><b>📄 Resumo para consulta</b><br><br>Perfil: '+esc(p.nome||'Não informado')+'<br>Sintomas registrados: '+d.length+'<br>Medicamentos: '+m.length+'<br>Exames: '+e.length+'<br>Consultas: '+c.length+'<br><br><button class="btn green" onclick="copiarParaIA()">📋 Copiar resumo para IA</button> <button class="btn secondary" onclick="go(\'relatorios\')">📄 Abrir relatórios</button></div>';
+}
+function alturaEmCm(valor){
+ const n=parseFloat(String(valor??'').replace(',','.'));
+ if(!Number.isFinite(n)||n<=0)return null;
+ // Aceita tanto centímetros (ex.: 184) quanto metros (ex.: 1,84).
+ return n<3?n*100:n;
+}
+function formatarAltura(valor){
+ const cm=alturaEmCm(valor);
+ if(!cm)return '—';
+ return cm<3?'—':(cm>=100&&cm<300?(cm/100).toFixed(2).replace('.',',')+' m':cm.toFixed(0)+' cm');
+}
+function calcularIMC(p){
+ const peso=parseFloat(String(p.peso||'').replace(',','.')),alturaCm=alturaEmCm(p.altura);
+ if(!Number.isFinite(peso)||peso<=0||!alturaCm)return null;
+ const h=alturaCm/100,bmi=peso/(h*h);
+ let cls=bmi<18.5?'Abaixo do peso':bmi<25?'Faixa considerada adequada':bmi<30?'Sobrepeso':bmi<35?'Obesidade grau I':bmi<40?'Obesidade grau II':'Obesidade grau III';
+ return{bmi,cls,min:18.5*h*h,max:24.99*h*h}
+} 
+function estimarAgua(p){const peso=parseFloat(String(p.peso||'').replace(',','.'));if(!peso)return null;let ml=peso*35;if(p.academia==='Sim')ml+=300;if(p.calorSuor==='Moderada')ml+=300;if(p.calorSuor==='Alta')ml+=600;if(p.trabalhoTipo==='Em pé'||p.trabalhoTipo==='Ativo / em movimento')ml+=200;return Math.round(ml/50)*50}
+function detalhesEstimativaAgua(p,agua){
+ const peso=parseFloat(String(p.peso||'').replace(',','.')),base=Number.isFinite(peso)?peso*35:0,ajustes=[];
+ if(p.academia==='Sim')ajustes.push('academia +300 ml');
+ if(p.calorSuor==='Moderada')ajustes.push('calor/suor moderado +300 ml');
+ if(p.calorSuor==='Alta')ajustes.push('calor/suor alto +600 ml');
+ if(p.trabalhoTipo==='Em pé'||p.trabalhoTipo==='Ativo / em movimento')ajustes.push('trabalho em pé/ativo +200 ml');
+ return {peso:peso,base:base,ajustes:ajustes,total:agua};
+}
+function formatarTextoLegado(v){return String(v??'').replace(/\bvariasx\s*\/\s*dia\b/gi,'Várias vezes / não consigo contar').replace(/\bprincipalis\b/gi,'Principais')}
+function atualizarMetricasCorporais(){
+ const p=get(K.p)[0]||{},x=calcularIMC(p),agua=estimarAgua(p),det=detalhesEstimativaAgua(p,agua);
+ if($('dashBMI'))$('dashBMI').textContent=x?x.bmi.toFixed(1):'—';
+ if($('dashBMIClass'))$('dashBMIClass').textContent=x?(x.cls+' • faixa de peso de referência: '+x.min.toFixed(1)+'–'+x.max.toFixed(1)+' kg'):'Informe peso e altura';
+ if($('dashWater'))$('dashWater').textContent=agua?(agua/1000).toFixed(2).replace('.',',')+' L/dia':'—';
+ if($('dashActivity'))$('dashActivity').textContent=p.academia==='Sim'?(p.academiaFreq||'—')+'x/semana':p.academia==='Não'?'Não pratica':'Não informado';
+ if($('dashActivityDetail'))$('dashActivityDetail').textContent=(p.trabalhoTipo||'Rotina não informada')+(p.horasSentado?' • '+p.horasSentado+'h sentado':'')+(p.horasPe?' • '+p.horasPe+'h em pé':'');
+ if($('dashActivityEdit'))$('dashActivityEdit').textContent=(p.academia||p.academiaFreq||p.trabalhoTipo||p.horasSentado||p.horasPe)?'✏️ Editar':'➕ Informar';
+ if($('dashUrine'))$('dashUrine').textContent=p.urinaDia?(formatarTextoLegado(p.urinaDia).match(/^Várias vezes/i)?formatarTextoLegado(p.urinaDia):formatarTextoLegado(p.urinaDia)+'x/dia'):'Não informado';
+ if($('dashUrineEdit'))$('dashUrineEdit').textContent=p.urinaDia?'✏️ Editar':'➕ Informar';
+ if($('dashWaterDetailsBody'))$('dashWaterDetailsBody').innerHTML=agua?'<b>Base:</b> '+det.peso+' kg × 35 ml/kg = '+Math.round(det.base)+' ml/dia<br><b>Ajustes considerados:</b> '+(det.ajustes.length?det.ajustes.join(' · '):'nenhum')+'<br><b>Resultado arredondado:</b> '+agua+' ml/dia ('+(agua/1000).toFixed(2).replace('.',',')+' L)<br><span class="muted">É uma estimativa pessoal de organização da rotina; não é uma prescrição ou meta médica.</span>':'Informe seu peso para calcular uma estimativa pessoal.';
+ if($('bodyMetrics'))$('bodyMetrics').innerHTML=x?'<div class="metric-kpi"><span>⚖️ IMC</span><b>'+x.bmi.toFixed(1)+'</b><small>'+esc(x.cls)+'</small></div><div class="metric-kpi"><span>📏 Faixa de referência</span><b>'+x.min.toFixed(1)+'–'+x.max.toFixed(1)+' kg</b><small>pela classificação de IMC adulto</small></div><div class="metric-kpi"><span>💧 Estimativa de água</span><b>'+((agua||0)/1000).toFixed(2).replace('.',',')+' L</b><small>ver “Como foi calculada” abaixo</small></div>':'';
+}
+function abrirEdicaoRotina(campo){
+ const alvo=campo==='urina'?'pUrinaDia':'pAcademia';
+ go('perfil');
+ setTimeout(()=>{
+  const card=document.querySelector('.lifestyle-card'),input=$(alvo);
+  if(card)card.scrollIntoView({behavior:'smooth',block:'start'});
+  if(input){setTimeout(()=>{input.focus();input.scrollIntoView({behavior:'smooth',block:'center'});},180);}
+ },80);
+}
+function atualizarPerfilHome(){const p=get(K.p)[0]||{},foto=p.foto||'';if($('homeProfileName'))$('homeProfileName').textContent=p.nome||'Seu nome';if($('homeProfileAge'))$('homeProfileAge').textContent=p.idade||'—';if($('homeProfileWeight'))$('homeProfileWeight').textContent=p.peso||'—';if($('homeProfileHeight'))$('homeProfileHeight').textContent=p.altura?formatarAltura(p.altura):'—';if($('homeProfileBlood'))$('homeProfileBlood').textContent=p.sangue||'—';if($('homeAvatar'))$('homeAvatar').innerHTML=foto?'<img src="'+esc(foto)+'" alt="Foto do perfil">':'<span>👤</span>'}
+const RECURSOS_PERSONALIZAVEIS=[
+ {key:'academia',icon:'🏋️',label:'Academia e medidas corporais',desc:'Atividades de academia e medidas de bíceps, cintura, quadril, panturrilha etc.',targets:['fitness']},
+ {key:'nutricao',icon:'🥗',label:'Nutrição',desc:'Diário de alimentação, hidratação e suplementos.',targets:['nutricao']},
+ {key:'sonoBem',icon:'😴',label:'Sono e bem-estar',desc:'Registros de sono, humor, ansiedade, estresse e bem-estar.',targets:['sonoBem']},
+ {key:'ciclo',icon:'🌸',label:'Ciclo menstrual',desc:'Recursos de ciclo menstrual e acompanhamento reprodutivo.',targets:['ciclo']}
+];
+function experienciaPadrao(){
+ const saved=get(K.preferencias)[0];
+ return saved&&typeof saved==='object'&&['simple','comfortable','advanced'].includes(saved.experiencia)?saved.experiencia:'comfortable';
+}
+function preferenciasPadrao(){
+ const p=get(K.p)[0]||{},saved=get(K.preferencias)[0];
+ const base={academia:p.academia==='Não'?'off':'on',nutricao:'on',sonoBem:'on',ciclo:'on',experiencia:'comfortable',ias:iaPadrao()};
+ if(saved&&typeof saved==='object')return Object.assign(base,saved);
+ return base;
+}
+function iaPadrao(){
+ const saved=get(K.preferencias)[0];
+ if(saved&&typeof saved==='object'&&Array.isArray(saved.ias)&&saved.ias.length)return saved.ias;
+ return [
+  {id:'chatgpt',nome:'ChatGPT',icone:'🟢',web:'https://chatgpt.com/',app:'intent://chatgpt.com/#Intent;scheme=https;package=com.openai.chatgpt;end',ativo:true,principal:true,oficial:true},
+  {id:'gemini',nome:'Gemini',icone:'🔵',web:'https://gemini.google.com/app',app:'intent://gemini.google.com/app#Intent;scheme=https;package=com.google.android.apps.bard;end',ativo:true,principal:false,oficial:true},
+  {id:'notebooklm',nome:'NotebookLM',icone:'🟣',web:'https://notebooklm.google.com/',app:'',ativo:false,principal:false,oficial:true}
+ ];
+}
+function salvarMinhasIAs(ias){
+ const atuais=Array.isArray(ias)?ias:[];
+ salvarPreferenciasObjeto({ias:atuais});
+}
+function escaparAttrIA(v){return String(v??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function dispositivoMovel(){return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent||'')}
+window.msaGetPromptIA=function(){const el=document.getElementById('promptIA');return el?el.value:''};
+function abrirMinhaIA(id){
+ const ia=preferenciasPadrao().ias.find(x=>x.id===id&&x.ativo);
+ if(!ia)return;
+ const prompt=window.msaGetPromptIA?window.msaGetPromptIA():'';
+ if(prompt){try{navigator.clipboard?.writeText(prompt)}catch(e){}}
+ const web=ia.web||'',app=ia.app||'';
+ const abrirWeb=()=>{if(!web)return;const sep=web.includes('?')?'&':'?';const url=prompt&&ia.id==='chatgpt'?web+sep+'q='+encodeURIComponent(prompt):web;window.open(url,'_blank')};
+ let tentouApp=false;
+ if(dispositivoMovel()&&app){
+  tentouApp=true;
+  let voltou=false;
+  const onVis=()=>{voltou=true;document.removeEventListener('visibilitychange',onVis)};
+  document.addEventListener('visibilitychange',onVis);
+  try{
+   const a=document.createElement('a');a.href=app;a.style.display='none';document.body.appendChild(a);a.click();a.remove();
+  }catch(e){}
+  setTimeout(()=>{document.removeEventListener('visibilitychange',onVis);if(!voltou)abrirWeb()},1100);
+ }
+ if(!tentouApp)abrirWeb();
+ const msg=$('copiado');
+ if(msg)msg.textContent=prompt?'✅ Informações preparadas e copiadas. Abrindo '+ia.nome+'…':'🚀 Abrindo '+ia.nome+'…';
+}
+function adicionarIAConfigurada(){
+ const nome=prompt('Nome da inteligência artificial:');
+ if(!nome||!nome.trim())return;
+ const web=prompt('Endereço web da IA (https://...):');
+ if(!web||!(web.trim().startsWith('https://')||web.trim().startsWith('http://'))){alert('Informe um endereço web válido começando com https:// ou http://.');return}
+ const app=prompt('Link para tentar abrir o aplicativo (opcional). No Android pode ser um link intent:// ou esquema do aplicativo:');
+ const id='ia_'+Date.now().toString(36);
+ const ias=preferenciasPadrao().ias.map(x=>Object.assign({},x,{principal:false}));
+ ias.push({id,nome:nome.trim(),icone:'🤖',web:web.trim(),app:(app||'').trim(),ativo:true,principal:ias.length===0});
+ salvarMinhasIAs(ias);
+ alert('🤖 '+nome.trim()+' foi adicionada às suas IAs.');
+}
+function definirIAPrincipal(id){
+ const ias=preferenciasPadrao().ias.map(x=>Object.assign({},x,{principal:x.id===id}));
+ salvarMinhasIAs(ias);
+}
+function alternarIA(id){
+ const ias=preferenciasPadrao().ias.map(x=>x.id===id?Object.assign({},x,{ativo:!x.ativo,principal:x.ativo?false:x.principal}):x);
+ if(!ias.some(x=>x.ativo))ias[0].ativo=true;
+ if(!ias.some(x=>x.ativo&&x.principal)){const first=ias.find(x=>x.ativo);if(first)first.principal=true}
+ salvarMinhasIAs(ias);
+}
+function removerIA(id){
+ const ia=preferenciasPadrao().ias.find(x=>x.id===id);
+ if(!ia||ia.oficial){alert('As IAs oficiais podem ser desativadas, mas não removidas.');return}
+ salvarMinhasIAs(preferenciasPadrao().ias.filter(x=>x.id!==id));
+}
+function editarIA(id){
+ const ia=preferenciasPadrao().ias.find(x=>x.id===id);if(!ia)return;
+ const web=prompt('Endereço web da IA:',ia.web||'');if(!web||!(web.trim().startsWith('https://')||web.trim().startsWith('http://')))return;
+ const app=prompt('Link para tentar abrir o aplicativo (opcional):',ia.app||'');
+ salvarMinhasIAs(preferenciasPadrao().ias.map(x=>x.id===id?Object.assign({},x,{web:web.trim(),app:(app||'').trim()}):x));
+}
+function renderMinhasIAs(){
+ const box=$('settingsAI');if(!box)return;
+ const ias=preferenciasPadrao().ias;
+ const principal=ias.find(x=>x.principal&&x.ativo);
+ box.innerHTML='<div class="experience-setting-title">🤖 Minhas IAs</div><div class="muted">Escolha quais inteligências artificiais você usa. O aplicativo não fica preso a uma IA específica.</div><div class="alert info" style="margin-top:10px">📱 No celular, o sistema tenta usar o aplicativo quando você cadastrar um link de app. Se não conseguir, usa o endereço web.</div><div class="ai-config-list" style="display:grid;gap:8px;margin-top:12px">'+ias.map(ia=>'<div style="border:1px solid #dbe4f0;border-radius:14px;padding:12px;background:#fff"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><b>'+esc(ia.icone||'🤖')+' '+esc(ia.nome)+'</b><span class="tag">'+(ia.ativo?'Ativada':'Desativada')+(ia.principal?' · ⭐ Principal':'')+'</span></div><small class="muted" style="display:block;margin-top:5px">'+esc(ia.web||'Sem endereço web')+'</small><div class="row" style="margin-top:9px"><button class="btn small '+(ia.ativo?'secondary':'green')+'" type="button" onclick="alternarIA(\''+escaparAttrIA(ia.id)+'\')">'+(ia.ativo?'Desativar':'Ativar')+'</button>'+(ia.ativo&&!ia.principal?'<button class="btn small secondary" type="button" onclick="definirIAPrincipal(\''+escaparAttrIA(ia.id)+'\')">⭐ Tornar principal</button>':'')+(ia.oficial?'':'<button class="btn small secondary" type="button" onclick="editarIA(\''+escaparAttrIA(ia.id)+'\')">✏️ Editar</button><button class="btn small red" type="button" onclick="removerIA(\''+escaparAttrIA(ia.id)+'\')">🗑️ Remover</button>')+'</div></div>').join('')+'</div><div class="row" style="margin-top:12px"><button class="btn green" type="button" onclick="adicionarIAConfigurada()">➕ Adicionar minha IA</button></div><div style="margin-top:12px;padding:11px;border-radius:13px;background:#f8fafc;font-size:12px;color:#687386">⭐ IA principal: '+esc(principal?principal.nome:'Nenhuma')+'. Você poderá usar esta IA como atalho em fluxos futuros.</div>';
+}
+function salvarPreferenciasObjeto(pref){
+ set(K.preferencias,[Object.assign({},preferenciasPadrao(),pref)]);
+ aplicarPreferencias();
+ aplicarExperiencia();
+ renderConfiguracoes();
+}
+function renderIAChoices(){
+ const box=$('iaChoices');if(!box)return;
+ const ias=preferenciasPadrao().ias.filter(x=>x.ativo);
+ box.innerHTML=ias.length?ias.map(ia=>'<button class="btn '+(ia.principal?'green':'secondary')+'" type="button" onclick="abrirMinhaIA(\''+escaparAttrIA(ia.id)+'\')">'+esc(ia.icone||'🤖')+' '+esc(ia.nome)+(ia.principal?' ⭐':'')+'</button>').join(''):'<span class="muted">Nenhuma IA ativada. Configure em ⚙️ Configurações.</span>';
+}
+function salvarPreferenciasPerfil(){
+ const pref={academia:$('prefAcademia')?.value||'on',nutricao:$('prefNutricao')?.value||'on',sonoBem:$('prefSonoBem')?.value||'on',ciclo:$('prefCiclo')?.value||'on'};
+ salvarPreferenciasObjeto(pref);
+ alert('⚙️ Preferências salvas! O aplicativo foi personalizado.');
+}
+function salvarExperiencia(){
+ const value=$('prefExperiencia')?.value||'comfortable';
+ salvarPreferenciasObjeto({experiencia:value});
+ const nomes={simple:'🔰 Simples',comfortable:'🙂 Confortável',advanced:'⚡ Avançado'};
+ alert('🎚️ Experiência definida como '+nomes[value]+'. Você pode mudar isso quando quiser em Configurações.');
+}
+function renderConfiguracoes(){
+ const pref=preferenciasPadrao(),box=$('settingsPreferences');
+ const aiBox=$('settingsAI');
+ if(aiBox)renderMinhasIAs();
+ renderIAChoices();
+ if(box){
+  const exp='<div class="experience-setting"><div class="experience-setting-title">🎚️ Experiência do aplicativo</div><div class="muted">Escolha quanto de informação, atalhos e opções você prefere ver. Isso não depende da sua idade.</div><select id="prefExperiencia" style="margin-top:8px"><option value="simple">🔰 Simples — poucos caminhos, botões maiores e mais orientação</option><option value="comfortable">🙂 Confortável — equilíbrio entre simplicidade e recursos</option><option value="advanced">⚡ Avançado — mais atalhos, detalhes e acesso rápido</option></select><button class="btn secondary" type="button" style="margin-top:8px" onclick="salvarExperiencia()">💾 Aplicar experiência</button></div>';
+  box.innerHTML=exp+RECURSOS_PERSONALIZAVEIS.map(r=>'<label style="display:flex;flex-direction:column;gap:6px;border:1px solid #dbe4f0;border-radius:14px;padding:12px;background:#fff"><span style="font-weight:900">'+r.icon+' '+r.label+'</span><small class="muted">'+r.desc+'</small><select data-pref-key="'+r.key+'"><option value="on" '+(pref[r.key]==='on'?'selected':'')+'>Ativado</option><option value="off" '+(pref[r.key]==='off'?'selected':'')+'>Desativado</select></label>').join('');
+  box.querySelector('#prefExperiencia').value=pref.experiencia||'comfortable';
+  box.querySelectorAll('[data-pref-key]').forEach(s=>s.addEventListener('change',function(){salvarPreferenciasObjeto({[this.dataset.prefKey]:this.value})}));
+ }
+}
+function aplicarPreferencias(){
+ const pref=preferenciasPadrao();
+ document.querySelectorAll('[data-feature]').forEach(el=>el.classList.toggle('msa-feature-off',pref[el.dataset.feature]==='off'));
+ document.querySelectorAll('[data-feature-nav="academia"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.academia==='off'));
+ document.querySelectorAll('[data-feature-nav="nutricao"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.nutricao==='off'));
+ document.querySelectorAll('[data-feature-nav="sonoBem"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.sonoBem==='off'));
+ document.querySelectorAll('[data-feature-nav="ciclo"]').forEach(el=>el.classList.toggle('msa-feature-off',pref.ciclo==='off'));
+ $('reproSection')?.classList.toggle('msa-feature-off',pref.ciclo==='off');
+ document.querySelectorAll('#dashActivityEdit,#dashActivity').forEach(el=>el.closest('.metric-kpi')?.classList.toggle('msa-feature-off',pref.academia==='off'));
+ $('medidasCorporaisCard')?.classList.toggle('msa-feature-off',pref.academia==='off');
+}
+function aplicarExperiencia(){
+ const level=experienciaPadrao();
+ document.body.classList.remove('msa-exp-simple','msa-exp-comfortable','msa-exp-advanced');
+ document.body.classList.add('msa-exp-'+level);
+ document.documentElement.dataset.msaExperience=level;
+ document.querySelectorAll('[data-experience="advanced"]').forEach(el=>el.classList.toggle('msa-experience-off',level!=='advanced'));
+ document.querySelectorAll('[data-experience="simple-hidden"]').forEach(el=>el.classList.toggle('msa-experience-off',level==='simple'));
+}
+function abrirPrivacidadeAjuda(tipo){
+ let old=document.getElementById('msaInfoModal');if(old)old.remove();
+ const priv=tipo==='privacidade';
+ const title=priv?'🔐 Privacidade e segurança':'❓ Central de ajuda';
+ const html=priv?
+ '<h3>🔐 Como seus dados são tratados</h3><p><b>Armazenamento local:</b> seus registros são mantidos no armazenamento do navegador deste dispositivo. O aplicativo não precisa de uma conta para funcionar.</p><p><b>Backup:</b> como os dados são locais, faça backups periódicos e guarde o arquivo em local seguro.</p><p><b>IA:</b> antes de enviar informações para qualquer serviço de IA, revise o que está sendo compartilhado e use somente dados que você se sinta confortável em enviar.</p><p><b>Compartilhamento:</b> use os recursos de compartilhamento somente com pessoas de confiança e revise o conteúdo antes de enviar.</p><p><b>Apagar dados:</b> ações de exclusão podem ser permanentes. Faça backup antes de apagar informações importantes.</p><p class="muted">O Minha Saúde IA é uma ferramenta de organização pessoal e não substitui profissionais de saúde.</p>':
+ '<h3>❓ Como usar</h3><p><b>📋 O que falta:</b> na Home, toque em “Ver o que falta” para localizar campos pendentes.</p><p><b>💾 Backup:</b> use a área de backup para guardar uma cópia do seu histórico.</p><p><b>📄 PDF:</b> abra a área de exportação e use a impressão do navegador para salvar em PDF.</p><p><b>🤖 IA:</b> a importação organiza informações antes de salvar. Revise o conteúdo antes de confirmar.</p><p><b>📱 Celular:</b> use a navegação inferior e o menu para encontrar as áreas.</p><p><b>🛡️ Segurança:</b> não compartilhe PIN, backups ou relatórios com pessoas não autorizadas.</p>';
+ const modal=document.createElement('div');modal.id='msaInfoModal';modal.style.cssText='position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.58);display:flex;align-items:center;justify-content:center;padding:18px';
+ modal.innerHTML='<div style="background:#fff;color:#172033;max-width:720px;width:100%;max-height:88vh;overflow:auto;border-radius:20px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.25)"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><h2 style="margin:0">'+title+'</h2><button class="btn secondary small" type="button" id="msaInfoClose">✕</button></div><div style="line-height:1.6;margin-top:14px">'+html+'</div><div class="row" style="margin-top:16px"><button class="btn green" type="button" id="msaInfoOk">Entendi</button></div></div>';
+ document.body.appendChild(modal);
+ const close=()=>modal.remove();modal.querySelector('#msaInfoClose').onclick=close;modal.querySelector('#msaInfoOk').onclick=close;modal.addEventListener('click',e=>{if(e.target===modal)close()});
+}
+function mostrarBoasVindasSeNecessario(){
+ if(window.msaStorage.getItem('msa2_onboarding_v1'))return;
+ const p=get(K.p)[0]||{};
+ if(p.nome||get(K.d).length||get(K.m).length||get(K.c).length||get(K.e).length){window.msaStorage.setItem('msa2_onboarding_v1','1');return}
+ let old=document.getElementById('msaWelcomeModal');if(old)old.remove();
+ const modal=document.createElement('div');modal.id='msaWelcomeModal';modal.style.cssText='position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.62);display:flex;align-items:center;justify-content:center;padding:18px';
+ modal.innerHTML='<div style="background:#fff;color:#172033;max-width:650px;width:100%;border-radius:22px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.28)"><div style="font-size:38px">🩺</div><h2 style="margin:6px 0">Bem-vindo ao Minha Saúde IA</h2><p style="line-height:1.6">Organize seu histórico de saúde em um só lugar: perfil, sintomas, medicamentos, consultas, exames, sono, documentos e relatórios.</p><div class="alert safe"><b>🔐 Privacidade:</b> seus registros ficam neste dispositivo enquanto você não usar um serviço externo. Faça backup regularmente.</div><div class="row" style="margin-top:14px"><button class="btn green" type="button" id="msaStartIA">✨ Começar com IA</button><button class="btn secondary" type="button" id="msaStartManual">👤 Preencher manualmente</button></div><button class="btn secondary small" style="margin-top:10px" type="button" id="msaWelcomeClose">Agora não</button></div>';
+ document.body.appendChild(modal);
+ const finish=()=>{window.msaStorage.setItem('msa2_onboarding_v1','1');modal.remove()};
+ modal.querySelector('#msaStartIA').onclick=()=>{finish();if(typeof go==='function')go('importar')};
+ modal.querySelector('#msaStartManual').onclick=()=>{finish();if(typeof go==='function')go('perfil')};
+ modal.querySelector('#msaWelcomeClose').onclick=finish;
+}
+function render(){
+mostrarBoasVindasSeNecessario();
+let d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
+const tlTodos=buildTimeline('todos');$('nD').textContent=tlTodos.filter(x=>x.type==='sintomas').length;$('nC').textContent=tlTodos.filter(x=>x.type==='consultas').length;$('nM').textContent=tlTodos.filter(x=>x.type==='medicamentos').length;$('nE').textContent=tlTodos.filter(x=>x.type==='exames').length;
+list('listD',d,x=>{const n=Number(x.int),invalid=!x.data||!x.local||!Number.isFinite(n)||n<1||n>10;return `<div class="item ${invalid?'timeline-row-invalid':''}"><div class="itemtop"><b>😣 ${esc(x.local||'Local não informado')}</b><span class="tag">${invalid?'⚠️ Revisar':n+'/10'}</span></div><p>${x.data?fmt(x.data):'⚠️ Data não informada'} · ${esc(x.tipo||'Tipo não informado')} · ${esc(x.freq||'Frequência não informada')}<br>${esc(x.sint||'Sem sintomas associados')}<br>${esc(x.gatilho||'')} ${esc(x.obs||'')}</p></div>`});
+list('listC',c,x=>{const invalid=!x.data||(!x.esp&&!x.med&&!x.mot);return `<div class="item ${invalid?'timeline-row-invalid':''}"><div class="itemtop"><b>👨‍⚕️ ${esc(x.esp||'Consulta')}</b><span class="tag">${invalid?'⚠️ Revisar':x.data}</span></div><p>${x.data?fmt(x.data):'⚠️ Data não informada'} · ${esc(x.med||'Médico não informado')} · ${esc(x.mot||'Motivo não informado')}<br><b>Perguntas:</b> ${esc(x.perg||'—')}<br><b>Orientações:</b> ${esc(x.obs||'—')}<br>${x.ret?'Retorno: '+x.ret:''}</p></div>`});
+list('listM',m,x=>{const invalid=!x.nome;return `<div class="item ${invalid?'timeline-row-invalid':''}"><div class="itemtop"><b>💊 ${esc(x.nome||'Medicamento')}</b><span class="tag">${invalid?'⚠️ Revisar':esc(x.dose||'')}</span></div><p>${esc(x.freq||'Frequência não informada')} · ${x.inicio||'—'} até ${x.fim||'—'}<br>Prescrito por: ${esc(x.pres||'—')}<br>${esc(x.obs||'')}</p></div>`});
+list('listE',e,x=>{const invalid=!x.nome||!x.data;return `<div class="item ${invalid?'timeline-row-invalid':''}"><div class="itemtop"><b>🧪 ${esc(x.nome||'Exame')}</b><span class="tag">${invalid?'⚠️ Revisar':x.data}</span></div><p>${x.data?fmt(x.data):'⚠️ Data não informada'}<br><b>Resultado:</b> ${esc(x.res||'Resultado não informado')}<br>${esc(x.obs||'')}</p></div>`});
+const dataTimelineValida=v=>{
+ const s=String(v??'').trim();
+ if(!s || /^(valor|data|não informado|nao informado|n\/a|-)$/i.test(s))return false;
+ const t=Date.parse(s);
+ return Number.isFinite(t);
+};
+const textoSintomaTimeline=x=>{
+ const local=String(x.local??'').trim();
+ const localValido=local && !/^(valor|local|não informado|nao informado|n\/a|-)$/i.test(local);
+ const n=Number(x.int);
+ if(localValido && Number.isFinite(n) && n>0)return local+' — intensidade '+n+'/10';
+ if(localValido)return local;
+ if(Number.isFinite(n) && n>0)return 'Intensidade '+n+'/10';
+ return 'Sintoma registrado';
+};
+let all=[...d.map(x=>({date:x.data,type:'😣 Sintoma',text:textoSintomaTimeline(x)})),...c.map(x=>({date:x.data,type:'👨‍⚕️ Consulta',text:x.esp||'Consulta registrada'})),...m.map(x=>({date:x.inicio||x.data,type:'💊 Medicamento',text:x.nome||'Medicamento registrado'})),...e.map(x=>({date:x.data,type:'🧪 Exame',text:x.nome||'Exame registrado'}))].filter(x=>dataTimelineValida(x.date)).sort((a,b)=>Date.parse(b.date)-Date.parse(a.date));
+$('tl').innerHTML=all.length?all.map(x=>`<div class="tl"><b>${x.type}</b> <span class="tag">${esc(fmt(x.date))}</span><p>${esc(x.text)}</p></div>`).join(''):'<div class="empty">Nenhum evento registrado.</div>';
+let last=all[0];$('ultimo').innerHTML=last?`<b>${last.type}</b><br>${esc(last.text)}<br><span class="muted">${last.date}</span>`:'Ainda não há registros.';
+let alert=findAlerts(d);$('alertaHome').className=alert?'danger':'safe';$('alertaHome').innerHTML=alert?alert:'Nenhum sinal de alerta automático encontrado nos registros.';
+let vals=d.slice(-10);$('chart').innerHTML=vals.length?vals.map(x=>`<div class="bar" style="height:${Math.max(8,x.int*10)}%"><span>${x.int}</span><small>${String(x.local).slice(0,7)}</small></div>`).join(''):'<div class="muted" style="margin:auto">Registre sintomas para ver a evolução.</div>';
+if($('homeSummary')){
+ const p=get(K.p)[0]||{}, all=[...d,...c,...m,...e].map(x=>x.data||x.inicio||x.fim).filter(Boolean).sort().reverse();
+ const nome=p.nome||'Seu perfil ainda não foi preenchido';
+ const ultima=all[0]||'Nenhum registro ainda';
+ $('homeSummary').innerHTML='<b>'+esc(nome)+'</b><br>'+d.length+' sintomas · '+c.length+' consultas · '+m.length+' medicamentos · '+e.length+' exames<br><span class="muted">Último registro: '+esc(ultima)+'</span>';
+}
+loadProfile();
+renderConfiguracoes();
+aplicarPreferencias();
+aplicarExperiencia();
+atualizarPerfilHome();
+renderCarteirinha();
+atualizarDashboard();
+atualizarMetricasCorporais();
+atualizarEngajamento();atualizarSmartHome();renderMedidasCorporais();
+}
+
+function registrarHumor(valor){
+ const key='msa2_humor'; const hoje=new Date().toISOString().slice(0,10);
+ window.msaStorage.setItem(key,JSON.stringify({data:hoje,valor:valor}));
+ const st=$('moodStatus');if(st)st.textContent='Registrado hoje: '+valor;
+ const done=$('moodDone');if(done){done.textContent='✓ Feito';done.style.background='#ecfdf3';done.style.color='#059669'}
+}
+function calcularCompletudeSaude(){
+ const p=get(K.p)[0]||{};
+ const itens=[
+  ['Perfil','Nome',p.nome],['Perfil','Data de nascimento',p.nasc],['Perfil','Sexo',p.sexo],['Perfil','Altura',p.altura],['Perfil','Peso',p.peso],
+  ['Perfil','Tipo sanguíneo',p.sangue],['Perfil','Alergias',p.alerg],['Perfil','Condições de saúde',p.cond],['Perfil','Cirurgias/internações',p.circ],
+  ['Perfil','Contato de emergência',p.emerg],['Rotina','Atividade física',p.academia||p.atividade],['Rotina','Tipo de trabalho',p.trabalhoTipo],
+  ['Rotina','Consumo de água',p.aguaDia],['Rotina','Alimentação',p.alimentacao],
+  ['Histórico','Medicamentos',get(K.m).length],['Histórico','Sintomas',get(K.d).length],['Histórico','Consultas',get(K.c).length],
+  ['Histórico','Exames',get(K.e).length],['Histórico','Sinais vitais',get(K.v).length],['Histórico','Vacinas',get(K.vax).length],
+  ['Histórico','Histórico familiar',get(K.fam).length],['Organização','Lembretes',get(K.r).length],['Organização','Documentos',get(K.doc).length]
+ ];
+ const ok=v=>Array.isArray(v)?v.length>0:!!v&&String(v).trim()!==''&&!/^não informado$/i.test(String(v).trim());
+ if(/femin|mulher|female/i.test(String(p.sexo||''))){
+  itens.push(['Saúde reprodutiva','Duração média do ciclo',p.ciclo],['Saúde reprodutiva','Diário do ciclo',get(K.ciclo).length],['Saúde reprodutiva','Duração média do sangramento',p.duracaoMenstr],['Saúde reprodutiva','Regularidade do ciclo',p.regularidade],['Saúde reprodutiva','Método anticoncepcional',p.anticoncepcionalMetodo||p.usaAnticoncepcional]);
+}
+ const preenchidos=itens.filter(x=>ok(x[2])).length;
+ return {percentual:Math.round(preenchidos/itens.length*100),total:itens.length,preenchidos,itens,pendentes:itens.filter(x=>!ok(x[2]))};
+}
+function gerarChecklistCompartilhamento(){
+ const c=calcularCompletudeSaude();
+ const linhas=['MINHA SAÚDE IA — CHECKLIST DE PREENCHIMENTO','Completude atual: '+c.percentual+'% ('+c.preenchidos+'/'+c.total+')','','INFORMAÇÕES QUE AINDA FALTAM:'];
+ c.pendentes.forEach(x=>linhas.push('• ['+x[0]+'] '+x[1]));
+ if(!c.pendentes.length)linhas.push('• Nenhuma informação pendente 🎉');
+ linhas.push('','Observação: alguns campos podem não se aplicar à pessoa. Preencha apenas informações realmente conhecidas.');
+ const txt=linhas.join('\n');
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>alert('📋 Checklist copiado! Agora você pode enviar para a pessoa preencher o que falta.')).catch(()=>prompt('Copie o checklist:',txt));}
+ else prompt('Copie o checklist:',txt);
+}
+function abrirPendenciasPreenchimento(){
+ const c=calcularCompletudeSaude();
+ if(!c.pendentes.length){alert('🎉 Seu cadastro está completo! Não há informações pendentes nos campos avaliados.');return}
+ const ids={'Nome':'pNome','Data de nascimento':'pNasc','Sexo':'pSexo','Altura':'pAltura','Peso':'pPeso','Tipo sanguíneo':'pSangue','Alergias':'pAlerg','Condições de saúde':'pCond','Cirurgias/internações':'pCirc','Contato de emergência':'pEmerg','Atividade física':'pAcademia','Tipo de trabalho':'pTrabalhoTipo','Consumo de água':'pAguaDia','Alimentação':'pAlimentacao','Duração média do ciclo':'pCiclo','Duração média do sangramento':'pDuracaoMenst','Regularidade do ciclo':'pRegularidade','Método anticoncepcional':'pAnticoncepcionalMetodo'};
+ const destinos={'Medicamentos':'meds','Sintomas':'dor','Consultas':'consultas','Exames':'exames','Sinais vitais':'acompanhamento','Vacinas':'acompanhamento','Histórico familiar':'familia','Lembretes':'lembretes','Documentos':'documentos','Diário do ciclo':'acompanhamento'};
+ let old=document.getElementById('msaPendenciasModal');if(old)old.remove();
+ const modal=document.createElement('div');modal.id='msaPendenciasModal';modal.className='msa-pendencias-overlay';
+ const groups={};c.pendentes.forEach(x=>(groups[x[0]]||(groups[x[0]]=[])).push(x));
+ let html='<div class="msa-pendencias-card" role="dialog" aria-modal="true" aria-labelledby="msaPendenciasTitle"><div class="msa-pendencias-head"><div><div class="msa-pendencias-kicker">📋 Preenchimento</div><h2 id="msaPendenciasTitle">Informações que faltam</h2><p>Escolha uma opção para ir direto ao local onde você pode preencher o dado.</p></div><button type="button" class="msa-pendencias-close" aria-label="Fechar">✕</button></div><div class="msa-pendencias-progress"><b>'+c.pendentes.length+'</b> informação(ões) pendente(s) · ficha em <b>'+c.percentual+'%</b></div><div class="msa-pendencias-list">';
+ Object.keys(groups).forEach(cat=>{html+='<div class="msa-pendencias-group"><h3>'+esc(cat)+'</h3>';groups[cat].forEach(x=>{html+='<button type="button" class="msa-pendencia-item" data-cat="'+esc(cat)+'" data-label="'+esc(x[1])+'"><span>⚠️ '+esc(x[1])+'</span><strong>Preencher →</strong></button>'});html+='</div>'});
+ html+='</div></div>';modal.innerHTML=html;document.body.appendChild(modal);
+ const close=()=>modal.remove();modal.querySelector('.msa-pendencias-close').onclick=close;modal.addEventListener('click',e=>{if(e.target===modal)close()});
+ modal.querySelectorAll('.msa-pendencia-item').forEach(btn=>btn.onclick=()=>{
+  const cat=btn.dataset.cat,label=btn.dataset.label;close();const fieldId=cat==='Perfil'?ids[label]:null;const dest=destinos[label];
+  if(fieldId){if(typeof go==='function')go('perfil');setTimeout(()=>{const el=document.getElementById(fieldId);if(el){el.focus();el.scrollIntoView({behavior:'smooth',block:'center'});el.style.boxShadow='0 0 0 4px rgba(37,99,235,.18)';setTimeout(()=>el.style.boxShadow='',1800)}},250)}
+  else if(dest&&typeof go==='function')go(dest);else if(cat==='Rotina'&&typeof go==='function')go('perfil');else if(typeof go==='function')go('perfil');
+ });
+}
+window.abrirPendenciasPreenchimento=abrirPendenciasPreenchimento;
+function atualizarEngajamento(){
+ const hoje=new Date().toISOString().slice(0,10);
+ const h=JSON.parse(window.msaStorage.getItem('msa2_humor')||'null');
+ if(h&&h.data===hoje){const st=$('moodStatus');if(st)st.textContent='Registrado hoje: '+h.valor;const d=$('moodDone');if(d){d.textContent='✓ Feito';d.style.background='#ecfdf3';d.style.color='#059669'}}
+ const c=calcularCompletudeSaude(),pct=c.percentual;
+ const pe=$('profilePercent'),pf=$('profileProgress');if(pe)pe.textContent=pct+'%';if(pf)pf.style.width=pct+'%';
+ const hm=$('homeMissingInfoText'); if(hm) hm.innerHTML=c.pendentes.length ? '<b>Ainda faltam '+c.pendentes.length+' informações</b> para completar o histórico. Clique em <b>“Ver o que falta”</b> para ir direto a cada uma.' : '<b>🎉 Seu cadastro está completo!</b> Não há informações pendentes nos campos avaliados.';
+ const pm=$('profileMissing');
+ if(pm)pm.innerHTML=c.pendentes.length
+   ? '<b>📌 Ainda faltam '+c.pendentes.length+' informações:</b> '+c.pendentes.slice(0,4).map(x=>esc(x[1])).join(' · ')+(c.pendentes.length>4?' · …':'')
+   : '<b>🎉 Cadastro completo!</b> Não há informações pendentes nos campos avaliados.';
+ const level=$('healthLevel');if(level)level.textContent=pct>=90?'🏆 Muito completo':pct>=70?'🌳 Bem organizado':pct>=40?'🌿 Em construção':'🌱 Começando';
+ const sd=$('streakDays');
+ const all=[...get(K.d),...get(K.c),...get(K.m),...get(K.e),...get(K.v),...get(K.vax)].map(x=>x.data||x.inicio).filter(Boolean);
+ const days=[...new Set(all.map(x=>String(x).slice(0,10)))].sort().reverse();let streak=0;
+ for(let i=0;i<days.length;i++){const target=new Date();target.setDate(target.getDate()-i);if(days[i]===target.toISOString().slice(0,10))streak++;else break}
+ if(sd)sd.textContent=streak;
+ const goals=[['perfil',pct>=90,'Completar meu cadastro'],['consulta',get(K.c).length>0,'Registrar uma consulta'],['vital',get(K.v).length>0,'Registrar um sinal vital'],['med',get(K.m).length>0,'Organizar medicamentos']];
+ const gl=$('goalList');if(gl)gl.innerHTML=goals.map(g=>'<label class="goal '+(g[1]?'done':'')+'"><input type="checkbox" '+(g[1]?'checked':'')+' disabled><span>'+(g[1]?'✅ ':'⬜ ')+g[2]+'</span></label>').join('');
+ const d=get(K.d),m=get(K.m),co=get(K.c),e=get(K.e);
+ const disc=[['😣',d.length,d.length===1?'sintoma registrado':'sintomas registrados'],['👨‍⚕️',co.length,co.length===1?'consulta registrada':'consultas registradas'],['💊',m.length,m.length===1?'medicamento registrado':'medicamentos registrados'],['🧪',e.length,e.length===1?'exame registrado':'exames registrados'],['📈',get(K.v).length,get(K.v).length===1?'sinal vital registrado':'sinais vitais registrados'],['🔥',streak,streak===1?'dia acompanhado':'dias acompanhados']];
+ const dc=$('healthDiscoveries');if(dc)dc.innerHTML=disc.map(x=>'<div class="discovery"><b>'+x[0]+' '+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
+}
+
+function atualizarDashboard(){
+ const d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e),v=get(K.v),vax=get(K.vax),p=get(K.p)[0]||{};
+ const condTxt=String(p.cond||'').trim();
+ const conds=condTxt&& !/^não informado$/i.test(condTxt) ? condTxt.split(/[;,|]+/).map(x=>x.trim()).filter(Boolean) : [];
+ const uniq=[...new Set(conds.map(x=>x.toLowerCase()))];
+ const set=(id,val)=>{const el=$(id);if(el)el.textContent=val};
+ set('dashCond',uniq.length);
+ set('dashCondTxt',uniq.length?uniq.slice(0,2).join(' · ')+(uniq.length>2?'…':''):'Nenhuma informada');
+ set('dashConsultas',c.length);set('dashMeds',m.length);set('dashExames',e.length);set('dashVacinas',vax.length);
+ set('dashConsultasTxt',c.length?(c.length===1?'1 consulta registrada':'histórico de consultas'):'Nenhuma consulta');
+ set('dashMedsTxt',m.length?(m.length===1?'1 medicamento':'medicamentos registrados'):'Nenhum registrado');
+ set('dashExamesTxt',e.length?(e.length===1?'1 exame':'exames registrados'):'Nenhum registrado');
+ const consultas=c.filter(x=>x.data).sort((a,b)=>new Date(b.data)-new Date(a.data));
+ const ultima=consultas[0];
+ if(ultima){
+   set('dashUltConsulta',fmt(ultima.data));
+   const days=Math.max(0,Math.floor((Date.now()-new Date(ultima.data).getTime())/86400000));
+   set('dashTempoConsulta',days===0?'Hoje':days===1?'Ontem':days+' dias atrás');
+ }else{set('dashUltConsulta','—');set('dashTempoConsulta','Ainda não')}
+ set('dashTotal',d.length+c.length+m.length+e.length+v.length+vax.length);
+ const eventos=[
+   {label:'Sint.',n:d.length},{label:'Cons.',n:c.length},{label:'Med.',n:m.length},{label:'Exames',n:e.length},{label:'Vitais',n:v.length},{label:'Vac.',n:vax.length}
+ ];
+ const max=Math.max(1,...eventos.map(x=>x.n));
+ const chart=$('dashChart');
+ if(chart)chart.innerHTML=eventos.map(x=>'<div class="dash-bar-wrap"><div class="dash-bar" title="'+x.n+' registros" style="height:'+Math.max(7,Math.round(x.n/max*88))+'px"></div><span class="dash-bar-label">'+x.label+'</span></div>').join('');
+ const peso=v.filter(x=>x.peso!==undefined&&String(x.peso).trim()).slice(-8);
+ const wc=$('dashWeight');
+ if(wc){
+   if(!peso.length)wc.innerHTML='<div class="muted" style="margin:auto">Registre sinais vitais para acompanhar o peso.</div>';
+   else{
+     const nums=peso.map(x=>parseFloat(String(x.peso).replace(',','.'))).filter(n=>!isNaN(n));
+     const min=Math.min(...nums),maxW=Math.max(...nums),range=Math.max(1,maxW-min);
+     wc.innerHTML=peso.map(x=>{
+       const n=parseFloat(String(x.peso).replace(',','.'));if(isNaN(n))return '';
+       const h=Math.max(12,Math.round(((n-min)/range)*78+20));
+       const lab=String(x.data||'').slice(0,5);
+       return '<div class="dash-bar-wrap"><div class="dash-bar" title="'+n+' kg" style="height:'+h+'px"></div><span class="dash-bar-label">'+n+'kg</span><span class="dash-bar-label">'+lab+'</span></div>';
+     }).join('');
+   }
+ }
+}
+function healthText(){
+ const p=get(K.p)[0]||{},d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e),v=get(K.v),r=get(K.r),vax=get(K.vax),fam=get(K.fam);
+ const completude=calcularCompletudeSaude();
+ const appVersion='V5.61';
+ const lines=['MINHA SAÚDE IA — RESUMO DE DADOS','Versão do sistema: '+appVersion,'Completude da ficha: '+completude.percentual+'% ('+completude.preenchidos+'/'+completude.total+' itens avaliados)','Gerado em: '+new Date().toLocaleString('pt-BR'),'','[PERFIL]','Nome: '+(p.nome||'Não informado'),'Nascimento: '+(p.nasc||'Não informado'),'Idade: '+(p.idade||'Não informado'),'Sexo: '+(p.sexo||'Não informado'),'Tipo sanguíneo: '+(p.sangue||'Não informado'),'Altura: '+(p.altura||'Não informado'),'Peso: '+(p.peso||'Não informado'),'Objetivo corporal: '+(p.objetivoCorporal||'Não informado'),'Academia: '+(p.academia||'Não informado'),'Frequência academia: '+(p.academiaFreq||'Não informado'),'Atividade física: '+(p.atividadeFisica||'Não informado'),'Trabalho: '+(p.trabalhoTipo||'Não informado'),'Horas sentado: '+(p.horasSentado||'Não informado'),'Horas em pé: '+(p.horasPe||'Não informado'),'Água por dia: '+(p.aguaDia||'Não informado'),'Frequência urinária (opcional): '+(p.urinaDia||'Não informado'),'Frequência de evacuação (opcional): '+(p.evacuacaoDia||'Não informado'),'Exposição a calor/suor: '+(p.calorSuor||'Não informado'),'Alimentação: '+(p.alimentacao||'Não informado'),'Alergias: '+(p.alerg||'Não informado'),'Condições: '+(p.cond||'Não informado'),'Cirurgias/internações: '+(p.circ||'Não informado'),'Informações importantes: '+(p.info||'Não informado'),'Uso de Dorcelax: '+(p.dorcelaxFreq||'Não informado'),'Uso de paracetamol: '+(p.paracetamolFreq||'Não informado'),'Outros remédios para dor/febre: '+(p.outrosDor||'Não informado'),'Já teve catapora: '+(p.catapora||'Não informado'),'Quando teve catapora: '+(p.cataporaQuando||'Não informado'),'','[SINTOMAS]'];
+ lines.push(...(d.length?d.map(x=>x.data+' | '+x.local+' | intensidade '+x.int+'/10 | '+x.tipo+' | '+(x.sint||'')):['Nenhum registro.']));
+ lines.push('','[CONSULTAS]');lines.push(...(c.length?c.map(x=>x.data+' | '+x.esp+' | '+(x.med||'')+' | Motivo: '+(x.mot||'')+' | Perguntas: '+(x.perg||'')+' | Orientações: '+(x.obs||'')+' | Retorno: '+(x.ret||'')):['Nenhum registro.']));
+ lines.push('','[MEDICAMENTOS]');lines.push(...(m.length?m.map(x=>x.nome+' | Dose: '+(x.dose||'')+' | Frequência: '+(x.freq||'')+' | Início: '+(x.inicio||'')+' | Fim: '+(x.fim||'')+' | Prescrito por: '+(x.pres||'')):['Nenhum registro.']));
+ lines.push('','[EXAMES]');lines.push(...(e.length?e.map(x=>x.data+' | '+x.nome+' | Resultado: '+(x.res||'')+' | Observações: '+(x.obs||'')):['Nenhum registro.']));
+ lines.push('','[SINAIS VITAIS]');lines.push(...(v.length?v.map(x=>x.data+' | Peso: '+(x.peso||'')+' | Pressão: '+(x.pressao||'')+' | FC: '+(x.fc||'')+' | Temp: '+(x.temp||'')+' | Glicemia: '+(x.glic||'')+' | Saturação: '+(x.sat||'')+' | '+(x.obs||'')):['Nenhum registro.']));
+ lines.push('','[VACINAS]');lines.push(...(vax.length?vax.map(x=>x.nome+' | '+(x.data||'')+' | '+(x.obs||'')):['Nenhum registro.']));
+ lines.push('','[HISTÓRICO FAMILIAR]');lines.push(...(fam.length?fam.map(x=>x.parente+': '+x.info):['Nenhum registro.']));
+ lines.push('','[SONO E BEM-ESTAR]');
+ const sono=get(K.sono);
+ const rotinaSono=sono.find(x=>x.habitual)||sono[sono.length-1];
+ if(rotinaSono&&rotinaSono.dormiu&&rotinaSono.acordou){
+   lines.push('🌙 Rotina habitual de sono: normalmente dorme às '+rotinaSono.dormiu+' e acorda às '+rotinaSono.acordou+' — cerca de '+(rotinaSono.horas||'Não informado')+' horas por noite.');
+   lines.push('📅 Frequência: todos os dias');
+   lines.push('🚽 Despertares para urinar: '+(rotinaSono.xixi??'Não informado'));
+   lines.push('😣 Despertares com dor: '+(rotinaSono.dor??'Não informado'));
+   if(rotinaSono.obs)lines.push('📝 Observação: '+rotinaSono.obs);
+ }else{
+   lines.push('🌙 Rotina habitual de sono: Não informada.');
+ }
+ lines.push('ℹ️ O tempo habitual de sono é apresentado para acompanhamento do padrão de descanso e pode ser comparado com sintomas e bem-estar registrados. Este dado, isoladamente, não diagnostica doenças nem determina a causa de estresse ou outros sintomas.');
+ lines.push('','[LEMBRETES]');lines.push(...(r.length?r.map(x=>x.data+' | '+x.tipo+' | '+x.nome):['Nenhum registro.']));
+ lines.push('','Este arquivo organiza informações registradas pelo usuário e não constitui diagnóstico, prescrição ou laudo.');
+ return lines.join('\n');
+}
+function exportarTexto(){const text=healthText();const blob=new Blob([text],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='minha-saude-'+new Date().toISOString().slice(0,10)+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function copiarParaIA(){const text=healthText()+'\n\nTAREFA PARA A IA:\nUse somente os fatos acima. Não invente, não altere os dados e não faça diagnóstico. Ajude a organizar ou preparar perguntas para um profissional de saúde.';if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(()=>alert('✅ Dados copiados. Agora você pode colar no ChatGPT, Gemini ou outra IA.')).catch(()=>copiarTextoFallback(text));else copiarTextoFallback(text)}
+function copiarTextoFallback(text){const t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();alert('✅ Dados copiados.')}
+function exportarPDF(){
+ const old=document.getElementById('msaPdfPrintRoot');
+ if(old)old.remove();
+ const root=document.createElement('div');
+ root.id='msaPdfPrintRoot';
+ const raw=healthText();
+ const pessoa=((get(K.p)[0]||{}).nome||'Não informado').trim();
+ const nomeArquivo=pessoa&&pessoa!=='Não informado' ? 'Informações de Saúde - '+pessoa : 'Informações de Saúde - Minha Saúde IA';
+ const pdfLines=raw.split(/\r?\n/);
+ const formatted=pdfLines.map(function(line){
+   const s=String(line||'').trim();
+   if(!s)return '<div class="msa-pdf-spacer"></div>';
+   if(/^\\[.*\\]$/.test(s))return '<h2 class="msa-pdf-section">'+esc(s.slice(1,-1))+'</h2>';
+   if(/^MINHA SAÚDE IA/.test(s))return '<div class="msa-pdf-subtitle">'+esc(s)+'</div>';
+   const m=s.match(/^([^:|]{1,55}):\\s*(.*)$/);
+   if(m)return '<p class="msa-pdf-line"><b>'+esc(m[1])+':</b> '+esc(m[2])+'</p>';
+   return '<p class="msa-pdf-line">'+esc(s)+'</p>';
+ }).join('');
+ root.innerHTML='<div class="msa-pdf-sheet"><div class="msa-pdf-brand">🩺 <span>Minha Saúde IA</span></div><h1>Informações de Saúde — '+esc(pessoa||'Pessoa')+'</h1><div class="msa-pdf-meta">📄 Documento gerado em '+esc(new Date().toLocaleString('pt-BR'))+' · <b>V5.61</b></div><div class="msa-pdf-content">'+formatted+'</div><div class="msa-pdf-foot">ℹ️ Este documento organiza informações registradas pelo usuário e não constitui diagnóstico, prescrição ou laudo médico.</div></div>';
+ const style=document.createElement('style');
+ style.id='msaPdfPrintStyle';
+ style.textContent='#msaPdfPrintRoot{position:fixed;inset:0;z-index:99999;overflow:auto;background:#fff;padding:24px;color:#172033;font-family:Arial,sans-serif}.msa-pdf-sheet{max-width:900px;margin:0 auto;line-height:1.5}.msa-pdf-brand{font-size:18px;font-weight:800;color:#1d4ed8;padding-bottom:8px;border-bottom:2px solid #dbeafe}.msa-pdf-brand span{margin-left:5px}.msa-pdf-sheet h1{font-size:27px;margin:14px 0 4px;color:#172033}.msa-pdf-meta{color:#64748b;font-size:11px;margin-bottom:18px}.msa-pdf-section{font-size:15px;color:#173b8f;background:#eff6ff;border-left:5px solid #2563eb;padding:8px 11px;margin:20px 0 9px;page-break-after:avoid;font-weight:800;letter-spacing:.1px}.msa-pdf-line{font:11px/1.55 Arial,sans-serif;margin:5px 0;page-break-inside:avoid}.msa-pdf-line b{font-weight:800;color:#0f172a}.msa-pdf-subtitle{font-size:11px;font-weight:700;color:#334155;margin:5px 0 10px}.msa-pdf-spacer{height:4px}.msa-pdf-foot{margin-top:24px;padding-top:10px;border-top:1px solid #e2e8f0;color:#64748b;font-size:9px}@media print{body>*:not(#msaPdfPrintRoot){display:none!important}#msaPdfPrintRoot{position:static!important;inset:auto!important;overflow:visible!important;padding:8mm 9mm!important;background:#fff!important;color:#000!important}.msa-pdf-sheet{max-width:none!important}.msa-pdf-brand{color:#1d4ed8}.msa-pdf-section{background:#eff6ff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.msa-pdf-line{font-size:10.5px;line-height:1.48;margin:4px 0}.msa-pdf-section{font-size:14px;padding:7px 9px;margin:16px 0 7px}.msa-pdf-foot{font-size:8px}}@media screen{#msaPdfPrintRoot:before{content:"Preparando o PDF…";display:block;font-weight:800;color:#1d4ed8;margin-bottom:12px}}';
+ document.head.appendChild(style);
+ document.body.appendChild(root);
+ const oldTitle=document.title;
+ document.title=nomeArquivo;
+ let done=false;
+ const cleanup=()=>{
+   if(done)return;
+   done=true;
+   window.removeEventListener('afterprint',cleanup);
+   root.remove();
+   style.remove();
+   document.title=oldTitle;
+ };
+ window.addEventListener('afterprint',cleanup,{once:true});
+ setTimeout(()=>{if(document.getElementById('msaPdfPrintRoot'))cleanup()},120000);
+ try{window.print()}catch(e){cleanup();alert('Não foi possível abrir a impressão. Tente novamente.')}
+}
+function abrirCartaoEmergencia(){const p=get(K.p)[0]||{},m=get(K.m);const body='<div class="box"><h2>🚨 Informações de emergência</h2><b>Nome:</b> '+esc(p.nome||'Não informado')+'<br><b>Nascimento:</b> '+esc(p.nasc||'Não informado')+'<br><b>Alergias:</b> '+esc(p.alerg||'Não informado')+'<br><b>Condições:</b> '+esc(p.cond||'Não informado')+'<br><b>Medicamentos registrados:</b> '+esc(m.map(x=>x.nome+(x.dose?' — '+x.dose:'')).join('; ')||'Não informado')+'<br><b>Contato:</b> '+esc(p.emerg||'Não informado')+' — '+esc(p.tel||'')+'<br><b>Informações:</b> '+esc(p.info||'Não informado')+'</div>';openReport('Cartão de emergência',body)}
+function copiarCartaoEmergencia(){const p=get(K.p)[0]||{},m=get(K.m);const text='CARTÃO DE EMERGÊNCIA\nNome: '+(p.nome||'Não informado')+'\nNascimento: '+(p.nasc||'Não informado')+'\nAlergias: '+(p.alerg||'Não informado')+'\nCondições: '+(p.cond||'Não informado')+'\nMedicamentos: '+(m.map(x=>x.nome+(x.dose?' — '+x.dose:'')).join('; ')||'Não informado')+'\nContato: '+(p.emerg||'Não informado')+' — '+(p.tel||'');if(navigator.clipboard)navigator.clipboard.writeText(text).then(()=>alert('✅ Cartão copiado.'));else copiarTextoFallback(text)}
+
+function renderMedidasCorporais(){
+ const a=get(K.medidas).slice().sort((x,y)=>String(y.data).localeCompare(String(x.data)));
+ const box=$('medidasList');if(!box)return;
+ box.innerHTML=a.length?a.map(x=>{
+  const vals=[
+   x.biceps?'💪 Bíceps: '+esc(x.biceps)+' cm':'',
+   x.barriga?'🟠 Barriga/cintura: '+esc(x.barriga)+' cm':'',
+   x.gluteos?'🍑 Glúteos/quadril: '+esc(x.gluteos)+' cm':'',
+   x.panturrilha?'🦵 Panturrilha: '+esc(x.panturrilha)+' cm':'',
+   x.coxa?'🦵 Coxa: '+esc(x.coxa)+' cm':'',
+   x.peito?'🫁 Peito/tórax: '+esc(x.peito)+' cm':''
+  ].filter(Boolean).join(' · ');
+  return '<div class="item"><div class="itemtop"><b>📏 '+esc(formatDateBR(x.data))+'</b><div class="row" style="gap:6px;justify-content:flex-end"><button class="btn secondary small" type="button" onclick="editarMedidaCorporal(\''+esc(String(x.id))+'\')">✏️ Editar</button><button class="btn red small" type="button" onclick="removerMedidaCorporal(\''+esc(String(x.id))+'\')">🗑️ Excluir</button></div></div><p>'+vals+(x.obs?'<br>📝 '+esc(x.obs):'')+'</p></div>';
+ }).join(''):'<div class="empty">Nenhuma medida corporal registrada ainda.</div>';
+}
+function editarMedidaCorporal(id){
+ const item=get(K.medidas).find(x=>String(x.id)===String(id));
+ if(!item)return;
+ const form=$('medidasForm');
+ if(!form)return;
+ form.dataset.editId=String(id);
+ $('medidasData').value=item.data||'';
+ $('medidasBiceps').value=item.biceps||'';
+ $('medidasBarriga').value=item.barriga||'';
+ $('medidasGluteos').value=item.gluteos||'';
+ $('medidasPanturrilha').value=item.panturrilha||'';
+ $('medidasCoxa').value=item.coxa||'';
+ $('medidasPeito').value=item.peito||'';
+ $('medidasObs').value=item.obs||'';
+ const btn=form.querySelector('button[type="submit"]');
+ if(btn)btn.textContent='💾 Atualizar medidas';
+ let cancel=form.querySelector('.cancelar-edicao-medidas');
+ if(!cancel){
+  cancel=document.createElement('button');
+  cancel.type='button';
+  cancel.className='btn secondary small cancelar-edicao-medidas';
+  cancel.textContent='✖️ Cancelar edição';
+  cancel.onclick=cancelarEdicaoMedidaCorporal;
+  btn?.parentNode?.insertBefore(cancel,btn.nextSibling);
+ }
+ form.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function cancelarEdicaoMedidaCorporal(){
+ const form=$('medidasForm');
+ if(!form)return;
+ delete form.dataset.editId;
+ form.reset();
+ $('medidasData').value=hojeLocal();
+ const btn=form.querySelector('button[type="submit"]');
+ if(btn)btn.textContent='💾 Salvar medidas';
+ form.querySelector('.cancelar-edicao-medidas')?.remove();
+}
+function removerMedidaCorporal(id){
+ if(!confirm('Excluir esta medição corporal?'))return;
+ set(K.medidas,get(K.medidas).filter(x=>String(x.id)!==String(id)));
+ render();
+}
+function renderAcompanhamento(){
+ const v=get(K.v),r=get(K.r),vax=get(K.vax),fam=get(K.fam),docs=get(K.doc),p=get(K.p)[0]||{};
+ if($('vList'))list('vList',v,x=>'<div class="item"><b>❤️ '+fmt(x.data)+'</b><p>Peso: '+esc(x.peso||'—')+' · Pressão: '+esc(x.pressao||'—')+' · FC: '+esc(x.fc||'—')+' · Temp: '+esc(x.temp||'—')+' · Glicemia: '+esc(x.glic||'—')+' · Sat.: '+esc(x.sat||'—')+'<br>'+esc(x.obs||'')+'</p></div>');
+ if($('rList'))list('rList',r,x=>'<div class="item"><div class="itemtop"><b>🔔 '+esc(x.nome)+'</b><span class="tag">'+esc(x.tipo)+'</span></div><p>'+fmt(x.data)+'</p><button class="btn red small" onclick="removerLembrete(\''+x.id+'\')">Excluir</button></div>');
+ if($('vaxList'))list('vaxList',vax,x=>'<div class="item"><b>💉 '+esc(x.nome)+'</b><p>'+(x.data||'Data não informada')+' · '+esc(x.obs||'')+'</p></div>');
+ if($('famList'))list('famList',fam,x=>'<div class="item"><b>🧬 '+esc(x.parente)+'</b><p>'+esc(x.info)+'</p></div>');
+ if($('docList'))list('docList',docs,x=>'<div class="item"><b>📎 '+esc(x.nome)+'</b><p>'+esc(x.tipo)+' · '+esc(x.tamanho||'')+' · '+esc(x.data||'')+'</p></div>');
+ const consultas=get(K.c).filter(x=>x.ret&&x.ret>=new Date().toISOString().slice(0,10)).sort((a,b)=>a.ret.localeCompare(b.ret));
+ if($('agendaList'))$('agendaList').innerHTML=consultas.length?consultas.map(x=>'<div class="item"><div class="itemtop"><b>👨‍⚕️ '+esc(x.esp)+'</b><span class="tag">'+esc(x.ret)+'</span></div><p>'+esc(x.med||'Médico não informado')+' · '+esc(x.mot||'')+'</p></div>').join(''):'<div class="empty">Nenhuma consulta futura com data de retorno registrada.</div>';
+ if($('vChart')){
+   const dados=v.filter(x=>x.peso!==''&&x.peso!=null).slice(-10);
+   $('vChart').innerHTML=dados.length?dados.map(x=>'<div class="bar" style="height:'+Math.max(8,Math.min(100,Number(x.peso)))+'%"><span>'+esc(x.peso)+'</span><small>'+String(x.data).slice(0,10)+'</small></div>').join(''):'<div class="muted" style="margin:auto">Registre peso para visualizar a evolução.</div>';
+ }
+ if($('emergencyCard'))$('emergencyCard').innerHTML='<b>'+esc(p.nome||'Nome não informado')+'</b><br>⚠️ Alergias: '+esc(p.alerg||'Não informado')+'<br>🩺 Condições: '+esc(p.cond||'Não informado')+'<br>💊 Medicamentos: '+esc(vitalMeds())+'<br>📞 Emergência: '+esc(p.emerg||'Não informado')+' '+esc(p.tel||'');
+}
+function vitalMeds(){return get(K.m).map(x=>x.nome+(x.dose?' — '+x.dose:'')).join('; ')||'Não informado'}
+function removerLembrete(id){set(K.r,get(K.r).filter(x=>x.id!==id));render()}
+function salvarDocumento(){const f=$('docFile')?.files?.[0];if(!f)return alert('Escolha um arquivo.');if(f.size>2*1024*1024)return alert('Para manter o armazenamento local estável, use arquivos de até 2 MB.');const reader=new FileReader();reader.onload=()=>{let a=get(K.doc);a.push({id:String(Date.now()),nome:$('docNome').value||f.name,tipo:f.type||'arquivo',tamanho:Math.round(f.size/1024)+' KB',data:new Date().toLocaleDateString('pt-BR'),conteudo:reader.result});set(K.doc,a);$('docFile').value='';$('docNome').value='';render();alert('📎 Documento salvo neste navegador.')};reader.readAsDataURL(f)}
+function verificarLembretes(){const now=Date.now();const a=get(K.r);a.forEach(x=>{if(x.alertado)return;const t=new Date(x.data).getTime();if(t&&t<=now+30000&&t>=now-60000){x.alertado=true;set(K.r,a);if('Notification' in window&&Notification.permission==='granted')new Notification('🩺 Minha Saúde IA',{body:x.nome});else alert('🔔 Lembrete: '+x.nome)}})}
+async function pedirNotificacao(){if('Notification' in window){try{await Notification.requestPermission();alert(Notification.permission==='granted'?'🔔 Notificações ativadas.':'Notificações não ativadas.')}catch(e){}}}
+function compartilharResumo(){const text=healthText();if(navigator.share){navigator.share({title:'Minha Saúde IA — Resumo',text:text}).catch(()=>{})}else copiarParaIA()}
+function resumoInteligente(){const p=get(K.p)[0]||{},d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e),v=get(K.v);const txt='RESUMO INTELIGENTE\nNome: '+(p.nome||'Não informado')+'\nRegistros: '+d.length+' sintomas, '+c.length+' consultas, '+m.length+' medicamentos, '+e.length+' exames, '+v.length+' sinais vitais.\nCondições: '+(p.cond||'Não informado')+'\nAlergias: '+(p.alerg||'Não informado')+'\nÚltimos sintomas: '+d.slice(-5).map(x=>x.data+' — '+x.local+' — '+x.int+'/10').join(' | ')+'\nÚltimos exames: '+e.slice(-5).map(x=>x.data+' — '+x.nome).join(' | ')+'\n\nEste resumo é baseado apenas nos registros locais e não é diagnóstico.';const box=$('resumoIA');if(box)box.textContent=txt}
+
+function prepararContextoIA(){
+ const p=get(K.p)[0]||{},d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
+ const recent=[...d.map(x=>({data:x.data,tipo:'Sintoma',texto:x.local+' — intensidade '+x.int+'/10 — '+(x.sint||'')})),...c.map(x=>({data:x.data,tipo:'Consulta',texto:x.esp+' — '+(x.mot||'')})),...m.map(x=>({data:x.inicio||x.fim,tipo:'Medicamento',texto:x.nome+' — '+(x.dose||'') })),...e.map(x=>({data:x.data,tipo:'Exame',texto:x.nome+' — '+(x.res||'')}))].filter(x=>x.data).sort((a,b)=>String(b.data).localeCompare(String(a.data))).slice(0,15);
+ const ficha=[
+ 'Contexto de saúde pessoal para análise e organização — Minha Saúde IA.',
+ 'IMPORTANTE: use somente as informações abaixo. Não invente, não complete lacunas e não faça diagnóstico. Se algo exigir avaliação, sinalize como assunto para discutir com profissional de saúde.',
+ '',
+ '[PERFIL]',
+ 'Nome: '+(p.nome||'Não informado'),
+ 'Data de nascimento: '+(p.nasc||'Não informado'),
+ 'Idade: '+(p.idade||'Não informado'),
+ 'Peso: '+(p.peso||'Não informado'),
+ 'Altura: '+(p.altura||'Não informado'),
+ 'Sexo: '+(p.sexo||'Não informado'),
+ 'Alergias: '+(p.alerg||'Não informado'),
+ 'Condições: '+(p.cond||'Não informado'),
+ 'Cirurgias/internações: '+(p.circ||'Não informado'),
+ 'Informações importantes: '+(p.info||'Não informado'),
+ '',
+ '[REGISTROS RECENTES]',
+ ...(recent.length?recent.map(x=>x.data+' — '+x.tipo+': '+x.texto):['Nenhum registro recente.']),
+ '',
+ '[MEDICAMENTOS REGISTRADOS]',
+ ...(m.length?m.slice(-15).map(x=>x.nome+' — '+(x.dose||'dose não informada')+' — '+(x.freq||'frequência não informada')):['Nenhum registrado.']),
+ '',
+ 'TAREFA: organize ou responda à pergunta do usuário usando somente este contexto. Não altere os fatos.'
+ ].join('\n');
+ try{navigator.clipboard.writeText(ficha);alert('✅ Contexto preparado e copiado. Revise antes de colar na IA.');go('ia');}catch(e){go('ia');const t=$('iaInput');if(t){t.value=ficha;t.focus();}alert('O contexto foi preparado. Se a cópia automática não funcionar, ele ficou no campo da IA.');}
+}
+function findAlerts(d){for(let x of d){let s=(x.sint||'').toLowerCase();if(x.int>=9)return '🔴 Há registro de dor muito intensa (9–10/10). Se for atual, súbita, piorando ou acompanhada de outros sinais importantes, procure avaliação médica.';if(/falta de ar|desmaio|convuls|confusão|fraqueza de um lado|sangramento importante/.test(s))return '🔴 Foi registrado um possível sinal de alerta. Se estiver acontecendo agora, procure atendimento médico rapidamente.'}return ''}
+$('medidasForm')?.addEventListener('submit',e=>{
+ e.preventDefault();
+ const editId=e.target.dataset.editId||'';
+ const item={id:editId?Number(editId):Date.now(),data:$('medidasData').value,biceps:$('medidasBiceps').value,barriga:$('medidasBarriga').value,gluteos:$('medidasGluteos').value,panturrilha:$('medidasPanturrilha').value,coxa:$('medidasCoxa').value,peito:$('medidasPeito').value,obs:$('medidasObs').value};
+ if(!item.biceps&&!item.barriga&&!item.gluteos&&!item.panturrilha&&!item.coxa&&!item.peito){alert('Informe pelo menos uma medida corporal.');return}
+ const a=get(K.medidas);
+ if(editId){
+  const idx=a.findIndex(x=>String(x.id)===String(editId));
+  if(idx<0){alert('Medição não encontrada.');cancelarEdicaoMedidaCorporal();return}
+  a[idx]=item;
+ }else{
+  a.push(item);
+ }
+ if(!gravarOuAvisar(K.medidas,a))return;
+ cancelarEdicaoMedidaCorporal();
+ render();
+ alert(editId?'📏 Medidas corporais atualizadas!':'📏 Medidas corporais salvas!');
+});
+$('dData').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+$('dorForm')?.addEventListener('submit',()=>{});
+$('dorForm').onsubmit=e=>{e.preventDefault();let a=get(K.d);a.push({data:$('dData').value,local:$('dLocal').value,int:+$('dInt').value,tipo:$('dTipo').value,freq:$('dFreq').value,gatilho:$('dGatilho').value,sint:$('dSint').value,obs:$('dObs').value});if(!gravarOuAvisar(K.d,a))return;e.target.reset();$('dInt').value=5;$('dScore').textContent=5;render();alert('Sintoma salvo!')};
+$('cForm').onsubmit=e=>{e.preventDefault();let a=get(K.c);a.push({data:$('cData').value,esp:$('cEsp').value,med:$('cMed').value,mot:$('cMot').value,perg:$('cPerg').value,obs:$('cObs').value,ret:$('cRet').value});if(!gravarOuAvisar(K.c,a))return;e.target.reset();render();alert('Consulta salva!')};
+$('mForm').onsubmit=e=>{e.preventDefault();let a=get(K.m);a.push({nome:$('mNome').value,dose:$('mDose').value,freq:$('mFreq').value,inicio:$('mInicio').value,fim:$('mFim').value,pres:$('mPres').value,obs:$('mObs').value});if(!gravarOuAvisar(K.m,a))return;e.target.reset();render();alert('Medicamento salvo!')};
+$('eForm').onsubmit=e=>{e.preventDefault();let a=get(K.e);a.push({nome:$('eNome').value,data:$('eData').value,res:$('eRes').value,obs:$('eObs').value});if(!gravarOuAvisar(K.e,a))return;e.target.reset();render();alert('Exame salvo!')};
+
+function hojeLocal(){return new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10)}
+function diasEntre(a,b){
+ const da=new Date(a+'T00:00:00'),db=new Date(b+'T00:00:00');
+ return Math.round((db-da)/86400000);
+}
+function adicionarDiasData(data,dias){
+ const d=new Date(data+'T00:00:00');d.setDate(d.getDate()+dias);
+ return d.toISOString().slice(0,10);
+}
+function renderCicloMenstrual(){
+ const a=get(K.ciclo).filter(x=>x.inicio).slice().sort((x,y)=>String(x.inicio).localeCompare(String(y.inicio)));
+ const resumo=$('cicloResumo'),listEl=$('cicloList');
+ if(!resumo||!listEl)return;
+ if(!a.length){
+   resumo.innerHTML='🩸 Registre o primeiro início da menstruação para começar seu histórico.';
+   listEl.innerHTML='<div class="empty">Nenhum ciclo registrado ainda.</div>';
+   return;
+ }
+ const intervalos=[];
+ for(let i=1;i<a.length;i++){const n=diasEntre(a[i-1].inicio,a[i].inicio);if(n>0&&n<100)intervalos.push(n)}
+ const media=intervalos.length?Math.round(intervalos.reduce((s,n)=>s+n,0)/intervalos.length):null;
+ const ultimo=a[a.length-1].inicio;
+ const proximo=media?adicionarDiasData(ultimo,media):null;
+ resumo.innerHTML='<b>📊 Histórico:</b> '+a.length+' ciclo(s)'+(media?' · <b>média entre inícios:</b> '+media+' dias':' · registre mais ciclos para calcular uma média')+(proximo?' · <b>próximo início estimado:</b> '+formatDateBR(proximo): '');
+ listEl.innerHTML=a.slice().reverse().map((x,i)=>{
+   const idx=a.findIndex(y=>y.id===x.id), intervalo=idx>0?diasEntre(a[idx-1].inicio,x.inicio):null;
+   return '<div class="item"><div class="itemtop"><b>🩸 Início: '+esc(formatDateBR(x.inicio))+'</b><span class="tag">'+(intervalo?intervalo+' dias de intervalo':'Primeiro registro')+'</span></div><p>'+(x.fim?'Fim: '+esc(formatDateBR(x.fim))+' · ':'')+'Fluxo: '+esc(x.fluxo||'Não informado')+' · Dor/cólica: '+esc(x.dor||'Não informado')+'/10'+(x.obs?' · 📝 '+esc(x.obs):'')+'</p></div>';
+ }).join('');
+}
+function renderNovosModulos(){
+ atualizarPainelAnticoncepcional();
+ renderCicloMenstrual();
+ const rev=(k,fn)=>{const a=get(k);return a.length?a.slice().reverse().map(fn).join(''):'<div class="empty">Nenhum registro ainda.</div>'};
+ if($('nutriList'))$('nutriList').innerHTML=rev(K.nutri,x=>'<div class="item"><b>🍎 '+esc(x.data)+'</b><p>'+esc(x.texto)+(x.foto?' 📸 Foto anexada':'')+'</p></div>');
+ if($('suplList'))$('suplList').innerHTML=rev(K.suplReg,x=>'<div class="item"><b>💊 '+esc(x.nome)+'</b><p>'+esc(x.dose||'')+(x.hora?' · '+x.hora:'')+' · estoque: '+(x.estoque??'—')+(x.obs?' · '+esc(x.obs):'')+'</p></div>');
+ if($('foodList'))$('foodList').innerHTML=rev(K.food,x=>'<div class="item"><b>⚠️ '+esc(x.nome)+'</b><p>'+esc(x.reacao)+' · '+esc(x.data||'Sem data')+(x.obs?' · '+esc(x.obs):'')+'</p></div>');
+ if($('aguaList'))$('aguaList').innerHTML=rev(K.agua,x=>'<div class="item"><b>💧 '+esc(x.data)+'</b><p>'+esc(x.qtd)+' ml'+(x.meta?' · meta '+esc(x.meta)+' ml':'')+'</p></div>');
+ const ag=get(K.agua),today=hojeLocal(),sum=ag.filter(x=>x.data===today).reduce((n,x)=>n+(+x.qtd||0),0),meta=ag.find(x=>x.data===today)?.meta||'';
+ if($('aguaResumo'))$('aguaResumo').textContent='Hoje: '+sum+' ml'+(meta?' de '+meta+' ml ('+Math.round(sum/+meta*100)+'%)':'');
+ if($('sonoList'))$('sonoList').innerHTML=rev(K.sono,x=>{
+ const detalhes=x.dormiu&&x.acordou
+  ? '🌙 '+esc(x.dormiu)+' → ☀️ '+esc(x.acordou)+' · '+esc(x.horas||'—')+' h · 🚽 xixi: '+esc(x.xixi??0)+' · 😣 dor: '+esc(x.dor??0)
+  : '⏱️ '+esc(x.horas||'—')+' h · qualidade '+esc(x.qual||'—')+'/10 · despertares '+esc(x.despert||'0');
+ return '<div class="item"><b>😴 '+(x.habitual?'Rotina habitual':'Registro de sono')+'</b><p>'+detalhes+(x.habitual?' · 📅 Todos os dias':(x.data?' · 📅 '+esc(x.data):''))+(x.obs?' · 📝 '+esc(x.obs):'')+'</p></div>';
+});
+ if($('bemList'))$('bemList').innerHTML=rev(K.bem,x=>'<div class="item"><b>🧠 '+esc(x.data)+'</b><p>Estresse: '+esc(x.estresse||'—')+'/10 · ansiedade: '+esc(x.ansiedade||'—')+'/10'+(x.obs?' · '+esc(x.obs):'')+'</p></div>');
+ if($('gatList'))$('gatList').innerHTML=rev(K.gat,x=>'<div class="item"><b>🎯 '+esc(x.gatilho)+'</b><p>'+esc(x.data)+' · sintoma: '+esc(x.sintoma||'—')+(x.obs?' · '+esc(x.obs):'')+'</p></div>');
+ if($('famListPage'))$('famListPage').innerHTML=rev(K.fam,x=>'<div class="item"><b>🧬 '+esc(x.parente)+'</b><p>'+esc(x.info||x.cond||'')+(x.idade?' · diagnóstico aos '+esc(x.idade)+' anos':'')+(x.obs?' · '+esc(x.obs):'')+'</p></div>');
+ if($('lembListPage'))$('lembListPage').innerHTML=rev(K.r,x=>'<div class="item"><b>🔔 '+esc(x.nome)+'</b><p>'+esc(x.data||'')+' · '+esc(x.tipo||'')+'</p></div>');
+ if($('medRotList'))$('medRotList').innerHTML=rev(K.medRot,x=>{const dia=hojeLocal(),tomou=get(K.medTaken).some(t=>t.medId===x.id&&String(t.data).slice(0,10)===dia);return '<div class="item"><div class="itemtop"><b>💊 '+esc(x.nome)+'</b><span class="tag">'+(tomou?'✅ Hoje registrado':'⏳ Hoje pendente')+'</span></div><p>'+esc(x.dose||'')+' · '+esc(x.hora)+' · estoque '+(x.estoque??0)+(+x.estoque<=+x.min?' ⚠️ Reposição':'')+'</p><button class="btn '+(tomou?'secondary':'green')+'" onclick="confirmarDose('+x.id+')">'+(tomou?'↩️ Registrar novamente':'✅ Tomei')+'</button></div>'});
+ if($('medAdherenceSummary')){
+ const meds=get(K.medRot),taken=get(K.medTaken),today=hojeLocal();
+ const active=meds.length,done=meds.filter(m=>taken.some(t=>t.medId===m.id&&String(t.data).slice(0,10)===today)).length;
+ const last7=new Date();last7.setDate(last7.getDate()-6);
+ const week=taken.filter(t=>new Date(t.data)>=last7).length;
+ $('medAdherenceSummary').innerHTML='<div class="card stat"><span>💊 Rotinas</span><b>'+active+'</b></div><div class="card stat"><span>✅ Hoje</span><b>'+done+'/'+active+'</b></div><div class="card stat"><span>📅 Últimos 7 dias</span><b>'+week+'</b></div><div class="card stat"><span>📦 Estoque baixo</span><b>'+meds.filter(m=>+m.estoque<=+m.min).length+'</b></div>';
+}
+if($('lembAgenda')){const items=[...get(K.r).map(x=>({d:x.data,n:x.nome,t:x.tipo||'Lembrete'})),...get(K.medRot).map(x=>({d:hojeLocal()+'T'+x.hora,n:x.nome,t:'Medicamento'}))].filter(x=>x.d).sort((a,b)=>String(a.d).localeCompare(String(b.d))).slice(0,8);$('lembAgenda').innerHTML=items.length?items.map(x=>'<div class="item"><b>'+esc(x.n)+'</b><p>'+esc(x.d)+' · '+esc(x.t)+'</p></div>').join(''):'<div class="empty">Nenhum próximo cuidado.</div>'}
+}
+function arquivoDataURL(file,cb){if(!file){cb('');return}const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(file)}
+$('cicloForm')?.querySelector('button')?.addEventListener('click',e=>{
+ const inicio=$('cicloInicio').value,fim=$('cicloFim').value;
+ if(!inicio){alert('Informe o início da menstruação.');return}
+ if(fim&&fim<inicio){alert('A data de fim não pode ser anterior ao início.');return}
+ let a=get(K.ciclo);
+ const idx=a.findIndex(x=>x.inicio===inicio);
+ const registro={id:idx>=0?a[idx].id:Date.now(),inicio,fim,fluxo:$('cicloFluxo').value,dor:$('cicloDor').value,obs:$('cicloObs').value};
+ if(idx>=0)a[idx]=registro;else a.push(registro);
+ a.sort((x,y)=>String(x.inicio).localeCompare(String(y.inicio)));
+ set(K.ciclo,a);e.target.reset();renderNovosModulos();alert('🩸 Ciclo menstrual registrado!'); 
+});
+$('nutriForm')?.addEventListener('submit',e=>{e.preventDefault();arquivoDataURL($('nutriFoto').files[0],foto=>{let a=get(K.nutri);a.push({data:$('nutriData').value,texto:$('nutriTexto').value,foto});set(K.nutri,a);e.target.reset();renderNovosModulos();alert('🍎 Alimentação registrada!')})});
+$('suplForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.suplReg);a.push({nome:$('suplNome').value,dose:$('suplDose').value,hora:$('suplHora').value,estoque:$('suplEstoque').value,obs:$('suplObs').value});set(K.suplReg,a);e.target.reset();renderNovosModulos();alert('💊 Suplemento salvo!')});
+$('foodForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.food);a.push({nome:$('foodNome').value,reacao:$('foodReacao').value,data:$('foodData').value,obs:$('foodObs').value});set(K.food,a);e.target.reset();renderNovosModulos();alert('⚠️ Reação registrada!')});
+$('aguaForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.agua);a.push({data:$('aguaData').value,qtd:$('aguaQtd').value,meta:$('aguaMeta').value});set(K.agua,a);e.target.reset();renderNovosModulos();alert('💧 Hidratação registrada!')});
+$('sonoForm')?.addEventListener('submit',e=>{
+ e.preventDefault();
+ const inicio=$('sonoDormiu').value,fim=$('sonoAcordou').value;
+ if(!inicio||!fim){alert('Informe o horário que dormiu e o horário que acordou.');return}
+ const [ih,im]=inicio.split(':').map(Number),[fh,fm]=fim.split(':').map(Number);
+ let mins=(fh*60+fm)-(ih*60+im);if(mins<=0)mins+=1440;
+ const horas=(mins/60).toFixed(1);
+ let a=get(K.sono);
+ const rotina={id:'habitual',habitual:true,dormiu:inicio,acordou:fim,horas:horas,xixi:$('sonoXixi').value||0,dor:$('sonoDor').value||0,obs:$('sonoObs').value,atualizadoEm:new Date().toISOString()};
+ const antigas=a.filter(x=>!x.habitual&&x.id!=='habitual');
+ a=antigas.concat([rotina]);
+ set(K.sono,a);e.target.reset();$('sonoXixi').value=0;$('sonoDor').value=0;renderNovosModulos();alert('🌙 Rotina de sono salva! Você normalmente dorme cerca de '+horas.replace('.',',')+' horas por noite.');
+});
+$('bemForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.bem);a.push({data:$('bemData').value,estresse:$('bemEstresse').value,ansiedade:$('bemAnsiedade').value,obs:$('bemObs').value});set(K.bem,a);e.target.reset();renderNovosModulos();alert('🧠 Bem-estar registrado!')});
+$('gatilhoForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.gat);a.push({data:$('gatData').value,gatilho:$('gatNome').value,sintoma:$('gatSintoma').value,obs:$('gatObs').value});set(K.gat,a);e.target.reset();renderNovosModulos();alert('🎯 Gatilho registrado!')});
+$('famFormPage')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.fam);a.push({parente:$('famParentePage').value,cond:$('famCondPage').value,info:$('famCondPage').value,idade:$('famIdadePage').value,obs:$('famObsPage').value});set(K.fam,a);e.target.reset();renderNovosModulos();alert('🧬 Antecedente salvo!')});
+function gerarPerguntasFamilia(){const a=get(K.fam),conds=[...new Set(a.map(x=>x.cond||x.info).filter(Boolean))];$('famPerguntas').innerHTML=conds.length?'<b>Perguntas sugeridas:</b><ol>'+conds.map(c=>'<li>Há algum exame preventivo ou acompanhamento relacionado a histórico familiar de '+esc(c)+' que devo discutir com meu médico?</li>').join('')+'</ol>':'Registre antecedentes familiares para gerar perguntas organizadas.'}
+$('medRotForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.medRot);a.push({id:Date.now(),nome:$('medRotNome').value,dose:$('medRotDose').value,hora:$('medRotHora').value,estoque:$('medRotEstoque').value||0,min:$('medRotMin').value||0});set(K.medRot,a);e.target.reset();renderNovosModulos();alert('💊 Rotina criada!')});
+function confirmarDose(id){
+ let a=get(K.medTaken),hoje=hojeLocal(),idx=a.findIndex(x=>x.medId===id&&String(x.data).slice(0,10)===hoje);
+ let r=get(K.medRot),med=r.find(x=>x.id===id);
+ if(idx>=0){a.splice(idx,1);set(K.medTaken,a);if(med&&+med.estoque>0){med.estoque=+med.estoque+1;set(K.medRot,r)}renderNovosModulos();return}
+ a.push({id:id,medId:id,data:new Date().toISOString()});set(K.medTaken,a);
+ if(med&&+med.estoque>0){med.estoque=+med.estoque-1;set(K.medRot,r)}
+ renderNovosModulos();alert('✅ Dose registrada para hoje e estoque atualizado.');
+}
+$('lembFormPage')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.r);a.push({nome:$('lembNomePage').value,data:$('lembDataPage').value,tipo:$('lembTipoPage').value});set(K.r,a);e.target.reset();renderNovosModulos();alert('🔔 Lembrete criado!')});
+function checarMedicamentosRotina(){const now=new Date(),hm=now.toTimeString().slice(0,5),date=hojeLocal();get(K.medRot).forEach(x=>{if(x.hora===hm){const chave='msa2_alerta_'+x.id+'_'+date+'_'+hm;if(!window.msaStorage.getItem(chave)){window.msaStorage.setItem(chave,'1');if('Notification'in window&&Notification.permission==='granted')new Notification('💊 Hora do medicamento',{body:x.nome+(x.dose?' — '+x.dose:'')});else alert('💊 Hora do medicamento: '+x.nome+(x.dose?' — '+x.dose:''))}}})}
+setInterval(checarMedicamentosRotina,30000);
+setInterval(checarAnticoncepcional,30000);
+renderNovosModulos();
+atualizarPainelAnticoncepcional();
+
+function exigirSexoObrigatorio(){const p=get(K.p)[0]||{};if(!Object.keys(p).length||p.sexo)return;goSemBloqueio('perfil');const sel=$('pSexo');if(sel){sel.focus();sel.scrollIntoView({behavior:'smooth',block:'center'});}alert('👤 Antes de continuar, informe o sexo no seu perfil. Essa informação é necessária para organizar corretamente os módulos de saúde específicos.');}
+function goSemBloqueio(id){document.querySelectorAll('nav button[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===id));fecharMenus?.();loadProfile?.();renderCarteirinha?.();renderNovosModulos?.();}
+function atualizarSaudeReprodutiva(){
+ const s=String($('pSexo')?.value||'').trim().toLowerCase();
+ const feminino=/femin|mulher|female/.test(s);
+ const cicloMenu=$('cicloMenuBtn');if(cicloMenu)cicloMenu.closest('.nav-group').style.display=feminino?'block':'none';
+ const box=$('reproSection');if(box)box.style.display=feminino?'block':'none';
+ const cb=$('contraceptiveBox');if(cb)cb.style.display=feminino?'block':'none';
+ atualizarCamposMetodoAnticoncepcional();
+ if(feminino) atualizarPainelAnticoncepcional();
+}
+function atualizarCamposMetodoAnticoncepcional(){
+ const metodo=String($('pAnticoncepcionalMetodo')?.value||'').toLowerCase();
+ const pill=/pílula combinada|pilula combinada/.test(metodo);
+ const mini=/minipílula|minipilula/.test(metodo);
+ const rb=$('pillRegimenBox');if(rb)rb.style.display=(pill||mini)?'grid':'none';
+ const rg=$('pAnticoncepcionalRegime')?.parentElement;if(rg)rg.style.display=pill?'':'none';
+ const mt=$('pMinipilulaTipo')?.parentElement;if(mt)mt.style.display=mini?'':'none';
+}
+function registrarAnticoncepcional(status,data){
+ const p=get(K.p)[0]||{};
+ if(String(p.usaAnticoncepcional||'').toLowerCase()!=='sim')return;
+ const dia=data||hojeLocal();
+ let a=get(K.anticoncepcional).filter(x=>x.data!==dia);
+ a.push({data:dia,status:status,registradoEm:new Date().toISOString()});
+ a.sort((x,y)=>String(x.data).localeCompare(String(y.data)));
+ set(K.anticoncepcional,a);
+ atualizarPainelAnticoncepcional();
+}
+function atualizarPainelAnticoncepcional(){
+ const p=get(K.p)[0]||{},box=$('anticoncepcionalToday'),hist=$('anticoncepcionalHistory');
+ if(!box)return;
+ const ativo=String(p.usaAnticoncepcional||'').toLowerCase()==='sim' && p.anticoncepcionalNome;
+ if(!ativo){
+   box.innerHTML='<div class="empty">Configure o anticoncepcional no Perfil para ativar o acompanhamento diário.</div>';
+   if(hist)hist.innerHTML='';
+   return;
+ }
+ const hoje=hojeLocal(),registro=get(K.anticoncepcional).find(x=>x.data===hoje);
+ const status=registro?.status;
+ box.innerHTML='<div class="item" style="background:#f8faff"><b>Hoje — '+esc(formatDateBR(hoje))+'</b><p>'+esc(p.anticoncepcionalNome)+(p.anticoncepcionalHora?' · horário '+esc(p.anticoncepcionalHora):'')+'<br><b>Status:</b> '+(status==='tomou'?'✅ Tomou':status==='nao_tomou'?'❌ Não tomou':'⏳ Ainda não registrado')+'</p><div class="row" style="margin-top:9px"><button class="btn green" type="button" onclick="registrarAnticoncepcional(\'tomou\')">✅ Tomei</button><button class="btn red" type="button" onclick="registrarAnticoncepcional(\'nao_tomou\')">❌ Não tomei</button></div></div>';
+ if(hist){
+   const dias=get(K.anticoncepcional).slice().sort((a,b)=>String(b.data).localeCompare(String(a.data))).slice(0,7);
+   hist.innerHTML=dias.length?dias.map(x=>'<div class="item"><div class="itemtop"><b>'+esc(formatDateBR(x.data))+'</b><span class="tag">'+(x.status==='tomou'?'✅ Tomou':'❌ Não tomou')+'</span></div></div>').join(''):'<div class="muted">Ainda não há registros diários.</div>';
+ }
+}
+function checarAnticoncepcional(){
+ const p=get(K.p)[0]||{},hora=String(p.anticoncepcionalHora||'');
+ if(String(p.usaAnticoncepcional||'').toLowerCase()!=='sim'||!hora)return;
+ const hm=new Date().toTimeString().slice(0,5),dia=hojeLocal();
+ if(hora!==hm||get(K.anticoncepcional).some(x=>x.data===dia))return;
+ const chave='msa2_anticoncepcional_alerta_'+dia+'_'+hm;
+ if(window.msaStorage.getItem(chave))return;
+ window.msaStorage.setItem(chave,'1');
+ if('Notification'in window&&Notification.permission==='granted')new Notification('💊 Hora do anticoncepcional',{body:(p.anticoncepcionalNome||'Anticoncepcional')+' — horário programado.'});
+ else alert('💊 Hora do anticoncepcional: '+(p.anticoncepcionalNome||'Anticoncepcional')+' — horário programado.');
+}
+function orientarEsquecimentoAnticoncepcional(){
+ const p=get(K.p)[0]||{},metodo=String(p.anticoncepcionalMetodo||'').toLowerCase();
+ if(String(p.usaAnticoncepcional||'').toLowerCase()!=='sim'){alert('ℹ️ Primeiro registre que usa anticoncepcional no Perfil.');return}
+ if(!metodo){alert('💊 Informe o método utilizado no Perfil antes de usar esta orientação.');return}
+ const horasTxt=prompt('🚨 Há quanto tempo a dose ficou atrasada? Informe aproximadamente em horas.\n\nSe você perdeu mais de uma dose, informe a quantidade de horas desde a primeira dose que deveria ter sido tomada.','24');
+ if(horasTxt===null)return;
+ const horas=Number(String(horasTxt).replace(',','.'));
+ if(!Number.isFinite(horas)||horas<0){alert('Informe um número de horas válido.');return}
+ let msg='💊 Orientação de segurança\\n\\n';
+ if(/pílula combinada|pilula combinada/.test(metodo)){
+   if(horas<48) msg+='Para pílula combinada, referências clínicas consideram uma única pílula atrasada ou perdida quando ainda não se passaram 48 horas desde o horário previsto: a orientação geral é tomar a pílula assim que possível e continuar as próximas no horário habitual.\\n\\n';
+   else msg+='Se já passaram 48 horas ou mais, isso pode corresponder a duas ou mais pílulas hormonais consecutivas perdidas. A orientação geral é tomar a pílula perdida mais recente assim que possível, continuar a cartela no horário habitual e usar método de barreira até completar 7 dias consecutivos de uso correto.\\n\\n';
+   msg+='Se as perdas ocorreram na primeira semana e houve relação sexual sem proteção nos 5 dias anteriores, procure orientação profissional sobre contracepção de emergência.';
+ }else if(/minipílula|minipilula/.test(metodo)){
+   const tipo=String(p.minipilulaTipo||'').toLowerCase();
+   if(/drospirenona/.test(tipo)){
+     msg+=horas<48?'Para minipílula de drospirenona, menos de 48 horas desde o horário previsto é tratado nas recomendações gerais como atraso/perda de uma dose: tomar assim que possível e continuar diariamente.':'Para minipílula de drospirenona, 48 horas ou mais pode exigir medidas adicionais, incluindo método de barreira por 7 dias; confirme a bula do seu produto.';
+   }else if(/tradicional|noretisterona|norgestrel/.test(tipo)){
+     msg+=horas>3?'Para algumas minipílulas tradicionais, mais de 3 horas de atraso já é considerado uma dose perdida; a orientação geral é tomar assim que possível e usar método de barreira até 2 dias de uso correto.':'Para esse intervalo, siga o horário habitual e confirme a orientação da bula do produto.';
+   }else{
+     msg+='O intervalo permitido varia conforme o princípio ativo da minipílula. Confirme a bula específica antes de decidir o que fazer.';
+   }
+ }else{
+   msg+='Para '+(p.anticoncepcionalMetodo||'este método')+', a conduta após atraso/esquecimento depende do produto e do esquema utilizado. Consulte a bula específica ou um profissional de saúde antes de tomar uma decisão.';
+ }
+ msg+='\\n\\n⚠️ Esta tela é uma referência de segurança e não substitui a bula do medicamento nem orientação profissional. A Anvisa disponibiliza gratuitamente o Bulário Eletrônico.';
+ alert(msg);
+}
+function loadProfile(){let p=get(K.p)[0]||{};[['Nome','nome'],['Nasc','nasc'],['Idade','idade'],['Peso','peso'],['Sexo','sexo'],['Sangue','sangue'],['Altura','altura'],['Supl','supl'],['Alerg','alerg'],['Cond','cond'],['Circ','circ'],['Info','info'],['Emerg','emerg'],['Tel','tel'],['Menstruacao','menstruacao'],['Ciclo','ciclo'],['DuracaoMenstr','duracaoMenstr'],['Regularidade','regularidade'],['SexoFreqMin','sexoFreqMin'],['SexoFreqMax','sexoFreqMax'],['MasturbacaoDia','masturbacaoDia'],['Camisinha','camisinha'],['Engravidou','engravidou'],['Mae','mae'],['Gestacoes','gestacoes'],['ReproObs','reproObs'],['UsaAnticoncepcional','usaAnticoncepcional'],['AnticoncepcionalMetodo','anticoncepcionalMetodo'],['AnticoncepcionalNome','anticoncepcionalNome'],['AnticoncepcionalHora','anticoncepcionalHora'],['AnticoncepcionalInicio','anticoncepcionalInicio'],['AnticoncepcionalRegime','anticoncepcionalRegime'],['MinipilulaTipo','minipilulaTipo'],['PrevColo','prevColo'],['Mamografia','mamografia'],['IST','ist'],['HPV','hpv'],['PrevProx','prevProx'],['PrevObs','prevObs'],['DorcelaxFreq','dorcelaxFreq'],['ParacetamolFreq','paracetamolFreq'],['OutrosDor','outrosDor'],['Catapora','catapora'],['CataporaQuando','cataporaQuando'],['Academia','academia'],['AcademiaFreq','academiaFreq'],['TrabalhoTipo','trabalhoTipo'],['HorasSentado','horasSentado'],['HorasPe','horasPe'],['AguaDia','aguaDia'],['UrinaDia','urinaDia'],['EvacuacaoDia','evacuacaoDia'],['CalorSuor','calorSuor'],['Fuma','fuma'],['FumaObs','fumaObs'],['Alcool','alcool'],['AlcoolObs','alcoolObs']].forEach(([id,key])=>{if($('p'+id))$('p'+id).value=p[key]||''});atualizarSaudeReprodutiva()}
+$('pSexo').addEventListener('input',atualizarSaudeReprodutiva);
+$('pAnticoncepcionalMetodo')?.addEventListener('change',atualizarCamposMetodoAnticoncepcional);
+function processarFotoPerfil(ev){const file=ev.target.files&&ev.target.files[0];if(!file)return;if(!file.type.startsWith('image/')){alert('Selecione uma imagem.');return;}const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{const max=700,scale=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);c.getContext('2d').drawImage(img,0,0,c.width,c.height);const data=c.toDataURL('image/jpeg',.82);let p=get(K.p)[0]||{};p.foto=data;set(K.p,[p]);loadProfile();renderCarteirinha();};img.src=reader.result};reader.readAsDataURL(file)}
+function renderCarteirinha(){const p=get(K.p)[0]||{},m=get(K.m),foto=p.foto||'';const img=foto?'<img src="'+esc(foto)+'" alt="Foto do perfil">':'<span>👤</span>';if($('profilePhotoPreview'))$('profilePhotoPreview').innerHTML=img;if($('cardPhoto'))$('cardPhoto').innerHTML=img;if($('cardName'))$('cardName').textContent=p.nome||'Seu nome';if($('cardBasic')){let bits=[];if(p.nasc)bits.push('Nascimento: '+formatDateBR(p.nasc));if(p.idade)bits.push('Idade: '+p.idade);if(p.sexo)bits.push('Sexo: '+p.sexo);$('cardBasic').textContent=bits.join(' • ')||'Preencha seu perfil para montar a carteirinha.'}if($('cardBlood'))$('cardBlood').textContent=p.sangue||'Não informado';if($('cardBirth'))$('cardBirth').textContent=p.nasc?formatDateBR(p.nasc):'Não informado';if($('cardHeight'))$('cardHeight').textContent=p.altura?formatarAltura(p.altura):'Não informado';if($('cardWeight'))$('cardWeight').textContent=p.peso?(p.peso+' kg'):'Não informado';if($('cardAllergy'))$('cardAllergy').textContent=p.alerg||'Não informado';if($('cardConditions'))$('cardConditions').textContent=p.cond||'Não informado';if($('cardMeds'))$('cardMeds').textContent=m.length?m.slice(-4).map(x=>x.nome+(x.dose?' — '+x.dose:'')).join(' • '):'Nenhum registrado';if($('cardEmergency'))$('cardEmergency').textContent=p.emerg?(p.emerg+(p.tel?' — '+p.tel:'')):'Não informado';if($('cardUpdated'))$('cardUpdated').textContent=new Date().toLocaleDateString('pt-BR')}
+function gerarCarteirinhaPDF(){renderCarteirinha();const oldTitle=document.title;document.title='Carteirinha de Saúde - '+((get(K.p)[0]||{}).nome||'Minha Saúde IA');setTimeout(()=>{window.print();setTimeout(()=>{document.title=oldTitle},500)},120)}
+$('pFoto')?.addEventListener('change',processarFotoPerfil);
+function ask(){let q=$('iaInput').value.trim();if(!q)return;let chat=$('chat');chat.innerHTML+=`<div class="bubble user">${esc(q)}</div>`;let l=q.toLowerCase(),ans;
+if(/falta de ar|desmaio|convuls|confus|avc|fraqueza de um lado|sangramento intenso/.test(l))ans='🚨 Esse relato pode envolver um sinal de alerta. Se estiver acontecendo agora, for intenso ou súbito, procure atendimento médico imediatamente.';
+else if(/dor|do[ií]|pontada|queima/.test(l))ans='Para organizar melhor, registre local, início, intensidade (0–10), tipo, fatores que pioram/melhoram e sintomas associados. Posso também gerar perguntas para sua consulta.';
+else if(/rem[eé]dio|medicamento/.test(l))ans='Posso organizar nome, dose, frequência e período de uso. Não altere ou interrompa um medicamento prescrito sem orientação profissional.';
+else ans='Posso ajudar a estruturar a informação e preparar sua conversa com um profissional. Conte quando começou, intensidade, sintomas associados e o que mudou desde então.';
+chat.innerHTML+=`<div class="bubble bot">${ans}</div>`;$('iaInput').value='';chat.scrollTop=chat.scrollHeight}
+function perguntasConsulta(){try{let d=get(K.d),e=get(K.e),m=get(K.m);let q=[];if(d.length)q.push('Quais podem ser as causas possíveis dos sintomas que registrei e quais sinais devo observar?');if(e.length)q.push('Há algum resultado dos meus exames que devo discutir com mais atenção?');if(m.length)q.push('Os medicamentos que estou usando devem ser mantidos, ajustados ou revisados?');q.push('Quais exames ou acompanhamentos podem ser necessários?','Em quais situações devo procurar atendimento antes do retorno?');const box=$('perguntas');if(box)box.innerHTML='<div class="alert safe"><b>Perguntas sugeridas:</b><ol>'+q.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol></div>';}catch(err){console.error('[Minha Saúde IA] erro ao gerar perguntas:',err);const box=$('perguntas');if(box)box.innerHTML='<div class="alert danger">❌ Não foi possível gerar as perguntas agora. Tente novamente.</div>';}}function gerarRelatorio(){
+ const p=get(K.p)[0]||{},d=get(K.d),c=get(K.c),m=get(K.m),e=get(K.e);
+ const body=`<div class="box"><b>Nome:</b> ${esc(p.nome||'Não informado')}<br><b>Informações importantes:</b> ${esc(p.info||'—')}<br><b>Alergias:</b> ${esc(p.alerg||'—')}</div>
+ <h2>Sintomas</h2><ul>${d.length?d.map(x=>`<li>${x.data} — ${esc(x.local)}, intensidade ${x.int}/10, ${esc(x.tipo)}. ${esc(x.sint||'')}</li>`).join(''):'<li>Nenhum registrado.</li>'}</ul>
+ <h2>Consultas</h2><ul>${c.length?c.map(x=>`<li>${x.data} — ${esc(x.esp)}, ${esc(x.med||'')}. ${esc(x.obs||'')}</li>`).join(''):'<li>Nenhuma registrada.</li>'}</ul>
+ <h2>Medicamentos</h2><ul>${m.length?m.map(x=>`<li>${esc(x.nome)} — ${esc(x.dose||'')} — ${esc(x.freq||'')}</li>`).join(''):'<li>Nenhum registrado.</li>'}</ul>
+ <h2>Exames</h2><ul>${e.length?e.map(x=>`<li>${x.data} — ${esc(x.nome)}: ${esc(x.res||'')}</li>`).join(''):'<li>Nenhum registrado.</li>'}</ul>`;
+ openReport('Resumo de Saúde',body);
+}
+// V4.55 — inicialização da aplicação separada do sistema de menus
+function iniciarAplicativo(){
+ try{
+  loadProfile();
+  renderCarteirinha();
+  renderNovosModulos();
+  render();
+
+  /* V5.83 — respeita imediatamente ?pagina=... ao abrir/atualizar a página.
+     Isso corrige links diretos para Família, sem voltar para a Home. */
+  const paginaInicial=paginaDaURL();
+  if(paginaInicial && document.getElementById(paginaInicial)){
+   mostrarPaginaDaURL();
+   renderNovosModulos();
+   if(typeof renderFamiliares==='function')renderFamiliares();
+  }
+ }catch(e){
+  console.error('[Minha Saúde IA] falha na inicialização',e);
+ }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',iniciarAplicativo);
+else iniciarAplicativo();
