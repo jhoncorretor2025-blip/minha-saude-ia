@@ -48,7 +48,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V6.01</title>
+<title>Minha Saúde IA — V6.02</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -2280,5 +2280,61 @@ footer{line-height:1.6}
 }
 @media(prefers-reduced-motion:reduce){section.active{animation:none}}
 </style>
+
+
+<!-- V6.02 — orientação contextual para facilitar a navegação entre áreas -->
+<style>
+.msa-page-guide{display:flex;align-items:flex-start;gap:11px;margin:0 0 13px;padding:13px 15px;border:1px solid #dce7fb;border-radius:15px;background:linear-gradient(120deg,#f2f7ff 0%,#fbfcff 100%);color:#344054;font-size:13px;line-height:1.55}
+.msa-page-guide-icon{display:flex;align-items:center;justify-content:center;flex:0 0 34px;height:34px;border-radius:11px;background:#e2ebff;color:#2455c7;font-size:17px}
+.msa-page-guide strong{display:block;color:#1d3f8f;font-size:13px;margin:0 0 2px}
+.msa-page-guide p{margin:0;color:#526078}
+.msa-page-guide .msa-guide-step{display:block;margin-top:4px;color:#344054;font-weight:750}
+@media(max-width:760px){.msa-page-guide{padding:12px;gap:9px}.msa-page-guide-icon{flex-basis:31px;height:31px}}
+</style>
+<script>
+(function(){
+ const guides={
+  home:['🏠','Seu resumo de saúde','Veja seus principais dados e atalhos para registrar novas informações.','Próximo passo: confira se seu perfil está atualizado.'],
+  buscar:['🔎','Encontre informações rapidamente','Pesquise nos registros salvos neste navegador, como exames, consultas e medicamentos.','Próximo passo: digite uma palavra-chave no campo de busca.'],
+  avisos:['🔔','Confira o que merece atenção','Consulte lembretes e avisos gerados a partir das informações registradas.','Próximo passo: revise cada aviso e confirme as datas importantes.'],
+  calendario:['📅','Organize suas datas de saúde','Visualize compromissos e registros por mês.','Próximo passo: navegue pelo calendário e confira as datas.'],
+  perguntas:['❓','Prepare-se para sua consulta','Anote dúvidas para não esquecer de conversar com o profissional de saúde.','Próximo passo: escreva uma pergunta e salve.'],
+  carteirinha:['🪪','Tenha seus dados essenciais à mão','Confira o resumo da sua ficha e gere uma versão para consulta quando necessário.','Próximo passo: revise os dados antes de exportar ou compartilhar.'],
+  inteligencia:['🧠','Entenda melhor seus próprios registros','Veja um resumo organizado das informações que você cadastrou. Isso não é diagnóstico médico.','Próximo passo: confira se os registros estão completos e atualizados.'],
+  leitor:['📄','Organize documentos de saúde','Selecione um documento para visualizar e preparar uma prévia das informações.','Próximo passo: escolha um arquivo e revise o conteúdo extraído.'],
+  timeline:['🕐','Acompanhe sua história ao longo do tempo','Consulte os registros reunidos em ordem cronológica.','Próximo passo: confira datas e corrija informações incompletas.'],
+  dor:['🩹','Registre sintomas com contexto','Anote local, intensidade, início e observações para facilitar a conversa com um profissional.','Próximo passo: preencha o registro e salve.'],
+  consultas:['👨‍⚕️','Organize consultas e retornos','Registre datas, especialidades e perguntas que deseja levar ao atendimento.','Próximo passo: preencha os dados conhecidos e salve a consulta.'],
+  meds:['💊','Mantenha seus medicamentos organizados','Registre nome, dose e orientações recebidas para consultar depois. O cadastro não define nem altera tratamentos.','Próximo passo: confira os dados com a receita ou orientação profissional.'],
+  exames:['🧪','Guarde resultados e observações','Registre exames e resultados para encontrá-los com mais facilidade.','Próximo passo: informe a data e transcreva os resultados com cuidado.'],
+  perfil:['👤','Mantenha seu perfil de saúde atualizado','Cadastre informações pessoais relevantes para consultas e relatórios.','Próximo passo: revise os campos e salve as alterações.'],
+  acompanhamento:['📊','Acompanhe suas medidas e sinais','Registre medidas ao longo do tempo para consultar tendências pessoais.','Próximo passo: informe a data e os valores medidos.'],
+  nutricao:['🥗','Registre hábitos e suplementação','Organize alimentação, hidratação e suplementos para observar sua rotina.','Próximo passo: registre informações reais do dia, sem mudar tratamentos por conta própria.'],
+  sono:['😴','Observe sono e bem-estar','Registre duração do sono, estresse e como você se sentiu ao longo do dia.','Próximo passo: preencha um registro consistente para comparar períodos.'],
+  familiares:['👨‍👩‍👧‍👦','Organize registros de familiares separadamente','Use esta área para acompanhar dados de outra pessoa sem misturá-los com seu perfil.','Próximo passo: confirme a pessoa selecionada antes de registrar informações.'],
+  familia:['🧬','Reúna antecedentes familiares','Registre histórico familiar conhecido para compartilhar com o profissional de saúde.','Próximo passo: indique o parentesco e diferencie fatos conhecidos de dúvidas.'],
+  lembretes:['⏰','Planeje cuidados e datas importantes','Organize lembretes de rotina, reposições e retornos. Os avisos podem depender do navegador.','Próximo passo: confira data, horário e se o lembrete está ativo.'],
+  exportar:['📤','Exporte seus dados com cuidado','Gere uma cópia para guardar ou levar a uma consulta. Revise antes de compartilhar informações sensíveis.','Próximo passo: escolha o formato e confira o arquivo gerado.'],
+  relatorios:['📈','Monte um relatório do período desejado','Selecione datas e tipos de informação para reunir registros já cadastrados.','Próximo passo: revise o intervalo antes de gerar o relatório.'],
+  backup:['🔐','Proteja e faça cópias dos seus registros','Confira as opções de segurança e crie backups para reduzir o risco de perder dados locais.','Próximo passo: faça um backup e guarde-o em local seguro.'],
+  importar:['🤖','Importe informações com revisão','Use a importação assistida para preparar dados, mas revise tudo antes de salvar.','Próximo passo: confira nomes, datas e doses antes de confirmar.'],
+  documentos:['🗂️','Mantenha documentos em um só lugar','Organize arquivos importantes no armazenamento deste navegador.','Próximo passo: adicione o arquivo correto e evite compartilhar documentos sem necessidade.'],
+  ia:['🤖','Prepare perguntas e resumos para conversar com uma IA','Use o assistente para organizar informações, não para substituir avaliação médica.','Próximo passo: revise o texto antes de copiar ou compartilhar.'],
+  configuracoes:['⚙️','Personalize como você usa o aplicativo','Ajuste preferências e recursos disponíveis para deixar a experiência mais adequada.','Próximo passo: altere uma opção por vez e confira o resultado.']
+ };
+ function adicionarGuias(){
+  Object.keys(guides).forEach(function(id){
+   const section=document.getElementById(id);
+   if(!section||section.querySelector(':scope > .msa-page-guide'))return;
+   const g=guides[id],guide=document.createElement('div');
+   guide.className='msa-page-guide';
+   guide.innerHTML='<span class="msa-page-guide-icon" aria-hidden="true">'+g[0]+'</span><div><strong>'+g[1]+'</strong><p>'+g[2]+'</p><span class="msa-guide-step">'+g[3]+'</span></div>';
+   section.insertBefore(guide,section.firstChild);
+  });
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',adicionarGuias,{once:true});
+ else adicionarGuias();
+})();
+</script>
 
 </body></html>
