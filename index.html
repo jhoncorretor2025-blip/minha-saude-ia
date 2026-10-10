@@ -38,7 +38,7 @@
       limpar.then(function(){
         var u=new URL(window.location.href);
         u.searchParams.set('cb',Date.now().toString());
-        u.searchParams.set('v','V6.02');
+        u.searchParams.set('v','V6.03');
         window.location.replace(u.toString());
       });
     }catch(e){}
@@ -48,7 +48,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V6.02</title>
+<title>Minha Saúde IA — V6.03</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -349,7 +349,7 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
 @media(max-width:760px){.msa-mobile-menu-fab{display:none!important}.msa-mobile-bar{grid-template-columns:repeat(4,1fr)}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V6.00">
+  <link rel="stylesheet" href="css/design-system.css?v=V6.03">
 
 <style id="v519-progressive-ui">
 /* V6.00 — melhorias progressivas de dashboard, favoritos e alertas */
@@ -633,7 +633,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.02</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.03</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 <nav id="nav" class="grouped-nav" aria-label="Navegação principal">
  <div class="nav-group"><button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button><div class="nav-menu"><button type="button" data-tab="home">🏠 Visão geral</button><button type="button" data-tab="timeline">🕐 Linha do tempo</button></div></div>
@@ -1575,15 +1575,15 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V6.00" defer></script>
-<script src="js/core/storage.js?v=V6.00" defer></script>
-<script src="js/core/utils.js?v=V6.00" defer></script>
-<script src="js/core/stability-v599.js?v=V6.00" defer></script>
-<script src="js/navigation/menu.js?v=V6.00" defer></script>
-<script src="js/core/app.js?v=V6.00" defer></script>
-<script src="js/features/perfil-save.js?v=V6.00" defer></script>
-<script src="js/features/familiares.js?v=V6.00" defer></script>
-<script src="js/features/recursos.js?v=V6.00" defer></script>
+<script src="js/core/constants.js?v=V6.03" defer></script>
+<script src="js/core/storage.js?v=V6.03" defer></script>
+<script src="js/core/utils.js?v=V6.03" defer></script>
+<script src="js/core/stability-v599.js?v=V6.03" defer></script>
+<script src="js/navigation/menu.js?v=V6.03" defer></script>
+<script src="js/core/app.js?v=V6.03" defer></script>
+<script src="js/features/perfil-save.js?v=V6.03" defer></script>
+<script src="js/features/familiares.js?v=V6.03" defer></script>
+<script src="js/features/recursos.js?v=V6.03" defer></script>
 
 
 <script>
@@ -1606,12 +1606,12 @@ function iniciarImportacao(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
-<script src="js/features/inteligencia.js?v=V6.00" defer></script>
-<script src="js/ai/importacao.js?v=V6.00" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/legacy/melhorias-primeiras.js?v=V6.00" defer></script>
-<script src="js/features/expansoes.js?v=V6.00" defer></script>
-<script src="js/ai/importacao-fluxo-v514.js?v=V6.00" defer></script>
-<script src="js/legacy/melhorias-v513.js?v=V6.00" defer></script>
+<script src="js/features/inteligencia.js?v=V6.03" defer></script>
+<script src="js/ai/importacao.js?v=V6.03" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/legacy/melhorias-primeiras.js?v=V6.03" defer></script>
+<script src="js/features/expansoes.js?v=V6.03" defer></script>
+<script src="js/ai/importacao-fluxo-v514.js?v=V6.03" defer></script>
+<script src="js/legacy/melhorias-v513.js?v=V6.03" defer></script>
 
 
 <script>
@@ -1717,7 +1717,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
-<script src="js/reports/relatorios-v599.js?v=V6.00" defer></script>
+<script src="js/reports/relatorios-v599.js?v=V6.03" defer></script>
 
 
 
@@ -2336,5 +2336,93 @@ footer{line-height:1.6}
  else adicionarGuias();
 })();
 </script>
+
+
+<!-- V6.03 — acabamento visual: contraste, consistência e responsividade, sem alterar funcionalidades -->
+<style id="msaV603VisualPolish">
+:root{
+  --msa-accent:#315fe9;
+  --msa-accent-soft:#edf3ff;
+  --msa-violet:#7046d3;
+  --msa-outline:rgba(49,95,233,.28);
+  --msa-card-radius:19px;
+}
+body{
+  background:
+    radial-gradient(ellipse at 8% 0%,rgba(219,231,255,.42),transparent 32rem),
+    var(--msa-bg,#f5f7fb);
+}
+header{
+  background:linear-gradient(118deg,#2459d9 0%,#4c4fdb 54%,#7046d3 100%);
+  position:relative;
+  isolation:isolate;
+}
+header:after{
+  content:"";position:absolute;z-index:-1;right:-72px;top:-110px;
+  width:260px;height:260px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.15);
+  box-shadow:0 0 0 28px rgba(255,255,255,.045),0 0 0 58px rgba(255,255,255,.035);
+  pointer-events:none;
+}
+.brand{letter-spacing:-.035em}
+.sub{line-height:1.5;max-width:720px}
+.wrap{width:100%}
+.grouped-nav,.msa-mobile-bar{border-color:#e1e8f3}
+.nav-toggle{transition:background .16s ease,color .16s ease,box-shadow .16s ease}
+.nav-toggle:hover{background:#edf3ff;color:#2455c7}
+section .card,section .item,section .metric-panel,section .engagement-card{
+  border-radius:var(--msa-card-radius);
+}
+section .card h2,section .card h3{overflow-wrap:anywhere}
+section .stat,section .dash-metric,section .dash-mini{min-width:0}
+section .tag,section .dash-badge{line-height:1.35}
+section .btn,section button.action,section .home-primary-actions button{
+  -webkit-tap-highlight-color:transparent;
+}
+section .btn:focus-visible,section button:focus-visible,
+section a:focus-visible, .msa-mobile-bar button:focus-visible,
+.msa-mobile-links button:focus-visible{
+  outline:3px solid var(--msa-outline);
+  outline-offset:3px;
+}
+section form label{overflow-wrap:anywhere}
+section form input,section form select,section form textarea{
+  min-width:0;max-width:100%;accent-color:var(--msa-accent);
+}
+section table{width:100%}
+section table th{background:#f7f9fd}
+section table tr:last-child td{border-bottom-color:transparent}
+section .alert{border-radius:14px}
+section .alert.safe{background:#effaf4;border-color:#b8e7cb;color:#17623a}
+section .alert.warn{background:#fff9e9;border-color:#f5df9c;color:#82520a}
+section .alert.danger{background:#fff1f2;border-color:#fecdd3;color:#9f1239}
+section .empty{border-radius:17px}
+.msa-page-guide{box-shadow:0 4px 14px rgba(37,99,235,.035)}
+.msa-toast{max-width:min(92vw,560px);text-align:center;line-height:1.45}
+@media(hover:hover) and (pointer:fine){
+  section .card:hover{transform:translateY(-1px)}
+  section .item:hover{border-color:#d3def0}
+  .nav-menu button:hover{transform:translateX(2px)}
+}
+@media(max-width:760px){
+  header{padding:20px 15px 27px;border-radius:0 0 23px 23px}
+  .brand{font-size:23px}
+  .wrap{padding-left:10px;padding-right:10px}
+  section .card{padding:15px}
+  section table{display:block;overflow-x:auto;overscroll-behavior-x:contain}
+  section table th,section table td{white-space:normal}
+  section table th{white-space:nowrap}
+  .msa-page-guide{box-shadow:none}
+}
+@media(max-width:390px){
+  .brand{font-size:21px}
+  .sub{font-size:13px}
+  section .card{padding:13px}
+  .msa-page-guide{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
 
 </body></html>
