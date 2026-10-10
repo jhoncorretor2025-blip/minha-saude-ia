@@ -38,7 +38,7 @@
       limpar.then(function(){
         var u=new URL(window.location.href);
         u.searchParams.set('cb',Date.now().toString());
-        u.searchParams.set('v','V6.03');
+        u.searchParams.set('v','V6.04');
         window.location.replace(u.toString());
       });
     }catch(e){}
@@ -48,7 +48,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V6.03</title>
+<title>Minha Saúde IA — V6.04</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -349,7 +349,7 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
 @media(max-width:760px){.msa-mobile-menu-fab{display:none!important}.msa-mobile-bar{grid-template-columns:repeat(4,1fr)}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V6.03">
+  <link rel="stylesheet" href="css/design-system.css?v=V6.04">
 
 <style id="v519-progressive-ui">
 /* V6.00 — melhorias progressivas de dashboard, favoritos e alertas */
@@ -633,7 +633,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.03</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.04</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 <nav id="nav" class="grouped-nav" aria-label="Navegação principal">
  <div class="nav-group"><button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button><div class="nav-menu"><button type="button" data-tab="home">🏠 Visão geral</button><button type="button" data-tab="timeline">🕐 Linha do tempo</button></div></div>
@@ -1575,15 +1575,15 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V6.03" defer></script>
-<script src="js/core/storage.js?v=V6.03" defer></script>
-<script src="js/core/utils.js?v=V6.03" defer></script>
-<script src="js/core/stability-v599.js?v=V6.03" defer></script>
-<script src="js/navigation/menu.js?v=V6.03" defer></script>
-<script src="js/core/app.js?v=V6.03" defer></script>
-<script src="js/features/perfil-save.js?v=V6.03" defer></script>
-<script src="js/features/familiares.js?v=V6.03" defer></script>
-<script src="js/features/recursos.js?v=V6.03" defer></script>
+<script src="js/core/constants.js?v=V6.04" defer></script>
+<script src="js/core/storage.js?v=V6.04" defer></script>
+<script src="js/core/utils.js?v=V6.04" defer></script>
+<script src="js/core/stability-v599.js?v=V6.04" defer></script>
+<script src="js/navigation/menu.js?v=V6.04" defer></script>
+<script src="js/core/app.js?v=V6.04" defer></script>
+<script src="js/features/perfil-save.js?v=V6.04" defer></script>
+<script src="js/features/familiares.js?v=V6.04" defer></script>
+<script src="js/features/recursos.js?v=V6.04" defer></script>
 
 
 <script>
@@ -1606,12 +1606,12 @@ function iniciarImportacao(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
-<script src="js/features/inteligencia.js?v=V6.03" defer></script>
-<script src="js/ai/importacao.js?v=V6.03" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/legacy/melhorias-primeiras.js?v=V6.03" defer></script>
-<script src="js/features/expansoes.js?v=V6.03" defer></script>
-<script src="js/ai/importacao-fluxo-v514.js?v=V6.03" defer></script>
-<script src="js/legacy/melhorias-v513.js?v=V6.03" defer></script>
+<script src="js/features/inteligencia.js?v=V6.04" defer></script>
+<script src="js/ai/importacao.js?v=V6.04" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/legacy/melhorias-primeiras.js?v=V6.04" defer></script>
+<script src="js/features/expansoes.js?v=V6.04" defer></script>
+<script src="js/ai/importacao-fluxo-v514.js?v=V6.04" defer></script>
+<script src="js/legacy/melhorias-v513.js?v=V6.04" defer></script>
 
 
 <script>
@@ -1717,7 +1717,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
-<script src="js/reports/relatorios-v599.js?v=V6.03" defer></script>
+<script src="js/reports/relatorios-v599.js?v=V6.04" defer></script>
 
 
 
@@ -2338,7 +2338,7 @@ footer{line-height:1.6}
 </script>
 
 
-<!-- V6.03 — acabamento visual: contraste, consistência e responsividade, sem alterar funcionalidades -->
+<!-- V6.04 — acabamento visual: contraste, consistência e responsividade, sem alterar funcionalidades -->
 <style id="msaV603VisualPolish">
 :root{
   --msa-accent:#315fe9;

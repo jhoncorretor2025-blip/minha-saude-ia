@@ -1,3 +1,10 @@
+## V6.04 — 10/10/2026
+- Sincronizada a versão oficial entre a interface, o manifesto de versão, as constantes compartilhadas e o cache do Service Worker.
+- Barra de navegação móvel destaca a ação correspondente à seção atual e expõe o estado com `aria-pressed`.
+- A indicação acompanha mudanças de seção acionadas por botões internos, mantendo a navegação coerente.
+- Preservadas as chaves `msa2_*`, a estrutura dos registros e os fluxos existentes.
+- Ajustes limitados à navegação móvel; a disposição desktop foi preservada.
+
 ## V6.00 — 08/10/2026
 - Reorganização física do JavaScript para uma estrutura por responsabilidade, sem alterar as chaves de armazenamento `msa2_*` nem o formato dos dados.
 - `js/app.js` → `js/core/app.js`.
