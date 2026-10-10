@@ -1,4 +1,4 @@
-const CACHE='minha-saude-ia-v6-00';
+const CACHE='minha-saude-ia-v6-03';
 const ASSETS=['./version.json','./','./index.html','./css/design-system.css','./js/core/constants.js','./js/core/storage.js','./js/core/utils.js','./js/navigation/menu.js','./js/core/app.js','./js/features/perfil-save.js','./js/features/familiares.js','./js/features/recursos.js','./js/features/inteligencia.js','./js/ai/importacao.js','./js/legacy/melhorias.js','./js/legacy/melhorias-primeiras.js','./js/features/expansoes.js','./js/legacy/melhorias-v513.js','./js/ai/importacao-fluxo-v514.js','./js/features/avancado.js','./js/core/stability-v599.js','./js/reports/relatorios-v599.js','./manifest.json','./icon.svg'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
