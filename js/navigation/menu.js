@@ -72,9 +72,24 @@
     return true;
   }
 
+  function sincronizarAtalhoMobile(id){
+    var bar=document.getElementById('msaMobileBar');
+    if(!bar)return;
+    var action=null;
+    if(id==='home')action='home';
+    else if(id==='buscar')action='search';
+    else if(['dor','meds','consultas','exames','acompanhamento'].indexOf(id)>=0)action='register';
+    bar.querySelectorAll('[data-mobile-action]').forEach(function(button){
+      var active=!!action&&button.getAttribute('data-mobile-action')===action;
+      button.classList.toggle('active',active);
+      button.setAttribute('aria-pressed',active?'true':'false');
+    });
+  }
+
   function navegar(id,feature){
     fechar();
     if(!document.getElementById(id))return;
+    sincronizarAtalhoMobile(id);
 
     /* V5.99 — existe um único controlador de navegação: window.go.
        O menu apenas informa a página; isso evita divergência de URL, estado e renderização. */
@@ -154,6 +169,17 @@
     try{if(typeof window.aplicarPreferencias==='function')window.aplicarPreferencias()}catch(e){}
     prepararAcessibilidade();
     criarNavegacaoMobile();
+    var secaoInicial=document.querySelector('section.active');
+    sincronizarAtalhoMobile(secaoInicial?secaoInicial.id:'home');
+    if(window.MutationObserver){
+      var areaPrincipal=document.getElementById('main-content')||document.body;
+      var observadorNavegacao=new MutationObserver(function(mudancas){
+        if(!mudancas.some(function(m){return m.type==='attributes'&&m.attributeName==='class'&&m.target.tagName==='SECTION'}))return;
+        var atual=document.querySelector('section.active');
+        if(atual)sincronizarAtalhoMobile(atual.id);
+      });
+      observadorNavegacao.observe(areaPrincipal,{subtree:true,attributes:true,attributeFilter:['class']});
+    }
     criarProximoPassoHome();
     melhorarAcoesRapidas();
 
