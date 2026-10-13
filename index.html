@@ -38,7 +38,7 @@
       limpar.then(function(){
         var u=new URL(window.location.href);
         u.searchParams.set('cb',Date.now().toString());
-        u.searchParams.set('v','V6.04');
+        u.searchParams.set('v','V6.05');
         window.location.replace(u.toString());
       });
     }catch(e){}
@@ -48,7 +48,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V6.04</title>
+<title>Minha Saúde IA — V6.05</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -349,7 +349,7 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
 @media(max-width:760px){.msa-mobile-menu-fab{display:none!important}.msa-mobile-bar{grid-template-columns:repeat(4,1fr)}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V6.04">
+  <link rel="stylesheet" href="css/design-system.css?v=V6.05">
 
 <style id="v519-progressive-ui">
 /* V6.00 — melhorias progressivas de dashboard, favoritos e alertas */
@@ -633,7 +633,7 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.04</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.05</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 <nav id="nav" class="grouped-nav" aria-label="Navegação principal">
  <div class="nav-group"><button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button><div class="nav-menu"><button type="button" data-tab="home">🏠 Visão geral</button><button type="button" data-tab="timeline">🕐 Linha do tempo</button></div></div>
@@ -707,6 +707,8 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 </div><details id="dashWaterDetails" style="margin-top:10px;padding:12px 14px;border:1px solid #dbe5ff;border-radius:15px;background:#fbfdff"><summary style="cursor:pointer;font-weight:900">💧 Como foi calculada a estimativa de água?</summary><div id="dashWaterDetailsBody" class="muted" style="margin-top:9px;line-height:1.5">Informe seu peso para calcular uma estimativa pessoal.</div></details><div class="grid4">
 <div class="card stat"><span>😣 Sintomas</span><b id="nD">0</b></div><div class="card stat"><span>👨‍⚕️ Consultas</span><b id="nC">0</b></div><div class="card stat"><span>💊 Medicamentos</span><b id="nM">0</b></div><div class="card stat"><span>🧪 Exames</span><b id="nE">0</b></div>
 </div>
+<details class="home-secondary-details" style="margin-top:13px"><summary>📋 Resumo, próximos cuidados e histórico</summary>
+<div class="home-secondary-details-body">
 <div class="card smart-care-card">
 <div class="dash-section-title"><div><h2>🎯 Próximos cuidados e revisões</h2><div class="muted">Datas futuras registradas e itens que precisam apenas de revisão dos dados.</div></div><button class="btn secondary" onclick="go('acompanhamento')">Ver tudo</button></div>
 <div id="nextCareList" class="smart-list"></div>
@@ -723,6 +725,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <div class="dash-section-title"><div><h2>🕐 Linha do tempo</h2><div class="muted">Veja sua evolução em ordem cronológica.</div></div><button class="btn secondary" onclick="go('timeline')">Abrir timeline</button></div>
 <div id="timelinePreview" class="timeline-mini"></div>
 </div>
+</div></details>
 <div class="home-secondary-content"><div class="card" style="margin-top:13px"><h2>Como você está hoje?</h2><div class="muted">Registre uma informação ou prepare-se para uma consulta.</div>
 <div class="card" style="margin-top:13px;background:linear-gradient(135deg,#eef4ff,#f7f2ff);border-color:#dbe5ff">
 <h2 style="margin-bottom:5px">🤖 Minha Saúde IA</h2>
@@ -914,7 +917,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <button type="button" onclick="bodyPick(this,'Mão')">✋ Mão</button><button type="button" onclick="bodyPick(this,'Perna')">🦵 Perna</button><button type="button" onclick="bodyPick(this,'Pé')">🦶 Pé</button>
 </div>
 <div class="grid2"><label>Quando começou?<input id="dData" type="datetime-local" required></label><label>Tipo<select id="dTipo"><option>Pontada</option><option>Queimação</option><option>Pressão</option><option>Latejante</option><option>Choque</option><option>Outro</option></select></label></div>
-<label>Intensidade <div class="range"><input id="dInt" type="range" min="0" max="10" value="5" oninput="dScore.textContent=this.value"><span class="score" id="dScore">5</span>/10</div></label>
+<label>Intensidade <div class="range msa-pain-range"><input id="dInt" type="range" min="0" max="10" value="5" oninput="dScore.textContent=this.value"><span class="score" id="dScore">5</span><span class="msa-pain-total">/ 10</span></div></label>
 <div class="grid2"><label>Frequência<select id="dFreq"><option>Contínua</option><option>Vai e volta</option><option>Momentos específicos</option></select></label><label>O que melhora/piora?<input id="dGatilho" placeholder="Ex.: comer, caminhar, deitar"></label></div>
 <label>Outros sintomas<textarea id="dSint" placeholder="Febre, náusea, tontura, vômito, falta de ar..."></textarea></label><label>Observações<textarea id="dObs"></textarea></label>
 <button class="btn">💾 Salvar sintoma</button></form></div>
@@ -1554,7 +1557,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.02. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.05. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -1575,15 +1578,15 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V6.04" defer></script>
-<script src="js/core/storage.js?v=V6.04" defer></script>
-<script src="js/core/utils.js?v=V6.04" defer></script>
-<script src="js/core/stability-v599.js?v=V6.04" defer></script>
-<script src="js/navigation/menu.js?v=V6.04" defer></script>
-<script src="js/core/app.js?v=V6.04" defer></script>
-<script src="js/features/perfil-save.js?v=V6.04" defer></script>
-<script src="js/features/familiares.js?v=V6.04" defer></script>
-<script src="js/features/recursos.js?v=V6.04" defer></script>
+<script src="js/core/constants.js?v=V6.05" defer></script>
+<script src="js/core/storage.js?v=V6.05" defer></script>
+<script src="js/core/utils.js?v=V6.05" defer></script>
+<script src="js/core/stability-v599.js?v=V6.05" defer></script>
+<script src="js/navigation/menu.js?v=V6.05" defer></script>
+<script src="js/core/app.js?v=V6.05" defer></script>
+<script src="js/features/perfil-save.js?v=V6.05" defer></script>
+<script src="js/features/familiares.js?v=V6.05" defer></script>
+<script src="js/features/recursos.js?v=V6.05" defer></script>
 
 
 <script>
@@ -1606,12 +1609,12 @@ function iniciarImportacao(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
-<script src="js/features/inteligencia.js?v=V6.04" defer></script>
-<script src="js/ai/importacao.js?v=V6.04" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/legacy/melhorias-primeiras.js?v=V6.04" defer></script>
-<script src="js/features/expansoes.js?v=V6.04" defer></script>
-<script src="js/ai/importacao-fluxo-v514.js?v=V6.04" defer></script>
-<script src="js/legacy/melhorias-v513.js?v=V6.04" defer></script>
+<script src="js/features/inteligencia.js?v=V6.05" defer></script>
+<script src="js/ai/importacao.js?v=V6.05" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/legacy/melhorias-primeiras.js?v=V6.05" defer></script>
+<script src="js/features/expansoes.js?v=V6.05" defer></script>
+<script src="js/ai/importacao-fluxo-v514.js?v=V6.05" defer></script>
+<script src="js/legacy/melhorias-v513.js?v=V6.05" defer></script>
 
 
 <script>
@@ -1717,7 +1720,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
-<script src="js/reports/relatorios-v599.js?v=V6.04" defer></script>
+<script src="js/reports/relatorios-v599.js?v=V6.05" defer></script>
 
 
 
@@ -1734,6 +1737,38 @@ body.msa-dark table{color:#e5e7eb} body.msa-dark th{background:#1e293b!important
 body.msa-dark .msa-theme-toggle{background:#1f2937;color:#f8fafc;border-color:#374151}
 .msa-focus-ring :focus-visible{outline:3px solid rgba(37,99,235,.35);outline-offset:2px}
 @media(max-width:760px){.msa-theme-toggle{top:10px;right:10px;padding:8px 10px;font-size:12px}}
+
+/* V6.05 — acessibilidade do tema escuro, intensidade e hierarquia da home */
+body.msa-dark header{background:linear-gradient(135deg,#172554,#312e81)!important;color:#f8fafc!important}
+body.msa-dark .sub,body.msa-dark .muted,body.msa-dark label,
+body.msa-dark .home-command-main p,body.msa-dark .home-secondary-actions button,
+body.msa-dark .home-guide-item span,body.msa-dark .home-more-card small,
+body.msa-dark .home-side-title,body.msa-dark .home-profile-stats,
+body.msa-dark .msa-page-subtitle,body.msa-dark .msa-section-subtitle{color:#cbd5e1!important}
+body.msa-dark .home-command-main,body.msa-dark .home-command-side,
+body.msa-dark .home-missing-info-card,body.msa-dark .home-more-card,
+body.msa-dark .home-guide-item,body.msa-dark .home-primary-actions button,
+body.msa-dark .home-command-side button,body.msa-dark .favorite-btn,
+body.msa-dark .smart-alert,body.msa-dark #dashWaterDetails,
+body.msa-dark .home-secondary-details{background:#111827!important;color:#e5e7eb!important;border-color:#334155!important}
+body.msa-dark .home-command-kicker,body.msa-dark .home-guide-btn{color:#93c5fd!important}
+body.msa-dark .home-primary-actions button,body.msa-dark .home-command-side button,
+body.msa-dark .home-guide-item,body.msa-dark .home-more-card{color:#e5e7eb!important}
+body.msa-dark .home-missing-info-kicker{color:#93c5fd!important}
+body.msa-dark .home-missing-info-card{background:linear-gradient(135deg,#111827,#172554)!important}
+body.msa-dark .msa-page-title,body.msa-dark .msa-section-title,
+body.msa-dark .msa-card-title,body.msa-dark .msa-form-label{color:#f1f5f9!important}
+body.msa-dark input::placeholder,body.msa-dark textarea::placeholder{color:#94a3b8!important}
+.msa-pain-range{display:flex;align-items:center;gap:8px;min-width:0}
+.msa-pain-range input[type="range"]{flex:1;min-width:0}
+.msa-pain-range .score,.msa-pain-range .msa-pain-total{white-space:nowrap;flex:0 0 auto}
+.msa-pain-range .msa-pain-total{font-weight:800}
+.home-secondary-details{margin-top:13px;border:1px solid var(--border);border-radius:16px;background:var(--card);padding:13px 16px}
+.home-secondary-details>summary{cursor:pointer;font-weight:900;color:var(--text);padding:3px 0}
+.home-secondary-details[open]>summary{margin-bottom:12px}
+.home-secondary-details-body{display:grid;gap:12px}
+@media(max-width:420px){.msa-pain-range{gap:6px}.msa-pain-range .score,.msa-pain-range .msa-pain-total{font-size:14px}}
+
 </style>
 <button id="msaThemeToggle" class="msa-theme-toggle" type="button" aria-label="Alternar tema">🌙 Tema</button>
 <script>
@@ -2282,7 +2317,7 @@ footer{line-height:1.6}
 </style>
 
 
-<!-- V6.02 — orientação contextual para facilitar a navegação entre áreas -->
+<!-- V6.05 — orientação contextual para facilitar a navegação entre áreas -->
 <style>
 .msa-page-guide{display:flex;align-items:flex-start;gap:11px;margin:0 0 13px;padding:13px 15px;border:1px solid #dce7fb;border-radius:15px;background:linear-gradient(120deg,#f2f7ff 0%,#fbfcff 100%);color:#344054;font-size:13px;line-height:1.55}
 .msa-page-guide-icon{display:flex;align-items:center;justify-content:center;flex:0 0 34px;height:34px;border-radius:11px;background:#e2ebff;color:#2455c7;font-size:17px}
@@ -2338,7 +2373,7 @@ footer{line-height:1.6}
 </script>
 
 
-<!-- V6.04 — acabamento visual: contraste, consistência e responsividade, sem alterar funcionalidades -->
+<!-- V6.05 — acabamento visual: contraste, consistência e responsividade, sem alterar funcionalidades -->
 <style id="msaV603VisualPolish">
 :root{
   --msa-accent:#315fe9;
