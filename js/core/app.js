@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V6.15 */
+/* Minha Saúde IA — aplicação principal V6.16 */
 
 const K=window.MSA_K||window.K;
 const get=k=>window.MSAStorage.get(k);
@@ -818,7 +818,7 @@ function renderNovosModulos(){
  if($('gatList'))$('gatList').innerHTML=rev(K.gat,x=>'<div class="item"><b>🎯 '+esc(x.gatilho)+'</b><p>'+esc(x.data)+' · sintoma: '+esc(x.sintoma||'—')+(x.obs?' · '+esc(x.obs):'')+'</p></div>');
  if($('famListPage'))$('famListPage').innerHTML=rev(K.fam,x=>'<div class="item"><b>🧬 '+esc(x.parente)+'</b><p>'+esc(x.info||x.cond||'')+(x.idade?' · diagnóstico aos '+esc(x.idade)+' anos':'')+(x.obs?' · '+esc(x.obs):'')+'</p></div>');
  if($('lembListPage'))$('lembListPage').innerHTML=rev(K.r,x=>'<div class="item"><b>🔔 '+esc(x.nome)+'</b><p>'+esc(x.data||'')+' · '+esc(x.tipo||'')+'</p></div>');
- if($('medRotList'))$('medRotList').innerHTML=rev(K.medRot,x=>{const dia=hojeLocal(),tomou=get(K.medTaken).some(t=>t.medId===x.id&&String(t.data).slice(0,10)===dia);return '<div class="item"><div class="itemtop"><b>💊 '+esc(x.nome)+'</b><span class="tag">'+(tomou?'✅ Hoje registrado':'⏳ Hoje pendente')+'</span></div><p>'+esc(x.dose||'')+' · '+esc(x.hora)+' · estoque '+(x.estoque??0)+(+x.estoque<=+x.min?' ⚠️ Reposição':'')+'</p><button class="btn '+(tomou?'secondary':'green')+'" onclick="confirmarDose('+x.id+')">'+(tomou?'↩️ Registrar novamente':'✅ Tomei')+'</button></div>'});
+ if($('medRotList'))$('medRotList').innerHTML=rev(K.medRot,x=>{const dia=hojeLocal(),tomou=get(K.medTaken).some(t=>t.medId===x.id&&String(t.data).slice(0,10)===dia),baixo=Number(x.estoque??0)<=Number(x.min??0);return '<div class="item"><div class="itemtop"><b>💊 '+esc(x.nome)+'</b><span class="tag">'+(tomou?'✅ Hoje registrado':'⏳ Hoje pendente')+'</span></div><p>'+esc(x.dose||'')+' · '+esc(x.hora)+' · estoque: <b>'+Number(x.estoque??0)+'</b> dose(s)'+(baixo?' · ⚠️ Reposição necessária':'')+'</p>'+(baixo?'<div class="alert warn" style="margin:8px 0">📦 Estoque no limite definido. Planeje a reposição.</div>':'')+'<div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn '+(tomou?'secondary':'green')+'" onclick="confirmarDose('+x.id+')">'+(tomou?'↩️ Desfazer confirmação':'✅ Confirmar dose')+'</button><button class="btn secondary" onclick="reporEstoqueRotina('+x.id+')">📦 Repor estoque</button></div></div>'});
  if($('medAdherenceSummary')){
  const meds=get(K.medRot),taken=get(K.medTaken),today=hojeLocal();
  const active=meds.length,done=meds.filter(m=>taken.some(t=>t.medId===m.id&&String(t.data).slice(0,10)===today)).length;
@@ -862,13 +862,23 @@ $('gatilhoForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.g
 $('famFormPage')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.fam);a.push({parente:$('famParentePage').value,cond:$('famCondPage').value,info:$('famCondPage').value,idade:$('famIdadePage').value,obs:$('famObsPage').value});set(K.fam,a);e.target.reset();renderNovosModulos();alert('🧬 Antecedente salvo!')});
 function gerarPerguntasFamilia(){const a=get(K.fam),conds=[...new Set(a.map(x=>x.cond||x.info).filter(Boolean))];$('famPerguntas').innerHTML=conds.length?'<b>Perguntas sugeridas:</b><ol>'+conds.map(c=>'<li>Há algum exame preventivo ou acompanhamento relacionado a histórico familiar de '+esc(c)+' que devo discutir com meu médico?</li>').join('')+'</ol>':'Registre antecedentes familiares para gerar perguntas organizadas.'}
 $('medRotForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.medRot);a.push({id:Date.now(),nome:$('medRotNome').value,dose:$('medRotDose').value,hora:$('medRotHora').value,estoque:$('medRotEstoque').value||0,min:$('medRotMin').value||0});set(K.medRot,a);e.target.reset();renderNovosModulos();alert('💊 Rotina criada!')});
+function reporEstoqueRotina(id){
+ const r=get(K.medRot),med=r.find(x=>x.id===id);if(!med)return;
+ const valor=prompt('Quantas doses/unidades você está adicionando ao estoque?', '1');
+ if(valor===null)return;
+ const qtd=Number(valor);
+ if(!Number.isInteger(qtd)||qtd<1){alert('Informe uma quantidade inteira maior que zero.');return}
+ med.estoque=Math.max(0,Number(med.estoque)||0)+qtd;set(K.medRot,r);
+ renderNovosModulos();alert('📦 Estoque atualizado: '+med.nome+' agora tem '+med.estoque+' dose(s).');
+}
 function confirmarDose(id){
  let a=get(K.medTaken),hoje=hojeLocal(),idx=a.findIndex(x=>x.medId===id&&String(x.data).slice(0,10)===hoje);
  let r=get(K.medRot),med=r.find(x=>x.id===id);
- if(idx>=0){a.splice(idx,1);set(K.medTaken,a);if(med&&+med.estoque>0){med.estoque=+med.estoque+1;set(K.medRot,r)}renderNovosModulos();return}
+ if(idx>=0){a.splice(idx,1);set(K.medTaken,a);if(med&&med.estoque!==undefined&&med.estoque!==''){med.estoque=Number(med.estoque||0)+1;set(K.medRot,r)}renderNovosModulos();alert('↩️ Confirmação desfeita e estoque devolvido.');return}
+ if(med&&med.estoque!==undefined&&med.estoque!==''&&Number(med.estoque)<=0){alert('⚠️ O estoque está zerado. Atualize a reposição antes de registrar uma dose como retirada do estoque.');return}
  a.push({id:id,medId:id,data:new Date().toISOString()});set(K.medTaken,a);
- if(med&&+med.estoque>0){med.estoque=+med.estoque-1;set(K.medRot,r)}
- renderNovosModulos();alert('✅ Dose registrada para hoje e estoque atualizado.');
+ if(med&&med.estoque!==undefined&&med.estoque!==''){med.estoque=Math.max(0,Number(med.estoque||0)-1);set(K.medRot,r)}
+ renderNovosModulos();alert('✅ Dose confirmada e estoque atualizado.');
 }
 $('lembFormPage')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.r);a.push({nome:$('lembNomePage').value,data:$('lembDataPage').value,tipo:$('lembTipoPage').value});set(K.r,a);e.target.reset();renderNovosModulos();alert('🔔 Lembrete criado!')});
 function checarMedicamentosRotina(){const now=new Date(),hm=now.toTimeString().slice(0,5),date=hojeLocal();get(K.medRot).forEach(x=>{if(x.hora===hm){const chave='msa2_alerta_'+x.id+'_'+date+'_'+hm;if(!window.msaStorage.getItem(chave)){window.msaStorage.setItem(chave,'1');if('Notification'in window&&Notification.permission==='granted')new Notification('💊 Hora do medicamento',{body:x.nome+(x.dose?' — '+x.dose:'')});else alert('💊 Hora do medicamento: '+x.nome+(x.dose?' — '+x.dose:''))}}})}
