@@ -160,7 +160,19 @@ function atualizarSmartHome(){
 function prepararConsulta(){
  const p=get(K.p)[0]||{},d=get(K.d),m=get(K.m),e=get(K.e),c=get(K.c);
  const preview=$('consultPrepPreview');
- if(preview)preview.innerHTML='<div class="prep-box"><b>📄 Resumo para consulta</b><br><br>Perfil: '+esc(p.nome||'Não informado')+'<br>Sintomas registrados: '+d.length+'<br>Medicamentos: '+m.length+'<br>Exames: '+e.length+'<br>Consultas: '+c.length+'<br><br><button class="btn green" onclick="copiarParaIA()">📋 Copiar resumo para IA</button> <button class="btn secondary" onclick="go(\'relatorios\')">📄 Abrir relatórios</button></div>';
+ if(preview)preview.innerHTML='<div class="prep-box"><b>📄 Resumo para consulta</b><br><br>Perfil: '+esc(p.nome||'Não informado')+'<br>Sintomas registrados: '+d.length+'<br>Medicamentos: '+m.length+'<br>Exames: '+e.length+'<br>Consultas: '+c.length+'<br><br><button class="btn green" onclick="imprimirResumoConsulta()">🖨️ Imprimir / salvar em PDF</button> <button class="btn secondary" onclick="copiarParaIA()">📋 Copiar resumo para IA</button> <button class="btn secondary" onclick="go(\'relatorios\')">📄 Abrir relatórios</button><p class="muted" style="margin-top:10px">Na janela de impressão, escolha “Salvar como PDF” para guardar uma cópia.</p></div>';
+}
+function imprimirResumoConsulta(){
+ const p=get(K.p)[0]||{},d=get(K.d),m=get(K.m),e=get(K.e),c=get(K.c);
+ const li=(arr,fn,empty)=>arr.length?'<ul>'+arr.map(fn).join('')+'</ul>':'<p>'+empty+'</p>';
+ const body='<div class="box"><b>Paciente:</b> '+esc(p.nome||'Não informado')+'<br><b>Nascimento:</b> '+esc(p.nasc||'Não informado')+'<br><b>Alergias:</b> '+esc(p.alerg||'Não informado')+'<br><b>Condições informadas:</b> '+esc(p.cond||'Não informado')+'<br><b>Informações importantes:</b> '+esc(p.info||'Não informado')+'</div>'+
+ '<h2>😣 Sintomas registrados</h2>'+li(d,x=>'<li><b>'+esc(x.data||'Data não informada')+'</b> — '+esc(x.local||'Local não informado')+'; intensidade '+esc(x.int??'—')+'/10; '+esc(x.tipo||'tipo não informado')+'. '+esc(x.sint||'')+(x.obs?' Observações: '+esc(x.obs):'')+'</li>','Nenhum sintoma registrado.')+
+ '<h2>💊 Medicamentos registrados</h2>'+li(m,x=>'<li><b>'+esc(x.nome||'Nome não informado')+'</b> — '+esc(x.dose||'dose não informada')+'; '+esc(x.freq||'frequência não informada')+(x.inicio?' · início: '+esc(x.inicio):'')+(x.fim?' · fim: '+esc(x.fim):'')+'</li>','Nenhum medicamento registrado.')+
+ '<h2>🧪 Exames registrados</h2>'+li(e,x=>'<li><b>'+esc(x.data||'Data não informada')+'</b> — '+esc(x.nome||'Exame sem nome')+': '+esc(x.res||'resultado não informado')+(x.obs?' · '+esc(x.obs):'')+'</li>','Nenhum exame registrado.')+
+ '<h2>👨‍⚕️ Consultas registradas</h2>'+li(c,x=>'<li><b>'+esc(x.data||'Data não informada')+'</b> — '+esc(x.esp||'especialidade não informada')+(x.med?' · profissional: '+esc(x.med):'')+(x.mot?' · motivo: '+esc(x.mot):'')+(x.obs?' · observações: '+esc(x.obs):'')+'</li>','Nenhuma consulta registrada.')+
+ '<h2>💬 Perguntas para discutir com o profissional</h2><ol><li>Quais hipóteses precisam ser consideradas para os sintomas relatados?</li><li>Há sinais de alerta específicos que devo observar?</li><li>Meus medicamentos e exames precisam de revisão?</li><li>Qual é o próximo passo recomendado e quando devo retornar?</li></ol>';
+ if(typeof openReport==='function')openReport('Resumo para consulta médica',body);
+ else alert('Não foi possível abrir a impressão agora. Tente novamente ou use a seção Relatórios.');
 }
 function alturaEmCm(valor){
  const n=parseFloat(String(valor??'').replace(',','.'));
