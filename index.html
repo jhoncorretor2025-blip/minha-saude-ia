@@ -38,7 +38,7 @@
       limpar.then(function(){
         var u=new URL(window.location.href);
         u.searchParams.set('cb',Date.now().toString());
-        u.searchParams.set('v','V6.05');
+        u.searchParams.set('v','V6.06');
         window.location.replace(u.toString());
       });
     }catch(e){}
@@ -48,7 +48,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V6.05</title>
+<title>Minha Saúde IA — V6.06</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -349,7 +349,7 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
 @media(max-width:760px){.msa-mobile-menu-fab{display:none!important}.msa-mobile-bar{grid-template-columns:repeat(4,1fr)}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V6.05">
+  <link rel="stylesheet" href="css/design-system.css?v=V6.06">
 
 <style id="v519-progressive-ui">
 /* V6.00 — melhorias progressivas de dashboard, favoritos e alertas */
@@ -633,7 +633,8 @@ function unlock(){let p=localStorage.getItem('msa2_pin');if(document.getElementB
 document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.05</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.06</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 <nav id="nav" class="grouped-nav" aria-label="Navegação principal">
  <div class="nav-group"><button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button><div class="nav-menu"><button type="button" data-tab="home">🏠 Visão geral</button><button type="button" data-tab="timeline">🕐 Linha do tempo</button></div></div>
@@ -1557,7 +1558,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.05. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.06. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -1578,15 +1579,15 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V6.05" defer></script>
-<script src="js/core/storage.js?v=V6.05" defer></script>
-<script src="js/core/utils.js?v=V6.05" defer></script>
-<script src="js/core/stability-v599.js?v=V6.05" defer></script>
-<script src="js/navigation/menu.js?v=V6.05" defer></script>
-<script src="js/core/app.js?v=V6.05" defer></script>
-<script src="js/features/perfil-save.js?v=V6.05" defer></script>
-<script src="js/features/familiares.js?v=V6.05" defer></script>
-<script src="js/features/recursos.js?v=V6.05" defer></script>
+<script src="js/core/constants.js?v=V6.06" defer></script>
+<script src="js/core/storage.js?v=V6.06" defer></script>
+<script src="js/core/utils.js?v=V6.06" defer></script>
+<script src="js/core/stability-v599.js?v=V6.06" defer></script>
+<script src="js/navigation/menu.js?v=V6.06" defer></script>
+<script src="js/core/app.js?v=V6.06" defer></script>
+<script src="js/features/perfil-save.js?v=V6.06" defer></script>
+<script src="js/features/familiares.js?v=V6.06" defer></script>
+<script src="js/features/recursos.js?v=V6.06" defer></script>
 
 
 <script>
@@ -1609,12 +1610,12 @@ function iniciarImportacao(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
-<script src="js/features/inteligencia.js?v=V6.05" defer></script>
-<script src="js/ai/importacao.js?v=V6.05" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/legacy/melhorias-primeiras.js?v=V6.05" defer></script>
-<script src="js/features/expansoes.js?v=V6.05" defer></script>
-<script src="js/ai/importacao-fluxo-v514.js?v=V6.05" defer></script>
-<script src="js/legacy/melhorias-v513.js?v=V6.05" defer></script>
+<script src="js/features/inteligencia.js?v=V6.06" defer></script>
+<script src="js/ai/importacao.js?v=V6.06" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/legacy/melhorias-primeiras.js?v=V6.06" defer></script>
+<script src="js/features/expansoes.js?v=V6.06" defer></script>
+<script src="js/ai/importacao-fluxo-v514.js?v=V6.06" defer></script>
+<script src="js/legacy/melhorias-v513.js?v=V6.06" defer></script>
 
 
 <script>
@@ -1720,7 +1721,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
-<script src="js/reports/relatorios-v599.js?v=V6.05" defer></script>
+<script src="js/reports/relatorios-v599.js?v=V6.06" defer></script>
 
 
 
@@ -1738,7 +1739,7 @@ body.msa-dark .msa-theme-toggle{background:#1f2937;color:#f8fafc;border-color:#3
 .msa-focus-ring :focus-visible{outline:3px solid rgba(37,99,235,.35);outline-offset:2px}
 @media(max-width:760px){.msa-theme-toggle{top:10px;right:10px;padding:8px 10px;font-size:12px}}
 
-/* V6.05 — acessibilidade do tema escuro, intensidade e hierarquia da home */
+/* V6.06 — acessibilidade do tema escuro, intensidade e hierarquia da home */
 body.msa-dark header{background:linear-gradient(135deg,#172554,#312e81)!important;color:#f8fafc!important}
 body.msa-dark .sub,body.msa-dark .muted,body.msa-dark label,
 body.msa-dark .home-command-main p,body.msa-dark .home-secondary-actions button,
@@ -2317,7 +2318,7 @@ footer{line-height:1.6}
 </style>
 
 
-<!-- V6.05 — orientação contextual para facilitar a navegação entre áreas -->
+<!-- V6.06 — orientação contextual para facilitar a navegação entre áreas -->
 <style>
 .msa-page-guide{display:flex;align-items:flex-start;gap:11px;margin:0 0 13px;padding:13px 15px;border:1px solid #dce7fb;border-radius:15px;background:linear-gradient(120deg,#f2f7ff 0%,#fbfcff 100%);color:#344054;font-size:13px;line-height:1.55}
 .msa-page-guide-icon{display:flex;align-items:center;justify-content:center;flex:0 0 34px;height:34px;border-radius:11px;background:#e2ebff;color:#2455c7;font-size:17px}
@@ -2373,7 +2374,7 @@ footer{line-height:1.6}
 </script>
 
 
-<!-- V6.05 — acabamento visual: contraste, consistência e responsividade, sem alterar funcionalidades -->
+<!-- V6.06 — acabamento visual: contraste, consistência e responsividade, sem alterar funcionalidades -->
 <style id="msaV603VisualPolish">
 :root{
   --msa-accent:#315fe9;
@@ -2457,6 +2458,42 @@ section .empty{border-radius:17px}
 }
 @media(prefers-reduced-motion:reduce){
   *,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+<style id="msaV606Accessibility">
+/* V6.06 — acessibilidade global e correções finais de contraste */
+.msa-skip-link{position:fixed;top:8px;left:8px;z-index:20000;transform:translateY(-160%);background:#fff;color:#172033;border:2px solid #2563eb;border-radius:10px;padding:11px 14px;font-weight:900;text-decoration:none;box-shadow:0 5px 18px rgba(15,23,42,.2)}
+.msa-skip-link:focus{transform:translateY(0);outline:3px solid #93c5fd;outline-offset:2px}
+button,input,select,textarea,a,summary{touch-action:manipulation}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid #60a5fa;outline-offset:2px}
+body.msa-dark{color-scheme:dark}
+body.msa-dark .grouped-nav,body.msa-dark nav,body.msa-dark .msa-mobile-bar,
+body.msa-dark .msa-mobile-links,body.msa-dark .msa-mobile-quick,
+body.msa-dark .home-profile-hero,body.msa-dark .metric-panel,
+body.msa-dark .home-secondary-content .card,body.msa-dark .engagement-card,
+body.msa-dark .msa-page-guide,body.msa-dark .msa-card,body.msa-dark .msa-card-feature,
+body.msa-dark .msa-card-compact,body.msa-dark .msa-data-item,
+body.msa-dark .msa-state{background:#111827!important;color:#e5e7eb!important;border-color:#334155!important}
+body.msa-dark .nav-toggle,body.msa-dark .nav-menu button,
+body.msa-dark .msa-mobile-bar button,body.msa-dark .msa-mobile-links button,
+body.msa-dark .msa-mobile-quick button{color:#e5e7eb}
+body.msa-dark .nav-toggle:hover,body.msa-dark .nav-menu button:hover{background:#1e293b!important;color:#bfdbfe!important}
+body.msa-dark section .card h2,body.msa-dark section .card h3,
+body.msa-dark section .card h4,body.msa-dark section .item b,
+body.msa-dark section .item strong,body.msa-dark section .stat b,
+body.msa-dark section .home-profile-main h2{color:#f8fafc}
+body.msa-dark section .item,body.msa-dark section .empty,
+body.msa-dark section .home-profile-actions button{background:#111827;color:#e5e7eb;border-color:#334155}
+body.msa-dark section table th{background:#1e293b;color:#f1f5f9}
+body.msa-dark section table td{border-color:#334155}
+body.msa-dark section .alert.safe{background:#123126!important;border-color:#216747!important;color:#bbf7d0!important}
+body.msa-dark section .alert.warn{background:#35280f!important;border-color:#78551b!important;color:#fde68a!important}
+body.msa-dark section .alert.danger{background:#3a1720!important;border-color:#7f2939!important;color:#fecdd3!important}
+body.msa-dark .msa-skip-link{background:#111827;color:#f8fafc;border-color:#93c5fd}
+body.msa-dark input:disabled,body.msa-dark select:disabled,body.msa-dark textarea:disabled{background:#1e293b!important;color:#94a3b8!important}
+@media(max-width:760px){
+ .msa-skip-link{font-size:14px}
+ button,.btn,nav button{min-height:40px}
 }
 </style>
 
