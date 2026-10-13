@@ -26,14 +26,14 @@ function addFlow(){
  if(draft){
   box.value=draft;
   $('msaImportRecovery').innerHTML='<div class="alert warn"><b>📝 Encontramos uma importação não finalizada.</b><br>O texto anterior foi recuperado automaticamente. Revise antes de importar.<div class="row" style="margin-top:8px"><button class="btn secondary small" type="button" id="msaDiscardDraft">Descartar rascunho</button></div></div>';
-  $('msaDiscardDraft').onclick=function(){saveDraft('');box.value='';$('msaImportRecovery').innerHTML='';setStep(1,'Prepare sua importação','Siga as etapas. O aplicativo guarda o que você colar para evitar perda acidental.')};
+  $('msaDiscardDraft').onclick=function(){saveDraft('');box.value='';$('msaImportRecovery').innerHTML='';setStep(1,'Importação instantânea por IA (V3)','Copie o Prompt Pronto (V3), gere a ficha em uma única resposta e revise antes de salvar.')};
   setStep(3,'Resposta recuperada','O texto que você estava preparando foi recuperado.');
- }else setStep(1,'Prepare sua importação','Primeiro copie o prompt e converse com a IA.');
- box.addEventListener('input',function(){saveDraft(box.value);if(box.value.trim())setStep(3,'Resposta pronta para análise','Quando terminar de conversar com a IA, cole a ficha completa abaixo.')});
+ }else setStep(1,'Prepare sua importação','Copie o Prompt Pronto (V3). A IA não deve fazer perguntas.');
+ box.addEventListener('input',function(){saveDraft(box.value);if(box.value.trim())setStep(3,'Ficha pronta para análise','Cole a ficha completa da IA abaixo para validar os campos.')});
  const copy=$('promptIA')?.closest('.card')?.querySelector('button[onclick*="copiarPrompt"]');
- if(copy)copy.addEventListener('click',()=>setStep(2,'Converse com sua IA','Cole o prompt no ChatGPT, Gemini ou outra IA e responda as perguntas necessárias.'));
+ if(copy)copy.addEventListener('click',()=>setStep(2,'Converse com sua IA','Cole o prompt no ChatGPT ou Gemini. A IA deve devolver a ficha completa em uma única resposta, sem perguntas.'));
  const openers=document.querySelectorAll('a[onclick*="copiarPromptAntesDeAbrir"]');
- openers.forEach(a=>a.addEventListener('click',()=>setStep(2,'Converse com sua IA','A IA organiza o contexto disponível e deve entregar a ficha sem inventar dados.')));
+ openers.forEach(a=>a.addEventListener('click',()=>setStep(2,'Converse com sua IA','A IA deve gerar a ficha completa sem perguntas e sem inventar dados.')));
 }
 function hookImport(){
  if(typeof window.processarImportacao==='function'&&!window.__msa514Wrapped){
