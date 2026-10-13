@@ -38,7 +38,7 @@
       limpar.then(function(){
         var u=new URL(window.location.href);
         u.searchParams.set('cb',Date.now().toString());
-        u.searchParams.set('v','V6.09');
+        u.searchParams.set('v','V6.10');
         window.location.replace(u.toString());
       });
     }catch(e){}
@@ -48,7 +48,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V6.09</title>
+<title>Minha Saúde IA — V6.10</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -349,7 +349,7 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
 @media(max-width:760px){.msa-mobile-menu-fab{display:none!important}.msa-mobile-bar{grid-template-columns:repeat(4,1fr)}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V6.09">
+  <link rel="stylesheet" href="css/design-system.css?v=V6.10">
 
 <style id="v519-progressive-ui">
 /* V6.00 — melhorias progressivas de dashboard, favoritos e alertas */
@@ -634,10 +634,10 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.09</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.10</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 
-<!-- V6.09 — retorno persistente, feedback de navegação e validação do perfil -->
+<!-- V6.10 — retorno persistente, feedback de navegação e validação do perfil -->
 <div id="msaPageReturnBar" class="msa-page-return" aria-label="Navegação da página" hidden>
  <button id="msaReturnHome" type="button" class="msa-return-home">← Voltar para o início</button>
  <span id="msaCurrentPageTitle" class="msa-current-page-title">Página</span>
@@ -844,6 +844,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   <button onclick="prepararConsulta()">👨‍⚕️ Preparar consulta</button>
   <button onclick="go('acompanhamento')">📈 Acompanhar sinais</button>
  </div>
+</div>
+<div class="card msa-backup-prompt" style="margin-top:13px;border:1px solid #b9d7c7;background:linear-gradient(135deg,#f0fdf4,#ffffff)">
+  <div class="dash-section-title"><div><h2 style="margin-bottom:4px">🛡️ Proteja seu histórico de saúde</h2><div class="muted">Seus registros ficam neste navegador e podem ser perdidos se os dados do navegador forem apagados ou se você usar outro dispositivo.</div></div><span aria-hidden="true" style="font-size:28px">💾</span></div>
+  <div id="msaBackupHomeStatus" class="alert warn" role="status" style="margin-top:10px">Confira se você tem um backup recente dos seus registros.</div>
+  <div class="row" style="margin-top:10px"><button class="btn green" type="button" onclick="baixarBackup()">⬇️ Fazer backup agora</button><button class="btn secondary" type="button" onclick="go('backup')">⚙️ Opções de backup</button><button class="btn secondary small" type="button" id="msaBackupHomeToggle" onclick="msaAlternarLembreteBackup()">🔕 Desativar lembrete semanal</button></div>
+  <div class="muted" style="margin-top:8px;font-size:12px">Lembrete no próprio aplicativo a cada 7 dias. O aplicativo não consegue confirmar se você guardou o arquivo em outro local.</div>
 </div>
 <div class="metric-panel">
  <div class="metric-kpi"><span>⚖️ IMC</span><b id="dashBMI">—</b><small id="dashBMIClass">Informe peso e altura</small></div>
@@ -1327,6 +1333,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <div class="card" style="margin-top:13px">
 <h2>💾 Backup e restauração</h2>
 <div class="muted">Faça uma cópia dos seus dados antes de limpar o navegador, trocar de celular ou fazer alterações importantes.</div>
+<div id="msaBackupSettingsStatus" class="alert warn" role="status" style="margin-top:10px">Lembretes de backup: verificando status…</div>
+<div class="row" style="margin-top:10px"><button class="btn secondary small" type="button" id="msaBackupSettingsToggle" onclick="msaAlternarLembreteBackup()">Desativar lembrete semanal</button></div>
 <div class="row" style="margin-top:13px">
 <button class="btn green" onclick="baixarBackup()">⬇️ Fazer backup completo</button>
 <button class="btn secondary" onclick="document.getElementById('arquivoBackup').click()">♻️ Restaurar backup</button>
@@ -1709,7 +1717,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.09. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.10. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -1730,15 +1738,15 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V6.09" defer></script>
-<script src="js/core/storage.js?v=V6.09" defer></script>
-<script src="js/core/utils.js?v=V6.09" defer></script>
-<script src="js/core/stability-v599.js?v=V6.09" defer></script>
-<script src="js/navigation/menu.js?v=V6.09" defer></script>
-<script src="js/core/app.js?v=V6.09" defer></script>
-<script src="js/features/perfil-save.js?v=V6.09" defer></script>
-<script src="js/features/familiares.js?v=V6.09" defer></script>
-<script src="js/features/recursos.js?v=V6.09" defer></script>
+<script src="js/core/constants.js?v=V6.10" defer></script>
+<script src="js/core/storage.js?v=V6.10" defer></script>
+<script src="js/core/utils.js?v=V6.10" defer></script>
+<script src="js/core/stability-v599.js?v=V6.10" defer></script>
+<script src="js/navigation/menu.js?v=V6.10" defer></script>
+<script src="js/core/app.js?v=V6.10" defer></script>
+<script src="js/features/perfil-save.js?v=V6.10" defer></script>
+<script src="js/features/familiares.js?v=V6.10" defer></script>
+<script src="js/features/recursos.js?v=V6.10" defer></script>
 
 
 <script>
@@ -1761,12 +1769,12 @@ function iniciarImportacao(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
-<script src="js/features/inteligencia.js?v=V6.09" defer></script>
-<script src="js/ai/importacao.js?v=V6.09" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/legacy/melhorias-primeiras.js?v=V6.09" defer></script>
-<script src="js/features/expansoes.js?v=V6.09" defer></script>
-<script src="js/ai/importacao-fluxo-v514.js?v=V6.09" defer></script>
-<script src="js/legacy/melhorias-v513.js?v=V6.09" defer></script>
+<script src="js/features/inteligencia.js?v=V6.10" defer></script>
+<script src="js/ai/importacao.js?v=V6.10" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/legacy/melhorias-primeiras.js?v=V6.10" defer></script>
+<script src="js/features/expansoes.js?v=V6.10" defer></script>
+<script src="js/ai/importacao-fluxo-v514.js?v=V6.10" defer></script>
+<script src="js/legacy/melhorias-v513.js?v=V6.10" defer></script>
 
 
 <script>
@@ -1872,7 +1880,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
-<script src="js/reports/relatorios-v599.js?v=V6.09" defer></script>
+<script src="js/reports/relatorios-v599.js?v=V6.10" defer></script>
 
 
 
@@ -1890,7 +1898,7 @@ body.msa-dark .msa-theme-toggle{background:#1f2937;color:#f8fafc;border-color:#3
 .msa-focus-ring :focus-visible{outline:3px solid rgba(37,99,235,.35);outline-offset:2px}
 @media(max-width:760px){.msa-theme-toggle{top:10px;right:10px;padding:8px 10px;font-size:12px}}
 
-/* V6.09 — acessibilidade do tema escuro, intensidade e hierarquia da home */
+/* V6.10 — acessibilidade do tema escuro, intensidade e hierarquia da home */
 body.msa-dark header{background:linear-gradient(135deg,#172554,#312e81)!important;color:#f8fafc!important}
 body.msa-dark .sub,body.msa-dark .muted,body.msa-dark label,
 body.msa-dark .home-command-main p,body.msa-dark .home-secondary-actions button,
@@ -2469,7 +2477,7 @@ footer{line-height:1.6}
 </style>
 
 
-<!-- V6.09 — orientação contextual para facilitar a navegação entre áreas -->
+<!-- V6.10 — orientação contextual para facilitar a navegação entre áreas -->
 <style>
 .msa-page-guide{display:flex;align-items:flex-start;gap:11px;margin:0 0 13px;padding:13px 15px;border:1px solid #dce7fb;border-radius:15px;background:linear-gradient(120deg,#f2f7ff 0%,#fbfcff 100%);color:#344054;font-size:13px;line-height:1.55}
 .msa-page-guide-icon{display:flex;align-items:center;justify-content:center;flex:0 0 34px;height:34px;border-radius:11px;background:#e2ebff;color:#2455c7;font-size:17px}
@@ -2525,7 +2533,7 @@ footer{line-height:1.6}
 </script>
 
 
-<!-- V6.09 — acabamento visual: contraste, consistência e responsividade, sem alterar funcionalidades -->
+<!-- V6.10 — acabamento visual: contraste, consistência e responsividade, sem alterar funcionalidades -->
 <style id="msaV603VisualPolish">
 :root{
   --msa-accent:#315fe9;
@@ -2612,7 +2620,7 @@ section .empty{border-radius:17px}
 }
 </style>
 <style id="msaV606Accessibility">
-/* V6.09 — acessibilidade global e correções finais de contraste */
+/* V6.10 — acessibilidade global e correções finais de contraste */
 .msa-skip-link{position:fixed;top:8px;left:8px;z-index:20000;transform:translateY(-160%);background:#fff;color:#172033;border:2px solid #2563eb;border-radius:10px;padding:11px 14px;font-weight:900;text-decoration:none;box-shadow:0 5px 18px rgba(15,23,42,.2)}
 .msa-skip-link:focus{transform:translateY(0);outline:3px solid #93c5fd;outline-offset:2px}
 button,input,select,textarea,a,summary{touch-action:manipulation}
@@ -2650,7 +2658,7 @@ body.msa-dark input:disabled,body.msa-dark select:disabled,body.msa-dark textare
 
 
 <style id="msaV607MobileForms">
-/* V6.09 — formulários confortáveis no celular e feedback acessível */
+/* V6.10 — formulários confortáveis no celular e feedback acessível */
 form{min-width:0}
 form>label{display:block;min-width:0;margin:0 0 3px;line-height:1.45}
 form .grid2,form .grid3,form .grid4{min-width:0;gap:12px}
