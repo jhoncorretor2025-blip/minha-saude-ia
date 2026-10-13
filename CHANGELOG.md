@@ -1,3 +1,8 @@
+## V6.14 — Ajustes na sincronização do perfil central
+- 🔁 Ao sincronizar familiares, atualiza nome, parentesco, idade e nascimento dos registros existentes sem apagar seus dados clínicos.
+- ⚧️ Normalização do gênero entre os formatos usados nos dois aplicativos.
+- 🔄 Versão e cache do PWA sincronizados para V6.14.
+
 ## V6.13 — Perfil central compartilhado com Canivete
 - 🔄 Padronizada a chave local `delta_perfil_central_v1` para nome, idade, nascimento, peso, altura, sexo e familiares resumidos.
 - ⚖️ Peso e altura são sincronizados entre os dois apps; o IMC continua calculado por cada módulo com os mesmos valores.
