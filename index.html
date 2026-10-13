@@ -38,7 +38,7 @@
       limpar.then(function(){
         var u=new URL(window.location.href);
         u.searchParams.set('cb',Date.now().toString());
-        u.searchParams.set('v','V6.07');
+        u.searchParams.set('v','V6.08');
         window.location.replace(u.toString());
       });
     }catch(e){}
@@ -48,7 +48,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V6.07</title>
+<title>Minha Saúde IA — V6.08</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -349,7 +349,7 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
 @media(max-width:760px){.msa-mobile-menu-fab{display:none!important}.msa-mobile-bar{grid-template-columns:repeat(4,1fr)}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V6.07">
+  <link rel="stylesheet" href="css/design-system.css?v=V6.08">
 
 <style id="v519-progressive-ui">
 /* V6.00 — melhorias progressivas de dashboard, favoritos e alertas */
@@ -634,8 +634,159 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.07</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.08</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
+
+<!-- V6.08 — retorno persistente, feedback de navegação e validação do perfil -->
+<div id="msaPageReturnBar" class="msa-page-return" aria-label="Navegação da página" hidden>
+ <button id="msaReturnHome" type="button" class="msa-return-home">← Voltar para o início</button>
+ <span id="msaCurrentPageTitle" class="msa-current-page-title">Página</span>
+</div>
+<div id="msaNavigationProgress" class="msa-navigation-progress" role="status" aria-live="polite" aria-label="Carregando página"><span></span></div>
+<style id="msaV608NavigationForms">
+.msa-page-return{position:sticky;top:8px;z-index:10010;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px;padding:8px 10px;background:rgba(255,255,255,.97);border:1px solid #dbe4f0;border-radius:14px;box-shadow:0 6px 20px rgba(15,23,42,.10);backdrop-filter:blur(12px)}
+.msa-page-return[hidden]{display:none!important}
+.msa-return-home{border:0;border-radius:10px;background:#eaf1ff;color:#1d4ed8;padding:10px 13px;min-height:42px;font:inherit;font-weight:900;cursor:pointer;white-space:nowrap}
+.msa-current-page-title{min-width:0;flex:1;font-size:13px;font-weight:850;color:#334155;overflow-wrap:anywhere}
+.msa-navigation-progress{position:fixed;left:0;right:0;top:0;height:3px;z-index:16000;opacity:0;pointer-events:none;background:transparent;transition:opacity .15s}
+.msa-navigation-progress.is-loading{opacity:1}
+.msa-navigation-progress span{display:block;width:35%;height:100%;background:linear-gradient(90deg,#2563eb,#7c3aed);transform:translateX(-110%)}
+.msa-navigation-progress.is-loading span{animation:msaProgressRun .75s ease-in-out infinite}
+@keyframes msaProgressRun{0%{transform:translateX(-110%)}100%{transform:translateX(330%)}}
+body.msa-dark .msa-page-return{background:rgba(17,24,39,.97);border-color:#334155}
+body.msa-dark .msa-current-page-title{color:#e5e7eb}
+body.msa-dark .msa-return-home{background:#1e3a8a;color:#dbeafe}
+#perfil input[aria-invalid="true"]{border-color:#dc2626!important;box-shadow:0 0 0 2px rgba(220,38,38,.13)}
+#perfil .msa-field-error{display:block;color:#b91c1c;font-size:12px;font-weight:750;margin-top:4px}
+body.msa-dark #perfil .msa-field-error{color:#fca5a5}
+@media(max-width:760px){
+ .msa-page-return{top:max(6px,env(safe-area-inset-top));gap:7px;padding:7px;border-radius:12px}
+ .msa-return-home{padding:9px 10px;font-size:13px;min-height:44px}
+ .msa-current-page-title{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){.msa-navigation-progress span{animation:none!important}.msa-navigation-progress{transition:none}}
+</style>
+<script id="msaV608NavigationFormsScript">
+(function(){
+'use strict';
+var TITLES={home:'Início',timeline:'Linha do tempo',perfil:'Meu perfil',dor:'Sintomas e dor',meds:'Medicamentos',consultas:'Consultas',exames:'Exames',acompanhamento:'Acompanhamento',carteirinha:'Carteirinha',backup:'Segurança e backup',exportar:'Exportar dados',importar:'Importar com IA',nutricao:'Nutrição',sono:'Sono e bem-estar',familia:'Histórico familiar',familiares:'Familiares',documentos:'Documentos',lembretes:'Lembretes',relatorios:'Relatórios',configuracoes:'Configurações',ia:'Assistente IA',inteligencia:'Central de inteligência',perguntas:'Preparar consulta',avisos:'Atenção e avisos',calendario:'Calendário'};
+var pageTitle=function(id){return TITLES[id]||((document.querySelector('section#'+CSS.escape(id)+' h1,section#'+CSS.escape(id)+' h2')||{}).textContent||id||'Página').trim()};
+var bar,progress,title;
+function startProgress(){if(!progress)return;progress.classList.add('is-loading');clearTimeout(startProgress.t);startProgress.t=setTimeout(stopProgress,900)}
+function stopProgress(){if(progress)progress.classList.remove('is-loading')}
+function currentPage(){try{return new URL(location.href).searchParams.get('pagina')||'home'}catch(e){return 'home'}}
+function syncBar(id){
+ id=id||currentPage();if(!bar)return;
+ var isInternal=id!=='home';
+ bar.hidden=!isInternal;
+ if(title)title.textContent=pageTitle(id);
+ document.body.classList.toggle('msa-page-internal',isInternal);
+ if(isInternal)bar.setAttribute('data-page',id);else bar.removeAttribute('data-page');
+}
+function goTopSection(id){
+ var target=document.getElementById(id);
+ if(!target)return;
+ target.style.scrollMarginTop='76px';
+ requestAnimationFrame(function(){
+  try{target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'})}
+  catch(e){window.scrollTo({top:0,behavior:'smooth'})}
+ });
+}
+function wrapNavigation(){
+ if(typeof window.go==='function'&&!window.__msaV608GoWrapped){
+  var original=window.go;
+  window.go=function(id){
+   startProgress();
+   var result=original.apply(this,arguments);
+   syncBar(id);
+   goTopSection(id);
+   setTimeout(stopProgress,260);
+   return result;
+  };
+  window.__msaV608GoWrapped=true;
+ }
+}
+function init(){
+ bar=document.getElementById('msaPageReturnBar');progress=document.getElementById('msaNavigationProgress');title=document.getElementById('msaCurrentPageTitle');
+ var back=document.getElementById('msaReturnHome');
+ if(back)back.addEventListener('click',function(){startProgress();if(typeof window.go==='function')window.go('home');else{history.replaceState({pagina:'home'},'','?pagina=home');syncBar('home');window.scrollTo({top:0,behavior:'smooth'})}});
+ wrapNavigation();
+ syncBar(currentPage());
+ setTimeout(function(){wrapNavigation();syncBar(currentPage());},120);
+ window.addEventListener('popstate',function(){startProgress();setTimeout(function(){syncBar(currentPage());goTopSection(currentPage());stopProgress()},80)});
+ document.addEventListener('click',function(ev){
+  var btn=ev.target.closest('button[data-tab]');
+  if(btn){startProgress();setTimeout(function(){syncBar(btn.dataset.tab);stopProgress()},300)}
+ });
+ /* Peso, altura e telefone: entrada assistida sem alterar o formato guardado no histórico. */
+ var peso=document.getElementById('pPeso'),altura=document.getElementById('pAltura'),tel=document.getElementById('pTel'),nasc=document.getElementById('pNasc'),idade=document.getElementById('pIdade');
+ function decimalInput(el,limit){
+  if(!el)return;
+  el.addEventListener('input',function(){
+   var v=el.value.replace(/[^0-9.,]/g,'');
+   var sep=v.search(/[.,]/);
+   if(sep>=0)v=v.slice(0,sep+1)+v.slice(sep+1).replace(/[.,]/g,'');
+   if(v.length>limit)v=v.slice(0,limit);
+   if(el.value!==v)el.value=v;
+   el.setAttribute('aria-invalid','false');
+  });
+  el.addEventListener('blur',function(){el.value=el.value.trim().replace(/,/g,'.')});
+ }
+ decimalInput(peso,7);decimalInput(altura,6);
+ if(tel){
+  function maskPhone(){
+   var d=tel.value.replace(/\D/g,'').slice(0,11);
+   if(d.length===0){tel.value='';return}
+   if(d.length<=2){tel.value='('+d;return}
+   if(d.length<=6){tel.value='('+d.slice(0,2)+') '+d.slice(2);return}
+   if(d.length<=10){tel.value='('+d.slice(0,2)+') '+d.slice(2,6)+'-'+d.slice(6);return}
+   tel.value='('+d.slice(0,2)+') '+d.slice(2,7)+'-'+d.slice(7);
+  }
+  tel.addEventListener('input',maskPhone);tel.addEventListener('blur',maskPhone);
+  if(tel.value)maskPhone();
+ }
+ function syncAge(){
+  if(!nasc||!nasc.value)return;
+  var dob=new Date(nasc.value+'T12:00:00'),today=new Date();
+  if(isNaN(dob.getTime())||dob>today){nasc.setCustomValidity('A data de nascimento não pode ser futura.');nasc.setAttribute('aria-invalid','true');return}
+  nasc.setCustomValidity('');nasc.removeAttribute('aria-invalid');
+  var years=today.getFullYear()-dob.getFullYear();
+  if(today.getMonth()<dob.getMonth()||(today.getMonth()===dob.getMonth()&&today.getDate()<dob.getDate()))years--;
+  if(idade&&years>=0&&years<=130)idade.value=String(years);
+ }
+ if(nasc){nasc.max=new Date().toISOString().slice(0,10);nasc.addEventListener('change',syncAge);syncAge()}
+ if(peso)peso.addEventListener('blur',function(){var n=Number(String(peso.value).replace(',','.'));if(peso.value&&(!Number.isFinite(n)||n<=0||n>500)){peso.setCustomValidity('Informe um peso maior que 0 e até 500 kg.');peso.setAttribute('aria-invalid','true')}else{peso.setCustomValidity('');peso.removeAttribute('aria-invalid')}});
+ if(altura)altura.addEventListener('blur',function(){var n=Number(String(altura.value).replace(',','.'));if(altura.value&&(!Number.isFinite(n)||n<=0||n>250||(n<3&&n<0.3))){altura.setCustomValidity('Informe a altura em cm (30–250) ou em metros (0,30–2,50).');altura.setAttribute('aria-invalid','true')}else{altura.setCustomValidity('');altura.removeAttribute('aria-invalid')}});
+ var save=document.getElementById('salvarPerfilBtn');
+ if(save&&!save.dataset.msaV608){
+  save.dataset.msaV608='1';
+  save.addEventListener('click',function(ev){
+   syncAge();
+   [peso,altura,nasc].forEach(function(el){if(el&&el.value&&typeof el.reportValidity==='function'&&!el.checkValidity()){ev.preventDefault();el.reportValidity();el.focus();throw new Error('Validação de perfil') }});
+  },true);
+ }
+ /* O botão legado chama o salvamento por onclick; validação no wrapper evita dados malformados. */
+ if(typeof window.msaSalvarPerfilRobusto==='function'&&!window.__msaV608SaveWrapped){
+  var originalSave=window.msaSalvarPerfilRobusto;
+  window.msaSalvarPerfilRobusto=function(){
+   syncAge();
+   var fields=[peso,altura,nasc,tel].filter(Boolean);
+   for(var i=0;i<fields.length;i++){
+    var el=fields[i];
+    if(el===tel&&el.value&&el.value.replace(/\D/g,'').length!==10&&el.value.replace(/\D/g,'').length!==11){alert('Confira o telefone: informe DDD e número com 10 ou 11 dígitos.');el.focus();return false}
+    if(el.value&&!el.checkValidity()){el.reportValidity();el.focus();return false}
+   }
+   if(peso&&peso.value)peso.value=peso.value.replace(',','.');
+   if(altura&&altura.value)altura.value=altura.value.replace(',','.');
+   return originalSave.apply(this,arguments);
+  };
+  window.__msaV608SaveWrapped=true;
+ }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
+
 <nav id="nav" class="grouped-nav" aria-label="Navegação principal">
  <div class="nav-group"><button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button><div class="nav-menu"><button type="button" data-tab="home">🏠 Visão geral</button><button type="button" data-tab="timeline">🕐 Linha do tempo</button></div></div>
  <div class="nav-group"><button type="button" class="nav-toggle" data-menu="health">❤️ Saúde ▾</button><div class="nav-menu">
@@ -931,8 +1082,8 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 
 <section id="exames"><div class="card"><h2>🧪 Exame</h2><form id="eForm"><div class="grid2"><label>Nome do exame<input id="eNome" required></label><label>Data<input id="eData" type="date" required></label></div><label>Resultado / valores importantes<textarea id="eRes"></textarea></label><label>Observações<textarea id="eObs"></textarea></label><button class="btn">💾 Salvar exame</button></form></div><div class="card" style="margin-top:13px"><h2>Exames registrados</h2><div id="listE" class="list"></div></div></section>
 
-<section id="perfil"><div class="card"><h2>👤 Perfil de saúde</h2><div class="muted">Informações que podem ser úteis em uma consulta.</div><form id="pForm" style="margin-top:13px"><div class="profile-photo-row"><div class="profile-photo-preview" id="profilePhotoPreview"><span>👤</span></div><div><label>📸 Sua foto<input id="pFoto" type="file" accept="image/*"></label><div class="muted" style="margin-top:6px">Use uma foto frontal. Ela fica armazenada apenas neste navegador.</div></div></div><div class="grid2"><label>Nome<input id="pNome"></label><label>Data de nascimento<input id="pNasc" type="date"></label></div>
-<div class="grid2"><label>Idade<input id="pIdade" type="number" min="0" max="130" placeholder="Ex.: 37"></label><label>Peso aproximado (kg)<input id="pPeso" type="number" min="0" max="500" step="0.1" placeholder="Ex.: 80"></label></div><div class="grid2"><label>Sexo <span style="color:#dc2626">*</span><select id="pSexo" required><option value="">Selecione</option><option value="Masculino">Masculino</option><option value="Feminino">Feminino</option><option value="Outro">Outro</option></select></label><label>Tipo sanguíneo<select id="pSangue"><option value="">Não informado</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></label></div><div><label>Altura (cm ou m)<input id="pAltura" type="number" min="0" max="250" step="0.01" placeholder="Ex.: 184 ou 1,84"></label></div><label>💊 Suplementos<textarea id="pSupl" placeholder="Nome, dose e frequência, se souber..."></textarea></label><label>🚨 Alergias<textarea id="pAlerg" placeholder="Medicamentos, alimentos, outras alergias..."></textarea></label><label>🩺 Condições já diagnosticadas<textarea id="pCond"></textarea></label><label>🏥 Cirurgias / internações anteriores<textarea id="pCirc"></textarea></label><label>📌 Informações importantes<textarea id="pInfo"></textarea></label>
+<section id="perfil"><div class="card"><h2>👤 Perfil de saúde</h2><div class="muted">Informações que podem ser úteis em uma consulta.</div><form id="pForm" style="margin-top:13px"><div class="profile-photo-row"><div class="profile-photo-preview" id="profilePhotoPreview"><span>👤</span></div><div><label>📸 Sua foto<input id="pFoto" type="file" accept="image/*"></label><div class="muted" style="margin-top:6px">Use uma foto frontal. Ela fica armazenada apenas neste navegador.</div></div></div><div class="grid2"><label>Nome<input id="pNome"></label><label>Data de nascimento<input id="pNasc" type="date" max="2026-10-12" autocomplete="bday"></label></div>
+<div class="grid2"><label>Idade<input id="pIdade" type="number" min="0" max="130" placeholder="Ex.: 37"></label><label>Peso aproximado (kg)<input id="pPeso" type="text" inputmode="decimal" autocomplete="off" maxlength="7" placeholder="Ex.: 80,5" aria-describedby="pPesoHelp"><span id="pPesoHelp" class="muted">Use kg; aceita vírgula ou ponto decimal.</span></label></div><div class="grid2"><label>Sexo <span style="color:#dc2626">*</span><select id="pSexo" required><option value="">Selecione</option><option value="Masculino">Masculino</option><option value="Feminino">Feminino</option><option value="Outro">Outro</option></select></label><label>Tipo sanguíneo<select id="pSangue"><option value="">Não informado</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></label></div><div><label>Altura (cm ou m)<input id="pAltura" type="text" inputmode="decimal" autocomplete="off" maxlength="6" placeholder="Ex.: 184 ou 1,84" aria-describedby="pAlturaHelp"><span id="pAlturaHelp" class="muted">Informe centímetros (184) ou metros (1,84).</span></label></div><label>💊 Suplementos<textarea id="pSupl" placeholder="Nome, dose e frequência, se souber..."></textarea></label><label>🚨 Alergias<textarea id="pAlerg" placeholder="Medicamentos, alimentos, outras alergias..."></textarea></label><label>🩺 Condições já diagnosticadas<textarea id="pCond"></textarea></label><label>🏥 Cirurgias / internações anteriores<textarea id="pCirc"></textarea></label><label>📌 Informações importantes<textarea id="pInfo"></textarea></label>
 <div class="card" style="margin-top:13px;background:#fffaf0;border-color:#fde7b2">
 <h3 style="margin-top:0">💊 Uso frequente de remédios para dor</h3>
 <div class="muted">Registre apenas o que costuma usar. Isso é histórico para consultas, não uma orientação de tratamento.</div>
@@ -1076,7 +1227,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 </div>
 <label>📝 Observações de prevenção<textarea id="pPrevObs" placeholder="Resultados, orientações recebidas ou outros acompanhamentos que você queira registrar..."></textarea></label>
 </div>
-</div><div class="grid2"><label>Contato de emergência<input id="pEmerg"></label><label>Telefone<input id="pTel"></label></div><button id="salvarPerfilBtn" class="btn" type="button" onclick="window.msaSalvarPerfilRobusto ? window.msaSalvarPerfilRobusto() : alert('⚠️ O módulo de salvamento ainda está carregando. Atualize a página e tente novamente.')">💾 Salvar perfil</button></form></div></section>
+</div><div class="grid2"><label>Contato de emergência<input id="pEmerg"></label><label>Telefone<input id="pTel" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="(51) 99999-9999"></label></div><button id="salvarPerfilBtn" class="btn" type="button" onclick="window.msaSalvarPerfilRobusto ? window.msaSalvarPerfilRobusto() : alert('⚠️ O módulo de salvamento ainda está carregando. Atualize a página e tente novamente.')">💾 Salvar perfil</button></form></div></section>
 
 
 <section id="acompanhamento"><div class="card"><h2>📊 Acompanhamento</h2><div class="muted">Acompanhe sinais registrados, lembretes, vacinas e informações importantes.</div>
@@ -1558,7 +1709,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.07. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.08. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -1579,15 +1730,15 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V6.07" defer></script>
-<script src="js/core/storage.js?v=V6.07" defer></script>
-<script src="js/core/utils.js?v=V6.07" defer></script>
-<script src="js/core/stability-v599.js?v=V6.07" defer></script>
-<script src="js/navigation/menu.js?v=V6.07" defer></script>
-<script src="js/core/app.js?v=V6.07" defer></script>
-<script src="js/features/perfil-save.js?v=V6.07" defer></script>
-<script src="js/features/familiares.js?v=V6.07" defer></script>
-<script src="js/features/recursos.js?v=V6.07" defer></script>
+<script src="js/core/constants.js?v=V6.08" defer></script>
+<script src="js/core/storage.js?v=V6.08" defer></script>
+<script src="js/core/utils.js?v=V6.08" defer></script>
+<script src="js/core/stability-v599.js?v=V6.08" defer></script>
+<script src="js/navigation/menu.js?v=V6.08" defer></script>
+<script src="js/core/app.js?v=V6.08" defer></script>
+<script src="js/features/perfil-save.js?v=V6.08" defer></script>
+<script src="js/features/familiares.js?v=V6.08" defer></script>
+<script src="js/features/recursos.js?v=V6.08" defer></script>
 
 
 <script>
@@ -1610,12 +1761,12 @@ function iniciarImportacao(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
-<script src="js/features/inteligencia.js?v=V6.07" defer></script>
-<script src="js/ai/importacao.js?v=V6.07" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/legacy/melhorias-primeiras.js?v=V6.07" defer></script>
-<script src="js/features/expansoes.js?v=V6.07" defer></script>
-<script src="js/ai/importacao-fluxo-v514.js?v=V6.07" defer></script>
-<script src="js/legacy/melhorias-v513.js?v=V6.07" defer></script>
+<script src="js/features/inteligencia.js?v=V6.08" defer></script>
+<script src="js/ai/importacao.js?v=V6.08" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/legacy/melhorias-primeiras.js?v=V6.08" defer></script>
+<script src="js/features/expansoes.js?v=V6.08" defer></script>
+<script src="js/ai/importacao-fluxo-v514.js?v=V6.08" defer></script>
+<script src="js/legacy/melhorias-v513.js?v=V6.08" defer></script>
 
 
 <script>
@@ -1721,7 +1872,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
-<script src="js/reports/relatorios-v599.js?v=V6.07" defer></script>
+<script src="js/reports/relatorios-v599.js?v=V6.08" defer></script>
 
 
 
@@ -1739,7 +1890,7 @@ body.msa-dark .msa-theme-toggle{background:#1f2937;color:#f8fafc;border-color:#3
 .msa-focus-ring :focus-visible{outline:3px solid rgba(37,99,235,.35);outline-offset:2px}
 @media(max-width:760px){.msa-theme-toggle{top:10px;right:10px;padding:8px 10px;font-size:12px}}
 
-/* V6.07 — acessibilidade do tema escuro, intensidade e hierarquia da home */
+/* V6.08 — acessibilidade do tema escuro, intensidade e hierarquia da home */
 body.msa-dark header{background:linear-gradient(135deg,#172554,#312e81)!important;color:#f8fafc!important}
 body.msa-dark .sub,body.msa-dark .muted,body.msa-dark label,
 body.msa-dark .home-command-main p,body.msa-dark .home-secondary-actions button,
@@ -2318,7 +2469,7 @@ footer{line-height:1.6}
 </style>
 
 
-<!-- V6.07 — orientação contextual para facilitar a navegação entre áreas -->
+<!-- V6.08 — orientação contextual para facilitar a navegação entre áreas -->
 <style>
 .msa-page-guide{display:flex;align-items:flex-start;gap:11px;margin:0 0 13px;padding:13px 15px;border:1px solid #dce7fb;border-radius:15px;background:linear-gradient(120deg,#f2f7ff 0%,#fbfcff 100%);color:#344054;font-size:13px;line-height:1.55}
 .msa-page-guide-icon{display:flex;align-items:center;justify-content:center;flex:0 0 34px;height:34px;border-radius:11px;background:#e2ebff;color:#2455c7;font-size:17px}
@@ -2374,7 +2525,7 @@ footer{line-height:1.6}
 </script>
 
 
-<!-- V6.07 — acabamento visual: contraste, consistência e responsividade, sem alterar funcionalidades -->
+<!-- V6.08 — acabamento visual: contraste, consistência e responsividade, sem alterar funcionalidades -->
 <style id="msaV603VisualPolish">
 :root{
   --msa-accent:#315fe9;
@@ -2461,7 +2612,7 @@ section .empty{border-radius:17px}
 }
 </style>
 <style id="msaV606Accessibility">
-/* V6.07 — acessibilidade global e correções finais de contraste */
+/* V6.08 — acessibilidade global e correções finais de contraste */
 .msa-skip-link{position:fixed;top:8px;left:8px;z-index:20000;transform:translateY(-160%);background:#fff;color:#172033;border:2px solid #2563eb;border-radius:10px;padding:11px 14px;font-weight:900;text-decoration:none;box-shadow:0 5px 18px rgba(15,23,42,.2)}
 .msa-skip-link:focus{transform:translateY(0);outline:3px solid #93c5fd;outline-offset:2px}
 button,input,select,textarea,a,summary{touch-action:manipulation}
@@ -2499,7 +2650,7 @@ body.msa-dark input:disabled,body.msa-dark select:disabled,body.msa-dark textare
 
 
 <style id="msaV607MobileForms">
-/* V6.07 — formulários confortáveis no celular e feedback acessível */
+/* V6.08 — formulários confortáveis no celular e feedback acessível */
 form{min-width:0}
 form>label{display:block;min-width:0;margin:0 0 3px;line-height:1.45}
 form .grid2,form .grid3,form .grid4{min-width:0;gap:12px}
