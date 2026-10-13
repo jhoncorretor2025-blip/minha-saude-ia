@@ -1,4 +1,4 @@
-/* Perfil central compartilhado — Minha Saúde IA V6.14 / Canivete v8.35
+/* Perfil central compartilhado — Minha Saúde IA V6.15 / Canivete v8.35
  * Mesma origem GitHub Pages: sincroniza apenas perfil básico e dados familiares resumidos.
  * Não compartilha prontuário, medicamentos, consultas, exames ou dados financeiros.
  */
@@ -19,7 +19,7 @@ function readProfile(){
 }
 function publishProfile(profile){
  const current=read()||{},p=profile||readProfile();
- return write({profile:Object.assign({},current.profile||{},p)});
+ const merged=Object.assign({},current.profile||{});Object.keys(p).forEach(k=>{if(String(p[k]??'').trim()!=='')merged[k]=p[k]});return write({profile:merged});
 }
 function familySummary(){
  const K=window.MSA_K||window.K||{},s=window.MSAStorage;
@@ -35,8 +35,8 @@ function applyShared(data){
  const p=data.profile,K=window.MSA_K||window.K||{},s=window.MSAStorage;if(!s||!K.p)return;
  try{
   const oldRaw=s.get(K.p),old=Array.isArray(oldRaw)?(oldRaw[0]||{}):(oldRaw||{}),merged=Object.assign({},old);
-  if(p.nome)merged.nome=p.nome;if(p.idade!=='')merged.idade=String(p.idade);if(p.nascimento)merged.nasc=p.nascimento;
-  if(p.pesoKg!=='')merged.peso=String(p.pesoKg);if(p.alturaCm!=='')merged.altura=String(p.alturaCm);if(p.sexo)merged.sexo=p.sexo;
+  if(p.nome)merged.nome=p.nome;if(String(p.idade||'').trim())merged.idade=String(p.idade);if(p.nascimento)merged.nasc=p.nascimento;
+  if(String(p.pesoKg||'').trim())merged.peso=String(p.pesoKg);if(String(p.alturaCm||'').trim())merged.altura=String(p.alturaCm);if(p.sexo)merged.sexo=p.sexo;
   s.set(K.p,[merged]);
   const mapping={pNome:merged.nome,pIdade:merged.idade,pNasc:merged.nasc,pPeso:merged.peso,pAltura:merged.altura,pSexo:merged.sexo};
   Object.keys(mapping).forEach(id=>{const el=document.getElementById(id);if(el&&mapping[id]!==undefined&&mapping[id]!==null)el.value=mapping[id]});
