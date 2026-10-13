@@ -48,6 +48,8 @@ function salvarPerfilRobusto(e){
     const ok=storage.set(K.p,[perfil]);
     if(!ok)throw new Error('O navegador recusou a gravação.');
 
+    try{if(window.MSAProfileBridge)window.MSAProfileBridge.publishProfile({nome:perfil.nome,idade:perfil.idade,nascimento:perfil.nasc,pesoKg:perfil.peso,alturaCm:perfil.altura,sexo:perfil.sexo})}catch(syncErr){console.warn('[Minha Saúde IA] sincronização do perfil central:',syncErr)}
+
     const depois=storage.get(K.p);
     const confirmado=Array.isArray(depois)&&depois[0];
     if(!confirmado)throw new Error('A gravação não pôde ser confirmada.');
