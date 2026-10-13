@@ -1,3 +1,8 @@
+## V6.15 — Proteção contra sobrescrita de perfil
+- 🛡️ A sincronização agora preserva campos preenchidos quando o outro aplicativo ainda não tem aquele dado.
+- 🔄 A primeira sincronização mescla os dados existentes sem apagar informações básicas por campos vazios.
+- 🔄 Versão e cache do PWA sincronizados para V6.15.
+
 ## V6.14 — Ajustes na sincronização do perfil central
 - 🔁 Ao sincronizar familiares, atualiza nome, parentesco, idade e nascimento dos registros existentes sem apagar seus dados clínicos.
 - ⚧️ Normalização do gênero entre os formatos usados nos dois aplicativos.
