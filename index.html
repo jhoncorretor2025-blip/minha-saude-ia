@@ -38,7 +38,7 @@
       limpar.then(function(){
         var u=new URL(window.location.href);
         u.searchParams.set('cb',Date.now().toString());
-        u.searchParams.set('v','V6.06');
+        u.searchParams.set('v','V6.07');
         window.location.replace(u.toString());
       });
     }catch(e){}
@@ -48,7 +48,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V6.06</title>
+<title>Minha Saúde IA — V6.07</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -349,7 +349,7 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
 @media(max-width:760px){.msa-mobile-menu-fab{display:none!important}.msa-mobile-bar{grid-template-columns:repeat(4,1fr)}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V6.06">
+  <link rel="stylesheet" href="css/design-system.css?v=V6.07">
 
 <style id="v519-progressive-ui">
 /* V6.00 — melhorias progressivas de dashboard, favoritos e alertas */
@@ -634,7 +634,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.06</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.07</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 <nav id="nav" class="grouped-nav" aria-label="Navegação principal">
  <div class="nav-group"><button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button><div class="nav-menu"><button type="button" data-tab="home">🏠 Visão geral</button><button type="button" data-tab="timeline">🕐 Linha do tempo</button></div></div>
@@ -1179,9 +1179,9 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 <div class="row" style="margin-top:13px">
 <button class="btn green" onclick="baixarBackup()">⬇️ Fazer backup completo</button>
 <button class="btn secondary" onclick="document.getElementById('arquivoBackup').click()">♻️ Restaurar backup</button>
-<input id="arquivoBackup" type="file" accept=".json" style="display:none" onchange="restaurarBackup(event)">
+<input id="arquivoBackup" type="file" accept=".json,application/json" style="display:none" onchange="restaurarBackup(event)">
 </div>
-<div class="alert warn" style="margin-top:13px">⚠️ O backup contém informações pessoais. Guarde o arquivo em local seguro e não o envie para pessoas ou serviços desconhecidos.</div>
+<div class="alert warn" style="margin-top:13px">⚠️ O backup contém informações pessoais. Guarde o arquivo em local seguro. O PIN e as preferências visuais não são incluídos.</div>
 </div>
 <div class="card" style="margin-top:13px">
 <h2>📱💻 Transferir entre dispositivos</h2>
@@ -1558,7 +1558,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.06. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.07. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -1579,15 +1579,15 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V6.06" defer></script>
-<script src="js/core/storage.js?v=V6.06" defer></script>
-<script src="js/core/utils.js?v=V6.06" defer></script>
-<script src="js/core/stability-v599.js?v=V6.06" defer></script>
-<script src="js/navigation/menu.js?v=V6.06" defer></script>
-<script src="js/core/app.js?v=V6.06" defer></script>
-<script src="js/features/perfil-save.js?v=V6.06" defer></script>
-<script src="js/features/familiares.js?v=V6.06" defer></script>
-<script src="js/features/recursos.js?v=V6.06" defer></script>
+<script src="js/core/constants.js?v=V6.07" defer></script>
+<script src="js/core/storage.js?v=V6.07" defer></script>
+<script src="js/core/utils.js?v=V6.07" defer></script>
+<script src="js/core/stability-v599.js?v=V6.07" defer></script>
+<script src="js/navigation/menu.js?v=V6.07" defer></script>
+<script src="js/core/app.js?v=V6.07" defer></script>
+<script src="js/features/perfil-save.js?v=V6.07" defer></script>
+<script src="js/features/familiares.js?v=V6.07" defer></script>
+<script src="js/features/recursos.js?v=V6.07" defer></script>
 
 
 <script>
@@ -1610,12 +1610,12 @@ function iniciarImportacao(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
-<script src="js/features/inteligencia.js?v=V6.06" defer></script>
-<script src="js/ai/importacao.js?v=V6.06" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/legacy/melhorias-primeiras.js?v=V6.06" defer></script>
-<script src="js/features/expansoes.js?v=V6.06" defer></script>
-<script src="js/ai/importacao-fluxo-v514.js?v=V6.06" defer></script>
-<script src="js/legacy/melhorias-v513.js?v=V6.06" defer></script>
+<script src="js/features/inteligencia.js?v=V6.07" defer></script>
+<script src="js/ai/importacao.js?v=V6.07" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/legacy/melhorias-primeiras.js?v=V6.07" defer></script>
+<script src="js/features/expansoes.js?v=V6.07" defer></script>
+<script src="js/ai/importacao-fluxo-v514.js?v=V6.07" defer></script>
+<script src="js/legacy/melhorias-v513.js?v=V6.07" defer></script>
 
 
 <script>
@@ -1721,7 +1721,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
-<script src="js/reports/relatorios-v599.js?v=V6.06" defer></script>
+<script src="js/reports/relatorios-v599.js?v=V6.07" defer></script>
 
 
 
@@ -1739,7 +1739,7 @@ body.msa-dark .msa-theme-toggle{background:#1f2937;color:#f8fafc;border-color:#3
 .msa-focus-ring :focus-visible{outline:3px solid rgba(37,99,235,.35);outline-offset:2px}
 @media(max-width:760px){.msa-theme-toggle{top:10px;right:10px;padding:8px 10px;font-size:12px}}
 
-/* V6.06 — acessibilidade do tema escuro, intensidade e hierarquia da home */
+/* V6.07 — acessibilidade do tema escuro, intensidade e hierarquia da home */
 body.msa-dark header{background:linear-gradient(135deg,#172554,#312e81)!important;color:#f8fafc!important}
 body.msa-dark .sub,body.msa-dark .muted,body.msa-dark label,
 body.msa-dark .home-command-main p,body.msa-dark .home-secondary-actions button,
@@ -2318,7 +2318,7 @@ footer{line-height:1.6}
 </style>
 
 
-<!-- V6.06 — orientação contextual para facilitar a navegação entre áreas -->
+<!-- V6.07 — orientação contextual para facilitar a navegação entre áreas -->
 <style>
 .msa-page-guide{display:flex;align-items:flex-start;gap:11px;margin:0 0 13px;padding:13px 15px;border:1px solid #dce7fb;border-radius:15px;background:linear-gradient(120deg,#f2f7ff 0%,#fbfcff 100%);color:#344054;font-size:13px;line-height:1.55}
 .msa-page-guide-icon{display:flex;align-items:center;justify-content:center;flex:0 0 34px;height:34px;border-radius:11px;background:#e2ebff;color:#2455c7;font-size:17px}
@@ -2374,7 +2374,7 @@ footer{line-height:1.6}
 </script>
 
 
-<!-- V6.06 — acabamento visual: contraste, consistência e responsividade, sem alterar funcionalidades -->
+<!-- V6.07 — acabamento visual: contraste, consistência e responsividade, sem alterar funcionalidades -->
 <style id="msaV603VisualPolish">
 :root{
   --msa-accent:#315fe9;
@@ -2461,7 +2461,7 @@ section .empty{border-radius:17px}
 }
 </style>
 <style id="msaV606Accessibility">
-/* V6.06 — acessibilidade global e correções finais de contraste */
+/* V6.07 — acessibilidade global e correções finais de contraste */
 .msa-skip-link{position:fixed;top:8px;left:8px;z-index:20000;transform:translateY(-160%);background:#fff;color:#172033;border:2px solid #2563eb;border-radius:10px;padding:11px 14px;font-weight:900;text-decoration:none;box-shadow:0 5px 18px rgba(15,23,42,.2)}
 .msa-skip-link:focus{transform:translateY(0);outline:3px solid #93c5fd;outline-offset:2px}
 button,input,select,textarea,a,summary{touch-action:manipulation}
@@ -2494,6 +2494,54 @@ body.msa-dark input:disabled,body.msa-dark select:disabled,body.msa-dark textare
 @media(max-width:760px){
  .msa-skip-link{font-size:14px}
  button,.btn,nav button{min-height:40px}
+}
+</style>
+
+
+<style id="msaV607MobileForms">
+/* V6.07 — formulários confortáveis no celular e feedback acessível */
+form{min-width:0}
+form>label{display:block;min-width:0;margin:0 0 3px;line-height:1.45}
+form .grid2,form .grid3,form .grid4{min-width:0;gap:12px}
+form input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+form select,form textarea{
+ width:100%;max-width:100%;min-width:0;box-sizing:border-box;
+ border-radius:12px;transition:border-color .15s ease,box-shadow .15s ease
+}
+form textarea{min-height:100px;resize:vertical}
+form input:focus-visible,form select:focus-visible,form textarea:focus-visible{
+ outline:3px solid rgba(37,99,235,.22);outline-offset:1px;border-color:#2563eb
+}
+form input[aria-invalid="true"],form select[aria-invalid="true"],form textarea[aria-invalid="true"]{
+ border-color:#dc2626!important;box-shadow:0 0 0 2px rgba(220,38,38,.12)
+}
+form .btn:not([type="button"]){min-height:46px}
+.bodymap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.bodymap button{min-width:0;min-height:44px;white-space:normal;overflow-wrap:anywhere}
+.msa-next-step{min-width:0;flex-wrap:wrap}
+.msa-next-step .btn{min-height:44px}
+#arquivoBackup,#msaBackupTransferFile{max-width:100%}
+@media(max-width:760px){
+ body{padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+ .wrap{padding-left:10px;padding-right:10px}
+ form{gap:12px}
+ form input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+ form select,form textarea{font-size:16px!important;min-height:46px}
+ form textarea{min-height:110px}
+ form .grid2,form .grid3,form .grid4{grid-template-columns:minmax(0,1fr);gap:10px}
+ form .btn:not([type="button"]){width:100%;min-height:48px}
+ .bodymap{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+ .bodymap button{padding:9px 5px;font-size:13px}
+ .msa-next-step{align-items:stretch;flex-direction:column}
+ .msa-next-step .btn{width:100%}
+ .msa-mobile-drawer-body{padding-bottom:calc(22px + env(safe-area-inset-bottom))}
+}
+@media(max-width:360px){
+ .bodymap{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .bodymap button{font-size:12px}
+}
+body.msa-dark form input:focus-visible,body.msa-dark form select:focus-visible,body.msa-dark form textarea:focus-visible{
+ border-color:#93c5fd;box-shadow:0 0 0 3px rgba(147,197,253,.18)
 }
 </style>
 
