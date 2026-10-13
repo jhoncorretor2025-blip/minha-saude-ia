@@ -1,3 +1,10 @@
+## V6.11 — Integração de despesas médicas com o Canivete
+- 💰 Formulário de consulta ganhou valor pago e opção explícita para disponibilizar a despesa ao Canivete.
+- 🔗 Cada consulta nova recebe identificador estável para evitar importações duplicadas.
+- 🔒 A integração compartilha somente data, especialidade, valor e identificador; motivo, profissional, perguntas e orientações permanecem no Minha Saúde IA.
+- 🛡️ Campos financeiros são opcionais; registros antigos e chaves de armazenamento foram preservados.
+- 🔄 Versão e cache do PWA sincronizados para V6.11.
+
 ## V6.04 — 10/10/2026
 - Sincronizada a versão oficial entre a interface, o manifesto de versão, as constantes compartilhadas e o cache do Service Worker.
 - Barra de navegação móvel destaca a ação correspondente à seção atual e expõe o estado com `aria-pressed`.
