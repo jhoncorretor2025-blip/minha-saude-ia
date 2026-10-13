@@ -1396,14 +1396,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <div><b>3️⃣ Copie a ficha</b><span>Copie toda a resposta estruturada devolvida pela IA.</span></div>
 <div><b>4️⃣ Revise e importe</b><span>O aplicativo identifica os campos e mostra uma prévia antes de salvar.</span></div>
 </div>
-<div class="ai-cta"><div><b>🚀 Quer começar agora?</b><span>Não precisa preencher tudo manualmente. A IA organiza o que já conhece e não fará uma entrevista.</span></div><button class="btn green" onclick="copiarPromptIA()">✨ Copiar prompt e começar</button></div>
+<div class="ai-cta"><div><b>🚀 Quer começar agora?</b><span>Não precisa preencher tudo manualmente. A IA organiza o que já conhece e não fará uma entrevista.</span></div><button class="btn green" onclick="copiarPromptIA()">✨ Copiar Prompt Pronto (V3)</button></div>
 <div class="alert safe" style="margin-top:13px">
 <b>🔄 Novo fluxo — V3:</b><br>
 1️⃣ O prompt é copiado automaticamente.<br>
 2️⃣ Abra o ChatGPT ou Gemini.<br>
 3️⃣ A IA usa o contexto/memória que já possui. <b>Ela não fará perguntas nem aguardará respostas.</b> Se faltar alguma informação, registre <b>Não informado</b>.<br>
 4️⃣ Copie a ficha que ela devolver.<br>
-5️⃣ Volte para cá, cole e toque em <b>Importar informações</b>.
+5️⃣ Volte para cá, cole a ficha e toque em <b>Importar e salvar</b>. Revise a prévia e confirme para gravar os dados.
 </div>
 <details id="guiaIAIniciante" style="margin-top:15px;background:#fff;border:1px solid #dbe5ff;border-radius:17px;box-shadow:0 5px 16px rgba(20,35,70,.05);overflow:hidden">
 <summary style="cursor:pointer;padding:13px 15px;list-style:none;background:linear-gradient(145deg,#f8fbff,#fff);display:flex;align-items:center;justify-content:space-between;gap:10px">
@@ -1450,7 +1450,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   #guiaIAIniciante [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
 }
 </style>
-<h3 style="margin-top:20px">📋 Prompt pronto</h3>
+<h3 style="margin-top:20px">📋 Prompt Pronto (V3)</h3>
 <textarea id="promptIA" readonly style="min-height:360px">Prepare meus dados pessoais de saúde para importação no aplicativo "Minha Saúde IA".
 
 IMPORTANTE:
@@ -1694,7 +1694,7 @@ REGRAS:
 <h3 style="margin-top:22px">📥 Cole aqui a ficha que a IA devolveu</h3>
 <textarea id="importIA" style="min-height:220px" placeholder="Cole aqui a ficha organizada pela IA..."></textarea>
 <div class="row" style="margin-top:9px">
-<button id="importBtn" class="btn green" onclick="iniciarImportacao()">✨ Importar e salvar</button>
+<button id="importBtn" class="btn green" onclick="iniciarImportacao()">✨ Analisar ficha e revisar</button>
 <button class="btn secondary" onclick="limparImportacao()">Limpar</button>
 </div>
 <div id="resultadoImport" style="margin-top:12px"></div>
@@ -1717,7 +1717,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.16. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.17. Importação instantânea por IA com revisão antes de salvar. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
