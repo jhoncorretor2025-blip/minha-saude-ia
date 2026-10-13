@@ -5,7 +5,7 @@ const K=window.MSA_K||window.K||{};
 const storage=window.MSAStorage;
 const KEY=K.familiares||'msa2_familiares',SELECTED='msa2_familiar_selecionado';
 function getList(){try{const v=storage.get(KEY);return Array.isArray(v)?v:[]}catch(e){return[]}}
-function saveList(v){try{return storage.set(KEY,Array.isArray(v)?v:[])}catch(e){return false}}
+function saveList(v){try{const list=Array.isArray(v)?v:[];const ok=storage.set(KEY,list);if(ok&&window.MSAProfileBridge)window.MSAProfileBridge.publishFamilies(list);return ok}catch(e){return false}}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function uid(p){return p+'_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8)}
 function val(id){const x=document.getElementById(id);return x?(x.value||'').trim():''}
