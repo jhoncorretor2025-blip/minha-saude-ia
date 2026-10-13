@@ -134,3 +134,7 @@ O projeto possui suporte PWA. Em navegadores compatíveis, a opção de instalar
 - 📦 Exportação FHIR R4.
 
 **Limitações arquiteturais:** sincronização automática em nuvem, autenticação de conta e armazenamento médico criptografado em repouso ainda exigem uma arquitetura de servidor/backend dedicada.
+
+
+## Notificações remotas (V6.12)
+A área **⏰ Central de Lembretes e Rotina** permite gerar um JSON de lembretes para o motor remoto do Canivete. O arquivo deve ser guardado no GitHub Actions Secret `MINHA_SAUDE_LEMBRETES_JSON` do repositório `delta-prompts`; não publique esse JSON em commits, issues ou arquivos do repositório. O motor é executado pelo workflow `.github/workflows/lembretes-canivete.yml` a cada cinco minutos e envia notificações por ntfy e/ou Telegram. Ao alterar horários, gere novamente a configuração e atualize o secret. Lembretes de consulta/exame exigem data e hora na Central de Lembretes; consultas registradas apenas com data não têm horário suficiente para alerta automático.
