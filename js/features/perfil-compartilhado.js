@@ -1,4 +1,4 @@
-/* Perfil central compartilhado — Minha Saúde IA V6.13 / Canivete v8.35
+/* Perfil central compartilhado — Minha Saúde IA V6.14 / Canivete v8.35
  * Mesma origem GitHub Pages: sincroniza apenas perfil básico e dados familiares resumidos.
  * Não compartilha prontuário, medicamentos, consultas, exames ou dados financeiros.
  */
@@ -42,8 +42,10 @@ function applyShared(data){
   Object.keys(mapping).forEach(id=>{const el=document.getElementById(id);if(el&&mapping[id]!==undefined&&mapping[id]!==null)el.value=mapping[id]});
   if(Array.isArray(data.familiares)){
    const key=K.familiares||'msa2_familiares',existing=s.get(key),list=Array.isArray(existing)?existing:[],ids=new Set(list.map(x=>String(x.id||'')));
-   const incoming=data.familiares.filter(x=>x.id&&!ids.has(String(x.id)));
-   if(incoming.length)s.set(key,list.concat(incoming.map(x=>({id:x.id,nome:x.nome,parentesco:x.parentesco,idade:x.idade,nasc:x.nascimento,sexo:x.sexo,medicamentos:[],consultas:[],crises:[]}))));
+   const byId=new Map(data.familiares.filter(x=>x.id).map(x=>[String(x.id),x]));
+   const mergedList=list.map(old=>{const fresh=byId.get(String(old.id||''));if(!fresh)return old;byId.delete(String(old.id));return Object.assign({},old,{nome:fresh.nome||old.nome,parentesco:fresh.parentesco||old.parentesco,idade:fresh.idade||old.idade,nasc:fresh.nascimento||old.nasc,sexo:fresh.sexo||old.sexo})});
+   byId.forEach(x=>mergedList.push({id:x.id,nome:x.nome,parentesco:x.parentesco,idade:x.idade,nasc:x.nascimento,sexo:x.sexo,medicamentos:[],consultas:[],crises:[]}));
+   s.set(key,mergedList);
   }
   try{if(typeof window.render==='function')window.render()}catch(e){}
   try{if(typeof window.renderCarteirinha==='function')window.renderCarteirinha()}catch(e){}
