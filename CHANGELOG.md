@@ -1,3 +1,10 @@
+## V6.13 — Perfil central compartilhado com Canivete
+- 🔄 Padronizada a chave local `delta_perfil_central_v1` para nome, idade, nascimento, peso, altura, sexo e familiares resumidos.
+- ⚖️ Peso e altura são sincronizados entre os dois apps; o IMC continua calculado por cada módulo com os mesmos valores.
+- 👨‍👩‍👧‍👦 Compartilha apenas dados básicos de familiares, sem prontuário, medicamentos, consultas ou exames.
+- 🔒 Sincronização local no mesmo navegador/origem; não envia dados para arquivos públicos nem para servidor.
+- 🧩 Preservadas as chaves antigas e os registros existentes.
+
 ## V6.12 — Notificações remotas via Canivete
 - 📲 Exportação de lembretes de medicamentos e compromissos com horário para o motor remoto do Canivete.
 - 🔒 Configuração preparada para GitHub Secret; dados de saúde não são gravados em arquivos públicos do repositório.
