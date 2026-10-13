@@ -1,4 +1,4 @@
-/* Minha Saúde IA — recursos complementares V4.61
+/* Minha Saúde IA — recursos complementares V6.07
  * Módulo independente para manter novas funções separadas do app principal.
  * Não usa servidor nem API key. Dados permanecem no navegador.
  */
