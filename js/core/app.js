@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V5.99 */
+/* Minha Saúde IA — aplicação principal V6.11 */
 
 const K=window.MSA_K||window.K;
 const get=k=>window.MSAStorage.get(k);
@@ -765,7 +765,7 @@ $('medidasForm')?.addEventListener('submit',e=>{
 $('dData').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
 $('dorForm')?.addEventListener('submit',()=>{});
 $('dorForm').onsubmit=e=>{e.preventDefault();let a=get(K.d);a.push({data:$('dData').value,local:$('dLocal').value,int:+$('dInt').value,tipo:$('dTipo').value,freq:$('dFreq').value,gatilho:$('dGatilho').value,sint:$('dSint').value,obs:$('dObs').value});if(!gravarOuAvisar(K.d,a))return;e.target.reset();$('dInt').value=5;$('dScore').textContent=5;render();alert('Sintoma salvo!')};
-$('cForm').onsubmit=e=>{e.preventDefault();let a=get(K.c);a.push({data:$('cData').value,esp:$('cEsp').value,med:$('cMed').value,mot:$('cMot').value,perg:$('cPerg').value,obs:$('cObs').value,ret:$('cRet').value});if(!gravarOuAvisar(K.c,a))return;e.target.reset();render();alert('Consulta salva!')};
+$('cForm').onsubmit=e=>{e.preventDefault();let a=get(K.c);a.push({id:'msa-consulta-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),data:$('cData').value,esp:$('cEsp').value,med:$('cMed').value,mot:$('cMot').value,perg:$('cPerg').value,obs:$('cObs').value,ret:$('cRet').value,valorPago:Math.max(0,Number($('cValorPago')?.value||0)),paga:!!$('cPaga')?.checked});if(!gravarOuAvisar(K.c,a))return;e.target.reset();render();alert('Consulta salva!')};
 $('mForm').onsubmit=e=>{e.preventDefault();let a=get(K.m);a.push({nome:$('mNome').value,dose:$('mDose').value,freq:$('mFreq').value,inicio:$('mInicio').value,fim:$('mFim').value,pres:$('mPres').value,obs:$('mObs').value});if(!gravarOuAvisar(K.m,a))return;e.target.reset();render();alert('Medicamento salvo!')};
 $('eForm').onsubmit=e=>{e.preventDefault();let a=get(K.e);a.push({nome:$('eNome').value,data:$('eData').value,res:$('eRes').value,obs:$('eObs').value});if(!gravarOuAvisar(K.e,a))return;e.target.reset();render();alert('Exame salvo!')};
 
