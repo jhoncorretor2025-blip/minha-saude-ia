@@ -59,6 +59,8 @@ window.exportarJSONCompleto=function(){
   const bytes=JSON.stringify(pkg);
   if(!Object.keys(data).length)throw new Error('Não encontrei registros para exportar. Verifique se você está no perfil correto.');
   downloadJSON('minha-saude-ia-backup-'+new Date().toISOString().slice(0,10)+'.json',pkg);
+  try{window.msaStorage.setItem(BACKUP_LAST_EXPORT_KEY,new Date().toISOString())}catch(storageErr){console.warn('[Minha Saúde IA] backup gerado, mas não foi possível registrar a data do lembrete.',storageErr)}
+  renderBackupReminder();
   if(window.msaToast)window.msaToast('✅ Backup criado com '+Object.keys(data).length+' grupos de dados.');
   else alert('✅ Backup criado com '+Object.keys(data).length+' grupos de dados. Guarde o arquivo em local seguro.');
   return true;
@@ -69,6 +71,40 @@ window.exportarJSONCompleto=function(){
  }
 };
 window.baixarBackup=function(){return window.exportarJSONCompleto()};
+
+const BACKUP_REMINDER_KEY='msa2_backup_reminder_enabled';
+const BACKUP_LAST_EXPORT_KEY='msa2_backup_last_export_at';
+function backupReminderEnabled(){
+ try{const v=window.msaStorage.getItem(BACKUP_REMINDER_KEY);return v===null||v!=='false'&&v!=='0'}catch(e){return true}
+}
+function backupLastExport(){
+ try{const v=window.msaStorage.getItem(BACKUP_LAST_EXPORT_KEY);return v?new Date(v):null}catch(e){return null}
+}
+function renderBackupReminder(){
+ const enabled=backupReminderEnabled(),last=backupLastExport(),now=new Date(),day=24*60*60*1000;
+ let message='',style='safe';
+ if(!enabled){message='🔕 Lembrete semanal desativado. Você ainda pode criar um backup manualmente a qualquer momento.';style='';}
+ else if(!last||!Number.isFinite(last.getTime())){message='⚠️ Você ainda não registrou um backup gerado neste navegador. Faça uma cópia agora para proteger seu histórico.';style='warn';}
+ else{
+  const days=Math.max(0,Math.floor((now-last)/day));
+  if(days>=7){message='⚠️ Seu último backup foi gerado há '+days+' dia(s). Recomendamos criar uma nova cópia agora.';style='warn';}
+  else{message='✅ Último backup gerado em '+last.toLocaleDateString('pt-BR')+'. O próximo lembrete será exibido quando completar 7 dias.';style='safe';}
+ }
+ ['msaBackupHomeStatus','msaBackupSettingsStatus'].forEach(id=>{
+  const el=document.getElementById(id);if(el){el.className='alert '+style;el.textContent=message;el.setAttribute('role','status')}
+ });
+ ['msaBackupHomeToggle','msaBackupSettingsToggle'].forEach(id=>{
+  const el=document.getElementById(id);if(el)el.textContent=enabled?'🔕 Desativar lembrete semanal':'🔔 Ativar lembrete semanal';
+ });
+}
+window.msaAtualizarLembreteBackup=renderBackupReminder;
+window.msaAlternarLembreteBackup=function(){
+ const next=!backupReminderEnabled();
+ try{window.msaStorage.setItem(BACKUP_REMINDER_KEY,next?'true':'false');}
+ catch(e){alert('Não foi possível salvar essa preferência no navegador.');return}
+ renderBackupReminder();
+};
+
 function parseStored(k){
  const raw=window.msaStorage.getItem(k);
  if(raw===null)return {raw:null,value:null};
@@ -191,6 +227,6 @@ window.removerDocumentoSaude=function(id){
  if(!confirm('Remover este documento do armazenamento local?'))return;
  const arr=g(key('doc','msa2_documentos')).filter(x=>x.id!==id);storage.set(K.doc,arr);renderDocumentosSaude();
 };
-window.inicializarRecursosV461=function(){renderDocumentosSaude()};
+window.inicializarRecursosV461=function(){renderDocumentosSaude();renderBackupReminder()};
 document.addEventListener('DOMContentLoaded',window.inicializarRecursosV461);
 })();
