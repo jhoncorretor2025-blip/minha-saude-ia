@@ -1,3 +1,9 @@
+## V6.12 — Notificações remotas via Canivete
+- 📲 Exportação de lembretes de medicamentos e compromissos com horário para o motor remoto do Canivete.
+- 🔒 Configuração preparada para GitHub Secret; dados de saúde não são gravados em arquivos públicos do repositório.
+- 🛡️ Modo discreto padrão para reduzir a exposição de detalhes na tela bloqueada.
+- 🔄 Versão e cache do PWA sincronizados para V6.12.
+
 ## V6.11 — Integração de despesas médicas com o Canivete
 - 💰 Formulário de consulta ganhou valor pago e opção explícita para disponibilizar a despesa ao Canivete.
 - 🔗 Cada consulta nova recebe identificador estável para evitar importações duplicadas.
