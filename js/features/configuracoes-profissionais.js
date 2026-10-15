@@ -69,13 +69,15 @@ function render(){
  document.getElementById('msaRestorePrefs').onclick=function(){
   if(!confirm('Restaurar módulos opcionais e nível de experiência para os padrões? Seus registros de saúde e suas configurações de IA serão preservados.'))return;
   try{
-   var key='msa2_preferencias',old=JSON.parse(localStorage.getItem(key)||'[]'),pref=Array.isArray(old)&&old[0]&&typeof old[0]==='object'?old[0]:{};
+   var storage=window.MSAStorage,constants=window.MSA_K||window.K,key=constants&&constants.preferencias;
+   if(!storage||!key||typeof storage.get!=='function'||typeof storage.set!=='function')throw new Error('Armazenamento do aplicativo indisponível.');
+   var old=storage.get(key),pref=Array.isArray(old)&&old[0]&&typeof old[0]==='object'?Object.assign({},old[0]):{};
    pref.academia='on';pref.nutricao='on';pref.sonoBem='on';pref.ciclo='on';pref.experiencia='comfortable';
-   localStorage.setItem(key,JSON.stringify([pref]));
+   if(storage.set(key,[pref])===false)throw new Error('O navegador não confirmou a gravação.');
    if(typeof window.aplicarPreferencias==='function')window.aplicarPreferencias();
    if(typeof window.render==='function')window.render();
    announce('Preferências padrão restauradas. Histórico de saúde e configurações de IA preservados.');
-  }catch(e){announce('Não foi possível restaurar as preferências. Nenhum registro clínico foi intencionalmente alterado.');}
+  }catch(e){console.error('[Minha Saúde IA] restauração de preferências:',e);announce('Não foi possível restaurar as preferências. Confira o armazenamento e tente novamente. Nenhum registro clínico foi intencionalmente alterado.');}
  };
 }
 function diagnostics(){
