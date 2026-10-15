@@ -1,3 +1,8 @@
+## V6.19 — Posicionamento mais claro na página inicial
+- 🩺 Apresentação principal atualizada para “Sua caderneta pessoal: o prontuário da sua saúde”.
+- 📝 Texto simplificado para explicar que a pessoa registra sintomas, medicamentos, exames, consultas e compromissos de saúde.
+- 🔄 Versão oficial, constante e cache atualizados para V6.19.
+
 ## V6.18 — Página inicial explica a finalidade do aplicativo
 - 👋 Adicionada uma apresentação clara no início: o app organiza o histórico pessoal de saúde, exames, sintomas, medicamentos e consultas.
 - 📝 Incluídos três passos simples e atalhos para começar pelo perfil, registrar um sintoma ou preparar uma consulta.
