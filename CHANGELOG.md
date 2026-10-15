@@ -1,4 +1,6 @@
 ## V6.20 — Configurações profissionais, acessibilidade e diagnóstico
+- 🔄 Seletor de tema sincronizado com o botão global, evitando opções visuais desatualizadas.
+- 👥 Restauração de preferências usa o armazenamento do perfil ativo, preservando o isolamento entre perfis.
 - 🎨 Adicionadas opções funcionais de tema, tamanho do texto, alto contraste e redução de animações.
 - 💾 Atalhos para as áreas existentes de backup/restauração e exportação, sem duplicar seus fluxos.
 - 🔒 Esclarecido que o armazenamento local não representa sincronização automática e que backups de saúde são sensíveis.
