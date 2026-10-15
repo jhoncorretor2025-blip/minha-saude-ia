@@ -11,7 +11,7 @@ function apply(v){
  d.dataset.msaFontSize=v.fontSize||'normal';
  b.classList.toggle('msa-high-contrast',v.contrast==='high');
  b.classList.toggle('msa-reduce-motion',!!v.reduceMotion);
- var theme=localStorage.getItem('msa2_theme')==='dark'?'dark':'light';
+ var theme=b.classList.contains('msa-dark')?'dark':'light';
  var t=document.getElementById('msaThemeSelect');if(t)t.value=theme;
  var fs=document.getElementById('msaFontSize');if(fs)fs.value=v.fontSize||'normal';
  var c=document.getElementById('msaContrast');if(c)c.value=v.contrast||'normal';
@@ -90,7 +90,11 @@ function diagnostics(){
  add('Áreas de backup/exportação',!!document.getElementById('backup')&&!!document.getElementById('exportar'),'Os fluxos completos ficam nas seções existentes; este diagnóstico não abre nem lê arquivos médicos.');
  box.innerHTML=checks.join('');
 }
-function boot(){render();apply(read());}
+function syncTheme(){var t=document.getElementById('msaThemeSelect');if(t)t.value=document.body.classList.contains('msa-dark')?'dark':'light';}
+function boot(){render();apply(read());syncTheme();
+ if(window.MutationObserver&&document.body){var observer=new MutationObserver(syncTheme);observer.observe(document.body,{attributes:true,attributeFilter:['class']});}
+ window.addEventListener('storage',syncTheme);
+}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 window.addEventListener('pageshow',function(){if(document.getElementById('configuracoes'))apply(read());});
 })();
