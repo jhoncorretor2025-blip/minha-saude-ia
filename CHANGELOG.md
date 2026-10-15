@@ -1,3 +1,10 @@
+## V6.18 — Página inicial explica a finalidade do aplicativo
+- 👋 Adicionada uma apresentação clara no início: o app organiza o histórico pessoal de saúde, exames, sintomas, medicamentos e consultas.
+- 📝 Incluídos três passos simples e atalhos para começar pelo perfil, registrar um sintoma ou preparar uma consulta.
+- 🔒 Explicado que os registros ficam no navegador e que o aplicativo não substitui profissionais de saúde nem serve para emergências.
+- 📱 Apresentação responsiva para celular e computador, sem remover funcionalidades existentes.
+- 🔄 Versão e cache atualizados para V6.18.
+
 ## V6.15 — Proteção contra sobrescrita de perfil
 - 🛡️ A sincronização agora preserva campos preenchidos quando o outro aplicativo ainda não tem aquele dado.
 - 🔄 A primeira sincronização mescla os dados existentes sem apagar informações básicas por campos vazios.
