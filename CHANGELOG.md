@@ -1,3 +1,12 @@
+## V6.20 — Configurações profissionais, acessibilidade e diagnóstico
+- 🎨 Adicionadas opções funcionais de tema, tamanho do texto, alto contraste e redução de animações.
+- 💾 Atalhos para as áreas existentes de backup/restauração e exportação, sem duplicar seus fluxos.
+- 🔒 Esclarecido que o armazenamento local não representa sincronização automática e que backups de saúde são sensíveis.
+- 🧪 Adicionado diagnóstico básico do navegador sem ler ou exibir registros clínicos.
+- ↩️ Restaurar aparência ou preferências não apaga o histórico de saúde; as configurações de IA são preservadas na restauração dos módulos.
+- 📱 Layout responsivo e controles com confirmação para restauração.
+- 🔄 Versão e cache atualizados para V6.20.
+
 ## V6.19 — Posicionamento mais claro na página inicial
 - 🩺 Apresentação principal atualizada para “Sua caderneta pessoal: o prontuário da sua saúde”.
 - 📝 Texto simplificado para explicar que a pessoa registra sintomas, medicamentos, exames, consultas e compromissos de saúde.
