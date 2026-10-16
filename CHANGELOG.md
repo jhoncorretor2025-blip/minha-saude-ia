@@ -1,3 +1,10 @@
+## V6.24 — Lado materno/paterno nos cards de familiares
+- 🧬 Cada card de familiar agora permite escolher diretamente: Não informado, Materno, Paterno, Outro ou Ambos / não sei.
+- 💾 A seleção é salva no armazenamento local sem apagar os demais dados do familiar.
+- 📋 O lado da família fica visível e editável na lista, inclusive para familiares já cadastrados.
+- 📱 Controles adaptados para computador e celular; a edição não abre o detalhe do familiar.
+- 🔢 Versão da interface, constantes, cache e `version.json` sincronizados em V6.24.
+
 ## V6.23 — Boas-vindas redesenhadas
 - ✨ Modal inicial reorganizado em três opções claras, com descrições práticas.
 - ⚡ Começo rápido destacado como caminho recomendado, sem obrigar o usuário a preencher tudo.
