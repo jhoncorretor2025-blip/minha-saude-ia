@@ -1,3 +1,8 @@
+## V6.29 — Explicação de consanguinidade no histórico familiar
+- 🧬 O campo agora pergunta claramente se os pais do familiar são parentes biológicos entre si.
+- 💡 Adicionada explicação com exemplo (pais que são primos) e esclarecimento de que não se refere ao parentesco entre o usuário e o familiar.
+- ♻️ Mantidos os valores internos existentes para preservar registros já salvos.
+
 ## V6.28 — Lado materno e paterno no cadastro familiar
 - 🧬 Adicionada a opção **Ambos os lados (materno e paterno)** no campo “Lado da família”.
 - 🌳 Familiares marcados como pertencentes a ambos os lados aparecem nos grupos materno e paterno do mapa familiar.
