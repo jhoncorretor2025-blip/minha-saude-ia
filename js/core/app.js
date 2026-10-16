@@ -388,14 +388,34 @@ function mostrarBoasVindasSeNecessario(){
  const p=get(K.p)[0]||{};
  if(p.nome||get(K.d).length||get(K.m).length||get(K.c).length||get(K.e).length){window.msaStorage.setItem('msa2_onboarding_v1','1');return}
  let old=document.getElementById('msaWelcomeModal');if(old)old.remove();
- const modal=document.createElement('div');modal.id='msaWelcomeModal';modal.style.cssText='position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.62);display:flex;align-items:center;justify-content:center;padding:18px';
- modal.innerHTML='<div style="background:#fff;color:#172033;max-width:650px;width:100%;max-height:92vh;overflow:auto;border-radius:22px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.28)"><div style="font-size:38px">🩺</div><h2 style="margin:6px 0">Bem-vindo ao Minha Saúde IA</h2><p style="line-height:1.6">Organize seu histórico de saúde em um só lugar: perfil, sintomas, medicamentos, consultas, exames, sono, documentos e relatórios.</p><div class="alert safe"><b>🔐 Privacidade:</b> seus registros ficam neste dispositivo enquanto você não usar um serviço externo. Faça backup regularmente.</div><button class="btn msa-welcome-primary" type="button" id="msaStartQuick">⚡ Começo rápido · 1 minuto</button><div class="msa-welcome-opt"><button class="btn secondary" type="button" id="msaStartIA">✨ Usar com IA</button><small>Um clique e a IA responde</small></div><div class="msa-welcome-opt"><button class="btn secondary" type="button" id="msaStartManual">👤 Perfil completo</button><small>Completo, manualmente eu cadastro (leva de 2 a 5 minutos)</small></div><button class="btn secondary small" style="margin-top:10px" type="button" id="msaWelcomeClose">Agora não</button></div>';
+ const modal=document.createElement('div');
+ modal.id='msaWelcomeModal';
+ modal.setAttribute('role','presentation');
+ modal.innerHTML='<div class="msa-welcome-panel" role="dialog" aria-modal="true" aria-labelledby="msaWelcomeTitle">'+
+  '<div class="msa-welcome-icon" aria-hidden="true">🩺</div>'+
+  '<div class="msa-welcome-eyebrow">SEU ESPAÇO DE CUIDADO</div>'+
+  '<h2 id="msaWelcomeTitle">Bem-vindo ao Minha Saúde IA!</h2>'+
+  '<p class="msa-welcome-intro">Sua saúde organizada em um só lugar. Escolha como deseja começar — você pode completar suas informações aos poucos.</p>'+
+  '<button class="msa-welcome-choice msa-welcome-featured" type="button" id="msaStartQuick">'+
+   '<span class="msa-welcome-choice-icon" aria-hidden="true">⚡</span><span class="msa-welcome-choice-copy"><strong>Quero começar agora</strong><small>Cadastre o essencial em cerca de 1 minuto. São perguntas rápidas e você pode pular qualquer uma.</small></span><span class="msa-welcome-arrow" aria-hidden="true">→</span>'+
+  '</button>'+
+  '<button class="msa-welcome-choice" type="button" id="msaStartIA">'+
+   '<span class="msa-welcome-choice-icon" aria-hidden="true">✨</span><span class="msa-welcome-choice-copy"><strong>Quero ajuda da IA</strong><small>Receba ajuda para organizar as informações que você fornecer. A IA não substitui profissionais de saúde.</small></span><span class="msa-welcome-arrow" aria-hidden="true">›</span>'+
+  '</button>'+
+  '<button class="msa-welcome-choice" type="button" id="msaStartManual">'+
+   '<span class="msa-welcome-choice-icon" aria-hidden="true">📋</span><span class="msa-welcome-choice-copy"><strong>Quero preencher meu perfil completo</strong><small>Cadastre perfil, histórico, medicamentos e outras informações manualmente.</small></span><span class="msa-welcome-arrow" aria-hidden="true">›</span>'+
+  '</button>'+
+  '<button class="msa-welcome-skip" type="button" id="msaWelcomeClose">Entrar sem cadastrar agora</button>'+
+  '<div class="msa-welcome-privacy"><span aria-hidden="true">🔒</span><span><strong>Privacidade em primeiro lugar</strong><small>Os registros ficam neste navegador. Ao usar serviços externos de IA, revise quais informações serão compartilhadas. Faça backups regularmente.</small></span></div>'+
+ '</div>';
  document.body.appendChild(modal);
  const finish=()=>{window.msaStorage.setItem('msa2_onboarding_v1','1');modal.remove()};
  modal.querySelector('#msaStartQuick').onclick=()=>{finish();if(typeof window.msaAbrirComecoRapido==='function')window.msaAbrirComecoRapido();else if(typeof go==='function')go('perfil')};
-  modal.querySelector('#msaStartIA').onclick=()=>{finish();if(typeof go==='function')go('importar')};
+ modal.querySelector('#msaStartIA').onclick=()=>{finish();if(typeof go==='function')go('importar')};
  modal.querySelector('#msaStartManual').onclick=()=>{finish();if(typeof go==='function')go('perfil')};
  modal.querySelector('#msaWelcomeClose').onclick=finish;
+ modal.addEventListener('click',e=>{if(e.target===modal)finish()});
+ document.addEventListener('keydown',function escapeWelcome(e){if(e.key==='Escape'&&document.getElementById('msaWelcomeModal')){finish();document.removeEventListener('keydown',escapeWelcome)}});
 }
 function render(){
 mostrarBoasVindasSeNecessario();
