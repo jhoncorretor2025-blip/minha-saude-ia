@@ -1,4 +1,4 @@
-/* Minha Saúde IA — módulo Familiares V6.25 */
+/* Minha Saúde IA — módulo Familiares V6.27 */
 (function(){
 'use strict';
 const K=window.MSA_K||window.K||{};
@@ -159,7 +159,7 @@ function gerarPromptCompletoFamilia(pergunta){
   '{"familiares":[],"historico_familiar":[]}',
   '',
   'Cada familiar deve preservar:',
-  'nome, parentesco, sexo, data_nascimento, idade, ladoFamilia, condicao, alergias, tipo_sanguineo, contato, obs, idadeDiagnostico, certeza, medicamentos, consultas e crises.',
+  'nome, parentesco, grauParentesco, consanguinidade, statusFamiliar, causaFalecimento, sexo, data_nascimento, idade, ladoFamilia, condicao, alergias, tipo_sanguineo, contato, obs, idadeDiagnostico, certeza, medicamentos, consultas e crises.',
   '',
   'Cada medicamento deve preservar:',
   'nome, dose, horario, frequencia, prescrito_por e obs.',
