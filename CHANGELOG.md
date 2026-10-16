@@ -1,3 +1,11 @@
+## V6.27 — Histórico familiar clínico e sugestões no painel
+- 🧬 Adicionados grau de parentesco, consanguinidade conhecida, status vivo/falecido, idade aproximada no diagnóstico e causa do falecimento.
+- ✏️ Familiares já cadastrados podem editar esses campos sem recriar a ficha ou perder medicamentos, consultas, crises e observações.
+- 🔔 O painel inicial sugere conversar com profissional de saúde quando há registro familiar de 1º grau com hipertensão ou diabetes; não é diagnóstico nem avaliação individual de risco.
+- 🤖 Os novos campos são incluídos nos resumos copiados e no prompt de IA do familiar.
+- 💾 Mantida a chave local existente `msa2_familiares`; nenhuma rotina de migração destrutiva ou exclusão de dados foi adicionada.
+- 🔢 Versão e cache sincronizados em V6.27.
+
 ## V6.26 — Página inicial começa pelo seu cartão de perfil
 - 🪪 Ao entrar, o primeiro item da Home é o cartão do perfil, com a foto e os dados pessoais (idade, peso, altura e tipo sanguíneo).
 - 📷 Tocar na foto do cartão abre a escolha de foto; a imagem é reduzida e salva neste navegador, sem criar aviso falso de rascunho.
