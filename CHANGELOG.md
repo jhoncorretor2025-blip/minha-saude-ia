@@ -1,3 +1,11 @@
+## V6.23 — Boas-vindas redesenhadas
+- ✨ Modal inicial reorganizado em três opções claras, com descrições práticas.
+- ⚡ Começo rápido destacado como caminho recomendado, sem obrigar o usuário a preencher tudo.
+- 🔒 Aviso de privacidade mais claro sobre armazenamento local e uso de IA externa.
+- 📱 Layout responsivo para celular e computador, com botões maiores e melhor leitura.
+- ♿ Fechamento por Escape e clique no fundo, mantendo os fluxos existentes de cadastro.
+- 🔢 Versão visível, referências de cache e `version.json` sincronizados em V6.23.
+
 ## V6.22 — Começo rápido para quem tem pouco tempo
 - ⚡ Nova opção “Começo rápido · 1 minuto” na tela de boas-vindas: 6 perguntas (nome, nascimento, alergias, remédios de uso contínuo, condições de saúde e contato de emergência). Todas podem ser puladas, sem foto e sem perguntas íntimas. Os dados são gravados no mesmo formato do perfil completo e dos medicamentos.
 - ✨ Na boas-vindas, “Usar com IA” explica “Um clique e a IA responde” e “Perfil completo” informa “Completo, manualmente eu cadastro (leva de 2 a 5 minutos)”.
