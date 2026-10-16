@@ -1,3 +1,8 @@
+## V6.28 — Lado materno e paterno no cadastro familiar
+- 🧬 Adicionada a opção **Ambos os lados (materno e paterno)** no campo “Lado da família”.
+- 🌳 Familiares marcados como pertencentes a ambos os lados aparecem nos grupos materno e paterno do mapa familiar.
+- ♻️ Mantida compatibilidade com registros antigos que usam “Ambos / não sei”.
+
 ## V6.27 — Histórico familiar clínico e sugestões no painel
 - 🧬 Adicionados grau de parentesco, consanguinidade conhecida, status vivo/falecido, idade aproximada no diagnóstico e causa do falecimento.
 - ✏️ Familiares já cadastrados podem editar esses campos sem recriar a ficha ou perder medicamentos, consultas, crises e observações.
