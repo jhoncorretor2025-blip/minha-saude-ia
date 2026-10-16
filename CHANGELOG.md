@@ -1,3 +1,9 @@
+## V6.25 — Recuperação dos familiares e correção dos cards
+- Refeito o módulo familiar a partir da versão estável anterior e reaplicada a opção de lado da família usando eventos seguros.
+- Cada familiar pode ser marcado como Materno, Paterno, Outro, Ambos/não sei ou Não informado.
+- Mantidas as chaves de armazenamento existentes; nenhum comando de exclusão ou limpeza dos dados locais foi adicionado.
+- Versão do aplicativo, arquivos, histórico e cache sincronizados em V6.25.
+
 ## V6.24 — Lado materno/paterno nos cards de familiares
 - 🧬 Cada card de familiar agora permite escolher diretamente: Não informado, Materno, Paterno, Outro ou Ambos / não sei.
 - 💾 A seleção é salva no armazenamento local sem apagar os demais dados do familiar.
