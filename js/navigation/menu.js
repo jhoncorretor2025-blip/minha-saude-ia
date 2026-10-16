@@ -394,7 +394,21 @@
         primaryId='importar';
         secondary='Preencher manualmente';
         secondaryId='perfil';
-      }else if(!nome || !sexo || !altura || !peso){
+      }else if(window.msaQuickEstado && (window.msaQuickEstado()==='pulado' || (window.msaQuickNovato && window.msaQuickNovato()))){
+        title='⚡ Comece em 1 minuto';
+        text='Responda 6 perguntas rápidas (todas podem ser puladas) e já pode usar o app.';
+        primary='Começo rápido';
+        primaryId='__quick__';
+        secondary='Perfil completo';
+        secondaryId='perfil';
+      }else if(window.msaQuickEstado && window.msaQuickEstado()==='feito' && total===0){
+        title='🚀 Perfil básico pronto';
+        text='Agora faça o primeiro registro: como você está hoje, um remédio ou uma consulta.';
+        primary='➕ Registrar agora';
+        primaryId='dor';
+        secondary='✨ Usar com IA';
+        secondaryId='importar';
+      }else if((!nome || !sexo || !altura || !peso) && !(window.msaQuickEstado && window.msaQuickEstado()==='feito')){
         title='👤 Complete seu perfil primeiro';
         text='Com nome, sexo, altura e peso preenchidos, o painel consegue mostrar mais informações úteis.';
         primary='Completar perfil';
@@ -427,7 +441,7 @@
 
       var bp=card.querySelector('[data-next-primary]');
       var bs=card.querySelector('[data-next-secondary]');
-      if(bp)bp.onclick=function(){navegar(primaryId)};
+      if(bp)bp.onclick=function(){if(primaryId==='__quick__'&&typeof window.msaAbrirComecoRapido==='function')window.msaAbrirComecoRapido();else navegar(primaryId)};
       if(bs)bs.onclick=function(){navegar(secondaryId)};
     }
 

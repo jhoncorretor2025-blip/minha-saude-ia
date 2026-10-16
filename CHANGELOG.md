@@ -1,3 +1,12 @@
+## V6.22 — Começo rápido para quem tem pouco tempo
+- ⚡ Nova opção “Começo rápido · 1 minuto” na tela de boas-vindas: 6 perguntas (nome, nascimento, alergias, remédios de uso contínuo, condições de saúde e contato de emergência). Todas podem ser puladas, sem foto e sem perguntas íntimas. Os dados são gravados no mesmo formato do perfil completo e dos medicamentos.
+- ✨ Na boas-vindas, “Usar com IA” explica “Um clique e a IA responde” e “Perfil completo” informa “Completo, manualmente eu cadastro (leva de 2 a 5 minutos)”.
+- 🧭 Depois do começo rápido, a Home mostra “Perfil básico pronto” e um único próximo passo, sem a cobrança de “faltam N informações”. Quem pulou ou ainda não começou vê um convite para o Começo rápido.
+- 💾 O aviso de backup deixa de aparecer como alerta para quem ainda não tem registros ou começou há menos de 2 dias.
+- 👤 Perfil completo: o básico e o contato de emergência aparecem primeiro; foto, remédios para dor, catapora, hábitos de vida, personalização e saúde reprodutiva ficam atrás de “Mostrar mais seções”.
+- 📱 Home no celular: o cartão do perfil (botões Editar e Ver carteirinha por cima do nome) e o cartão “O que falta” (texto espremido ao lado do botão) agora se organizam em linhas.
+- 🔄 Versão oficial, constante e cache atualizados para V6.22.
+
 ## V6.21 — Correção de navegação, estrutura e modo escuro
 - 🧭 A página inicial deixou de ficar visível acima das outras páginas: ao abrir Medicamentos, Sintomas, Relatórios e as demais telas, o conteúdo certo aparece no topo.
 - 📐 Corrigido um `</div>` a mais que fechava o container principal cedo demais: páginas depois da Linha do tempo encostavam nas bordas da tela e um cartão repetido “Linha do tempo da saúde” aparecia no meio das páginas.

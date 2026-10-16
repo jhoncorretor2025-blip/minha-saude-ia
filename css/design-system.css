@@ -543,3 +543,54 @@ body.msa-dark .msa-mobile-bar button.active{background:#1e3a8a!important}
 body.msa-dark .msa-mobile-bar button.active,body.msa-dark .msa-mobile-bar button.active *{color:#fff!important}
 /* cartões de métricas continuam claros no modo escuro: rótulos precisam de texto mais escuro, não mais claro */
 body.msa-dark #home .metric-kpi span{color:#5b6b82}
+
+/* V6.22 — Começo rápido: tela de boas-vindas, perguntas básicas e perfil completo recolhido. */
+.msa-welcome-primary{display:block;width:100%;min-height:52px;margin-top:14px;font-size:17px}
+.msa-welcome-opt{margin-top:10px}
+.msa-welcome-opt .btn{display:block;width:100%;min-height:46px}
+.msa-welcome-opt small{display:block;margin:5px 2px 0;font-size:13px;line-height:1.4;color:#52607a}
+.msa-qs{position:fixed;inset:0;z-index:100001;background:rgba(15,23,42,.62);display:flex;align-items:flex-end;justify-content:center}
+.msa-qs-card{position:relative;background:#fff;color:#172033;width:100%;max-width:560px;max-height:94vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+@media(min-width:640px){.msa-qs{align-items:center}.msa-qs-card{border-radius:22px;padding:26px}}
+.msa-qs-fechar{position:absolute;top:8px;right:8px;width:44px;height:44px;border:0;background:transparent;font-size:28px;line-height:1;color:#52607a;cursor:pointer;border-radius:12px}
+.msa-qs h2{margin:0 40px 4px 0;font-size:22px;color:#172033}
+.msa-qs-sub{margin:0 0 14px;color:#52607a;font-size:14px;line-height:1.5}
+.msa-qs-q{margin:0 0 14px}
+.msa-qs-rotulo,.msa-qs label{display:block;font-weight:700;font-size:14px;margin:0 0 6px;color:#172033}
+.msa-qs input,.msa-qs textarea{width:100%;min-height:46px;font-size:16px;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:12px;padding:10px 12px;background:#fff;color:#172033;font-family:inherit}
+.msa-qs textarea{resize:vertical}
+.msa-qs-chips{display:flex;flex-wrap:wrap;gap:8px}
+.msa-qs-chip{min-height:46px;padding:0 11px;border:1px solid #cbd5e1;border-radius:12px;background:#fff;color:#172033;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.msa-qs-chip[aria-pressed="true"]{background:#2563eb;border-color:#2563eb;color:#fff}
+.msa-qs-txt{margin-top:8px}
+.msa-qs-txt[hidden],.msa-qs-erro[hidden]{display:none}
+.msa-qs-erro{margin-top:6px;color:#b91c1c;font-size:13px}
+.msa-qs-par{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.msa-qs-acoes{margin-top:16px;display:grid;gap:8px}
+.msa-qs-salvar{min-height:52px;font-size:17px}
+.msa-qs-pular{min-height:46px;background:transparent;border:0;color:#1d4ed8;font-weight:700;font-size:15px;cursor:pointer;text-decoration:underline;font-family:inherit}
+.msa-qs-nota{margin:12px 0 0;text-align:center;font-size:12.5px;color:#64748b}
+body.msa-dark .msa-qs-card{background:#111827;color:#e5e7eb}
+body.msa-dark .msa-qs h2,body.msa-dark .msa-qs-rotulo,body.msa-dark .msa-qs label{color:#f1f5f9}
+body.msa-dark .msa-qs-sub,body.msa-dark .msa-qs-fechar{color:#cbd5e1}
+body.msa-dark .msa-qs-nota{color:#94a3b8}
+body.msa-dark .msa-qs input,body.msa-dark .msa-qs textarea,body.msa-dark .msa-qs-chip{background:#0f172a;color:#e5e7eb;border-color:#334155}
+body.msa-dark .msa-qs-chip[aria-pressed="true"]{background:#2563eb;border-color:#2563eb;color:#fff}
+body.msa-dark .msa-qs-erro{color:#fca5a5}
+body.msa-dark .msa-qs-pular{color:#93c5fd}
+#pForm:not(.msa-perfil-expandido) .msa-perfil-extra,#pForm:not(.msa-perfil-expandido) #reproSection{display:none!important}
+.msa-perfil-mais{margin:14px 0;padding:12px;border:1px dashed #cbd5e1;border-radius:14px;text-align:center}
+.msa-perfil-mais .btn{width:100%;min-height:46px}
+.msa-perfil-mais small{display:block;margin-top:8px;color:#52607a;font-size:13px;line-height:1.4}
+body.msa-dark .msa-perfil-mais{border-color:#334155}
+body.msa-dark .msa-perfil-mais small{color:#cbd5e1}
+body.msa-quick-feito #msaPurposeIntro{display:none}
+/* V6.22 — Home no celular: o cartão do perfil e o cartão "O que falta" não cabiam em uma linha só (botões por cima do nome, texto espremido). */
+@media(max-width:600px){
+  #home .home-profile-hero{flex-wrap:wrap}
+  #home .home-profile-main{flex:1 1 calc(100% - 96px)}
+  #home .home-profile-actions{flex:1 1 100%;flex-direction:row;min-width:0}
+  #home .home-profile-actions button{flex:1 1 0;min-height:44px}
+  #home #homeMissingInfoCard{flex-direction:column!important;align-items:stretch!important;gap:12px!important}
+  #home #homeMissingInfoCard .btn{width:100%;min-height:46px}
+}

@@ -84,7 +84,12 @@ function renderBackupReminder(){
  const enabled=backupReminderEnabled(),last=backupLastExport(),now=new Date(),day=24*60*60*1000;
  let message='',style='safe';
  if(!enabled){message='🔕 Lembrete semanal desativado. Você ainda pode criar um backup manualmente a qualquer momento.';style='';}
- else if(!last||!Number.isFinite(last.getTime())){message='⚠️ Você ainda não registrou um backup gerado neste navegador. Faça uma cópia agora para proteger seu histórico.';style='warn';}
+ else if(!last||!Number.isFinite(last.getTime())){
+   const semDados=typeof window.msaTotalRegistrosBackup==='function'&&window.msaTotalRegistrosBackup()===0;
+   const recente=typeof window.msaQuickRecente==='function'&&window.msaQuickRecente(2);
+   if(semDados||recente){message='💾 Quando você tiver registros, guarde uma cópia (backup) aqui para não perder nada.';style='';}
+   else{message='⚠️ Você ainda não registrou um backup gerado neste navegador. Faça uma cópia agora para proteger seu histórico.';style='warn';}
+  }
  else{
   const days=Math.max(0,Math.floor((now-last)/day));
   if(days>=7){message='⚠️ Seu último backup foi gerado há '+days+' dia(s). Recomendamos criar uma nova cópia agora.';style='warn';}
