@@ -87,7 +87,7 @@ function renderBackupReminder(){
  else if(!last||!Number.isFinite(last.getTime())){
    const semDados=typeof window.msaTotalRegistrosBackup==='function'&&window.msaTotalRegistrosBackup()===0;
    const recente=typeof window.msaQuickRecente==='function'&&window.msaQuickRecente(2);
-   if(semDados||recente){message='💾 Quando você tiver registros, guarde uma cópia (backup) aqui para não perder nada.';style='';}
+   if(semDados||recente){message='💾 Quando você tiver registros, guarde uma cópia (backup) aqui para não perder nada.';style='safe';}
    else{message='⚠️ Você ainda não registrou um backup gerado neste navegador. Faça uma cópia agora para proteger seu histórico.';style='warn';}
   }
  else{

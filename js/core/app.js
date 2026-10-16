@@ -224,7 +224,7 @@ function abrirEdicaoRotina(campo){
   if(input){setTimeout(()=>{input.focus();input.scrollIntoView({behavior:'smooth',block:'center'});},180);}
  },80);
 }
-function atualizarPerfilHome(){const p=get(K.p)[0]||{},foto=p.foto||'';if($('homeProfileName'))$('homeProfileName').textContent=p.nome||'Seu nome';if($('homeProfileAge'))$('homeProfileAge').textContent=p.idade||'—';if($('homeProfileWeight'))$('homeProfileWeight').textContent=p.peso||'—';if($('homeProfileHeight'))$('homeProfileHeight').textContent=p.altura?formatarAltura(p.altura):'—';if($('homeProfileBlood'))$('homeProfileBlood').textContent=p.sangue||'—';if($('homeAvatar'))$('homeAvatar').innerHTML=foto?'<img src="'+esc(foto)+'" alt="Foto do perfil">':'<span>👤</span>'}
+function atualizarPerfilHome(){const p=get(K.p)[0]||{},foto=p.foto||'';if($('homeProfileName'))$('homeProfileName').textContent=p.nome||'Complete seu perfil';if($('homeProfileAge'))$('homeProfileAge').textContent=p.idade||'—';if($('homeProfileWeight'))$('homeProfileWeight').textContent=p.peso||'—';if($('homeProfileHeight'))$('homeProfileHeight').textContent=p.altura?formatarAltura(p.altura):'—';if($('homeProfileBlood'))$('homeProfileBlood').textContent=p.sangue||'—';if($('homeAvatar'))$('homeAvatar').innerHTML=foto?'<img src="'+esc(foto)+'" alt="Foto do perfil">':'<span>👤</span>'}
 const RECURSOS_PERSONALIZAVEIS=[
  {key:'academia',icon:'🏋️',label:'Academia e medidas corporais',desc:'Atividades de academia e medidas de bíceps, cintura, quadril, panturrilha etc.',targets:['fitness']},
  {key:'nutricao',icon:'🥗',label:'Nutrição',desc:'Diário de alimentação, hidratação e suplementos.',targets:['nutricao']},

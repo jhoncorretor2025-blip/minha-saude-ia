@@ -1,3 +1,13 @@
+## V6.26 — Página inicial começa pelo seu cartão de perfil
+- 🪪 Ao entrar, o primeiro item da Home é o cartão do perfil, com a foto e os dados pessoais (idade, peso, altura e tipo sanguíneo).
+- 📷 Tocar na foto do cartão abre a escolha de foto; a imagem é reduzida e salva neste navegador, sem criar aviso falso de rascunho.
+- ⚡ Logo abaixo do cartão ficam as três ações principais: Completar perfil, Registrar sintoma e Registrar consulta.
+- 🧹 O guia “Seu resumo de saúde” deixa de aparecer na Home, e a apresentação longa só aparece para quem ainda não tem nenhum dado.
+- 👤 Sem nome cadastrado, o cartão mostra “Complete seu perfil” em vez de “Seu nome”.
+- 🎨 O cartão “Próximo passo” da Home, que aparecia solto na página por falta de estilo, ganhou o visual de cartão (com versão para o modo escuro).
+- 💾 A mensagem informativa de backup (para quem ainda não tem registros) passou a usar a caixa verde, em vez da laranja de alerta.
+- 🔢 Versão visível, constante, `version.json` e cache sincronizados em V6.26.
+
 ## V6.25 — Recuperação dos familiares e correção dos cards
 - Refeito o módulo familiar a partir da versão estável anterior e reaplicada a opção de lado da família usando eventos seguros.
 - Cada familiar pode ser marcado como Materno, Paterno, Outro, Ambos/não sei ou Não informado.

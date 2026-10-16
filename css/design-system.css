@@ -594,3 +594,37 @@ body.msa-quick-feito #msaPurposeIntro{display:none}
   #home #homeMissingInfoCard{flex-direction:column!important;align-items:stretch!important;gap:12px!important}
   #home #homeMissingInfoCard .btn{width:100%;min-height:46px}
 }
+
+/* V6.23 — Home: cartão do perfil primeiro (com a foto tocável) e, logo abaixo, as três ações principais. */
+#home>.msa-page-guide{display:none}
+#home .home-profile-edit{display:none}
+#home .home-profile-hero{margin-bottom:12px}
+#home #homeAvatar{position:relative;cursor:pointer}
+#home #homeAvatar::after{content:"📷";position:absolute;right:-4px;bottom:-4px;width:26px;height:26px;border-radius:50%;background:#fff;border:1px solid #cbd5e1;display:grid;place-items:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.home-quick-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 15px}
+.home-qa{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:84px;padding:10px 6px;border:1px solid #cfe0ff;border-radius:16px;background:#fff;cursor:pointer;font-family:inherit;box-shadow:0 6px 16px rgba(37,99,235,.08)}
+.home-qa span{font-size:24px;line-height:1}
+.home-qa b{font-size:13px;line-height:1.25;text-align:center;color:#1e3a8a}
+.home-qa:first-child{background:#2563eb;border-color:#2563eb}
+.home-qa:first-child b{color:#fff}
+.home-qa:focus-visible,#home #homeAvatar:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}
+@media(min-width:760px){.home-qa{flex-direction:row;gap:10px;min-height:64px}.home-qa b{font-size:15px}}
+body.msa-tem-dados #msaPurposeIntro{display:none}
+body.msa-dark .home-qa{background:#111827;border-color:#334155}
+body.msa-dark .home-qa b{color:#e5e7eb}
+body.msa-dark .home-qa:first-child{background:#2563eb;border-color:#2563eb}
+body.msa-dark .home-qa:first-child b{color:#fff}
+body.msa-dark #home #homeAvatar::after{background:#1f2937;border-color:#475569}
+/* V6.23 — cartão "Próximo passo" da Home: o HTML (.msa-next-step-card) existia sem nenhum CSS e aparecia solto na página. */
+.msa-next-step-card{display:flex;align-items:center;gap:14px;margin:0 0 15px;padding:16px;border:1px solid #cfe0ff;border-radius:18px;background:linear-gradient(135deg,#f5f9ff,#ffffff);box-shadow:0 8px 22px rgba(37,99,235,.08)}
+.msa-next-step-icon{flex:0 0 auto;display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:#e8f0ff;font-size:22px}
+.msa-next-step-copy{flex:1 1 auto;min-width:0}
+.msa-next-step-kicker{font-size:12px;font-weight:800;letter-spacing:.04em;color:#1d4ed8}
+.msa-next-step-copy h2{margin:2px 0 4px;font-size:18px;line-height:1.25}
+.msa-next-step-copy p{margin:0;color:#52607a;font-size:14px;line-height:1.5}
+.msa-next-step-actions{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:640px){.msa-next-step-card{flex-wrap:wrap;align-items:flex-start}.msa-next-step-copy{flex:1 1 calc(100% - 60px)}.msa-next-step-actions{flex:1 1 100%}.msa-next-step-actions .btn{flex:1 1 140px;min-height:46px}}
+body.msa-dark .msa-next-step-card{background:linear-gradient(135deg,#111827,#172554);border-color:#334155;box-shadow:none}
+body.msa-dark .msa-next-step-icon{background:#1e293b}
+body.msa-dark .msa-next-step-kicker{color:#93c5fd}
+body.msa-dark .msa-next-step-copy p{color:#cbd5e1}

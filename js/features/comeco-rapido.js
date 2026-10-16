@@ -49,7 +49,10 @@ window.msaQuickTextoHome=function(c){
 
 function ajustarIntro(){
   var feito=window.msaQuickEstado()==='feito';
-  if(document.body)document.body.classList.toggle('msa-quick-feito',feito);
+  if(document.body){
+    document.body.classList.toggle('msa-quick-feito',feito);
+    document.body.classList.toggle('msa-tem-dados',feito||!!String(perfil().nome||'').trim()||totalRegistros()>0);
+  }
   var intro=document.getElementById('msaPurposeIntro');if(!intro)return;
   var btn=intro.querySelector('.msa-purpose-actions .btn');if(!btn)return;
   var promover=!feito&&(window.msaQuickEstado()==='pulado'||window.msaQuickNovato());
@@ -307,9 +310,36 @@ function compactarPerfil(){
   if(salvo==='1')aplicar(true);
 }
 
+/* ---------- foto: tocar no avatar do cartão da Home abre a escolha de foto (o app já salva e reduz a imagem) ---------- */
+function atualizarCartaoDepoisDaFoto(){
+  [400,1200,2500].forEach(function(t){setTimeout(function(){
+    try{if(typeof window.atualizarPerfilHome==='function')window.atualizarPerfilHome();else if(typeof window.render==='function')window.render()}catch(e){}
+  },t)});
+}
+function ligarFotoDoCartao(){
+  var av=document.getElementById('homeAvatar'),inp=document.getElementById('pFoto');
+  if(!av||av.getAttribute('data-msa-foto'))return;
+  av.setAttribute('data-msa-foto','1');
+  function abrir(){window.__msaFotoDoCartao=Date.now();if(inp&&typeof inp.click==='function')inp.click();else if(typeof window.go==='function')window.go('perfil')}
+  av.addEventListener('click',abrir);
+  av.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();abrir()}});
+  if(inp){
+    /* Foto escolhida pelo cartão da Home: o app já salva na hora. O navegador dispara "input" e "change" no campo de arquivo; os dois
+       "borbulhariam" até o formulário do perfil, onde o recurso de rascunhos criaria um aviso falso de "informações ainda não salvas". */
+    var daHome=function(){return window.__msaFotoDoCartao&&Date.now()-window.__msaFotoDoCartao<120000};
+    inp.addEventListener('input',function(e){if(daHome())e.stopPropagation()});
+    inp.addEventListener('change',function(e){
+      if(daHome())e.stopPropagation();
+      window.__msaFotoDoCartao=0;
+      atualizarCartaoDepoisDaFoto();
+    });
+  }
+}
+
 function iniciar(){
   try{compactarPerfil()}catch(e){console.warn('[Minha Saúde IA] perfil compacto',e)}
   try{ajustarIntro()}catch(e){}
+  try{ligarFotoDoCartao()}catch(e){console.warn('[Minha Saúde IA] foto do cartão',e)}
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',iniciar);else iniciar();
 })();
