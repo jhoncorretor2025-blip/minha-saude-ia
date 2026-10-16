@@ -1,4 +1,4 @@
-/* Minha Saúde IA — módulo Familiares V5.87 */
+/* Minha Saúde IA — módulo Familiares V6.24 */
 (function(){
 'use strict';
 const K=window.MSA_K||window.K||{};
@@ -56,7 +56,9 @@ function aplicarFiltroFamilia(){
  const detail=document.getElementById('familiarDetalhe');
  if(detail)detail.style.display=(f==='ia'?'none':'');
 }
+function instalarEstilosLadoFamiliaCards(){if(document.getElementById('msaFamSideCardStyles'))return;const s=document.createElement('style');s.id='msaFamSideCardStyles';s.textContent='.familiar-person-card{display:flex;flex-direction:column;align-items:stretch;gap:8px;cursor:default;padding:10px}.familiar-person-main{display:flex;align-items:center;gap:10px;text-align:left;width:100%;min-width:0;border:0;background:transparent;padding:2px;color:var(--text);cursor:pointer;font:inherit}.familiar-person-main:focus-visible{outline:2px solid #2563eb;outline-offset:2px;border-radius:8px}.familiar-side-label{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:7px;border-top:1px solid #edf0f5;font-size:11px;font-weight:800;color:#64748b}.familiar-side-label select{width:auto;min-width:132px;max-width:58%;margin:0;padding:6px 8px;min-height:34px;border:1px solid #d8e1ef;border-radius:9px;background:#fff;color:#334155;font:inherit;font-size:12px;font-weight:700}.familiar-side-label select:focus{outline:2px solid #93b4ff;outline-offset:1px}@media(max-width:430px){.familiar-side-label{align-items:flex-start;flex-direction:column}.familiar-side-label select{width:100%;max-width:none}}';document.head.appendChild(s)}
 function renderFamiliares(){
+ instalarEstilosLadoFamiliaCards();
  instalarEstilosFamiliaInteligente();
  instalarFiltroFamilia();
  instalarCampoLadoFamilia();
@@ -65,7 +67,7 @@ function renderFamiliares(){
  const cadastroCard=document.getElementById('familiaCadastroCard');if(cadastroCard)cadastroCard.dataset.famArea='cadastro';
  const pessoasCard=document.getElementById('familiaPessoasCard');if(pessoasCard)pessoasCard.dataset.famArea='cadastro';
  const cards=document.getElementById('familiaresList');
- if(cards)cards.innerHTML=list.length?list.map(p=>'<button type="button" class="familiar-person-card '+(sel&&p.id===sel.id?'selected':'')+'" onclick="selecionarFamiliar(\''+esc(p.id)+'\')"><span class="familiar-person-icon">'+(p.sexo==='Feminino'?'👩':'👤')+'</span><span class="familiar-person-info"><b>'+esc(p.nome||'Sem nome')+'</b><small>'+esc(p.parentesco||'Parentesco não informado')+'</small><small>'+esc(p.condicao||'Condição não informada')+'</small></span><span class="familiar-person-count">'+(p.medicamentos||[]).length+' 💊<br>'+(p.consultas||[]).length+' 👨‍⚕️</span></button>').join(''):'<div class="empty">Nenhum familiar cadastrado ainda.</div>';
+ if(cards)cards.innerHTML=list.length?list.map(p=>'<div class="familiar-person-card '+(sel&&p.id===sel.id?'selected':'')+'"><button type="button" class="familiar-person-main" onclick="selecionarFamiliar(\\''+esc(p.id)+'\\')"><span class="familiar-person-icon">'+(p.sexo==='Feminino'?'👩':'👤')+'</span><span class="familiar-person-info"><b>'+esc(p.nome||'Sem nome')+'</b><small>'+esc(p.parentesco||'Parentesco não informado')+'</small><small>'+esc(p.condicao||'Condição não informada')+'</small></span><span class="familiar-person-count">'+(p.medicamentos||[]).length+' 💊<br>'+(p.consultas||[]).length+' 👨‍⚕️</span></button><label class="familiar-side-label">🧬 Lado da família<select aria-label="Lado da família de '+esc(p.nome||'familiar')+'" onchange="atualizarLadoFamiliar(\\''+esc(p.id)+'\\',this.value)" onclick="event.stopPropagation()"><option value="" '+(!p.ladoFamilia?'selected':'')+'>Não informado</option><option value="Materno" '+(familiaLado(p)==='Materno'?'selected':'')+'>Materno</option><option value="Paterno" '+(familiaLado(p)==='Paterno'?'selected':'')+'>Paterno</option><option value="Outro" '+(p.ladoFamilia==='Outro'?'selected':'')+'>Outro</option><option value="Ambos / não sei" '+(p.ladoFamilia==='Ambos / não sei'?'selected':'')+'>Ambos / não sei</option></select></label></div>').join(''):'<div class="empty">Nenhum familiar cadastrado ainda.</div>'
  const detail=document.getElementById('familiarDetalhe');if(!detail)return;
  if(!sel){detail.innerHTML='<div class="empty">👨‍👩‍👧‍👦 Selecione um familiar ou cadastre o primeiro acima.</div>';return}
  const meds=sel.medicamentos||[],cons=sel.consultas||[],crises=sel.crises||[];
@@ -85,6 +87,7 @@ function bindForms(id){
  const cr=document.getElementById('familiarCriseForm');if(cr)cr.onsubmit=e=>{e.preventDefault();addRecord(id,'crises',{data:val('fCriData'),hora:val('fCriHora'),tipo:val('fCriTipo'),intensidade:val('fCriInt'),descricao:val('fCriDesc'),gatilho:val('fCriGatilho'),conduta:val('fCriConduta')})};
 }
 function addRecord(memberId,type,data){const list=getList(),p=list.find(x=>x.id===memberId);if(!p)return;ensure(p);p[type].push(Object.assign({id:uid(type.slice(0,3)),criadoEm:new Date().toISOString()},data));if(!saveList(list)){alert('Não foi possível salvar.');return}setSelected(memberId);renderFamiliares()}
+window.atualizarLadoFamiliar=function(id,lado){const list=getList(),p=list.find(x=>x.id===id);if(!p)return;p.ladoFamilia=String(lado||'');if(!saveList(list)){alert('Não foi possível salvar o lado da família.');return}setSelected(selectedId()||id);renderFamiliares();};
 window.selecionarFamiliar=id=>{setSelected(id);renderFamiliares();setTimeout(()=>document.getElementById('familiarDetalhe')?.scrollIntoView({behavior:'smooth',block:'start'}),50)};
 window.excluirFamiliar=id=>{const p=findMember(id);if(!p)return;if(!confirm('Excluir '+(p.nome||'este familiar')+' e todos os registros dele?'))return;const list=getList().filter(x=>x.id!==id);saveList(list);if(selectedId()===id)setSelected(list[0]?.id||'');renderFamiliares()};
 window.excluirRegistroFamiliar=(memberId,type,recordId)=>{const list=getList(),p=list.find(x=>x.id===memberId);if(!p)return;ensure(p);p[type]=p[type].filter(x=>x.id!==recordId);saveList(list);setSelected(memberId);renderFamiliares()};
