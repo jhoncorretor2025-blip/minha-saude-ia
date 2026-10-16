@@ -15,7 +15,7 @@ async function verificarNovaVersao(){
   const r=await fetch('./version.json?cb='+Date.now(),{cache:'no-store'});
   if(!r.ok)return;
   const data=await r.json();
-  if(data.version && data.version!=='V5.99'){
+  if(data.version && window.MSA_VERSION && data.version!==window.MSA_VERSION){
    const key='msa2_update_attempt_'+data.version;
    if(sessionStorage.getItem(key)!=='1'){
     sessionStorage.setItem(key,'1');
@@ -107,7 +107,7 @@ function updateReportSummary(){
  const {start,end,d,c,m,e}=rangeData();
  const comp=calcularCompletudeSaude();
  const ri=$('rSistemaInfo');
- if(ri)ri.innerHTML='<div class="alert safe"><b>🩺 Identificação do relatório</b><br>Versão do sistema: <b>V5.99</b> · Ficha preenchida: <b>'+comp.percentual+'%</b> ('+comp.preenchidos+'/'+comp.total+')</div>';
+ if(ri)ri.innerHTML='<div class="alert safe"><b>🩺 Identificação do relatório</b><br>Versão do sistema: <b>'+(window.MSA_VERSION||'—')+'</b> · Ficha preenchida: <b>'+comp.percentual+'%</b> ('+comp.preenchidos+'/'+comp.total+')</div>';
  const avg=d.length?(d.reduce((a,x)=>a+x.int,0)/d.length).toFixed(1):'—';
  $('rResumo').innerHTML=`<div class="grid4"><div><b>${d.length}</b><br><span class="muted">Sintomas</span></div><div><b>${c.length}</b><br><span class="muted">Consultas</span></div><div><b>${m.length}</b><br><span class="muted">Medicamentos</span></div><div><b>${e.length}</b><br><span class="muted">Exames</span></div></div><p style="margin-top:12px"><b>Intensidade média registrada:</b> ${avg}/10</p><p class="muted">Período: ${start} → ${end}</p>`;
 }

@@ -411,7 +411,7 @@ button{touch-action:manipulation}
 }
 body{overflow-x:hidden}
 main#main-content{min-width:0}
-#home{display:block}
+/* V6.21: removida a regra "#home{display:block}" (de V5.81). Ela vencia "section{display:none}" e mantinha a Home sempre visível acima das outras páginas. A Home continua aparecendo na abertura pela classe .active. */
 #home .home-profile-hero,
 #home .home-command-center,
 #home .metric-panel,
@@ -510,3 +510,36 @@ input:focus,select:focus,textarea:focus{
   #home .home-command-center{border-radius:16px}
   #home .card,.card{padding:15px}
 }
+
+/* V6.21 — apresentação da página inicial. O HTML (.msa-purpose*) entrou na V6.18 sem nenhum CSS e por isso aparecia sem formatação. */
+.msa-purpose{background:#fff;border:1px solid #dfe8f6;border-radius:20px;padding:18px;margin:0 0 16px;box-shadow:0 10px 30px rgba(37,99,235,.08)}
+.msa-purpose-kicker{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--msa-color-primary-dark,#1d4ed8);background:var(--msa-color-primary-soft,#eef4ff);border-radius:999px;padding:5px 11px;margin-bottom:10px}
+.msa-purpose h1{font-size:clamp(24px,6.4vw,34px);line-height:1.15;letter-spacing:-.02em;margin:2px 0 10px;color:#14213d}
+.msa-purpose-lead{font-size:16px;line-height:1.6;color:#44516b;margin:0 0 16px;max-width:760px}
+.msa-purpose-steps{display:grid;grid-template-columns:1fr;gap:10px;margin:0 0 16px}
+.msa-purpose-step{display:flex;align-items:flex-start;gap:12px;background:#f6f9ff;border:1px solid #e1e8f3;border-radius:14px;padding:12px 14px}
+.msa-purpose-emoji{flex:0 0 auto;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#fff;border:1px solid #dfe8f6;font-size:20px}
+.msa-purpose-step strong{display:block;font-size:15px;color:#14213d;margin-bottom:2px}
+.msa-purpose-step span:not(.msa-purpose-emoji){display:block;font-size:14px;line-height:1.5;color:#52607a}
+.msa-purpose-actions{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px}
+.msa-purpose-actions .btn{flex:1 1 210px;justify-content:center;text-align:center}
+.msa-purpose-note{font-size:13px;line-height:1.55;color:#3f5a49;background:#f1faf4;border:1px solid #cfe9d8;border-radius:12px;padding:10px 12px}
+@media(min-width:760px){.msa-purpose{padding:26px}.msa-purpose-steps{grid-template-columns:repeat(3,1fr)}.msa-purpose-actions .btn{flex:0 1 auto}}
+body.msa-dark .msa-purpose{background:#111827;border-color:#263244;box-shadow:none}
+body.msa-dark .msa-purpose h1,body.msa-dark .msa-purpose-step strong{color:#f1f5f9}
+body.msa-dark .msa-purpose-lead,body.msa-dark .msa-purpose-step span:not(.msa-purpose-emoji){color:#cbd5e1}
+body.msa-dark .msa-purpose-kicker{background:#1e2a44;color:#bfdbfe}
+body.msa-dark .msa-purpose-step{background:#0f172a;border-color:#263244}
+body.msa-dark .msa-purpose-emoji{background:#111827;border-color:#263244}
+body.msa-dark .msa-purpose-note{background:#0f2a1c;border-color:#1e4a33;color:#bbf7d0}
+
+/* V6.21 — modo escuro: textos que ficavam quase invisíveis (azul-escuro sobre fundo escuro, branco sobre branco). Não altera o modo claro. */
+body.msa-dark #home h2,body.msa-dark #home h3{color:#f1f5f9}
+body.msa-dark .msa-page-guide strong{color:#bfdbfe}
+body.msa-dark .msa-page-guide p{color:#cbd5e1}
+body.msa-dark .msa-page-guide .msa-guide-step{color:#e2e8f0}
+body.msa-dark .home-more-btn,body.msa-dark .home-guide-btn{background:#1e293b!important;color:#e2e8f0!important;border-color:#334155!important}
+body.msa-dark .msa-mobile-bar button.active{background:#1e3a8a!important}
+body.msa-dark .msa-mobile-bar button.active,body.msa-dark .msa-mobile-bar button.active *{color:#fff!important}
+/* cartões de métricas continuam claros no modo escuro: rótulos precisam de texto mais escuro, não mais claro */
+body.msa-dark #home .metric-kpi span{color:#5b6b82}

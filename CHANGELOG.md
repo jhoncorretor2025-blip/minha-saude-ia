@@ -1,3 +1,14 @@
+## V6.21 — Correção de navegação, estrutura e modo escuro
+- 🧭 A página inicial deixou de ficar visível acima das outras páginas: ao abrir Medicamentos, Sintomas, Relatórios e as demais telas, o conteúdo certo aparece no topo.
+- 📐 Corrigido um `</div>` a mais que fechava o container principal cedo demais: páginas depois da Linha do tempo encostavam nas bordas da tela e um cartão repetido “Linha do tempo da saúde” aparecia no meio das páginas.
+- 🔄 Corrigido o recarregamento automático a cada nova sessão (a verificação de versão comparava com um número antigo fixo).
+- 🧹 Removido o texto solto (“\n” e “>”) que aparecia na tela; o `<head>` voltou a ficar completo e uma regra de acessibilidade de movimento reduzido deixou de ser perdida.
+- 🩺 O quadro “Identificação do relatório” e o diagnóstico de importação passaram a mostrar a versão real do sistema.
+- 🎨 A apresentação da página inicial (introduzida na V6.18) ganhou o estilo que faltava: cartão, três passos lado a lado no computador e empilhados no celular, botões e aviso de privacidade, com versão para o modo escuro.
+- 🌙 Modo escuro: títulos, botões e o item ativo da barra inferior que ficavam quase invisíveis passaram a ter contraste legível.
+- 🛠️ Removida a chamada a uma função antiga (showOnboarding) que gerava erro ao abrir o aplicativo.
+- 🔄 Versão oficial, constante e cache atualizados para V6.21.
+
 ## V6.20 — Configurações profissionais, acessibilidade e diagnóstico
 - 🔄 Seletor de tema sincronizado com o botão global, evitando opções visuais desatualizadas.
 - 👥 Restauração de preferências usa o armazenamento do perfil ativo, preservando o isolamento entre perfis.

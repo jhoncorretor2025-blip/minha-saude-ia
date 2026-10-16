@@ -2,7 +2,8 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">\n<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <script>
 /* Compatibilidade: remove qualquer onboarding legado/cacheado e libera o toque da página. */
 (function(){
@@ -38,7 +39,7 @@
       limpar.then(function(){
         var u=new URL(window.location.href);
         u.searchParams.set('cb',Date.now().toString());
-        u.searchParams.set('v','V6.20');
+        u.searchParams.set('v','V6.21');
         window.location.replace(u.toString());
       });
     }catch(e){}
@@ -48,7 +49,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V6.20</title>
+<title>Minha Saúde IA — V6.21</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -349,7 +350,7 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
 @media(max-width:760px){.msa-mobile-menu-fab{display:none!important}.msa-mobile-bar{grid-template-columns:repeat(4,1fr)}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V6.20">
+  <link rel="stylesheet" href="css/design-system.css?v=V6.21">
 
 <style id="v519-progressive-ui">
 /* V6.00 — melhorias progressivas de dashboard, favoritos e alertas */
@@ -634,7 +635,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.20</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.21</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 
 <!-- V6.20 — retorno persistente, feedback de navegação e validação do perfil -->
@@ -957,7 +958,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   <div id="progressiveAlerts" class="alert-list"><div class="muted">Carregando resumo…</div></div>
  </div>
 </div>
-\n<div class="card health-dashboard" style="margin-top:13px">
+<div class="card health-dashboard" style="margin-top:13px">
 <div class="dash-head"><div><h2 style="margin-bottom:3px">📊 Seu Painel de Saúde</h2><div class="muted">Um resumo rápido de tudo que já está registrado.</div></div><span class="dash-badge">VISÃO GERAL</span></div>
 <div class="dash-grid">
 <div class="dash-metric"><span>🩺 Doenças/condições</span><b id="dashCond">0</b><small id="dashCondTxt">Nenhuma informada</small></div>
@@ -998,6 +999,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </div>
 </div>
 <div class="grid2" style="margin-top:13px"><div class="card"><h2>🛡️ Atenção</h2><div id="alertaHome" class="safe">Nenhum alerta automático com os dados registrados.</div></div><div class="card"><h2>🕒 Último registro</h2><div id="ultimo" class="muted">Ainda não há registros.</div></div></div>
+</div>
 </section>
 
 <section id="buscar">
@@ -1078,9 +1080,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  <div class="alert safe" style="margin-top:12px">🔒 A leitura é local. O arquivo não é enviado automaticamente para uma IA e a prévia precisa ser revisada antes de qualquer salvamento.</div>
 </div>
 </section>
-<section id="timeline"><div class="card"><div class="dash-section-title"><div><h2>🕐 Linha do tempo da minha saúde</h2><div class="muted">Todos os tipos de registro são reunidos aqui. Registros sem data ficam no final e podem ser marcados para revisão.</div></div><button class="btn secondary" onclick="go('home')">← Início</button></div><div id="timelineFilters" class="row" style="margin-top:10px;gap:7px;flex-wrap:wrap"></div><div id="timelineFull" class="timeline-full"></div></div></div></section>
-<section id="timeline_old_placeholder" style="display:none"></section>
-<!-- timeline original movido visualmente para o novo painel -->><div class="card"><h2>🕐 Linha do tempo da saúde</h2><div class="muted">Todos os seus registros organizados por data.</div><div id="tl" class="timeline" style="margin-top:17px"></div></div></section>
+<section id="timeline"><div class="card"><div class="dash-section-title"><div><h2>🕐 Linha do tempo da minha saúde</h2><div class="muted">Todos os tipos de registro são reunidos aqui. Registros sem data ficam no final e podem ser marcados para revisão.</div></div><button class="btn secondary" onclick="go('home')">← Início</button></div><div id="timelineFilters" class="row" style="margin-top:10px;gap:7px;flex-wrap:wrap"></div><div id="timelineFull" class="timeline-full"></div></div></section>
+<section id="timeline_old_placeholder" style="display:none">
+<!-- timeline original movido visualmente para o novo painel --><div class="card"><h2>🕐 Linha do tempo da saúde</h2><div class="muted">Todos os seus registros organizados por data.</div><div id="tl" class="timeline" style="margin-top:17px"></div></div></section>
 
 <section id="dor"><div class="card"><h2>😣 Registrar sintoma ou dor</h2>
 <form id="dorForm">
@@ -1733,7 +1735,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.20. Importação instantânea por IA com revisão antes de salvar. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.21. Importação instantânea por IA com revisão antes de salvar. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -1754,17 +1756,17 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V6.20" defer></script>
-<script src="js/core/storage.js?v=V6.20" defer></script>
-<script src="js/core/utils.js?v=V6.20" defer></script>
-<script src="js/core/stability-v599.js?v=V6.20" defer></script>
-<script src="js/navigation/menu.js?v=V6.20" defer></script>
-<script src="js/core/app.js?v=V6.20" defer></script>
-<script src="js/features/notificacoes-remotas.js?v=V6.20" defer></script>
-<script src="js/features/perfil-compartilhado.js?v=V6.20" defer></script>
-<script src="js/features/perfil-save.js?v=V6.20" defer></script>
-<script src="js/features/familiares.js?v=V6.20" defer></script>
-<script src="js/features/recursos.js?v=V6.20" defer></script>
+<script src="js/core/constants.js?v=V6.21" defer></script>
+<script src="js/core/storage.js?v=V6.21" defer></script>
+<script src="js/core/utils.js?v=V6.21" defer></script>
+<script src="js/core/stability-v599.js?v=V6.21" defer></script>
+<script src="js/navigation/menu.js?v=V6.21" defer></script>
+<script src="js/core/app.js?v=V6.21" defer></script>
+<script src="js/features/notificacoes-remotas.js?v=V6.21" defer></script>
+<script src="js/features/perfil-compartilhado.js?v=V6.21" defer></script>
+<script src="js/features/perfil-save.js?v=V6.21" defer></script>
+<script src="js/features/familiares.js?v=V6.21" defer></script>
+<script src="js/features/recursos.js?v=V6.21" defer></script>
 
 
 <script>
@@ -1787,12 +1789,12 @@ function iniciarImportacao(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
-<script src="js/features/inteligencia.js?v=V6.20" defer></script>
-<script src="js/ai/importacao.js?v=V6.20" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/legacy/melhorias-primeiras.js?v=V6.20" defer></script>
-<script src="js/features/expansoes.js?v=V6.20" defer></script>
-<script src="js/ai/importacao-fluxo-v514.js?v=V6.20" defer></script>
-<script src="js/legacy/melhorias-v513.js?v=V6.20" defer></script>
+<script src="js/features/inteligencia.js?v=V6.21" defer></script>
+<script src="js/ai/importacao.js?v=V6.21" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/legacy/melhorias-primeiras.js?v=V6.21" defer></script>
+<script src="js/features/expansoes.js?v=V6.21" defer></script>
+<script src="js/ai/importacao-fluxo-v514.js?v=V6.21" defer></script>
+<script src="js/legacy/melhorias-v513.js?v=V6.21" defer></script>
 
 
 <script>
@@ -1894,11 +1896,10 @@ document.addEventListener('DOMContentLoaded',()=>{
  limparParametrosPublicos();
  setTimeout(verificarAtalhoIA,80);
  setTimeout(()=>{if(typeof mostrarPaginaDaURL==='function')mostrarPaginaDaURL()},120);
- setTimeout(showOnboarding,180);
 });
 </script>
 
-<script src="js/reports/relatorios-v599.js?v=V6.20" defer></script>
+<script src="js/reports/relatorios-v599.js?v=V6.21" defer></script>
 
 
 
@@ -2024,7 +2025,8 @@ body.msa-dark .msa-save-bar{background:linear-gradient(180deg,rgba(17,24,39,0),#
  .msa-home-more-toggle{min-height:48px}
  .msa-toast{bottom:calc(92px + env(safe-area-inset-bottom))}
 }
-.timeline-title{display:flex;justify-content:space-between;gap:8px;align-items:center}.timeline-review-tag{display:inline-flex;align-items:center;padding:4px 7px;border-radius:999px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:10px;font-weight:900}.timeline-row-invalid .timeline-content{border-color:#fed7aa;background:#fffaf5}.smart-review-panel{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px;border:1px solid #fed7aa;background:#fffaf5;border-radius:15px}.smart-review-panel small{display:block;color:#7c5a32;margin-top:3px;line-height:1.35}@media(max-width:600px){.smart-review-panel{align-items:stretch;flex-direction:column}.smart-review-panel .btn{width:100%}}\n@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+.timeline-title{display:flex;justify-content:space-between;gap:8px;align-items:center}.timeline-review-tag{display:inline-flex;align-items:center;padding:4px 7px;border-radius:999px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:10px;font-weight:900}.timeline-row-invalid .timeline-content{border-color:#fed7aa;background:#fffaf5}.smart-review-panel{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px;border:1px solid #fed7aa;background:#fffaf5;border-radius:15px}.smart-review-panel small{display:block;color:#7c5a32;margin-top:3px;line-height:1.35}@media(max-width:600px){.smart-review-panel{align-items:stretch;flex-direction:column}.smart-review-panel .btn{width:100%}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style>
 <script id="msaV539EnhancementsScript">
 (function(){
@@ -2744,6 +2746,6 @@ body.msa-dark .msa-settings-grid>label small{color:#cbd5e1}
 body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 @media(max-width:600px){.msa-settings-grid{grid-template-columns:minmax(0,1fr)}.msa-settings-professional .row>.btn{flex:1 1 100%;width:100%}}
 </style>
-<script src="js/features/configuracoes-profissionais.js?v=V6.20" defer></script>
+<script src="js/features/configuracoes-profissionais.js?v=V6.21" defer></script>
 
 </body></html>
