@@ -32,6 +32,7 @@
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="family">👨‍👩‍👧 Família ▾</button><div class="nav-menu">'+
         '<button type="button" data-tab="familia">🧬 Histórico Familiar e Genética</button>'+
         '<button type="button" data-tab="familiares">👨‍👩‍👧‍👦 Familiares</button>'+
+        '<button type="button" data-tab="parceiro">💑 Meu círculo de saúde</button>'+
       '</div></div>'+
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="organization">📁 Organizar ▾</button><div class="nav-menu">'+
         '<button type="button" data-tab="documentos">📄 Documentos</button><button type="button" data-tab="leitor">📄 Leitor inteligente</button>'+
@@ -238,7 +239,7 @@
           ['calendario','📅 Calendário'],['lembretes','⏰ Lembretes']
         ])+
         mobileSection('Família',[
-          ['familia','🧬 Histórico Familiar e Genética'],['familiares','👨‍👩‍👧‍👦 Familiares']
+          ['familia','🧬 Histórico Familiar e Genética'],['familiares','👨‍👩‍👧‍👦 Familiares'],['parceiro','💑 Meu círculo de saúde']
         ])+
         mobileSection('Organizar',[
           ['documentos','📄 Documentos'],['leitor','📄 Leitor inteligente'],['relatorios','📊 Relatórios'],['carteirinha','🪪 Carteirinha']
