@@ -1,3 +1,9 @@
+## V6.37 — Página dedicada ao círculo de saúde
+- 💑 Criada a página Meu círculo de saúde para organizar o cadastro e acompanhamento de cônjuge, namorado(a) ou companheiro(a).
+- 💬 Reunidos em cartões separados os atalhos para enviar entrevista pelo WhatsApp, preencher manualmente, importar respostas e ver perfis cadastrados.
+- 🧭 Adicionado acesso próprio à página no menu Família, com instruções de privacidade e visão geral dos dados que podem ser registrados.
+- ♻️ Reutilizadas as funções de cadastro e importação existentes, sem criar um armazenamento paralelo.
+
 ## V6.36 — Entrevista de saúde compartilhável por WhatsApp
 - 💬 Adicionado botão para copiar uma entrevista guiada que pode ser enviada ao parceiro(a) pelo WhatsApp.
 - 🤖 A pessoa cola o texto na própria IA, responde a perguntas uma por vez, revisa o resumo e solicita um JSON final para devolver.
