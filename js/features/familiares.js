@@ -15,6 +15,7 @@ function setSelected(id){try{storage.set(SELECTED,id||'')}catch(e){}}
 function findMember(id){return getList().find(x=>x.id===id)||null}
 function ensure(p){p.medicamentos=Array.isArray(p.medicamentos)?p.medicamentos:[];p.consultas=Array.isArray(p.consultas)?p.consultas:[];p.crises=Array.isArray(p.crises)?p.crises:[];return p}
 let __msaFamFiltro=window.__msaFamFiltro||'todos';
+let __msaFamPendingEdit='';
 function instalarEstilosFiltroFamilia(){
  if(document.getElementById('msaFamFilterStyles'))return;
  const s=document.createElement('style');s.id='msaFamFilterStyles';
@@ -91,11 +92,13 @@ function renderParceirosSaude(){
   },delay));
  }));
  host.querySelectorAll('[data-partner-edit]').forEach(b=>b.addEventListener('click',()=>{
-   const id=b.dataset.partnerEdit;
+   const id=String(b.dataset.partnerEdit||'');
+   if(!id||!getList().some(p=>String(p.id)===id)){alert('Não foi possível localizar esse perfil. Atualize a lista e tente novamente.');return}
+   __msaFamPendingEdit=id;setSelected(id);
    if(typeof go==='function')go('familiares');
-   [250,600,1100].forEach(delay=>setTimeout(()=>{
-    if(!getList().some(p=>String(p.id)===String(id)))return;
-    setSelected(id);
+   [80,250,600,1100].forEach(delay=>setTimeout(()=>{
+    if(!getList().some(p=>String(p.id)===id))return;
+    __msaFamPendingEdit=id;setSelected(id);
     if(typeof window.selecionarFamiliar==='function')window.selecionarFamiliar(id);else renderFamiliares();
     setTimeout(()=>window.focarEdicaoFamiliar&&window.focarEdicaoFamiliar(id),80);
    },delay));
@@ -132,14 +135,20 @@ window.excluirPerfilParceiro=function(id){
 };
 
 window.focarEdicaoFamiliar=function(id){
-  if(id){const p=getList().find(x=>String(x.id)===String(id));if(!p){alert('Não foi possível localizar esse perfil. Atualize a lista e tente novamente.');return}setSelected(p.id);renderFamiliares()}
+  if(id){const p=getList().find(x=>String(x.id)===String(id));if(!p){alert('Não foi possível localizar esse perfil. Atualize a lista e tente novamente.');return}__msaFamPendingEdit=String(p.id);setSelected(p.id);renderFamiliares()}
   setTimeout(function(){
    const form=document.getElementById('familiarBasicEditForm');
-   if(!form){alert('O formulário de edição não foi carregado. Selecione a pessoa novamente.');return}
+   const expected=__msaFamPendingEdit||String(id||'');
+   const current=findMember(selectedId());
+   if(!form||(expected&&(!current||String(current.id)!==expected))){
+    if(expected&&getList().some(p=>String(p.id)===expected)){__msaFamPendingEdit=expected;setSelected(expected);renderFamiliares();setTimeout(()=>window.focarEdicaoFamiliar(expected),120);return}
+    alert('Não foi possível abrir o formulário da pessoa selecionada. Tente novamente.');return;
+   }
    const details=form.closest('details');if(details)details.open=true;
    form.scrollIntoView({behavior:'smooth',block:'center'});
    const name=form.querySelector('#fbNome');if(name)name.focus({preventScroll:true});
-  },60);
+   __msaFamPendingEdit='';
+  },100);
 };
 function renderFamiliares(){
  renderParceirosSaude();
@@ -151,7 +160,7 @@ function renderFamiliares(){
  instalarCamposPerfilSaudePessoa();
  renderAlertasHistoricoFamiliar();
  const box=document.getElementById('familiares');if(!box||!box.classList.contains('active'))return;
- const list=getList();renderFamiliaInteligencia();let sel=findMember(selectedId());if(!sel&&list.length){sel=list[0];setSelected(sel.id)}if(sel)ensure(sel);
+ const list=getList();renderFamiliaInteligencia();const pending=__msaFamPendingEdit?findMember(__msaFamPendingEdit):null;let sel=pending||findMember(selectedId());if(!sel&&list.length){sel=list[0];setSelected(sel.id)}if(sel){setSelected(sel.id);ensure(sel)}
  const cadastroCard=document.getElementById('familiaCadastroCard');if(cadastroCard)cadastroCard.dataset.famArea='cadastro';
  const pessoasCard=document.getElementById('familiaPessoasCard');if(pessoasCard)pessoasCard.dataset.famArea='cadastro';
  const cards=document.getElementById('familiaresList');
