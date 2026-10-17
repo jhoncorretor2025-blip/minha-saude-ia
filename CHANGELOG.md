@@ -1,3 +1,10 @@
+## V6.32 — Perguntas sobre minha saúde
+- 💬 Nova página “Perguntas sobre minha saúde” (menu 🤖 IA e atalho no Início).
+- ❓ Perguntas prontas: como está minha saúde, o que levar ao médico, alimentos bons, alimentos a evitar, hidratação, hábitos que faltam, hábitos errados, sono, dúvidas sobre remédios e exames preventivos — e campo para pergunta própria.
+- 🤖 O app junta a pergunta com o resumo dos registros e regras de segurança (sem diagnóstico, sem mudar remédios, linguagem simples) e abre a IA escolhida em Configurações → Minhas IAs.
+- 🔒 Antes de enviar, mostra o aviso de privacidade e a prévia do texto. Nada é enviado sem o toque da pessoa.
+- 🔄 Versão e cache atualizados para V6.32.
+
 ## V6.31 — PDF mais fácil de ler e versão sincronizada
 - 📄 No PDF, os títulos das seções agora aparecem em destaque e com emoji (👤 Perfil, 💊 Medicamentos, 🩺 Consultas, 🧪 Exames…).
 - 🅱️ Os rótulos (Nome, Peso, Dose…) aparecem em negrito, e “Não informado” fica mais discreto para destacar o que foi preenchido.
