@@ -73,7 +73,7 @@ function renderParceirosSaude(){
  const encerrados=list.filter(p=>p.statusRelacionamento==='Encerrado');
  const card=function(p,ended){
   const records=(p.medicamentos||[]).length+' medicamento(s) · '+(p.consultas||[]).length+' consulta(s) · '+(p.crises||[]).length+' ocorrência(s)';
-  return '<div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px solid #e2e8f0;background:#fff;border-radius:14px;padding:13px;margin-top:9px"><div style="flex:1;min-width:190px"><b>'+(p.sexo==='Feminino'?'👩':'👤')+' '+esc(p.nome||'Sem nome')+'</b><div style="font-size:12px;color:#64748b;margin-top:3px">'+esc(p.parentesco||'Relação não informada')+(ended?' · Encerrado':' · Ativo')+'</div><div style="font-size:11px;color:#64748b;margin-top:3px">'+esc(p.condicao||'Condição não informada')+' · '+records+'</div></div><div style="display:flex;gap:7px;flex-wrap:wrap"><button type="button" class="btn secondary small" data-partner-open="'+esc(p.id)+'">👁️ Ver perfil</button>'+(ended?'<button type="button" class="btn small" data-partner-reactivate="'+esc(p.id)+'">↩️ Reativar</button>':'<button type="button" class="btn secondary small" data-partner-end="'+esc(p.id)+'">💔 Encerrar relação</button>')+'<button type="button" class="btn red small" data-partner-delete="'+esc(p.id)+'">🗑️ Excluir perfil</button></div></div>';
+  return '<div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px solid #e2e8f0;background:#fff;border-radius:14px;padding:13px;margin-top:9px"><div style="flex:1;min-width:190px"><b>'+(p.sexo==='Feminino'?'👩':'👤')+' '+esc(p.nome||'Sem nome')+'</b><div style="font-size:12px;color:#64748b;margin-top:3px">'+esc(p.parentesco||'Relação não informada')+(ended?' · Encerrado':' · Ativo')+'</div><div style="font-size:11px;color:#64748b;margin-top:3px">'+esc(p.condicao||'Condição não informada')+' · '+records+'</div></div><div style="display:flex;gap:7px;flex-wrap:wrap"><button type="button" class="btn secondary small" data-partner-open="'+esc(p.id)+'">👁️ Ver perfil</button><button type="button" class="btn small" data-partner-edit="'+esc(p.id)+'">✏️ Editar perfil</button>'+(ended?'<button type="button" class="btn small" data-partner-reactivate="'+esc(p.id)+'">↩️ Reativar</button>':'<button type="button" class="btn secondary small" data-partner-end="'+esc(p.id)+'">💔 Encerrar relação</button>')+'<button type="button" class="btn red small" data-partner-delete="'+esc(p.id)+'">🗑️ Excluir perfil</button></div></div>';
  };
  host.innerHTML=(ativos.length?'<h4 style="margin:12px 0 4px">💑 Relacionamentos ativos</h4>'+ativos.map(p=>card(p,false)).join(''):'<div class="empty" style="margin-top:10px">Nenhum parceiro(a) cadastrado ainda. Use “Preencher manualmente” ou “Enviar entrevista pelo WhatsApp” acima.</div>')+
  (encerrados.length?'<h4 style="margin:18px 0 4px">🗂️ Relacionamentos encerrados (histórico preservado)</h4><p class="muted" style="margin:0">Esses perfis não aparecem como relacionamentos ativos, mas permanecem em Familiares caso queira consultar seus registros.</p>'+encerrados.map(p=>card(p,true)).join(''):'');
@@ -90,6 +90,16 @@ function renderParceirosSaude(){
    else renderFamiliares();
   },delay));
  }));
+ host.querySelectorAll('[data-partner-edit]').forEach(b=>b.addEventListener('click',()=>{
+   const id=b.dataset.partnerEdit;
+   if(typeof go==='function')go('familiares');
+   [250,600,1100].forEach(delay=>setTimeout(()=>{
+    if(!getList().some(p=>String(p.id)===String(id)))return;
+    setSelected(id);
+    if(typeof window.selecionarFamiliar==='function')window.selecionarFamiliar(id);else renderFamiliares();
+    setTimeout(()=>window.focarEdicaoFamiliar&&window.focarEdicaoFamiliar(id),80);
+   },delay));
+  }));
  host.querySelectorAll('[data-partner-end]').forEach(b=>b.addEventListener('click',()=>window.encerrarRelacionamentoParceiro(b.dataset.partnerEnd)));
  host.querySelectorAll('[data-partner-reactivate]').forEach(b=>b.addEventListener('click',()=>window.reativarRelacionamentoParceiro(b.dataset.partnerReactivate)));
  host.querySelectorAll('[data-partner-delete]').forEach(b=>b.addEventListener('click',()=>window.excluirPerfilParceiro(b.dataset.partnerDelete)));
@@ -121,6 +131,16 @@ window.excluirPerfilParceiro=function(id){
  alert('🗑️ Perfil e registros associados excluídos.');
 };
 
+window.focarEdicaoFamiliar=function(id){
+  if(id){const p=getList().find(x=>String(x.id)===String(id));if(!p){alert('Não foi possível localizar esse perfil. Atualize a lista e tente novamente.');return}setSelected(p.id);renderFamiliares()}
+  setTimeout(function(){
+   const form=document.getElementById('familiarBasicEditForm');
+   if(!form){alert('O formulário de edição não foi carregado. Selecione a pessoa novamente.');return}
+   const details=form.closest('details');if(details)details.open=true;
+   form.scrollIntoView({behavior:'smooth',block:'center'});
+   const name=form.querySelector('#fbNome');if(name)name.focus({preventScroll:true});
+  },60);
+};
 function renderFamiliares(){
  renderParceirosSaude();
  instalarEstilosLadoFamiliaCards();
