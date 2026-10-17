@@ -1,3 +1,11 @@
+## V6.40 — Gerenciamento de relacionamentos
+- 💔 Adicionada opção de encerrar o relacionamento e manter o perfil/histórico de saúde arquivado.
+- ↩️ Adicionada opção de reativar um relacionamento encerrado.
+- 🗑️ Adicionada opção de excluir permanentemente o perfil do parceiro(a) e todos os registros associados, com confirmação explícita.
+- 👥 Criada na página Meu círculo de saúde uma lista separada de relacionamentos ativos e encerrados.
+- 🧭 Mantidas as melhorias da importação por IA: instruções para gerar JSON, contagem correta, confirmação persistente e atalho para abrir o perfil importado.
+- 🔢 Atualizados os números de versão e cache para V6.40.
+
 ## V6.39 — Fluxo de importação da IA mais claro
 - 🧭 Explicados os passos para transformar a entrevista da IA em JSON e trazer as informações ao sistema.
 - 📝 Melhoradas as instruções do prompt da entrevista para gerar o JSON após a revisão, com um comando de recuperação claro.
