@@ -324,7 +324,7 @@ function extrairJSONFamilia(raw){
    }
   }
  }
- throw new Error('Não encontrei um JSON válido da família. Na IA, finalize dizendo "pode gerar" e copie a resposta completa.');
+ throw new Error('A resposta não contém o JSON de importação. Volte à conversa da IA e envie: Gere agora o JSON de importação do Minha Saúde IA usando todas as informações que já respondi. Depois copie o JSON completo e cole aqui. Um resumo em texto, sozinho, não cria o cadastro.');
 }
 function arrFam(v){return Array.isArray(v)?v:[]}
 function normalizarFamiliarImportado(src){
@@ -386,7 +386,7 @@ function salvarImportacaoFamilia(dados){
   }
   if(idx>=0){
    const antigo=ensure(atuais[idx]),merged=Object.assign({},antigo);
-   ['nome','parentesco','sexo','nasc','idade','condicao','alergias','sangue','contato','obs','ladoFamilia','idadeDiagnostico','certeza'].forEach(function(k){
+   ['nome','parentesco','sexo','nasc','idade','altura','peso','medidas','rotina','medicamentosRelato','condicao','alergias','sangue','contato','obs','ladoFamilia','idadeDiagnostico','certeza','statusFamiliar','causaFalecimento'].forEach(function(k){
     if(String(novo[k]||'').trim())merged[k]=novo[k];
    });
    merged.medicamentos=novo.medicamentos.length?novo.medicamentos:antigo.medicamentos;
@@ -475,17 +475,18 @@ function salvarImportacaoFamilia(dados){
   novos:novos,
   atualizados:atualizados,
   totalFamiliares:importados.length,
-  totalHistorico:antecedentes.length
+  totalHistorico:antecedentes.length,
+  nomes:importados.map(function(p){return p.nome}).filter(Boolean)
  };
 }
 function abrirImportadorRespostaFamilia(){
  let old=document.getElementById('msaFamiliaIAImportModal');if(old)old.remove();
  const modal=document.createElement('div');modal.id='msaFamiliaIAImportModal';modal.className='msa-ava-overlay';
  modal.innerHTML='<div class="msa-ava-dialog" role="dialog" aria-modal="true" aria-labelledby="msaFamiliaIAImportTitle">'+
- '<div class="msa-ava-top"><div><div class="msa-fam-kicker">📥 IA · FAMÍLIA</div><h2 id="msaFamiliaIAImportTitle">Colar resposta da IA</h2><p>Cole aqui a resposta gerada pelo ChatGPT, Gemini ou outra IA a partir do prompt da Família.</p></div><button type="button" class="msa-ava-close" id="msaFamiliaIAImportClose">✕</button></div>'+
- '<textarea id="msaFamiliaIAImportText" style="margin-top:14px;width:100%;min-height:330px;padding:13px;border:1px solid #d6deea;border-radius:14px;font-size:13px;line-height:1.45" placeholder="Cole aqui a resposta da IA..."></textarea>'+
- '<div class="msa-ava-actions" style="display:grid;grid-template-columns:1fr 1fr"><button type="button" class="btn secondary" id="msaFamiliaIAImportPaste">📋 Colar da área de transferência</button><button type="button" class="btn green" id="msaFamiliaIAImportSave">✅ Importar e salvar</button><button type="button" class="btn secondary" id="msaFamiliaIAImportGo">➡️ Ir para Familiares</button><button type="button" class="btn secondary" id="msaFamiliaIAImportCancel">↩️ Voltar</button></div>'+
- '<div id="msaFamiliaIAImportStatus" class="alert safe" style="margin-top:12px">Os dados só serão gravados depois de você clicar em “Importar e salvar”.</div></div>';
+ '<div class="msa-ava-top"><div><div class="msa-fam-kicker">📥 IA · FAMÍLIA</div><h2 id="msaFamiliaIAImportTitle">Importar dados para o perfil</h2><p>Volte à conversa onde você respondeu às perguntas. Se a IA ainda não gerou o JSON, envie: <b>“Gere agora o JSON de importação do Minha Saúde IA usando todas as informações que já respondi.”</b> Depois copie a resposta JSON completa e cole aqui. Um resumo em texto comum não basta.</p></div><button type="button" class="msa-ava-close" id="msaFamiliaIAImportClose">✕</button></div>'+
+ '<textarea id="msaFamiliaIAImportText" style="margin-top:14px;width:100%;min-height:330px;padding:13px;border:1px solid #d6deea;border-radius:14px;font-size:13px;line-height:1.45" placeholder="Cole aqui o JSON completo gerado pela IA..."></textarea>'+
+ '<div class="msa-ava-actions" style="display:grid;grid-template-columns:1fr 1fr"><button type="button" class="btn secondary" id="msaFamiliaIAImportPaste">📋 Colar da área de transferência</button><button type="button" class="btn green" id="msaFamiliaIAImportSave">✅ Importar e salvar</button><button type="button" class="btn secondary" id="msaFamiliaIAImportGo">👤 Ver perfil importado</button><button type="button" class="btn secondary" id="msaFamiliaIAImportCancel">↩️ Voltar</button></div>'+
+ '<div id="msaFamiliaIAImportStatus" class="alert safe" style="margin-top:12px">Passo 1: cole o JSON completo. Passo 2: clique em “Importar e salvar”. Passo 3: depois da confirmação, clique em “Ver perfil importado”.</div></div>';
  document.body.appendChild(modal);
  const input=modal.querySelector('#msaFamiliaIAImportText'),status=modal.querySelector('#msaFamiliaIAImportStatus'),fechar=function(){modal.remove()};
  modal.querySelector('#msaFamiliaIAImportClose').onclick=fechar;modal.querySelector('#msaFamiliaIAImportCancel').onclick=fechar;
@@ -501,11 +502,16 @@ function abrirImportadorRespostaFamilia(){
   try{
    const raw=input.value.trim();if(!raw)throw new Error('Cole primeiro a resposta da IA.');
    const dados=extrairJSONFamilia(raw),res=salvarImportacaoFamilia(dados);
-   status.className='alert safe';status.innerHTML='✅ <b>Família importada!</b> '+res.total+' familiar(es): '+res.novos+' novo(s) e '+res.atualizados+' atualizado(s).';
-   setTimeout(function(){fechar();if(typeof go==='function')go('familiares');setTimeout(function(){renderFamiliares();document.getElementById('familiares')&&document.getElementById('familiares').scrollIntoView({behavior:'smooth',block:'start'})},120)},250);
+   status.className='alert safe';
+   const nomes=(res.nomes||[]).join(', ');
+   status.innerHTML='<b>✅ Importação concluída!</b><br>Perfis no arquivo: '+res.totalFamiliares+' · Novos: '+res.novos+' · Atualizados: '+res.atualizados+' · Antecedentes familiares: '+res.totalHistorico+(nomes?'<p><b>Pessoa(s):</b> '+esc(nomes)+'</p>':'')+'<p><b>Próximo passo:</b> clique em “Ver perfil importado” para abrir os dados no sistema.</p>';
+   modal.querySelector('#msaFamiliaIAImportSave').disabled=true;
+   modal.querySelector('#msaFamiliaIAImportSave').textContent='✅ Dados importados';
+   modal.querySelector('#msaFamiliaIAImportPaste').disabled=true;
+   modal.querySelector('#msaFamiliaIAImportGo').textContent='👤 Ver perfil importado';
   }catch(e){status.className='alert danger';status.textContent='❌ '+(e.message||'Não foi possível importar a resposta.')}
  };
- modal.querySelector('#msaFamiliaIAImportGo').onclick=function(){fechar();if(typeof go==='function')go('familiares');setTimeout(renderFamiliares,100)};
+ modal.querySelector('#msaFamiliaIAImportGo').onclick=function(){fechar();if(typeof go==='function')go('familiares');setTimeout(function(){renderFamiliares();const detail=document.getElementById('familiarDetalhe');if(detail)detail.scrollIntoView({behavior:'smooth',block:'start'})},220)};
  input.focus();
 }
 window.abrirImportadorRespostaFamilia=abrirImportadorRespostaFamilia;
@@ -543,24 +549,26 @@ window.copiarEntrevistaParceiroWhatsApp=function(){
  const prompt=[
  'OLÁ! Vamos preencher seu perfil de saúde para o Minha Saúde IA.',
  '',
- 'Copie este texto e cole no ChatGPT, Gemini ou outra IA. Peça à IA para conduzir uma entrevista amigável, com UMA pergunta por vez, esperando sua resposta antes de continuar. Você pode pular qualquer pergunta ou responder “não sei”.',
+ 'Copie este texto e cole no ChatGPT, Gemini ou outra IA. Faça uma entrevista amigável, com UMA pergunta por vez e espere minha resposta. Posso pular qualquer pergunta ou responder “não sei”.',
  '',
- 'OBJETIVO: criar um resumo organizado do meu perfil de saúde para eu enviar à pessoa que me convidou. Não invente informações, não faça diagnóstico, não recomende mudar medicamentos e marque como “não informado” tudo que eu não souber.',
+ 'OBJETIVO: organizar um resumo do meu perfil de saúde para eu escolher o que compartilhar com meu/minha parceiro(a). Não invente dados, não faça diagnóstico e não recomende alterar medicamentos.',
  '',
- 'PERGUNTE, UMA DE CADA VEZ, SOBRE: nome ou apelido autorizado; idade e sexo opcionais; altura, peso e medidas; rotina, sono, alimentação e atividade física; condições de saúde, cirurgias e alergias; medicamentos, vitaminas e suplementos (dose e frequência só se eu souber); consultas, exames, sintomas e vacinas que eu queira compartilhar; histórico familiar que eu conheça; e o que gostaria que meu/minha parceiro(a) soubesse para ajudar a organizar minha saúde.',
+ 'PERGUNTE UMA DE CADA VEZ sobre: nome ou apelido autorizado; idade e sexo opcionais; altura, peso e medidas; rotina, sono, alimentação e atividade física; condições conhecidas, cirurgias e alergias; medicamentos, vitaminas e suplementos (dose/frequência apenas se eu souber); consultas, exames, sintomas e vacinas que eu quiser informar; e histórico familiar conhecido.',
  '',
- 'PRIVACIDADE: antes de começar, lembre que posso deixar qualquer resposta em branco. Compartilhe apenas o que me sinto confortável em enviar. Não peça CPF, endereço, senha ou outros dados desnecessários.',
+ 'PRIVACIDADE: peça minha autorização antes de começar. Não solicite CPF, endereço, senha ou dados desnecessários. Deixe claro que posso pular qualquer pergunta.',
  '',
- 'QUANDO TERMINAR: mostre primeiro um resumo legível para eu revisar e corrigir. Só quando eu confirmar ou pedir para gerar, entregue um único JSON válido, sem Markdown e sem explicações, neste formato:',
- '{"familiares":[{"nome":"NOME OU APELIDO","parentesco":"Namorado(a)","sexo":"","idade":"","altura":"","peso":"","medidas":"","rotina":"","condicao":"","alergias":"","sangue":"","contato":"","obs":"Resumo de saúde autorizado pela própria pessoa","medicamentos":[],"consultas":[],"crises":[]}],"historico_familiar":[]}',
+ 'AO TERMINAR AS PERGUNTAS: mostre um resumo curto e peça que eu confirme ou corrija. Depois da minha confirmação, gere AUTOMATICAMENTE um JSON válido para importar no Minha Saúde IA. Se eu disser “gere o JSON agora”, gere imediatamente usando todas as minhas respostas anteriores.',
  '',
- 'Use o nome ou apelido que eu autorizar. Use parentesco “Namorado(a)”, “Namorada(o)”, “Cônjuge” ou “Companheiro(a)” conforme eu escolher. Não inclua informações que eu não forneci. Campos desconhecidos devem ficar vazios e listas sem dados devem ser [].',
+ 'O JSON deve ter a chave "familiares" com uma lista e a chave "historico_familiar" com uma lista, nesta estrutura:',
+ '{"familiares":[{"nome":"NOME OU APELIDO AUTORIZADO","parentesco":"Namorado(a)","sexo":"","idade":"","altura":"","peso":"","medidas":"","rotina":"","medicamentosRelato":"","condicao":"","alergias":"","sangue":"","contato":"","obs":"","medicamentos":[],"consultas":[],"crises":[]}],"historico_familiar":[]}',
  '',
- 'IMPORTANTE PARA QUEM RECEBER: envie de volta pelo WhatsApp o JSON completo. A pessoa poderá abrir Minha Saúde IA → Família → Colar resposta da IA para importar. O aplicativo só salvará os dados quando ela confirmar a importação.',
+ 'Use “Namorado(a)”, “Namorada(o)”, “Cônjuge” ou “Companheiro(a)” conforme a relação informada. Não invente informações. Não use Markdown nem cercas de código em volta do JSON final. A resposta final precisa incluir o objeto JSON completo.',
  '',
- 'Comece perguntando se estou de acordo em preencher e compartilhar essas informações.'
- ].join('\\n');
- const done=()=>alert('📋 Entrevista copiada! Envie o texto pelo WhatsApp. A pessoa cola na IA dela, responde às perguntas e devolve o JSON final para você importar em Família → Colar resposta da IA.');
+ 'Quando gerar o JSON, oriente-me a copiar a resposta inteira e enviá-la pelo WhatsApp à pessoa que me convidou. Ela abrirá Minha Saúde IA → Meu círculo de saúde → Importar respostas recebidas. Nada deve ser salvo automaticamente em outro sistema.',
+ '',
+ 'Comece perguntando se concordo em preencher e compartilhar as informações.'
+ ].join('\n');
+ const done=()=>alert('📋 Entrevista copiada! Envie-a pelo WhatsApp. Depois das respostas, peça que a IA gere o JSON final. Copie o JSON inteiro e importe em Meu círculo de saúde → Importar respostas recebidas.');
  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(prompt).then(done).catch(()=>fallbackIAFamiliar(prompt));else fallbackIAFamiliar(prompt);
 };
 
