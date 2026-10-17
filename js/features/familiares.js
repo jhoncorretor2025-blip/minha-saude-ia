@@ -448,6 +448,21 @@ function salvarImportacaoFamilia(dados){
  const atuais=getList();
  let novos=0,atualizados=0,primeiroId='';
 
+ // 1) Compatibilidade com JSONs que colocam listas no nível principal.
+ // Quando há apenas uma pessoa, associa medicamentos/consultas/crises à pessoa importada.
+ if(importados.length===1){
+  const pessoa=importados[0];
+  ['medicamentos','consultas','crises'].forEach(function(chave){
+   const raizLista=arrFam(raiz[chave]||raiz[chave.toUpperCase()]);
+   if(!pessoa[chave].length&&raizLista.length){
+    pessoa[chave]=raizLista.map(function(x){
+     const item=Object.assign({},x||{});
+     if(!item.id)item.id=uid(chave.slice(0,-1));
+     return item;
+    });
+   }
+  });
+ }
  // 1) Importa/atualiza os familiares completos enviados pela IA.
  importados.forEach(function(novo){
   const chave=(String(novo.nome)+'|'+String(novo.parentesco)).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
@@ -552,7 +567,7 @@ function salvarImportacaoFamilia(dados){
   totalFamiliares:importados.length,
   totalHistorico:antecedentes.length,
   nomes:importados.map(function(p){return p.nome}).filter(Boolean),
-  nomes:importados.map(function(p){return p.nome}).filter(Boolean)
+  perfilId:primeiroId
  };
 }
 function abrirImportadorRespostaFamilia(){
@@ -578,6 +593,8 @@ function abrirImportadorRespostaFamilia(){
   try{
    const raw=input.value.trim();if(!raw)throw new Error('Cole primeiro a resposta da IA.');
    const dados=extrairJSONFamilia(raw),res=salvarImportacaoFamilia(dados);
+   window.__msaUltimoPerfilImportado=res.perfilId||'';
+   if(res.perfilId)setSelected(res.perfilId);
    status.className='alert safe';
    const nomes=(res.nomes||[]).join(', ');
    status.innerHTML='<b>✅ Importação concluída!</b><br>Perfis no arquivo: '+res.totalFamiliares+' · Novos: '+res.novos+' · Atualizados: '+res.atualizados+' · Antecedentes familiares: '+res.totalHistorico+(nomes?'<p><b>Pessoa(s):</b> '+esc(nomes)+'</p>':'')+'<p><b>Próximo passo:</b> clique em “Ver perfil importado” para abrir os dados no sistema.</p>';
@@ -587,7 +604,18 @@ function abrirImportadorRespostaFamilia(){
    modal.querySelector('#msaFamiliaIAImportGo').textContent='👤 Ver perfil importado';
   }catch(e){status.className='alert danger';status.textContent='❌ '+(e.message||'Não foi possível importar a resposta.')}
  };
- modal.querySelector('#msaFamiliaIAImportGo').onclick=function(){fechar();if(typeof go==='function')go('familiares');setTimeout(function(){renderFamiliares();const detail=document.getElementById('familiarDetalhe');if(detail)detail.scrollIntoView({behavior:'smooth',block:'start'})},220)};
+ modal.querySelector('#msaFamiliaIAImportGo').onclick=function(){
+  const alvo=window.__msaUltimoPerfilImportado||'';
+  fechar();
+  if(alvo)setSelected(alvo);
+  if(typeof go==='function')go('familiares');
+  setTimeout(function(){
+   if(alvo)setSelected(alvo);
+   renderFamiliares();
+   const detail=document.getElementById('familiarDetalhe');
+   if(detail)detail.scrollIntoView({behavior:'smooth',block:'start'});
+  },350);
+ };
  input.focus();
 }
 window.abrirImportadorRespostaFamilia=abrirImportadorRespostaFamilia;
