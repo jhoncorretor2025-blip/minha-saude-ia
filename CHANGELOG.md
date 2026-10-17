@@ -1,3 +1,10 @@
+## V6.31 — PDF mais fácil de ler e versão sincronizada
+- 📄 No PDF, os títulos das seções agora aparecem em destaque e com emoji (👤 Perfil, 💊 Medicamentos, 🩺 Consultas, 🧪 Exames…).
+- 🅱️ Os rótulos (Nome, Peso, Dose…) aparecem em negrito, e “Não informado” fica mais discreto para destacar o que foi preenchido.
+- 🐞 Corrigidas as expressões que reconheciam títulos e rótulos no PDF (estavam com barras duplicadas e nunca funcionavam).
+- 🐞 O PDF e o TXT mostravam “V5.61”; agora usam a versão oficial do aplicativo.
+- 🔄 Versão sincronizada em V6.31 em todos os lugares (a constante do app e o cache estavam em V6.27 enquanto o site estava em V6.30, o que fazia o aviso de atualização reaparecer).
+
 ## V6.30 — Exportação mais organizada e clara
 - 📤 Reorganizada a tela de exportação em grupos: guardar cópia, compartilhar informações e acesso rápido.
 - 🧭 Melhoradas as descrições de JSON, TXT, PDF, preparação para IA, compartilhamento controlado e modo emergência.
