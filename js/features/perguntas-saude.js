@@ -1,4 +1,4 @@
-/* Minha Saúde IA — Perguntas sobre minha saúde (V6.32)
+/* Minha Saúde IA — Perguntas sobre minha saúde (V6.33)
  * A pessoa escolhe uma pergunta pronta. O app junta a pergunta + o resumo dos registros (healthText)
  * + regras de segurança, copia e abre a IA escolhida. Nada é enviado sem a pessoa tocar no botão.
  */
@@ -8,27 +8,47 @@ var ID='perguntas-saude';
 var PERGUNTAS=[
  {grupo:'🩺 Visão geral',itens:[
   ['💚','Como está minha saúde, de forma geral?','Faça um resumo simples de como está minha saúde com base nos registros: o que parece bem, o que merece atenção e o que está faltando registrar.'],
-  ['📋','O que eu deveria conversar com o médico?','Liste os pontos dos meus registros que valem a pena levar para uma consulta, em ordem de prioridade, com perguntas prontas para eu fazer.']
+  ['📋','O que eu deveria conversar com o médico?','Liste os pontos dos meus registros que valem a pena levar para uma consulta, em ordem de prioridade, com perguntas prontas para eu fazer.'],
+  ['⏱️','Me faça um resumo para mostrar ao médico em 1 minuto','Monte um resumo curto e organizado (até 12 linhas) com o mais importante dos meus registros: condições, remédios, alergias, sintomas recentes e exames, no formato que um médico lê rápido.'],
+  ['⚖️','Meu peso está adequado para a minha altura?','Com base no peso e altura registrados, calcule o IMC, explique o que ele significa de forma simples, lembre as limitações do IMC e diga se vale conversar com um profissional.']
+ ]},
+ {grupo:'🤒 Sintomas',itens:[
+  ['🔍','O que pode ser esse sintoma?','Olhe os sintomas que registrei (local, intensidade, quando começou, o que melhora ou piora) e liste as possibilidades mais comuns em linguagem simples, como hipóteses para eu conversar com o médico — deixe claro que não é diagnóstico. Explique o que diferencia uma possibilidade da outra.'],
+  ['🚨','Quando devo me preocupar com esse sintoma?','Com base nos meus sintomas registrados, liste os sinais de alerta que indicariam procurar atendimento logo (pronto-socorro) e os que podem esperar uma consulta marcada.'],
+  ['👨‍⚕️','Que especialista devo procurar?','Com base nos meus sintomas e registros, diga qual tipo de profissional (clínico geral, cardiologista, ortopedista, nutricionista…) faz mais sentido procurar primeiro e por quê.'],
+  ['🔗','Meu sintoma pode ter relação com algum remédio que uso?','Compare os sintomas registrados com os medicamentos e suplementos registrados e diga se algum deles costuma causar efeitos parecidos, para eu confirmar com o médico ou farmacêutico. Não sugira parar nenhum remédio.']
  ]},
  {grupo:'🥗 Alimentação',itens:[
   ['✅','Quais alimentos são bons para mim?','Com base no meu perfil, condições, alergias, objetivos e hábitos registrados, sugira alimentos e tipos de refeição que costumam ajudar alguém com esse perfil. Explique o porquê de cada um.'],
   ['⛔','Quais alimentos devo evitar ou diminuir?','Com base nos meus registros (condições, alergias, intolerâncias, remédios e objetivos), diga quais alimentos ou hábitos alimentares eu deveria evitar ou reduzir, e por quê. Destaque possíveis interações entre alimentos e os remédios registrados.'],
+  ['🍽️','Monte um cardápio simples de 1 dia para mim','Monte um exemplo de cardápio de um dia (café, almoço, lanche e jantar) com comida brasileira do dia a dia, barata e fácil, respeitando minhas alergias, intolerâncias e condições registradas. Sem dietas restritivas.'],
+  ['🧂','Que vitaminas ou nutrientes podem estar faltando?','Com base na alimentação, rotina e exames registrados, diga quais nutrientes podem merecer atenção e que exames ajudariam a confirmar. Não indique suplementos sem orientação profissional.'],
   ['💧','Estou bebendo água suficiente?','Analise o que registrei sobre água, peso, atividade física, calor e rotina e diga se a minha hidratação parece adequada e como melhorar.']
  ]},
  {grupo:'🏃 Hábitos',itens:[
   ['🧩','Qual hábito saudável está faltando?','Com base nos meus registros, aponte os hábitos saudáveis que parecem estar faltando na minha rotina (sono, atividade física, alimentação, hidratação, consultas preventivas, vacinas…) e como começar de forma simples.'],
   ['⚠️','Qual hábito meu pode estar errado?','Com base nos meus registros, aponte hábitos que podem estar prejudicando minha saúde (por exemplo: muito tempo sentado, pouco sono, uso frequente de remédio para dor, álcool, cigarro) e sugira trocas simples e realistas.'],
-  ['😴','Como posso dormir melhor?','Analise meus registros de sono, bem-estar, estresse e rotina e sugira mudanças práticas para melhorar meu sono.']
+  ['🗓️','Monte um plano de 7 dias para eu melhorar','Crie um plano de 7 dias com UMA pequena mudança por dia, baseada nos meus registros (ex.: dia 1 beber mais água, dia 2 caminhar 10 minutos…). Coisas fáceis de cumprir.'],
+  ['🏋️','Que exercícios combinam comigo?','Com base na idade, peso, rotina, dores e condições registradas, sugira tipos de atividade física para começar com segurança e o que evitar. Lembre de liberar com o médico se houver condição que peça cuidado.'],
+  ['😴','Como posso dormir melhor?','Analise meus registros de sono, bem-estar, estresse e rotina e sugira mudanças práticas para melhorar meu sono.'],
+  ['🧘','Como diminuir o estresse e a ansiedade no dia a dia?','Com base nos registros de estresse, ansiedade, sono e gatilhos, sugira práticas simples para o dia a dia e diga quando vale procurar um psicólogo ou médico.']
  ]},
  {grupo:'💊 Remédios e exames',itens:[
   ['💊','Tem algo nos meus remédios que devo perguntar ao médico?','Olhe os medicamentos e suplementos registrados e liste dúvidas importantes para eu levar ao médico ou farmacêutico (horários, combinações, uso prolongado). Não mude doses nem sugira parar ou começar remédios.'],
-  ['🧪','Que exames ou consultas preventivas estão atrasados?','Com base na minha idade, sexo e registros, liste exames e consultas preventivas que costumam ser recomendados e que não aparecem nos meus registros, para eu conversar com o médico.']
+  ['🧪','Que exames ou consultas preventivas estão atrasados?','Com base na minha idade, sexo e registros, liste exames e consultas preventivas que costumam ser recomendados e que não aparecem nos meus registros, para eu conversar com o médico.'],
+  ['📈','Me explique meus exames em linguagem simples','Explique, em palavras simples, o que significam os exames e resultados que registrei, o que cada item mede e quais pontos vale levar ao médico. Não feche diagnóstico.'],
+  ['🧬','Meu histórico familiar pede atenção em quê?','Com base no histórico familiar registrado, diga quais cuidados e exames preventivos costumam ser recomendados para quem tem esse histórico, para eu conversar com o médico.']
+ ]},
+ {grupo:'🌿 Práticas complementares',itens:[
+  ['🌿','Se você fosse um homeopata, o que me indicaria?','Responda como um homeopata explicaria, com base nos meus sintomas e registros, o que a homeopatia costuma considerar para esse quadro. Seja honesto: diga claramente que as evidências científicas de efeito da homeopatia além do placebo são fracas, que ela não substitui nenhum tratamento indicado pelo médico, e que nada deve ser usado no lugar dos remédios registrados. Sugira levar a ideia ao médico antes de usar.'],
+  ['🍵','Tem chá ou remédio caseiro seguro para o que sinto?','Com base nos meus sintomas, sugira opções caseiras simples (chás, compressas, repouso, hidratação) que costumam aliviar desconfortos leves, e avise sobre interações com os remédios registrados, gravidez e condições que contraindicam. Deixe claro quando o caso pede médico.'],
+  ['🌱','Fitoterápicos ou suplementos combinam com meus remédios?','Olhe os medicamentos registrados e diga quais plantas medicinais, chás ou suplementos comuns podem interagir com eles, para eu confirmar com o farmacêutico antes de usar.']
  ]}
 ];
 var REGRAS=[
  'Você vai me ajudar a entender meus próprios registros de saúde. Responda em português do Brasil, com linguagem simples, como se explicasse para alguém sem formação na área.',
  'Use SOMENTE as informações do resumo abaixo. Não invente dados. Se faltar informação para responder bem, diga o que falta.',
- 'Não faça diagnóstico, não prescreva, não mude doses e não diga para parar ou começar remédios. Para decisões de tratamento, oriente a procurar um profissional de saúde.',
+ 'Não feche diagnóstico: quando falar de possíveis causas, apresente como hipóteses para conversar com o médico. Não prescreva, não mude doses e não diga para parar ou começar remédios. Para decisões de tratamento, oriente a procurar um profissional de saúde.',
  'Se algo no resumo indicar possível urgência, diga claramente para procurar atendimento.',
  'Formato da resposta: 1) resposta curta em 2 linhas; 2) tópicos com emojis e títulos em negrito; 3) "✅ O que fazer agora" com até 3 passos simples; 4) "🩺 O que perguntar ao médico".'
 ].join('\n- ');

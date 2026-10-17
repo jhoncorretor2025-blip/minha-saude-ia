@@ -1,3 +1,10 @@
+## V6.33 — Mais perguntas sobre a saúde
+- 🤒 Nova categoria Sintomas: “O que pode ser esse sintoma?”, quando se preocupar, que especialista procurar e se o sintoma tem relação com algum remédio.
+- 🌿 Nova categoria Práticas complementares: “Se você fosse um homeopata, o que me indicaria?”, chás e remédios caseiros seguros e interação de fitoterápicos com os remédios — sempre avisando que não substituem o tratamento e que a homeopatia tem evidência científica fraca.
+- 🥗 Mais perguntas de alimentação (cardápio de 1 dia, nutrientes que podem faltar), hábitos (plano de 7 dias, exercícios, estresse e ansiedade), exames (explicar resultados, histórico familiar) e visão geral (resumo de 1 minuto para o médico, IMC).
+- 🛡️ Regras da IA ajustadas: possíveis causas aparecem como hipóteses para conversar com o médico, nunca como diagnóstico.
+- 🔄 Versão e cache atualizados para V6.33 (26 perguntas prontas).
+
 ## V6.32 — Perguntas sobre minha saúde
 - 💬 Nova página “Perguntas sobre minha saúde” (menu 🤖 IA e atalho no Início).
 - ❓ Perguntas prontas: como está minha saúde, o que levar ao médico, alimentos bons, alimentos a evitar, hidratação, hábitos que faltam, hábitos errados, sono, dúvidas sobre remédios e exames preventivos — e campo para pergunta própria.
