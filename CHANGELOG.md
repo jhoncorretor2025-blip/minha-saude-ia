@@ -1,3 +1,9 @@
+## V6.35 — Círculo de saúde e perfis de pessoas próximas
+- 💞 Ampliadas as opções de relação para cônjuge, namorado(a), companheiro(a), parceiro(a) e ficante na área de pessoas acompanhadas.
+- 🩺 Adicionados campos opcionais de altura, peso, medidas corporais, rotina física e medicamentos/vitaminas relatados, no cadastro manual e no perfil individual.
+- 🤖 Ampliada a entrevista guiada para incluir informações básicas do perfil de saúde; os dados são salvos localmente no perfil da pessoa.
+- 🔐 Reforçadas orientações para registrar dados de saúde de outra pessoa apenas com autorização. Os perfis continuam separados do perfil principal.
+
 ## V6.34 — Correção do layout inicial
 - 🧭 Corrigido o cartão de perfil da página inicial para manter foto, informações pessoais e botões em colunas estáveis.
 - 📐 Impedidos elementos adicionais da área inicial de comprimir os dados do perfil ou criar colunas estreitas.
