@@ -1,3 +1,10 @@
+## V6.36 — Entrevista de saúde compartilhável por WhatsApp
+- 💬 Adicionado botão para copiar uma entrevista guiada que pode ser enviada ao parceiro(a) pelo WhatsApp.
+- 🤖 A pessoa cola o texto na própria IA, responde a perguntas uma por vez, revisa o resumo e solicita um JSON final para devolver.
+- 📥 O JSON pode ser importado pela função existente de colar resposta da IA; a gravação continua dependendo de confirmação no aplicativo.
+- 🩺 Importação de perfil ampliada para reconhecer altura, peso, medidas e rotina quando esses campos vierem no JSON.
+- 🔐 Incluídas orientações de consentimento, minimização de dados e opção de pular perguntas.
+
 ## V6.35 — Círculo de saúde e perfis de pessoas próximas
 - 💞 Ampliadas as opções de relação para cônjuge, namorado(a), companheiro(a), parceiro(a) e ficante na área de pessoas acompanhadas.
 - 🩺 Adicionados campos opcionais de altura, peso, medidas corporais, rotina física e medicamentos/vitaminas relatados, no cadastro manual e no perfil individual.
