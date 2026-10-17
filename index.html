@@ -39,7 +39,7 @@
       limpar.then(function(){
         var u=new URL(window.location.href);
         u.searchParams.set('cb',Date.now().toString());
-        u.searchParams.set('v','V6.47');
+        u.searchParams.set('v','V6.48');
         window.location.replace(u.toString());
       });
     }catch(e){}
@@ -49,7 +49,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V6.47</title>
+<title>Minha Saúde IA — V6.48</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -349,14 +349,14 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
 @media(min-width:761px){.grouped-nav{justify-content:flex-start;align-items:center;gap:6px}.grouped-nav .nav-group{flex:0 0 auto}.grouped-nav .nav-group:last-child .nav-menu{left:auto;right:0}}
 @media(max-width:760px){.msa-mobile-menu-fab{display:none!important}.msa-mobile-bar{grid-template-columns:repeat(4,1fr)}}
 
-/* V6.47 — respostas de bem-estar opcionais e acessíveis */
+/* V6.48 — respostas de bem-estar opcionais e acessíveis */
 .wellbeing-choice{display:flex;align-items:flex-start;gap:9px;padding:9px 5px;font-size:14px;font-weight:600;line-height:1.4;cursor:pointer}
 .wellbeing-choice input[type="radio"]{width:18px;min-width:18px;height:18px;margin:1px 0 0;accent-color:var(--blue)}
 #bemForm fieldset{min-width:0}
 #bemForm legend{font-size:15px}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V6.47">
+  <link rel="stylesheet" href="css/design-system.css?v=V6.48">
 
 <style id="v519-progressive-ui">
 /* V6.00 — melhorias progressivas de dashboard, favoritos e alertas */
@@ -565,7 +565,7 @@ body.msa-dark #settingsPreferences label{background:#111827!important;color:#e5e
 <div id="msa99-status" role="status" aria-live="polite"></div>
 
 <style id="msa646-pendencias-friendly">
-/* V6.47 — Pendências com leitura fácil, visual consistente e toque confortável. */
+/* V6.48 — Pendências com leitura fácil, visual consistente e toque confortável. */
 #msaPendenciasModal{background:rgba(8,15,35,.68)!important;backdrop-filter:blur(5px)!important;-webkit-backdrop-filter:blur(5px)!important;color:#172033!important}
 #msaPendenciasModal .msa-pendencias-card{background:var(--card,#fff)!important;color:var(--text,#172033)!important;border:1px solid rgba(148,163,184,.28)!important;border-radius:24px!important;padding:clamp(16px,3vw,26px)!important;box-shadow:0 24px 70px rgba(0,0,0,.28)!important;scrollbar-width:thin}
 #msaPendenciasModal .msa-pendencias-kicker{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#eaf2ff;color:#1d4ed8;font-size:12px;font-weight:800;margin-bottom:8px}
@@ -584,6 +584,26 @@ body.msa-dark #settingsPreferences label{background:#111827!important;color:#e5e
 @media(max-width:600px){#msaPendenciasModal{padding:10px!important;align-items:center!important}#msaPendenciasModal .msa-pendencias-card{max-height:calc(100dvh - 20px)!important;padding:17px!important;border-radius:22px!important}#msaPendenciasModal .msa-pendencias-progress{margin:14px 0 20px;padding:12px}#msaPendenciasModal .msa-pendencias-group h3{font-size:17px}#msaPendenciasModal .msa-pendencias-item{align-items:flex-start!important;padding:12px!important;gap:8px!important}#msaPendenciasModal .msa-pendencias-item span{font-size:14px}#msaPendenciasModal .msa-pendencias-item strong{font-size:11px;padding:7px 8px}}
 @media(prefers-reduced-motion:reduce){#msaPendenciasModal .msa-pendencias-item{transition:none!important}}
 </style>
+
+<style id="msa648-pendencias-polish">
+/* V6.48 — Modal de pendências: hierarquia visual, acolhimento e acessibilidade. */
+#msaPendenciasModal .msa-pendencias-card{width:min(760px,100%)!important;padding:clamp(20px,3.4vw,30px)!important;border-radius:28px!important;background:linear-gradient(180deg,#fff 0%,#fbfdff 100%)!important;box-shadow:0 28px 90px rgba(15,23,42,.32),0 2px 8px rgba(15,23,42,.06)!important}
+#msaPendenciasModal .msa-pendencias-kicker{padding:7px 12px!important;background:#eaf2ff!important;border:1px solid #d8e7ff!important;color:#1d4ed8!important;letter-spacing:.01em}
+#msaPendenciasModal #msaPendenciasTitle{font-size:clamp(24px,4vw,32px)!important;font-weight:850!important;letter-spacing:-.035em!important;margin:5px 0 9px!important}
+#msaPendenciasModal .msa-pendencias-head p{font-size:14px!important;line-height:1.65!important;max-width:58ch}
+#msaPendenciasModal .msa-pendencias-progress{display:flex!important;align-items:center!important;gap:12px!important;margin:20px 0 24px!important;padding:16px 18px!important;border-radius:18px!important;border-color:#d8e7ff!important;background:linear-gradient(115deg,#eff6ff,#f8fbff 70%,#eef5ff)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.9)!important}
+#msaPendenciasModal .msa-pendencias-group{margin:0 0 23px!important}
+#msaPendenciasModal .msa-pendencias-group h3{border:0!important;padding:0 0 9px!important;font-size:17px!important;font-weight:800!important}
+#msaPendenciasModal .msa-pendencias-item{min-height:72px!important;padding:15px 16px!important;border-radius:18px!important;border-color:#dce7f6!important;background:linear-gradient(120deg,#f8fbff,#fff)!important;box-shadow:0 3px 10px rgba(30,64,175,.035)!important}
+#msaPendenciasModal .msa-pendencias-item span{font-size:14px!important;font-weight:750!important;line-height:1.45!important}
+#msaPendenciasModal .msa-pendencias-item strong{padding:9px 12px!important;border-radius:12px!important;background:#1d4ed8!important;color:#fff!important;font-size:12px!important;box-shadow:0 4px 10px rgba(29,78,216,.16)!important}
+#msaPendenciasModal .msa-pendencias-item:hover{transform:translateY(-2px)!important;background:#f0f6ff!important;border-color:#9bbcff!important;box-shadow:0 8px 18px rgba(37,99,235,.09)!important}
+#msaPendenciasModal .msa-pendencias-close{width:44px!important;height:44px!important;border-radius:15px!important;background:#f1f5f9!important;transition:background .18s,transform .18s!important}
+#msaPendenciasModal .msa-pendencias-close:hover{background:#e2eaf5!important;transform:rotate(4deg)!important}
+@media(max-width:600px){#msaPendenciasModal{padding:10px!important}#msaPendenciasModal .msa-pendencias-card{width:100%!important;max-height:calc(100dvh - 20px)!important;padding:18px!important;border-radius:24px!important}#msaPendenciasModal .msa-pendencias-progress{align-items:flex-start!important;padding:13px!important;margin:15px 0 20px!important}#msaPendenciasModal .msa-pendencias-item{align-items:center!important;min-height:68px!important;padding:13px!important;gap:10px!important}#msaPendenciasModal .msa-pendencias-item strong{white-space:normal!important;text-align:center!important;max-width:46%!important}}
+@media(prefers-reduced-motion:reduce){#msaPendenciasModal *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+
 </head>
 <body>
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
@@ -662,7 +682,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.47</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.48</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 
 <!-- V6.20 — retorno persistente, feedback de navegação e validação do perfil -->
@@ -1852,7 +1872,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.47. Importação instantânea por IA com revisão antes de salvar. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.48. Importação instantânea por IA com revisão antes de salvar. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -1873,18 +1893,18 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V6.47" defer></script>
-<script src="js/core/storage.js?v=V6.47" defer></script>
-<script src="js/core/utils.js?v=V6.47" defer></script>
-<script src="js/core/stability-v599.js?v=V6.47" defer></script>
-<script src="js/features/comeco-rapido.js?v=V6.47" defer></script>
-<script src="js/navigation/menu.js?v=V6.47" defer></script>
-<script src="js/core/app.js?v=V6.47" defer></script>
-<script src="js/features/notificacoes-remotas.js?v=V6.47" defer></script>
-<script src="js/features/perfil-compartilhado.js?v=V6.47" defer></script>
-<script src="js/features/perfil-save.js?v=V6.47" defer></script>
-<script src="js/features/familiares.js?v=V6.47" defer></script>
-<script src="js/features/recursos.js?v=V6.47" defer></script>
+<script src="js/core/constants.js?v=V6.48" defer></script>
+<script src="js/core/storage.js?v=V6.48" defer></script>
+<script src="js/core/utils.js?v=V6.48" defer></script>
+<script src="js/core/stability-v599.js?v=V6.48" defer></script>
+<script src="js/features/comeco-rapido.js?v=V6.48" defer></script>
+<script src="js/navigation/menu.js?v=V6.48" defer></script>
+<script src="js/core/app.js?v=V6.48" defer></script>
+<script src="js/features/notificacoes-remotas.js?v=V6.48" defer></script>
+<script src="js/features/perfil-compartilhado.js?v=V6.48" defer></script>
+<script src="js/features/perfil-save.js?v=V6.48" defer></script>
+<script src="js/features/familiares.js?v=V6.48" defer></script>
+<script src="js/features/recursos.js?v=V6.48" defer></script>
 
 
 <script>
@@ -1907,12 +1927,12 @@ function iniciarImportacao(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
-<script src="js/features/inteligencia.js?v=V6.47" defer></script>
-<script src="js/ai/importacao.js?v=V6.47" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/legacy/melhorias-primeiras.js?v=V6.47" defer></script>
-<script src="js/features/expansoes.js?v=V6.47" defer></script>
-<script src="js/ai/importacao-fluxo-v514.js?v=V6.47" defer></script>
-<script src="js/legacy/melhorias-v513.js?v=V6.47" defer></script>
+<script src="js/features/inteligencia.js?v=V6.48" defer></script>
+<script src="js/ai/importacao.js?v=V6.48" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/legacy/melhorias-primeiras.js?v=V6.48" defer></script>
+<script src="js/features/expansoes.js?v=V6.48" defer></script>
+<script src="js/ai/importacao-fluxo-v514.js?v=V6.48" defer></script>
+<script src="js/legacy/melhorias-v513.js?v=V6.48" defer></script>
 
 
 <script>
@@ -2017,7 +2037,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
-<script src="js/reports/relatorios-v599.js?v=V6.47" defer></script>
+<script src="js/reports/relatorios-v599.js?v=V6.48" defer></script>
 
 
 
@@ -2864,8 +2884,8 @@ body.msa-dark .msa-settings-grid>label small{color:#cbd5e1}
 body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 @media(max-width:600px){.msa-settings-grid{grid-template-columns:minmax(0,1fr)}.msa-settings-professional .row>.btn{flex:1 1 100%;width:100%}}
 </style>
-<script src="js/features/configuracoes-profissionais.js?v=V6.47" defer></script>
-<script src="js/features/perguntas-saude.js?v=V6.47" defer></script>
+<script src="js/features/configuracoes-profissionais.js?v=V6.48" defer></script>
+<script src="js/features/perguntas-saude.js?v=V6.48" defer></script>
 
 <style id="msa-welcome-v623">
 #msaWelcomeModal{position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.64);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto}
@@ -2894,7 +2914,7 @@ body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion
 @media(prefers-reduced-motion:reduce){#msaWelcomeModal .msa-welcome-choice{transition:none}}
 </style>
 
-<!-- V6.47 — Correção de layout da área de perfil da página inicial -->
+<!-- V6.48 — Correção de layout da área de perfil da página inicial -->
 <style id="msa-home-layout-fix-v634">
 #home #homeProfileHero.home-profile-hero{display:grid!important;grid-template-columns:80px minmax(0,1fr) 150px;align-items:center;gap:16px;min-width:0;}
 #home #homeProfileHero>.home-avatar{grid-column:1;grid-row:1;width:72px;height:72px;min-width:72px;}
