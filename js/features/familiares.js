@@ -61,7 +61,60 @@ function familiaGrau(p){if(p.grauParentesco)return p.grauParentesco;const r=Stri
 function familiaStatus(p){return p.statusFamiliar||'Não informado'}
 function familiaConds(p){return String([p.condicao,p.obs,p.causaFalecimento].filter(Boolean).join(' '))}
 function renderAlertasHistoricoFamiliar(){const home=document.getElementById('home');if(!home)return;let card=document.getElementById('msaFamilyRiskSuggestions');const members=familiaArray();const legacy=(()=>{try{const x=window.MSAStorage?.get(K.fam)||[];return Array.isArray(x)?x:[]}catch(e){return[]}})();const first=members.filter(p=>familiaGrau(p)==='1º grau');const tests=[{label:'hipertensão',re:/hipertens(?:ão|ao|iva|ivo)/i,advice:'Considere conversar com seu profissional de saúde sobre a frequência adequada para monitorar a pressão arterial (por exemplo, ao menos anualmente, conforme orientação clínica).'},{label:'diabetes',re:/diabet(?:e|es|ica|ico)/i,advice:'Converse com seu profissional de saúde sobre prevenção e se/ quando o rastreamento da glicose é indicado para você.'}];const alerts=[];tests.forEach(t=>{const people=first.filter(p=>t.re.test(familiaConds(p)));const old=legacy.filter(p=>t.re.test(String([p.cond,p.info,p.obs].filter(Boolean).join(' ')))&&/pai|mãe|mae|irm[aã]o|filh/i.test(String(p.parente||'')));if(people.length||old.length){const names=[...people.map(p=>p.nome||p.parentesco||'Familiar de 1º grau'),...old.map(p=>p.parente||'Familiar')];alerts.push({label:t.label,names:[...new Set(names)],advice:t.advice})}});if(!alerts.length){if(card)card.remove();return}if(!card){card=document.createElement('div');card.id='msaFamilyRiskSuggestions';card.className='card';card.style.cssText='margin-top:13px;border:1px solid #f4d28a;background:linear-gradient(135deg,#fffbeb,#fff7ed)';const anchor=home.querySelector('.health-dashboard')||home.querySelector('.metric-panel')||home.firstElementChild;if(anchor)anchor.insertAdjacentElement('afterend',card);else home.prepend(card)}card.innerHTML='<div style="display:flex;gap:10px;align-items:flex-start"><span style="font-size:25px">🧬</span><div><div style="font-size:11px;font-weight:900;letter-spacing:.05em;color:#92400e">ATENÇÃO AO HISTÓRICO FAMILIAR</div><h3 style="margin:3px 0 6px">Sugestões para conversar na próxima consulta</h3><p style="margin:0 0 9px;color:#78350f;font-size:12px">Estas sugestões são lembretes organizacionais, não um diagnóstico nem uma avaliação individual de risco.</p>'+alerts.map(a=>'<div style="padding:10px;margin-top:7px;border-radius:12px;background:rgba(255,255,255,.8);border:1px solid #f4d28a"><b>Familiar de 1º grau com '+esc(a.label)+' registrado</b><div style="font-size:12px;color:#78350f;margin-top:3px">Familiar(es): '+esc(a.names.join(', '))+'</div><p style="margin:6px 0 0;font-size:13px;color:#78350f">'+esc(a.advice)+'</p></div>').join('')+'<button type="button" class="btn secondary small" style="margin-top:10px" onclick="if(typeof go===\'function\')go(\'familiares\');else document.getElementById(\'familiares\')?.scrollIntoView({behavior:\'smooth\'})">Revisar histórico familiar →</button></div></div>'}
+
+function parceirosRelacao(p){
+ const r=String(p&&p.parentesco||'').toLowerCase();
+ return /marido|esposa|cônjuge|conjuge|namorad|companheir|parceir|ficante|relação afetiva|relacao afetiva/.test(r);
+}
+function renderParceirosSaude(){
+ const host=document.getElementById('msaPartnerProfilesList');if(!host)return;
+ const list=getList().filter(parceirosRelacao);
+ const ativos=list.filter(p=>p.statusRelacionamento!=='Encerrado');
+ const encerrados=list.filter(p=>p.statusRelacionamento==='Encerrado');
+ const card=function(p,ended){
+  const records=(p.medicamentos||[]).length+' medicamento(s) · '+(p.consultas||[]).length+' consulta(s) · '+(p.crises||[]).length+' ocorrência(s)';
+  return '<div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px solid #e2e8f0;background:#fff;border-radius:14px;padding:13px;margin-top:9px"><div style="flex:1;min-width:190px"><b>'+(p.sexo==='Feminino'?'👩':'👤')+' '+esc(p.nome||'Sem nome')+'</b><div style="font-size:12px;color:#64748b;margin-top:3px">'+esc(p.parentesco||'Relação não informada')+(ended?' · Encerrado':' · Ativo')+'</div><div style="font-size:11px;color:#64748b;margin-top:3px">'+esc(p.condicao||'Condição não informada')+' · '+records+'</div></div><div style="display:flex;gap:7px;flex-wrap:wrap"><button type="button" class="btn secondary small" data-partner-open="'+esc(p.id)+'">👁️ Ver perfil</button>'+(ended?'<button type="button" class="btn small" data-partner-reactivate="'+esc(p.id)+'">↩️ Reativar</button>':'<button type="button" class="btn secondary small" data-partner-end="'+esc(p.id)+'">💔 Encerrar relação</button>')+'<button type="button" class="btn red small" data-partner-delete="'+esc(p.id)+'">🗑️ Excluir perfil</button></div></div>';
+ };
+ host.innerHTML=(ativos.length?'<h4 style="margin:12px 0 4px">💑 Relacionamentos ativos</h4>'+ativos.map(p=>card(p,false)).join(''):'<div class="empty" style="margin-top:10px">Nenhum parceiro(a) cadastrado ainda. Use “Preencher manualmente” ou “Enviar entrevista pelo WhatsApp” acima.</div>')+
+ (encerrados.length?'<h4 style="margin:18px 0 4px">🗂️ Relacionamentos encerrados (histórico preservado)</h4><p class="muted" style="margin:0">Esses perfis não aparecem como relacionamentos ativos, mas permanecem em Familiares caso queira consultar seus registros.</p>'+encerrados.map(p=>card(p,true)).join(''):'');
+ host.querySelectorAll('[data-partner-open]').forEach(b=>b.addEventListener('click',()=>{
+  const id=b.dataset.partnerOpen;
+  if(typeof go==='function')go('familiares');
+  setTimeout(()=>{window.selecionarFamiliar&&window.selecionarFamiliar(id);},180);
+ }));
+ host.querySelectorAll('[data-partner-end]').forEach(b=>b.addEventListener('click',()=>window.encerrarRelacionamentoParceiro(b.dataset.partnerEnd)));
+ host.querySelectorAll('[data-partner-reactivate]').forEach(b=>b.addEventListener('click',()=>window.reativarRelacionamentoParceiro(b.dataset.partnerReactivate)));
+ host.querySelectorAll('[data-partner-delete]').forEach(b=>b.addEventListener('click',()=>window.excluirPerfilParceiro(b.dataset.partnerDelete)));
+}
+window.encerrarRelacionamentoParceiro=function(id){
+ const p=findMember(id);if(!p||!parceirosRelacao(p))return;
+ if(!confirm('Encerrar o relacionamento com '+(p.nome||'esta pessoa')+'? O perfil e o histórico de saúde serão mantidos no sistema, mas passarão para “Relacionamentos encerrados”.'))return;
+ const all=getList(),person=all.find(x=>x.id===id);if(!person)return;
+ person.statusRelacionamento='Encerrado';person.relacionamentoEncerradoEm=new Date().toISOString();
+ if(!saveList(all)){alert('Não foi possível atualizar o relacionamento.');return}
+ renderParceirosSaude();renderFamiliares();
+ alert('💙 Relacionamento encerrado. O perfil e os dados foram preservados no histórico.');
+};
+window.reativarRelacionamentoParceiro=function(id){
+ const p=findMember(id);if(!p||!parceirosRelacao(p))return;
+ if(!confirm('Reativar '+(p.nome||'este relacionamento')+' como relacionamento ativo?'))return;
+ const all=getList(),person=all.find(x=>x.id===id);if(!person)return;
+ person.statusRelacionamento='Ativo';delete person.relacionamentoEncerradoEm;
+ if(!saveList(all)){alert('Não foi possível reativar o relacionamento.');return}
+ renderParceirosSaude();renderFamiliares();
+};
+window.excluirPerfilParceiro=function(id){
+ const p=findMember(id);if(!p||!parceirosRelacao(p))return;
+ if(!confirm('Excluir permanentemente o perfil de '+(p.nome||'esta pessoa')+' e TODOS os registros associados, incluindo medicamentos, consultas e ocorrências? Esta ação não pode ser desfeita. Para apenas encerrar a relação e manter o histórico, escolha “Encerrar relação”.'))return;
+ const all=getList().filter(x=>x.id!==id);
+ if(!saveList(all)){alert('Não foi possível excluir o perfil.');return}
+ if(selectedId()===id)setSelected(all[0]?.id||'');
+ renderParceirosSaude();renderFamiliares();
+ alert('🗑️ Perfil e registros associados excluídos.');
+};
+
 function renderFamiliares(){
+ renderParceirosSaude();
  instalarEstilosLadoFamiliaCards();
  instalarEstilosFamiliaInteligente();
  instalarFiltroFamilia();
