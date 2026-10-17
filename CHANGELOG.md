@@ -1,3 +1,10 @@
+## V6.34 — Pergunta chega pronta no ChatGPT
+- 🐞 Corrigido: com o perfil preenchido, o texto ficava grande demais e o ChatGPT abria vazio, sem a pergunta.
+- ✂️ Agora só vai para a IA o que foi preenchido (linhas “Não informado” e seções vazias ficam de fora).
+- 🔗 O ChatGPT sempre abre com a pergunta já escrita; se o texto passar do limite do link, o resumo é encurtado e o texto completo continua copiado.
+- 📋 Para Gemini e outras IAs (que não aceitam pergunta pelo link), aparece uma instrução clara para colar com Ctrl + V.
+- 🔄 Versão e cache atualizados para V6.34.
+
 ## V6.33 — Mais perguntas sobre a saúde
 - 🤒 Nova categoria Sintomas: “O que pode ser esse sintoma?”, quando se preocupar, que especialista procurar e se o sintoma tem relação com algum remédio.
 - 🌿 Nova categoria Práticas complementares: “Se você fosse um homeopata, o que me indicaria?”, chás e remédios caseiros seguros e interação de fitoterápicos com os remédios — sempre avisando que não substituem o tratamento e que a homeopatia tem evidência científica fraca.

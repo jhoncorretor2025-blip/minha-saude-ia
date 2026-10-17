@@ -1,4 +1,4 @@
-/* Minha Saúde IA — Perguntas sobre minha saúde (V6.33)
+/* Minha Saúde IA — Perguntas sobre minha saúde (V6.34)
  * A pessoa escolhe uma pergunta pronta. O app junta a pergunta + o resumo dos registros (healthText)
  * + regras de segurança, copia e abre a IA escolhida. Nada é enviado sem a pessoa tocar no botão.
  */
@@ -53,7 +53,13 @@ var REGRAS=[
  'Formato da resposta: 1) resposta curta em 2 linhas; 2) tópicos com emojis e títulos em negrito; 3) "✅ O que fazer agora" com até 3 passos simples; 4) "🩺 O que perguntar ao médico".'
 ].join('\n- ');
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-function resumo(){try{return typeof healthText==='function'?healthText():''}catch(e){return ''}}
+function resumo(){
+ /* V6.34: manda só o que foi preenchido. Linhas “Não informado” deixavam o texto enorme e o ChatGPT abria vazio */
+ var t='';try{t=typeof healthText==='function'?healthText():''}catch(e){return ''}
+ var linhas=t.split(/\r?\n/).filter(function(l){var x=l.trim();return !/:\s*(não informado|nenhum|nenhuma|-)?\s*$/i.test(x)&&!/^nenhum registro\.?$/i.test(x)&&!/^(versão do sistema|gerado em|completude da ficha):/i.test(x)});
+ var out=[];linhas.forEach(function(l,i){var sec=/^\[.+\]$/.test(l.trim());var prox=linhas[i+1];if(sec&&(!prox||/^\[.+\]$/.test(prox.trim())||!prox.trim()))return;out.push(l)});
+ return out.join('\n').replace(/\n{3,}/g,'\n\n').trim();
+}
 function montarPrompt(pergunta,detalhe){
  return 'PERGUNTA: '+pergunta+'\n\nO QUE EU QUERO: '+detalhe+'\n\nREGRAS:\n- '+REGRAS+'\n\n===== MEUS REGISTROS DE SAÚDE (Minha Saúde IA) =====\n'+resumo();
 }
@@ -66,11 +72,21 @@ function copiar(texto){
  return Promise.resolve(fallback(texto));
 }
 function fallback(texto){try{var t=document.createElement('textarea');t.value=texto;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();var ok=document.execCommand('copy');t.remove();return ok}catch(e){return false}}
+var LIMITE_LINK=7000;
+function textoParaLink(texto){
+ /* o link tem limite de tamanho: se passar, encurta o resumo e avisa a IA (o texto completo continua copiado) */
+ if(encodeURIComponent(texto).length<=LIMITE_LINK)return texto;
+ var marca='\n\n[Resumo encurtado para caber no link. Se precisar, peça que eu cole o resumo completo.]';
+ var corte=texto.length;
+ while(corte>500&&encodeURIComponent(texto.slice(0,corte)+marca).length>LIMITE_LINK)corte=Math.floor(corte*0.9);
+ return texto.slice(0,corte)+marca;
+}
 function abrirIA(ia,texto){
  var url=ia.web;
- /* O ChatGPT aceita a pergunta direto no endereço; se o texto for muito grande, abre só o site e a pessoa cola */
- if(ia.id==='chatgpt'&&texto.length<6000){url=ia.web+(ia.web.indexOf('?')>=0?'&':'?')+'q='+encodeURIComponent(texto)}
+ /* O ChatGPT aceita a pergunta pronta no endereço (?q=). Gemini e outras IAs não aceitam: aí a pessoa cola. */
+ if(ia.id==='chatgpt'){url=ia.web+(ia.web.indexOf('?')>=0?'&':'?')+'q='+encodeURIComponent(textoParaLink(texto))}
  window.open(url,'_blank','noopener');
+ return ia.id==='chatgpt';
 }
 var atual=null;
 function mostrarEtapa(pergunta,detalhe){
@@ -104,7 +120,7 @@ function render(){
   var p=e.target.closest('[data-ps-p]');if(p){mostrarEtapa(p.getAttribute('data-ps-p'),p.getAttribute('data-ps-d'));return}
   if(e.target.id==='psLivreBtn'){var q=(document.getElementById('psLivre').value||'').trim();if(!q){document.getElementById('psLivre').focus();return}mostrarEtapa(q,'Responda à minha pergunta usando meus registros de saúde.');return}
   var b=e.target.closest('[data-ps-ia]');
-  if(b&&atual){var ia=iasAtivas()[Number(b.getAttribute('data-ps-ia'))];copiar(atual).then(function(){var st=document.getElementById('psStatus');if(st)st.textContent='✅ Pergunta copiada. Abrindo o '+ia.nome+'…'});abrirIA(ia,atual);return}
+  if(b&&atual){var ia=iasAtivas()[Number(b.getAttribute('data-ps-ia'))];var foiNoLink=abrirIA(ia,atual);copiar(atual).then(function(ok){var st=document.getElementById('psStatus');if(!st)return;st.innerHTML=foiNoLink?'✅ Abrindo o <b>'+esc(ia.nome)+'</b> com a pergunta já escrita. Se ela não aparecer, clique na caixa de mensagem e aperte <b>Ctrl + V</b> (no celular: segure e toque em <b>Colar</b>).':'📋 Pergunta copiada! O <b>'+esc(ia.nome)+'</b> não aceita pergunta pelo link: na janela que abriu, clique na caixa de mensagem e aperte <b>Ctrl + V</b> (no celular: segure e toque em <b>Colar</b>), depois envie.';st.classList.add('ps-status-forte')});return}
   if(e.target.id==='psCopiar'&&atual){copiar(atual).then(function(ok){var st=document.getElementById('psStatus');if(st)st.textContent=ok?'✅ Copiado! Agora cole na IA que preferir.':'Não consegui copiar sozinho. Abra “Ver o que será enviado” e copie manualmente.'})}
  });
  /* atalho no menu (grupo IA) */
@@ -124,7 +140,7 @@ css.textContent='#'+ID+' .ps-grupo{margin:18px 0 8px;font-size:15px}'+
  '#'+ID+' .ps-livre{display:grid;gap:8px}#'+ID+' .ps-livre textarea{width:100%;box-sizing:border-box}'+
  '#'+ID+' .ps-etapa{margin-top:16px;border:2px solid #2563eb}#'+ID+' .ps-ias{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}'+
  '#'+ID+' .ps-previa pre{white-space:pre-wrap;max-height:260px;overflow:auto;font-size:11px;background:#f8fafc;padding:10px;border-radius:10px}'+
- '#'+ID+' .ps-status{font-weight:800;color:#047857;min-height:18px}'+
+ '#'+ID+' .ps-status{font-weight:800;color:#047857;min-height:18px}'+'#'+ID+' .ps-status-forte{padding:12px 14px;border-radius:12px;background:#ecfdf5;border:1px solid #a7f3d0;line-height:1.5}'+
  '.ps-atalho-home{display:flex;align-items:center;gap:12px;width:100%;margin:12px 0;padding:14px 16px;border-radius:16px;border:1px solid #bfdbfe;background:linear-gradient(135deg,#eff6ff,#f5f3ff);color:#172033;text-align:left;font:inherit;cursor:pointer}'+
  '.ps-atalho-home>span:first-child{font-size:26px}.ps-atalho-home b{display:block;font-size:15px}.ps-atalho-home small{display:block;color:#475569;font-size:12.5px}.ps-atalho-home .ps-seta{margin-left:auto;font-weight:900;color:#2563eb}'+
  'body.msa-dark #'+ID+' .ps-pergunta{background:#111827;border-color:#263244}body.msa-dark .ps-atalho-home{background:#111827;border-color:#263244;color:#e5e7eb}body.msa-dark .ps-atalho-home small{color:#94a3b8}body.msa-dark #'+ID+' .ps-previa pre{background:#0b1220;color:#e5e7eb}';
