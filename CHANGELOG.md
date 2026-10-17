@@ -1,3 +1,8 @@
+## V6.34 — Correção do layout inicial
+- 🧭 Corrigido o cartão de perfil da página inicial para manter foto, informações pessoais e botões em colunas estáveis.
+- 📐 Impedidos elementos adicionais da área inicial de comprimir os dados do perfil ou criar colunas estreitas.
+- 📱 Ajustado o comportamento responsivo para telas menores, com estatísticas e botões reorganizados.
+
 ## V6.34 — Pergunta chega pronta no ChatGPT
 - 🐞 Corrigido: com o perfil preenchido, o texto ficava grande demais e o ChatGPT abria vazio, sem a pergunta.
 - ✂️ Agora só vai para a IA o que foi preenchido (linhas “Não informado” e seções vazias ficam de fora).
