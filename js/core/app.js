@@ -86,7 +86,7 @@ function registroProblemas(tipo,x){
  else if(tipo==='suplementos'){req('nome do suplemento',r.nome)}
  else if(tipo==='reacoes'){req('alimento',r.nome);req('reação',r.reacao)}
  else if(tipo==='agua'){req('data',r.data);const q=Number(r.qtd);if(!Number.isFinite(q)||q<=0)issues.push('quantidade maior que zero')}
- else if(tipo==='bemestar'){req('data',r.data)}
+ else if(tipo==='bemestar'){if(!r.opcional)req('data',r.data)}
  else if(tipo==='gatilhos'){req('data',r.data);if(empty(r.gatilho)&&empty(r.sintoma))issues.push('gatilho ou sintoma')}
  else if(tipo==='familia'){req('parente',r.parente);if(empty(r.info||r.cond||r.condicao))issues.push('condição/informação')}
  else if(tipo==='documentos'){if(empty(r.nome)||/^documento informado$/i.test(String(r.nome).trim()))issues.push('nome do documento')}
@@ -887,7 +887,7 @@ $('sonoForm')?.addEventListener('submit',e=>{
  a=antigas.concat([rotina]);
  set(K.sono,a);e.target.reset();$('sonoXixi').value=0;$('sonoDor').value=0;renderNovosModulos();alert('🌙 Rotina de sono salva! Você normalmente dorme cerca de '+horas.replace('.',',')+' horas por noite.');
 });
-$('bemForm')?.addEventListener('submit',e=>{e.preventDefault();const form=e.currentTarget;const estresse=form.querySelector('input[name="bemEstresse"]:checked')?.value||'';const ansiedade=form.querySelector('input[name="bemAnsiedade"]:checked')?.value||'';const obs=$('bemObs')?.value.trim()||'';const status=$('bemStatus');if(!estresse&&!ansiedade&&!obs){if(status)status.textContent='Tudo certo — você pode pular esta seção sem salvar respostas.';return;}const a=get(K.bem);a.push({data:new Date().toISOString().slice(0,10),periodoDias:14,estresse:estresse,ansiedade:ansiedade,obs:obs});set(K.bem,a);form.reset();if(status)status.textContent='✅ Respostas opcionais salvas. Você pode alterá-las em outro momento.';renderNovosModulos();});
+$('bemForm')?.addEventListener('submit',e=>{e.preventDefault();const form=e.currentTarget;const estresse=form.querySelector('input[name="bemEstresse"]:checked')?.value||'';const ansiedade=form.querySelector('input[name="bemAnsiedade"]:checked')?.value||'';const obs=$('bemObs')?.value.trim()||'';const status=$('bemStatus');if(!estresse&&!ansiedade&&!obs){if(status)status.textContent='Tudo certo — você pode pular esta seção sem salvar respostas.';return;}const a=get(K.bem);a.push({data:new Date().toISOString().slice(0,10),periodoDias:14,estresse:estresse,ansiedade:ansiedade,obs:obs,opcional:true});set(K.bem,a);form.reset();if(status)status.textContent='✅ Respostas opcionais salvas. Você pode alterá-las em outro momento.';renderNovosModulos();});
 $('bemPular')?.addEventListener('click',()=>{const form=$('bemForm');if(form)form.reset();const status=$('bemStatus');if(status)status.textContent='Seção pulada. Nenhuma resposta foi exigida.';});
 $('gatilhoForm')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.gat);a.push({data:$('gatData').value,gatilho:$('gatNome').value,sintoma:$('gatSintoma').value,obs:$('gatObs').value});set(K.gat,a);e.target.reset();renderNovosModulos();alert('🎯 Gatilho registrado!')});
 $('famFormPage')?.addEventListener('submit',e=>{e.preventDefault();let a=get(K.fam);a.push({parente:$('famParentePage').value,cond:$('famCondPage').value,info:$('famCondPage').value,idade:$('famIdadePage').value,obs:$('famObsPage').value});set(K.fam,a);e.target.reset();renderNovosModulos();alert('🧬 Antecedente salvo!')});
