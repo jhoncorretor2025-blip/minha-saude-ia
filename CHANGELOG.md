@@ -1,3 +1,9 @@
+## V6.30 — Exportação mais organizada e clara
+- 📤 Reorganizada a tela de exportação em grupos: guardar cópia, compartilhar informações e acesso rápido.
+- 🧭 Melhoradas as descrições de JSON, TXT, PDF, preparação para IA, compartilhamento controlado e modo emergência.
+- 🔒 Destacado o aviso de privacidade para lembrar que arquivos exportados podem conter dados pessoais e de saúde.
+- ♻️ Mantidas as funções de exportação existentes; alteração focada na interface e nas orientações.
+
 ## V6.29 — Explicação de consanguinidade no histórico familiar
 - 🧬 O campo agora pergunta claramente se os pais do familiar são parentes biológicos entre si.
 - 💡 Adicionada explicação com exemplo (pais que são primos) e esclarecimento de que não se refere ao parentesco entre o usuário e o familiar.
