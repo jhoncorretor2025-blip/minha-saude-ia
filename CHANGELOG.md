@@ -1,3 +1,10 @@
+## V6.41 — Edição do perfil individual
+- ✏️ Adicionado formulário visível “Editar dados pessoais” dentro de cada ficha, aberto por padrão para facilitar encontrar o recurso.
+- 🧑 Permite alterar nome, relação, sexo, nascimento, idade, tipo sanguíneo, condição principal, alergias, contato e observações.
+- 💾 As mudanças salvam no perfil selecionado sem apagar medicamentos, consultas, crises ou outros registros.
+- 🧭 A página Meu círculo de saúde agora também explica como editar uma pessoa depois do cadastro.
+- 🔢 Atualizados o número de versão e referências de cache para V6.41.
+
 ## V6.40 — Gerenciamento de relacionamentos
 - 💔 Adicionada opção de encerrar o relacionamento e manter o perfil/histórico de saúde arquivado.
 - ↩️ Adicionada opção de reativar um relacionamento encerrado.
