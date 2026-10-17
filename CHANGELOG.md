@@ -1,3 +1,12 @@
+## V6.39 — Fluxo de importação da IA mais claro
+- 🧭 Explicados os passos para transformar a entrevista da IA em JSON e trazer as informações ao sistema.
+- 📝 Melhoradas as instruções do prompt da entrevista para gerar o JSON após a revisão, com um comando de recuperação claro.
+- 📥 A tela de importação agora orienta o usuário quando cola somente um resumo em texto, e não um JSON.
+- ✅ Corrigido o resumo de sucesso: contagem usa os campos reais retornados pela importação; a confirmação fica visível até clicar em “Ver perfil importado”.
+- 👤 Ao abrir o perfil, o sistema navega para a lista e rola até os dados importados.
+- ♻️ Atualização do perfil existente agora preserva altura, peso, medidas, rotina e medicamentos/vitaminas relatados.
+- 🔢 Atualizado o controle de versão para V6.39.
+
 ## V6.38 — Atalho Meu círculo de saúde no menu Família
 - 💑 Adicionado o item “Meu círculo de saúde” ao menu Família da navegação dinâmica de desktop.
 - 📱 Adicionado o mesmo atalho ao menu de navegação móvel.
