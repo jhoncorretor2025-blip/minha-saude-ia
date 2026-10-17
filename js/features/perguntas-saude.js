@@ -1,4 +1,4 @@
-/* Minha Saúde IA — Perguntas sobre minha saúde (V6.34)
+/* Minha Saúde IA — Perguntas sobre minha saúde (V6.35)
  * A pessoa escolhe uma pergunta pronta. O app junta a pergunta + o resumo dos registros (healthText)
  * + regras de segurança, copia e abre a IA escolhida. Nada é enviado sem a pessoa tocar no botão.
  */
@@ -60,9 +60,20 @@ function resumo(){
  var out=[];linhas.forEach(function(l,i){var sec=/^\[.+\]$/.test(l.trim());var prox=linhas[i+1];if(sec&&(!prox||/^\[.+\]$/.test(prox.trim())||!prox.trim()))return;out.push(l)});
  return out.join('\n').replace(/\n{3,}/g,'\n\n').trim();
 }
-function montarPrompt(pergunta,detalhe){
- return 'PERGUNTA: '+pergunta+'\n\nO QUE EU QUERO: '+detalhe+'\n\nREGRAS:\n- '+REGRAS+'\n\n===== MEUS REGISTROS DE SAÚDE (Minha Saúde IA) =====\n'+resumo();
+function pessoaPergunta(){var s=document.getElementById('psPessoa');return s?s.value:'eu'}
+function dadosPessoaSelecionada(){
+ var pessoa=pessoaPergunta();
+ if(pessoa==='eu'){var t='';try{t=typeof healthText==='function'?healthText():''}catch(e){}return {nome:'Jhonatan',resumo:t||'Não há resumo de saúde próprio disponível no momento.',tipo:'meu perfil'};}
+ var lista=[];try{var st=window.MSAStorage;lista=st&&typeof st.get==='function'?(st.get((window.MSA_K||window.K||{}).familiares||'msa2_familiares')||[]):[]}catch(e){}
+ if(!Array.isArray(lista))lista=[];
+ var p=lista.find(function(x){return String(x&&x.id)===String(pessoa)});
+ if(!p)return {nome:'perfil selecionado',resumo:'Não foi possível localizar o perfil familiar selecionado. Volte à seção Familiares e confirme o cadastro.',tipo:'perfil familiar'};
+ var linhas=['Nome: '+(p.nome||'Não informado'),'Relação: '+(p.parentesco||'Não informada'),'Sexo: '+(p.sexo||'Não informado'),'Idade: '+(p.idade||'Não informada'),'Nascimento: '+(p.nasc||'Não informado'),'Tipo sanguíneo: '+(p.sangue||'Não informado'),'Condição principal: '+(p.condicao||'Não informada'),'Alergias: '+(p.alergias||'Não informadas'),'Contato: '+(p.contato||'Não informado'),'Observações: '+(p.obs||'Nenhuma')];
+ ['medicamentos','consultas','crises'].forEach(function(k){var arr=Array.isArray(p[k])?p[k]:[];linhas.push('',k.toUpperCase()+':');if(!arr.length){linhas.push('Nenhum registro cadastrado.');return}arr.forEach(function(x){linhas.push('- '+Object.keys(x||{}).filter(function(key){return x[key]!==''&&x[key]!=null&&typeof x[key]!=='object'}).map(function(key){return key+': '+x[key]}).join('; '))})});
+ return {nome:p.nome||'perfil selecionado',resumo:linhas.join('\n'),tipo:'perfil familiar'};
 }
+function montarPrompt(pergunta,detalhe){var pessoa=dadosPessoaSelecionada();return 'PESSOA SOBRE QUEM PERGUNTO: '+pessoa.nome+' ('+pessoa.tipo+').\nIMPORTANTE: analise somente os dados desta pessoa e não misture informações de outra pessoa.\n\nPERGUNTA: '+pergunta+'\n\nO QUE EU QUERO: '+detalhe+'\n\nREGRAS:\n- '+REGRAS+'\n\n===== REGISTROS DE SAÚDE DE '+pessoa.nome.toUpperCase()+' =====\n'+pessoa.resumo;}
+
 function iasAtivas(){
  try{var lista=(typeof preferenciasPadrao==='function'?preferenciasPadrao().ias:[])||[];lista=lista.filter(function(x){return x&&x.ativo&&x.web});if(lista.length)return lista}catch(e){}
  return [{id:'chatgpt',nome:'ChatGPT',icone:'🟢',web:'https://chatgpt.com/'},{id:'gemini',nome:'Gemini',icone:'🔵',web:'https://gemini.google.com/app'}];
@@ -109,11 +120,12 @@ function render(){
  var main=document.getElementById('main-content')||document.querySelector('main');if(!main)return;
  var sec=document.createElement('section');sec.id=ID;
  sec.innerHTML='<div class="card"><h2>❓ Perguntas sobre minha saúde</h2>'+
-  '<p class="muted">Escolha uma pergunta. O app junta a pergunta com o <b>resumo dos seus registros</b> e leva para a sua IA (ChatGPT, Gemini…), que responde de um jeito simples.</p>'+
+  '<p class="muted">Escolha de quem são os dados que a IA deve analisar. O app usará somente o perfil selecionado.</p>'+'<label class="ps-pessoa-label" for="psPessoa">👤 Esta pergunta é sobre</label><select id="psPessoa" class="ps-pessoa"><option value="eu">🙋‍♂️ Eu — Jhonatan (meu perfil de saúde)</option></select><p class="muted">Depois escolha uma pergunta. Os dados do perfil selecionado serão incluídos no texto enviado à IA.</p>'+
   '<div class="alert warn">⚠️ A resposta da IA é uma orientação geral para você se organizar. Ela <b>não é diagnóstico</b> e não substitui o médico, o nutricionista ou outro profissional.</div>'+
   PERGUNTAS.map(function(g){return '<h3 class="ps-grupo">'+esc(g.grupo)+'</h3><div class="ps-grade">'+g.itens.map(function(it){return '<button type="button" class="ps-pergunta" data-ps-p="'+esc(it[1])+'" data-ps-d="'+esc(it[2])+'"><span>'+it[0]+'</span><b>'+esc(it[1])+'</b></button>'}).join('')+'</div>'}).join('')+
   '<h3 class="ps-grupo">✍️ Minha própria pergunta</h3><div class="ps-livre"><textarea id="psLivre" rows="3" placeholder="Ex.: Posso comer ovo todo dia com o meu colesterol?"></textarea><button type="button" class="btn" id="psLivreBtn">Continuar →</button></div>'+
   '<div class="card ps-etapa" id="psEtapa" hidden></div></div>';
+ var pessoaSelect=sec.querySelector('#psPessoa');if(pessoaSelect){try{var st=window.MSAStorage;var fam=st&&typeof st.get==='function'?(st.get((window.MSA_K||window.K||{}).familiares||'msa2_familiares')||[]):[];if(Array.isArray(fam)){fam.filter(function(p){return p&&p.id}).forEach(function(p){var op=document.createElement('option');op.value=String(p.id);op.textContent='👥 '+(p.nome||'Familiar')+' — '+(p.parentesco||'Relação não informada');pessoaSelect.appendChild(op)});}}catch(e){}}
  var secoes=main.querySelectorAll(':scope > section');var ultima=secoes[secoes.length-1];
  if(ultima)ultima.insertAdjacentElement('afterend',sec);else main.appendChild(sec);
  sec.addEventListener('click',function(e){
@@ -132,7 +144,7 @@ function render(){
   a.addEventListener('click',function(){if(typeof go==='function')go(ID)});var alvo=home.querySelector('.home-profile-actions')||home.firstElementChild;if(alvo&&alvo.parentNode)alvo.parentNode.insertBefore(a,alvo.nextSibling);else home.insertBefore(a,home.firstChild)}
 }
 var css=document.createElement('style');css.id='msa-perguntas-saude';
-css.textContent='#'+ID+' .ps-grupo{margin:18px 0 8px;font-size:15px}'+
+css.textContent='#'+ID+' .ps-pessoa-label{display:block;font-weight:900;margin:12px 0 6px}'+ '#'+ID+' .ps-pessoa{display:block;width:100%;max-width:520px;padding:12px;border:1px solid #bfdbfe;border-radius:12px;background:var(--card,#fff);color:inherit;font:inherit;font-weight:800;margin-bottom:12px}'+ '#'+ID+' .ps-grupo{margin:18px 0 8px;font-size:15px}'+
  '#'+ID+' .ps-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}'+
  '#'+ID+' .ps-pergunta{display:flex;align-items:center;gap:10px;text-align:left;padding:13px 14px;border-radius:14px;border:1px solid var(--line,#e5e7eb);background:var(--card,#fff);color:inherit;font:inherit;cursor:pointer;transition:transform .15s,border-color .15s}'+
  '#'+ID+' .ps-pergunta:hover,#'+ID+' .ps-pergunta:focus-visible{border-color:#2563eb;transform:translateY(-2px)}'+
