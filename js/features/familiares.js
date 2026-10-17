@@ -80,7 +80,15 @@ function renderParceirosSaude(){
  host.querySelectorAll('[data-partner-open]').forEach(b=>b.addEventListener('click',()=>{
   const id=b.dataset.partnerOpen;
   if(typeof go==='function')go('familiares');
-  setTimeout(()=>{window.selecionarFamiliar&&window.selecionarFamiliar(id);},180);
+  // A navegação pode redesenhar a ficha e restaurar a pessoa anterior.
+  // Reaplica a seleção depois que a seção de Familiares terminar de renderizar.
+  [250,600,1100].forEach(delay=>setTimeout(()=>{
+   const atual=getList().find(p=>String(p.id)===String(id));
+   if(!atual)return;
+   setSelected(id);
+   if(typeof window.selecionarFamiliar==='function')window.selecionarFamiliar(id);
+   else renderFamiliares();
+  },delay));
  }));
  host.querySelectorAll('[data-partner-end]').forEach(b=>b.addEventListener('click',()=>window.encerrarRelacionamentoParceiro(b.dataset.partnerEnd)));
  host.querySelectorAll('[data-partner-reactivate]').forEach(b=>b.addEventListener('click',()=>window.reativarRelacionamentoParceiro(b.dataset.partnerReactivate)));
@@ -172,7 +180,20 @@ function bindForms(id){
 }
 function addRecord(memberId,type,data){const list=getList(),p=list.find(x=>x.id===memberId);if(!p)return;ensure(p);p[type].push(Object.assign({id:uid(type.slice(0,3)),criadoEm:new Date().toISOString()},data));if(!saveList(list)){alert('Não foi possível salvar.');return}setSelected(memberId);renderFamiliares()}
 window.atualizarLadoFamiliar=function(id,lado){const list=getList(),p=list.find(x=>x.id===id);if(!p)return;p.ladoFamilia=String(lado||'');if(!saveList(list)){alert('Não foi possível salvar o lado da família.');return}setSelected(selectedId()||id);renderFamiliares();};
-window.selecionarFamiliar=id=>{setSelected(id);renderFamiliares();setTimeout(()=>document.getElementById('familiarDetalhe')?.scrollIntoView({behavior:'smooth',block:'start'}),50)};
+window.selecionarFamiliar=id=>{
+ const pessoa=getList().find(p=>String(p.id)===String(id));
+ if(!pessoa){console.warn('[Minha Saúde IA] Perfil familiar não encontrado:',id);return}
+ setSelected(pessoa.id);
+ renderFamiliares();
+ // Confirma que a seleção sobrevive ao redesenho da lista.
+ setTimeout(()=>{
+  const selecionado=getList().find(p=>String(p.id)===String(selectedId()));
+  if(!selecionado||String(selecionado.id)!==String(pessoa.id)){
+   setSelected(pessoa.id);renderFamiliares();
+  }
+  document.getElementById('familiarDetalhe')?.scrollIntoView({behavior:'smooth',block:'start'});
+ },80);
+};
 window.excluirFamiliar=id=>{const p=findMember(id);if(!p)return;if(!confirm('Excluir '+(p.nome||'este familiar')+' e todos os registros dele?'))return;const list=getList().filter(x=>x.id!==id);saveList(list);if(selectedId()===id)setSelected(list[0]?.id||'');renderFamiliares()};
 window.excluirRegistroFamiliar=(memberId,type,recordId)=>{const list=getList(),p=list.find(x=>x.id===memberId);if(!p)return;ensure(p);p[type]=p[type].filter(x=>x.id!==recordId);saveList(list);setSelected(memberId);renderFamiliares()};
 window.copiarResumoFamiliar=id=>{const p=findMember(id);if(!p)return;ensure(p);const t=['RESUMO DO FAMILIAR','Nome: '+(p.nome||'Não informado'),'Parentesco: '+(p.parentesco||'Não informado'),'Grau de parentesco: '+(p.grauParentesco||familiaGrau(p)),'Consanguinidade conhecida: '+(p.consanguinidade||'Não informado'),'Status: '+(p.statusFamiliar||'Não informado'),'Idade ao diagnóstico: '+(p.idadeDiagnostico||'Não informada'),'Causa do falecimento: '+(p.causaFalecimento||'Não informada'),'Idade: '+(p.idade||'Não informada'),'Altura (cm): '+(p.altura||'Não informada'),'Peso (kg): '+(p.peso||'Não informado'),'Medidas corporais: '+(p.medidas||'Não informadas'),'Rotina/atividade física: '+(p.rotina||'Não informada'),'Medicamentos/vitaminas/suplementos relatados: '+(p.medicamentosRelato||'Não informados'),'Condição: '+(p.condicao||'Não informada'),'Alergias: '+(p.alergias||'Não informadas'),'Medicamentos:',...(p.medicamentos.length?p.medicamentos.map(x=>'- '+x.nome+(x.dose?' — '+x.dose:'')+(x.frequencia?' — '+x.frequencia:'')):['- Nenhum registrado']),'Consultas:',...(p.consultas.length?p.consultas.map(x=>'- '+fmtDate(x.data)+' — '+(x.especialidade||'Consulta')+' — '+(x.medico||'Não informado')):['- Nenhuma registrada']),'Crises:',...(p.crises.length?p.crises.map(x=>'- '+fmtDate(x.data)+' — '+(x.tipo||'Ocorrência')+' — '+(x.intensidade||'')+' — '+(x.descricao||'')):['- Nenhuma registrada'])].join('\n');if(navigator.clipboard?.writeText)navigator.clipboard.writeText(t).then(()=>alert('📋 Resumo copiado.')).catch(()=>fallback(t));else fallback(t)};
