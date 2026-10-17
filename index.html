@@ -39,7 +39,7 @@
       limpar.then(function(){
         var u=new URL(window.location.href);
         u.searchParams.set('cb',Date.now().toString());
-        u.searchParams.set('v','V6.29');
+        u.searchParams.set('v','V6.30');
         window.location.replace(u.toString());
       });
     }catch(e){}
@@ -49,7 +49,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V6.29</title>
+<title>Minha Saúde IA — V6.30</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -350,7 +350,7 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
 @media(max-width:760px){.msa-mobile-menu-fab{display:none!important}.msa-mobile-bar{grid-template-columns:repeat(4,1fr)}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V6.29">
+  <link rel="stylesheet" href="css/design-system.css?v=V6.30">
 
 <style id="v519-progressive-ui">
 /* V6.00 — melhorias progressivas de dashboard, favoritos e alertas */
@@ -635,7 +635,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.29</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.30</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 
 <!-- V6.20 — retorno persistente, feedback de navegação e validação do perfil -->
@@ -1320,7 +1320,45 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <div class="card" style="margin-top:13px"><h3>📈 Adesão aos medicamentos</h3><div class="muted">Resumo dos registros de doses feitas pelo botão “Tomei”. É apenas um registro do que foi informado.</div><div id="medAdherenceSummary" class="grid4" style="margin-top:12px"></div></div>
 <div class="card" style="margin-top:13px"><h3>📋 Próximos cuidados</h3><div id="lembAgenda" class="list"></div></div><div class="alert warn" style="margin-top:13px">🔔 Para alertas automáticos, permita notificações no navegador. Confirmações e registros ficam salvos somente neste navegador.</div></div></section>
 
-<section id="exportar"><div class="card"><h2>📤 Exportar meus dados</h2><div class="muted">Baixe ou copie suas informações para guardar, imprimir ou levar a outra IA.</div><div class="actions" style="margin-top:14px"><button class="action" onclick="abrirModoEmergencia()"><strong>🚨</strong>Modo emergência<small>Mostra rapidamente seus dados essenciais.</small></button><button class="action" onclick="exportarJSONCompleto()"><strong>💾</strong>Backup JSON<small>Exporta os dados em formato estruturado.</small></button><button class="action" onclick="exportarPDF()"><strong>📄</strong>Exportar para PDF<small>Abre uma versão pronta para imprimir ou salvar como PDF.</small></button><button class="action" onclick="exportarTexto()"><strong>📝</strong>Baixar texto<small>Arquivo TXT com seu histórico organizado.</small></button><button class="action" onclick="copiarParaIA()"><strong>🤖</strong>Copiar para IA<small>Texto pronto para colar no ChatGPT, Gemini ou outra IA.</small></button><button class="action" onclick="abrirCompartilhamentoSeguro()"><strong>📤</strong>Compartilhar com controle<small>Escolha exatamente quanto da sua ficha deseja compartilhar.</small></button></div><div class="alert safe" style="margin-top:13px">🔒 A exportação é feita no seu navegador. Revise o conteúdo antes de compartilhar informações de saúde.</div></div></section>
+<section id="exportar">
+<div class="card">
+  <div style="display:flex;align-items:flex-start;gap:13px;flex-wrap:wrap">
+    <div style="font-size:34px;line-height:1" aria-hidden="true">📤</div>
+    <div style="flex:1;min-width:220px">
+      <h2 style="margin:0 0 6px">Exportar meus dados</h2>
+      <div class="muted">Escolha como deseja guardar, consultar ou compartilhar suas informações de saúde.</div>
+      <div class="alert safe" role="note" style="margin-top:12px">🔒 <b>Privacidade:</b> os arquivos podem conter dados pessoais e de saúde. Confira o conteúdo e escolha com cuidado onde salvar ou com quem compartilhar.</div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:13px">
+  <h3>💾 Guardar uma cópia dos meus dados</h3>
+  <div class="muted">Use estas opções para manter um arquivo pessoal ou transferir seus registros para outro lugar.</div>
+  <div class="actions">
+    <button class="action" type="button" onclick="exportarJSONCompleto()"><strong>💾</strong>Backup JSON<small>Cópia estruturada dos dados para backup e restauração compatível.</small></button>
+    <button class="action" type="button" onclick="exportarTexto()"><strong>📝</strong>Baixar texto (TXT)<small>Histórico legível, fácil de abrir e consultar.</small></button>
+    <button class="action" type="button" onclick="exportarPDF()"><strong>📄</strong>Salvar em PDF<small>Versão pronta para imprimir ou guardar como documento.</small></button>
+  </div>
+</div>
+
+<div class="card" style="margin-top:13px">
+  <h3>🤖 Usar ou compartilhar informações</h3>
+  <div class="muted">Prepare os dados para uma conversa com uma IA ou selecione o que deseja compartilhar.</div>
+  <div class="actions">
+    <button class="action" type="button" onclick="copiarParaIA()"><strong>🤖</strong>Preparar para uma IA<small>Copia um texto organizado para colar no ChatGPT, Gemini ou outra IA.</small></button>
+    <button class="action" type="button" onclick="abrirCompartilhamentoSeguro()"><strong>📤</strong>Compartilhar com controle<small>Escolha quais partes da sua ficha deseja compartilhar.</small></button>
+  </div>
+</div>
+
+<div class="card" style="margin-top:13px">
+  <h3>🚨 Acesso rápido</h3>
+  <div class="muted">Consulte rapidamente informações essenciais quando precisar delas.</div>
+  <div class="actions">
+    <button class="action" type="button" onclick="abrirModoEmergencia()"><strong>🚨</strong>Modo emergência<small>Mostra os dados essenciais registrados para consulta rápida. Não substitui serviços de emergência.</small></button>
+  </div>
+</div>
+</section>
 <section id="relatorios">
 <div class="card">
 <h2>📊 Central de Relatórios</h2>
@@ -1736,7 +1774,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.29. Importação instantânea por IA com revisão antes de salvar. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.30. Importação instantânea por IA com revisão antes de salvar. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -1757,18 +1795,18 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V6.29" defer></script>
-<script src="js/core/storage.js?v=V6.29" defer></script>
-<script src="js/core/utils.js?v=V6.29" defer></script>
-<script src="js/core/stability-v599.js?v=V6.29" defer></script>
-<script src="js/features/comeco-rapido.js?v=V6.29" defer></script>
-<script src="js/navigation/menu.js?v=V6.29" defer></script>
-<script src="js/core/app.js?v=V6.29" defer></script>
-<script src="js/features/notificacoes-remotas.js?v=V6.29" defer></script>
-<script src="js/features/perfil-compartilhado.js?v=V6.29" defer></script>
-<script src="js/features/perfil-save.js?v=V6.29" defer></script>
-<script src="js/features/familiares.js?v=V6.29" defer></script>
-<script src="js/features/recursos.js?v=V6.29" defer></script>
+<script src="js/core/constants.js?v=V6.30" defer></script>
+<script src="js/core/storage.js?v=V6.30" defer></script>
+<script src="js/core/utils.js?v=V6.30" defer></script>
+<script src="js/core/stability-v599.js?v=V6.30" defer></script>
+<script src="js/features/comeco-rapido.js?v=V6.30" defer></script>
+<script src="js/navigation/menu.js?v=V6.30" defer></script>
+<script src="js/core/app.js?v=V6.30" defer></script>
+<script src="js/features/notificacoes-remotas.js?v=V6.30" defer></script>
+<script src="js/features/perfil-compartilhado.js?v=V6.30" defer></script>
+<script src="js/features/perfil-save.js?v=V6.30" defer></script>
+<script src="js/features/familiares.js?v=V6.30" defer></script>
+<script src="js/features/recursos.js?v=V6.30" defer></script>
 
 
 <script>
@@ -1791,12 +1829,12 @@ function iniciarImportacao(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
-<script src="js/features/inteligencia.js?v=V6.29" defer></script>
-<script src="js/ai/importacao.js?v=V6.29" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/legacy/melhorias-primeiras.js?v=V6.29" defer></script>
-<script src="js/features/expansoes.js?v=V6.29" defer></script>
-<script src="js/ai/importacao-fluxo-v514.js?v=V6.29" defer></script>
-<script src="js/legacy/melhorias-v513.js?v=V6.29" defer></script>
+<script src="js/features/inteligencia.js?v=V6.30" defer></script>
+<script src="js/ai/importacao.js?v=V6.30" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/legacy/melhorias-primeiras.js?v=V6.30" defer></script>
+<script src="js/features/expansoes.js?v=V6.30" defer></script>
+<script src="js/ai/importacao-fluxo-v514.js?v=V6.30" defer></script>
+<script src="js/legacy/melhorias-v513.js?v=V6.30" defer></script>
 
 
 <script>
@@ -1901,7 +1939,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
-<script src="js/reports/relatorios-v599.js?v=V6.29" defer></script>
+<script src="js/reports/relatorios-v599.js?v=V6.30" defer></script>
 
 
 
@@ -2748,7 +2786,7 @@ body.msa-dark .msa-settings-grid>label small{color:#cbd5e1}
 body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 @media(max-width:600px){.msa-settings-grid{grid-template-columns:minmax(0,1fr)}.msa-settings-professional .row>.btn{flex:1 1 100%;width:100%}}
 </style>
-<script src="js/features/configuracoes-profissionais.js?v=V6.29" defer></script>
+<script src="js/features/configuracoes-profissionais.js?v=V6.30" defer></script>
 
 <style id="msa-welcome-v623">
 #msaWelcomeModal{position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.64);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto}
