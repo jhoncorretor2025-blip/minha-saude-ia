@@ -1,4 +1,4 @@
-/* Minha Saúde IA — módulo Familiares V6.28 */
+/* Minha Saúde IA — módulo Familiares V6.29 */
 (function(){
 'use strict';
 const K=window.MSA_K||window.K||{};
