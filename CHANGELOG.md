@@ -1,3 +1,9 @@
+## V6.38 — Atalho Meu círculo de saúde no menu Família
+- 💑 Adicionado o item “Meu círculo de saúde” ao menu Família da navegação dinâmica de desktop.
+- 📱 Adicionado o mesmo atalho ao menu de navegação móvel.
+- 🧭 Corrigida a localização do atalho: a navegação é reconstruída por js/navigation/menu.js, não pelo menu original no HTML.
+- 🔢 Atualizados os números de versão e cache para V6.38.
+
 ## V6.37 — Página dedicada ao círculo de saúde
 - 💑 Criada a página Meu círculo de saúde para organizar o cadastro e acompanhamento de cônjuge, namorado(a) ou companheiro(a).
 - 💬 Reunidos em cartões separados os atalhos para enviar entrevista pelo WhatsApp, preencher manualmente, importar respostas e ver perfis cadastrados.
