@@ -39,7 +39,7 @@
       limpar.then(function(){
         var u=new URL(window.location.href);
         u.searchParams.set('cb',Date.now().toString());
-        u.searchParams.set('v','V6.39');
+        u.searchParams.set('v','V6.40');
         window.location.replace(u.toString());
       });
     }catch(e){}
@@ -49,7 +49,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V6.39</title>
+<title>Minha Saúde IA — V6.40</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -350,7 +350,7 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
 @media(max-width:760px){.msa-mobile-menu-fab{display:none!important}.msa-mobile-bar{grid-template-columns:repeat(4,1fr)}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V6.39">
+  <link rel="stylesheet" href="css/design-system.css?v=V6.40">
 
 <style id="v519-progressive-ui">
 /* V6.00 — melhorias progressivas de dashboard, favoritos e alertas */
@@ -635,7 +635,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.39</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.40</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 
 <!-- V6.20 — retorno persistente, feedback de navegação e validação do perfil -->
@@ -1324,7 +1324,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
    <div style="font-size:28px">👥</div><h3 style="margin:0">4. Ver pessoas cadastradas</h3><p class="muted">Abra a lista de pessoas acompanhadas para escolher um perfil e consultar ou atualizar os dados salvos neste navegador.</p><div style="margin-top:auto"><button type="button" class="btn secondary" style="width:100%" onclick="if(typeof go==='function')go('familiares')">👥 Ver perfis cadastrados</button></div>
   </div>
  </div>
- <div class="card" style="margin-top:14px;border-radius:18px"><h3>🩺 O que pode entrar no perfil?</h3><div class="grid2"><div><b>📏 Dados e rotina</b><p class="muted">Altura, peso, medidas, academia, sono e hábitos.</p></div><div><b>💊 Saúde e tratamentos</b><p class="muted">Condições conhecidas, alergias, medicamentos, vitaminas e suplementos.</p></div><div><b>🗓️ Acompanhamento</b><p class="muted">Consultas, exames, sintomas e vacinas que a pessoa decidir informar.</p></div><div><b>🧬 Histórico familiar</b><p class="muted">Antecedentes conhecidos, sempre marcando o que não souber.</p></div></div></div>
+ <div class="card" id="msaPartnerManageCard" style="margin-top:14px;border:1px solid #dbe5ff;border-radius:18px"><h3>👥 Gerenciar relacionamentos e perfis</h3><p class="muted">Aqui você pode abrir o perfil, encerrar um relacionamento mantendo o histórico, reativar um relacionamento ou excluir permanentemente o perfil e os registros dessa pessoa.</p><div class="alert warn" style="margin-top:10px">💔 Encerrar relação preserva os dados. Excluir perfil apaga os registros de saúde associados e não pode ser desfeito.</div><div id="msaPartnerProfilesList"></div></div>\n <div class="card" style="margin-top:14px;border-radius:18px"><h3>🩺 O que pode entrar no perfil?</h3><div class="grid2"><div><b>📏 Dados e rotina</b><p class="muted">Altura, peso, medidas, academia, sono e hábitos.</p></div><div><b>💊 Saúde e tratamentos</b><p class="muted">Condições conhecidas, alergias, medicamentos, vitaminas e suplementos.</p></div><div><b>🗓️ Acompanhamento</b><p class="muted">Consultas, exames, sintomas e vacinas que a pessoa decidir informar.</p></div><div><b>🧬 Histórico familiar</b><p class="muted">Antecedentes conhecidos, sempre marcando o que não souber.</p></div></div></div>
 </section>
 
 <section id="familiares"><div class="card"><h2>👨‍👩‍👧‍👦 Familiares</h2><div class="muted">Cadastre familiares ou pessoas próximas separadamente do seu perfil. Você pode acompanhar cônjuge, namorado(a), companheiro(a), filhos, pais ou outra pessoa com dados individuais de saúde, sem misturar os registros.</div><div class="alert safe" style="margin-top:12px">🔒 Os dados desta área ficam separados do seu perfil principal e armazenados neste navegador. Ao abrir uma IA externa, o aplicativo mostrará uma prévia e pedirá sua confirmação antes do compartilhamento.</div><div class="card" id="familiaCadastroCard" style="margin-top:13px"><h3>💞 Adicionar pessoa ao meu círculo de saúde</h3><p class="muted">Cadastre seu parceiro(a) ou alguém que você ajuda a acompanhar. Informe apenas dados que tem autorização para registrar.</p><form id="familiarForm" style="margin-top:10px"><div class="grid2"><label>Nome <span style="color:#dc2626">*</span><input id="fNome" required placeholder="Ex.: João"></label><label>Parentesco<select id="fParentesco"><option>Marido</option><option>Esposa</option><option>Cônjuge</option><option>Namorado(a)</option><option>Companheiro(a)</option><option>Parceiro(a)</option><option>Ficante</option><option>Outra relação afetiva</option><option>Filho(a)</option><option>Pai</option><option>Mãe</option><option>Irmão/irmã</option><option>Avô/avó</option><option>Outro</option></select></label></div><div class="grid2"><label>Sexo<select id="fSexo"><option value="">Não informado</option><option>Masculino</option><option>Feminino</option><option>Outro</option></select></label><label>Data de nascimento<input id="fNasc" type="date"></label></div><div class="grid2"><label>Idade<input id="fIdade" type="number" min="0" max="130"></label><label>Tipo sanguíneo<select id="fSangue"><option value="">Não informado</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></label></div><label>🧠 Condição principal<input id="fCondicao" placeholder="Ex.: Alzheimer / demência"></label><label>🚨 Alergias<textarea id="fAlergias" placeholder="Medicamentos, alimentos ou outras alergias..."></textarea></label><label>📞 Contato / responsável<input id="fContato" placeholder="Telefone ou pessoa de referência"></label><label>📌 Observações importantes<textarea id="fObs" placeholder="Informações úteis para consultas e cuidados."></textarea></label><button class="btn green">💾 Cadastrar familiar</button></form></div><div class="card" id="familiaPessoasCard" style="margin-top:13px"><h3>👥 Pessoas cadastradas</h3><div id="familiaresList" class="familiar-people-list" style="margin-top:10px"></div></div><div id="familiarDetalhe" style="margin-top:13px"></div></div></section>
@@ -1800,7 +1800,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.39. Importação instantânea por IA com revisão antes de salvar. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.40. Importação instantânea por IA com revisão antes de salvar. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -1821,18 +1821,18 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V6.39" defer></script>
-<script src="js/core/storage.js?v=V6.39" defer></script>
-<script src="js/core/utils.js?v=V6.39" defer></script>
-<script src="js/core/stability-v599.js?v=V6.39" defer></script>
-<script src="js/features/comeco-rapido.js?v=V6.39" defer></script>
-<script src="js/navigation/menu.js?v=V6.39" defer></script>
-<script src="js/core/app.js?v=V6.39" defer></script>
-<script src="js/features/notificacoes-remotas.js?v=V6.39" defer></script>
-<script src="js/features/perfil-compartilhado.js?v=V6.39" defer></script>
-<script src="js/features/perfil-save.js?v=V6.39" defer></script>
-<script src="js/features/familiares.js?v=V6.39" defer></script>
-<script src="js/features/recursos.js?v=V6.39" defer></script>
+<script src="js/core/constants.js?v=V6.40" defer></script>
+<script src="js/core/storage.js?v=V6.40" defer></script>
+<script src="js/core/utils.js?v=V6.40" defer></script>
+<script src="js/core/stability-v599.js?v=V6.40" defer></script>
+<script src="js/features/comeco-rapido.js?v=V6.40" defer></script>
+<script src="js/navigation/menu.js?v=V6.40" defer></script>
+<script src="js/core/app.js?v=V6.40" defer></script>
+<script src="js/features/notificacoes-remotas.js?v=V6.40" defer></script>
+<script src="js/features/perfil-compartilhado.js?v=V6.40" defer></script>
+<script src="js/features/perfil-save.js?v=V6.40" defer></script>
+<script src="js/features/familiares.js?v=V6.40" defer></script>
+<script src="js/features/recursos.js?v=V6.40" defer></script>
 
 
 <script>
@@ -1855,12 +1855,12 @@ function iniciarImportacao(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
-<script src="js/features/inteligencia.js?v=V6.39" defer></script>
-<script src="js/ai/importacao.js?v=V6.39" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/legacy/melhorias-primeiras.js?v=V6.39" defer></script>
-<script src="js/features/expansoes.js?v=V6.39" defer></script>
-<script src="js/ai/importacao-fluxo-v514.js?v=V6.39" defer></script>
-<script src="js/legacy/melhorias-v513.js?v=V6.39" defer></script>
+<script src="js/features/inteligencia.js?v=V6.40" defer></script>
+<script src="js/ai/importacao.js?v=V6.40" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/legacy/melhorias-primeiras.js?v=V6.40" defer></script>
+<script src="js/features/expansoes.js?v=V6.40" defer></script>
+<script src="js/ai/importacao-fluxo-v514.js?v=V6.40" defer></script>
+<script src="js/legacy/melhorias-v513.js?v=V6.40" defer></script>
 
 
 <script>
@@ -1965,7 +1965,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
-<script src="js/reports/relatorios-v599.js?v=V6.39" defer></script>
+<script src="js/reports/relatorios-v599.js?v=V6.40" defer></script>
 
 
 
@@ -2812,8 +2812,8 @@ body.msa-dark .msa-settings-grid>label small{color:#cbd5e1}
 body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 @media(max-width:600px){.msa-settings-grid{grid-template-columns:minmax(0,1fr)}.msa-settings-professional .row>.btn{flex:1 1 100%;width:100%}}
 </style>
-<script src="js/features/configuracoes-profissionais.js?v=V6.39" defer></script>
-<script src="js/features/perguntas-saude.js?v=V6.39" defer></script>
+<script src="js/features/configuracoes-profissionais.js?v=V6.40" defer></script>
+<script src="js/features/perguntas-saude.js?v=V6.40" defer></script>
 
 <style id="msa-welcome-v623">
 #msaWelcomeModal{position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.64);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto}
@@ -2842,7 +2842,7 @@ body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion
 @media(prefers-reduced-motion:reduce){#msaWelcomeModal .msa-welcome-choice{transition:none}}
 </style>
 
-<!-- V6.39 — Correção de layout da área de perfil da página inicial -->
+<!-- V6.40 — Correção de layout da área de perfil da página inicial -->
 <style id="msa-home-layout-fix-v634">
 #home #homeProfileHero.home-profile-hero{display:grid!important;grid-template-columns:80px minmax(0,1fr) 150px;align-items:center;gap:16px;min-width:0;}
 #home #homeProfileHero>.home-avatar{grid-column:1;grid-row:1;width:72px;height:72px;min-width:72px;}
