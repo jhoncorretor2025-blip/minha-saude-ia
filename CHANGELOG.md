@@ -1,3 +1,11 @@
+## V6.61 — Navegação mais fácil no celular e convite para compartilhar
+- 💬 Barra de baixo do celular ganhou “Perguntar” (abre as Perguntas sobre minha saúde) — 5 botões numa linha só.
+- 🤖 No topo das páginas de IA: “O que você quer fazer com a IA?” com 4 caminhos (Perguntar, Preencher minha ficha, Preparar consulta, Enviar minha ficha).
+- 📤 Card “Deixe sua família por dentro” no Início, nas Perguntas e em Exportar: ficha em PDF, resumo no WhatsApp (com confirmação) e carteirinha, com lembrete após 30 dias sem compartilhar.
+- 🧭 Menu do celular: “Perguntar sobre minha saúde” em primeiro na IA e “Enviar minha ficha para a família” em Dados.
+- 🐞 Versão sincronizada: o version.json estava em V6.55 e o cache em v6-55 enquanto o app estava em V6.60 — isso fazia aparecer “Nova versão disponível” e recarregar a página.
+- 🔄 Versão e cache em V6.61.
+
 ## V6.55 — Perguntas da consulta: copiar e imprimir funcionando
 - 🐞 “Imprimir / salvar PDF” saía em branco: a regra de impressão da página escondia a caixa das perguntas. Agora abre uma folha só com as perguntas, nome, data e linhas para anotar a resposta do médico.
 - 📋 “Copiar perguntas” ficou mais confiável no iPhone (seleção do jeito que o Safari exige) e confirma na própria tela, sem depender de janela de alerta.

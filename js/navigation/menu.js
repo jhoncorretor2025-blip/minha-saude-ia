@@ -245,10 +245,10 @@
           ['documentos','📄 Documentos'],['leitor','📄 Leitor inteligente'],['relatorios','📊 Relatórios'],['carteirinha','🪪 Carteirinha']
         ])+
         mobileSection('IA',[
-          ['ia','🤖 Assistente'],['importar','⚡ Importar com IA'],['perguntas','❓ Preparar consulta']
+          ['perguntas-saude','💬 Perguntar sobre minha saúde'],['ia','🤖 Assistente'],['importar','⚡ Importar com IA'],['perguntas','❓ Preparar consulta']
         ])+
         mobileSection('Dados e segurança',[
-          ['exportar','📤 Exportar e compartilhar'],['backup','💾 Backup e restauração'],['configuracoes','⚙️ Configurações']
+          ['exportar','📤 Enviar minha ficha para a família'],['backup','💾 Backup e restauração'],['configuracoes','⚙️ Configurações']
         ])+
         '<div class="msa-mobile-section"><div class="msa-mobile-section-title">Ação especial</div>'+ 
           '<div class="msa-mobile-links"><button type="button" class="danger" data-mobile-emergency="1">🚨 Modo emergência</button>'+ 
@@ -262,6 +262,7 @@
     bar.innerHTML=
       '<button type="button" data-mobile-action="home"><strong>🏠</strong>Início</button>'+
       '<button type="button" data-mobile-action="register"><strong>➕</strong>Registrar</button>'+
+      '<button type="button" data-mobile-action="ask"><strong>💬</strong>Perguntar</button>'+
       '<button type="button" data-mobile-action="search"><strong>🔎</strong>Buscar</button>'+
       '<button type="button" data-mobile-action="menu"><strong>☰</strong>Menu</button>';
 
@@ -310,6 +311,7 @@
       var action=b.getAttribute('data-mobile-action');
       if(action==='home')doMobileTab('home');
       else if(action==='register')openDrawer();
+      else if(action==='ask')doMobileTab('perguntas-saude');
       else if(action==='search')focusSearch();
       else if(action==='menu')openDrawer();
     });
