@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V6.57 */
+/* Minha Saúde IA — aplicação principal V6.58 */
 
 const K=window.MSA_K||window.K;
 const get=k=>window.MSAStorage.get(k);
@@ -224,7 +224,53 @@ function abrirEdicaoRotina(campo){
   if(input){setTimeout(()=>{input.focus();input.scrollIntoView({behavior:'smooth',block:'center'});},180);}
  },80);
 }
-function atualizarPerfilHome(){const p=get(K.p)[0]||{},foto=p.foto||'';if($('homeProfileName'))$('homeProfileName').textContent=p.nome||'Complete seu perfil';if($('homeProfileAge'))$('homeProfileAge').textContent=p.idade||'—';if($('homeProfileWeight'))$('homeProfileWeight').textContent=p.peso||'—';if($('homeProfileHeight'))$('homeProfileHeight').textContent=p.altura?formatarAltura(p.altura):'—';if($('homeProfileBlood'))$('homeProfileBlood').textContent=p.sangue||'—';if($('homeAvatar'))$('homeAvatar').innerHTML=foto?'<img src="'+esc(foto)+'" alt="Foto do perfil">':'<span>👤</span>'}
+function atualizarResumoCorporalHome(){
+ const box=$('homeBmiCard');if(!box)return;
+ const p=get(K.p)[0]||{},calc=calcularIMC(p);
+ const value=$('homeBmiValue'),status=$('homeBmiStatus'),desc=$('homeBmiDescription'),person=$('homeBmiPerson'),caption=$('homeBmiFigureCaption'),scale=$('homeBmiScale');
+ if(!calc){
+  if(value)value.textContent='—';if(status){status.textContent='Complete peso e altura';status.style.background='#eef2f7';status.style.color='#475569'}
+  if(desc)desc.textContent='Preencha seu peso e sua altura no perfil para visualizar o indicador e a ilustração.';
+  if(caption)caption.textContent='Dados ainda não informados';
+  if(person)person.className='home-bmi-person type-normal';
+  if(scale)scale.querySelectorAll('[data-bmi]').forEach(el=>el.classList.remove('active'));
+  return;
+ }
+ const bmi=calc.bmi;
+ const category=bmi<18.5?'lean':bmi<25?'normal':bmi<30?'over':bmi<35?'obese':'high';
+ const labels={lean:'Abaixo do peso',normal:'Faixa adequada',over:'Sobrepeso',obese:'Obesidade grau I',high:'Obesidade grau II ou III'};
+ const descriptions={lean:'O IMC está abaixo da faixa de referência para adultos. Vale avaliar contexto, alimentação e histórico com um profissional.',normal:'O IMC está dentro da faixa de referência para adultos. Continue acompanhando também cintura, força e bem-estar.',over:'O IMC está na faixa de sobrepeso para adultos. A medida não diferencia gordura de músculo e precisa ser interpretada com contexto.',obese:'O IMC está na faixa de obesidade grau I para adultos. Converse com um profissional para uma avaliação individual.',high:'O IMC está na faixa de obesidade grau II ou III para adultos. Uma avaliação profissional pode ajudar a definir próximos passos.'};
+ if(value)value.textContent=bmi.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
+ if(status){status.textContent=labels[category];const colors={lean:['#fff1f2','#9f1239'],normal:['#dcfce7','#166534'],over:['#fef3c7','#92400e'],obese:['#ffedd5','#9a3412'],high:['#fee2e2','#991b1b']};status.style.background=colors[category][0];status.style.color=colors[category][1]}
+ if(desc)desc.textContent=descriptions[category];
+ if(person)person.className='home-bmi-person type-'+category;
+ if(caption)caption.textContent=labels[category]+' · ilustração simbólica';
+ if(scale)scale.querySelectorAll('[data-bmi]').forEach(el=>el.classList.toggle('active',el.dataset.bmi===category));
+}
+function atualizarContagemAniversarioHome(){
+ const box=$('homeBirthdayCountdown');if(!box)return;
+ const p=get(K.p)[0]||{},raw=String(p.nasc||'').trim();
+ if(!raw){box.hidden=true;box.innerHTML='';return}
+ let month=0,day=0,match=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+ if(match){month=Number(match[2]);day=Number(match[3])}
+ else{match=raw.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);if(match){day=Number(match[1]);month=Number(match[2])}}
+ if(!month||!day||month>12||day>31){box.hidden=true;box.innerHTML='';return}
+ const today=new Date();today.setHours(0,0,0,0);
+ let next=new Date(today.getFullYear(),month-1,day);next.setHours(0,0,0,0);
+ if(next<today)next=new Date(today.getFullYear()+1,month-1,day);
+ const days=Math.round((next-today)/86400000);
+ if(days>30){box.hidden=true;box.innerHTML='';return}
+ const age=Number(p.idade);
+ let headline=days===0?'🎉 Feliz aniversário!':days===1?'🎂 Falta apenas 1 dia para seu aniversário!':'🎂 Faltam '+days+' dias para seu aniversário!';
+ let detail=days===0?'Que seu novo ciclo venha com muita saúde e bons momentos!':(Number.isFinite(age)&&age>0?'Você completará '+(age+1)+' anos.':'Seu aniversário está chegando!');
+ box.innerHTML='<span class="home-birthday-icon" aria-hidden="true">🎁</span><div><strong>'+esc(headline)+'</strong><small>'+esc(detail)+'</small></div>';
+ box.hidden=false;
+}
+function mostrarAjudaIMCHome(){
+ alert('O IMC é calculado dividindo o peso em quilos pela altura em metros ao quadrado. Para adultos, as faixas são: abaixo de 18,5 (abaixo do peso), 18,5 a 24,9 (faixa adequada), 25 a 29,9 (sobrepeso), 30 a 34,9 (obesidade grau I), 35 a 39,9 (grau II) e 40 ou mais (grau III). É uma triagem geral, não um diagnóstico, e pode ser menos representativo para pessoas muito musculosas, gestantes e alguns outros grupos.');
+}
+$('homeBmiHelp')?.addEventListener('click',mostrarAjudaIMCHome);
+function atualizarPerfilHome(){const p=get(K.p)[0]||{},foto=p.foto||'';if($('homeProfileName'))$('homeProfileName').textContent=p.nome||'Complete seu perfil';if($('homeProfileAge'))$('homeProfileAge').textContent=p.idade||'—';if($('homeProfileWeight'))$('homeProfileWeight').textContent=p.peso||'—';if($('homeProfileHeight'))$('homeProfileHeight').textContent=p.altura?formatarAltura(p.altura):'—';if($('homeProfileBlood'))$('homeProfileBlood').textContent=p.sangue||'—';if($('homeAvatar'))$('homeAvatar').innerHTML=foto?'<img src="'+esc(foto)+'" alt="Foto do perfil">':'<span>👤</span>';atualizarResumoCorporalHome();atualizarContagemAniversarioHome()}
 const RECURSOS_PERSONALIZAVEIS=[
  {key:'academia',icon:'🏋️',label:'Academia e medidas corporais',desc:'Atividades de academia e medidas de bíceps, cintura, quadril, panturrilha etc.',targets:['fitness']},
  {key:'nutricao',icon:'🥗',label:'Nutrição',desc:'Diário de alimentação, hidratação e suplementos.',targets:['nutricao']},
