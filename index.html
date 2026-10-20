@@ -1537,8 +1537,47 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </div>
 </section>
 
+
+<script>
+/* V6.56 — perguntas rápidas personalizadas com o perfil já cadastrado */
+window.msaPerguntarPerfil = function(pergunta){
+  var input = document.getElementById('iaInput');
+  if (typeof window.homeGo === 'function') window.homeGo('ia');
+  else if (typeof window.go === 'function') window.go('ia');
+  window.setTimeout(function(){
+    var campo = document.getElementById('iaInput');
+    if(campo){ campo.value = pergunta; campo.focus(); }
+    var aviso = document.getElementById('msaPerguntaPerfilAviso');
+    if(aviso) aviso.remove();
+    if(campo && campo.parentElement){
+      var nota = document.createElement('div');
+      nota.id='msaPerguntaPerfilAviso';
+      nota.className='alert safe';
+      nota.style.marginTop='8px';
+      nota.textContent='Pergunta pronta. Toque em Enviar para consultar a IA com seus registros disponíveis.';
+      campo.parentElement.insertAdjacentElement('afterend',nota);
+    }
+  },180);
+};
+</script>
+
 <section id="importar">
 <div class="card">
+<div class="ai-hero"><div class="ai-hero-icon">💬</div><div><h2>O que você quer saber sobre sua saúde?</h2><p>Escolha uma pergunta. A IA deve considerar as informações que você já cadastrou no seu perfil, como doenças, sintomas, medicamentos, exames e hábitos — sem pedir tudo novamente.</p></div></div>
+<div class="grid2" style="margin-top:14px" id="msaPerguntasRapidas">
+<button class="btn secondary" type="button" onclick="msaPerguntarPerfil('Minha alimentação está adequada considerando meu perfil de saúde, minhas condições registradas, meus hábitos e meus objetivos? Explique o que posso melhorar e o que precisa de avaliação profissional.')">🥗 Minha alimentação está adequada?</button>
+<button class="btn secondary" type="button" onclick="msaPerguntarPerfil('Considerando meus sintomas e meu histórico de saúde cadastrados, quais cuidados preventivos devo considerar e quais sinais de alerta exigem atendimento? Não faça diagnóstico.')">🛡️ Que cuidados preventivos devo ter?</button>
+<button class="btn secondary" type="button" onclick="msaPerguntarPerfil('Com base nas condições, sintomas e histórico que registrei, quais especialidades médicas podem ser relevantes para conversar com um profissional e por quê? Não invente consultas anteriores.')">🩺 Quais médicos devo consultar?</button>
+<button class="btn secondary" type="button" onclick="msaPerguntarPerfil('Revise a lista de medicamentos e suplementos que cadastrei. Ajude-me a organizar dúvidas para levar ao médico ou farmacêutico, sem recomendar mudanças de dose ou suspensões.')">💊 Meus medicamentos e suplementos</button>
+<button class="btn secondary" type="button" onclick="msaPerguntarPerfil('Com base nos meus dados e hábitos registrados, quais mudanças saudáveis posso priorizar? Diferencie sugestões gerais de pontos que preciso discutir com um profissional.')">🏃 Como posso melhorar minha saúde?</button>
+<button class="btn secondary" type="button" onclick="msaPerguntarPerfil('Analise os exames que registrei e me ajude a entender quais resultados ou dúvidas devo revisar com meu médico. Se não houver exames cadastrados, diga isso claramente.')">🧪 O que acompanhar nos meus exames?</button>
+<button class="btn secondary" type="button" onclick="msaPerguntarPerfil('Com base na rotina e nos dados de sono que registrei, como posso melhorar meu sono? Se faltarem informações, explique o que está ausente sem inventar.')">🌙 Como melhorar meu sono?</button>
+<button class="btn green" type="button" onclick="msaPerguntarPerfil('Organize um resumo claro das informações de saúde que já cadastrei: condições, medicamentos e suplementos, alergias, sintomas, exames, consultas e hábitos. Separe dados registrados de informações ausentes. Quero revisar o resumo para poder exportá-lo em PDF.')">📄 Resumir meu histórico de saúde</button>
+</div>
+<div class="alert safe" style="margin-top:13px">🔒 Antes de compartilhar informações de saúde, revise a resposta e escolha o que deseja incluir. A IA não substitui consulta ou avaliação médica.</div>
+</div>
+<details style="margin-top:14px"><summary style="cursor:pointer;padding:14px;border:1px solid var(--border,#dbe2ea);border-radius:14px;font-weight:700">📥 Precisa importar seu perfil com outra IA?</summary>
+<div class="card" style="margin-top:10px">
 <div class="ai-hero">
 <div class="ai-hero-icon">🤖</div>
 <div><h2>✨ Comece com a IA — é muito mais rápido</h2>
@@ -1854,6 +1893,7 @@ REGRAS:
 </div>
 <div id="resultadoImport" style="margin-top:12px"></div>
 </div>
+</details>
 </section>
 <section id="documentos">
 <div class="card"><div class="dash-section-title"><div><h2>📄 Cofre de documentos</h2><div class="muted">Guarde cópias locais de PDFs, imagens e outros documentos de saúde. Nada é enviado automaticamente para uma IA.</div></div><button class="btn green" onclick="adicionarDocumentoSaude()">➕ Adicionar</button></div>
