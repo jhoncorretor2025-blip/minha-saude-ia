@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V6.45 */
+/* Minha Saúde IA — aplicação principal V6.57 */
 
 const K=window.MSA_K||window.K;
 const get=k=>window.MSAStorage.get(k);
@@ -666,11 +666,57 @@ function exportarPDF(){
 function abrirCartaoEmergencia(){const p=get(K.p)[0]||{},m=get(K.m);const body='<div class="box"><h2>🚨 Informações de emergência</h2><b>Nome:</b> '+esc(p.nome||'Não informado')+'<br><b>Nascimento:</b> '+esc(p.nasc||'Não informado')+'<br><b>Alergias:</b> '+esc(p.alerg||'Não informado')+'<br><b>Condições:</b> '+esc(p.cond||'Não informado')+'<br><b>Medicamentos registrados:</b> '+esc(m.map(x=>x.nome+(x.dose?' — '+x.dose:'')).join('; ')||'Não informado')+'<br><b>Contato:</b> '+esc(p.emerg||'Não informado')+' — '+esc(p.tel||'')+'<br><b>Informações:</b> '+esc(p.info||'Não informado')+'</div>';openReport('Cartão de emergência',body)}
 function copiarCartaoEmergencia(){const p=get(K.p)[0]||{},m=get(K.m);const text='CARTÃO DE EMERGÊNCIA\nNome: '+(p.nome||'Não informado')+'\nNascimento: '+(p.nasc||'Não informado')+'\nAlergias: '+(p.alerg||'Não informado')+'\nCondições: '+(p.cond||'Não informado')+'\nMedicamentos: '+(m.map(x=>x.nome+(x.dose?' — '+x.dose:'')).join('; ')||'Não informado')+'\nContato: '+(p.emerg||'Não informado')+' — '+(p.tel||'');if(navigator.clipboard)navigator.clipboard.writeText(text).then(()=>alert('✅ Cartão copiado.'));else copiarTextoFallback(text)}
 
+function normalizarNumeroMedida(v){const n=parseFloat(String(v??'').replace(',','.'));return Number.isFinite(n)&&n>0?n:null}
+function atualizarPainelMedidasInteligentes(){
+ const panel=$('medidasSmartPanel');if(!panel)return;
+ const p=get(K.p)[0]||{},height=alturaEmCm(p.altura),pesoForm=normalizarNumeroMedida($('medidasPeso')?.value),peso=pesoForm||normalizarNumeroMedida(p.peso);
+ const bmi=peso&&height?peso/Math.pow(height/100,2):null;
+ const regs=get(K.medidas).slice().sort((a,b)=>String(b.data||'').localeCompare(String(a.data||'')));
+ const atual=regs[0]||{},anterior=regs[1]||{},pesoAtual=normalizarNumeroMedida(pesoForm||atual.peso||p.peso),pesoAnterior=normalizarNumeroMedida(anterior.peso);
+ const difPeso=pesoAtual&&pesoAnterior?pesoAtual-pesoAnterior:null,cintura=normalizarNumeroMedida(atual.barriga),relacao=cintura&&height?cintura/height:null;
+ const fmt=n=>Number(n).toLocaleString('pt-BR',{maximumFractionDigits:1});
+ const dif=key=>{const a=normalizarNumeroMedida(atual[key]),b=normalizarNumeroMedida(anterior[key]);return a&&b?((a-b)>0?'+':'')+fmt(a-b)+' cm':null};
+ const changes=[['Bíceps','biceps'],['Cintura','barriga'],['Quadril','gluteos'],['Panturrilha','panturrilha'],['Coxa','coxa'],['Peito/tórax','peito']].map(([label,key])=>{const d=dif(key);return d?'<div><b>'+label+':</b> '+esc(d)+'</div>':''}).filter(Boolean).join('');
+ const bmiText=bmi?(bmi<18.5?'Abaixo da faixa de referência para adultos':bmi<25?'Faixa de referência para adultos':bmi<30?'Faixa de sobrepeso pelo IMC':'IMC na faixa de obesidade para adultos'):'Informe peso e altura no perfil para calcular';
+ const tips=[];
+ if(!height)tips.push('Preencha sua altura no perfil para calcular o IMC.');
+ if(!peso)tips.push('Informe seu peso no perfil ou nesta medição.');
+ if(cintura&&height)tips.push(relacao>=0.5?'A relação cintura/altura está em 0,50 ou mais. Use como sinal para conversar com um profissional, não como diagnóstico.':'A relação cintura/altura está abaixo de 0,50; acompanhe a tendência ao longo do tempo.');
+ if(!cintura)tips.push('Registrar a cintura permite acompanhar uma medida importante ao longo do tempo.');
+ panel.innerHTML='<div class="card"><h4 style="margin:0 0 8px">🧮 IMC automático</h4><div style="font-size:28px;font-weight:800;color:var(--blue)">'+(bmi?fmt(bmi):'—')+'</div><div class="muted">'+esc(bmiText)+'</div><div class="muted" style="margin-top:6px">Peso: '+(peso?fmt(peso)+' kg':'não informado')+' · Altura: '+(height?fmt(height/100)+' m':'não informada')+'</div></div><div class="card"><h4 style="margin:0 0 8px">📉 Desde a medição anterior</h4><div>'+(difPeso!==null?'<b>Peso:</b> '+(difPeso>0?'+':'')+fmt(difPeso)+' kg':'Peso: registre duas medições com peso')+'</div>'+(changes||'<div class="muted" style="margin-top:6px">Registre duas medições para comparar as medidas corporais.</div>')+'</div><div class="card" style="grid-column:1/-1;background:#f0f7ff"><h4 style="margin:0 0 6px">💡 Sugestões baseadas nos seus dados</h4><ul style="margin:6px 0 0;padding-left:20px">'+tips.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul><div class="muted" style="margin-top:8px">IMC e relação cintura/altura são indicadores gerais; não diagnosticam doenças e podem não ser adequados para todas as pessoas.</div></div>';
+ if($('medidasAlturaAtual'))$('medidasAlturaAtual').textContent=height?fmt(height)+' cm':'não informada no perfil';
+}
+function configurarLembreteMedidas(){
+ const freq=$('medidasLembreteFreq'),status=$('medidasLembreteStatus'),btn=$('medidasLembreteSalvar');if(!freq||!status||!btn)return;
+ let saved={};try{saved=JSON.parse(window.MSAStorage.raw('msa2_medidas_lembrete')||'{}')||{}}catch(e){}
+ freq.value=String(saved.dias||0);
+ function refresh(){
+  if(!saved.dias){status.textContent='Lembrete desativado.';return}
+  const regs=get(K.medidas).slice().sort((a,b)=>String(b.data||'').localeCompare(String(a.data||''))),base=saved.ultima||(regs[0]&&regs[0].data)||'';
+  if(!base){status.textContent='Lembrete ativo: registre a primeira medição para iniciar a contagem.';return}
+  const d=new Date(base+'T12:00:00');d.setDate(d.getDate()+Number(saved.dias));const hoje=new Date();hoje.setHours(0,0,0,0);
+  status.textContent='Próxima medição sugerida: '+d.toLocaleDateString('pt-BR')+'. O aviso aparece ao abrir o aplicativo.';
+  if(d<=hoje&&saved.avisado!==base){status.textContent+=' Já está na hora de registrar uma nova medição.';saved.avisado=base;try{window.MSAStorage.set('msa2_medidas_lembrete',saved)}catch(e){}}
+ }
+ btn.onclick=function(){saved.dias=Number(freq.value)||0;const regs=get(K.medidas).slice().sort((a,b)=>String(b.data||'').localeCompare(String(a.data||'')));saved.ultima=regs[0]?.data||'';saved.avisado='';try{window.MSAStorage.set('msa2_medidas_lembrete',saved);refresh();alert(saved.dias?'🔔 Lembrete de medição salvo. O aviso será mostrado ao abrir o aplicativo.':'Lembrete desativado.')}catch(e){alert('Não foi possível salvar o lembrete.')}};
+ refresh();
+}
+function abrirGuiaMedidas(){
+ let modal=$('medidasGuiaModal');if(!modal){
+  modal=document.createElement('div');modal.id='medidasGuiaModal';modal.style.cssText='position:fixed;inset:0;z-index:30000;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;padding:16px';
+  modal.innerHTML='<div class="card" role="dialog" aria-modal="true" aria-labelledby="medidasGuiaTitulo" style="width:min(620px,100%);max-height:85vh;overflow:auto"><div class="itemtop"><h3 id="medidasGuiaTitulo">📐 Guia rápido de medição</h3><button class="btn secondary small" type="button" id="medidasGuiaFechar">Fechar ✕</button></div><ol style="line-height:1.65"><li><b>Bíceps:</b> braço relaxado ou flexionado, sempre usando o mesmo método.</li><li><b>Cintura/barriga:</b> fita horizontal na região definida para acompanhar, sem prender a respiração nem apertar a pele.</li><li><b>Quadril:</b> contorne a parte mais larga dos glúteos.</li><li><b>Panturrilha:</b> contorne a parte mais larga da panturrilha.</li><li><b>Coxa:</b> escolha um ponto fixo e repita a medição nesse mesmo local.</li><li><b>Peito/tórax:</b> fita horizontal, postura natural, sem apertar.</li></ol><p class="muted">Dica: meça em condições parecidas e registre a data. Pequenas diferenças podem ocorrer por postura, hidratação ou posição da fita.</p></div>';
+  document.body.appendChild(modal);modal.addEventListener('click',e=>{if(e.target===modal)modal.remove()});modal.querySelector('#medidasGuiaFechar').onclick=()=>modal.remove();
+ }
+}
 function renderMedidasCorporais(){
+ const p=get(K.p)[0]||{};
+ if($('medidasPeso')&&!$('medidasForm')?.dataset.editId&&!$('medidasPeso').value)$('medidasPeso').value=p.peso||'';
+ atualizarPainelMedidasInteligentes();configurarLembreteMedidas();
  const a=get(K.medidas).slice().sort((x,y)=>String(y.data).localeCompare(String(x.data)));
  const box=$('medidasList');if(!box)return;
  box.innerHTML=a.length?a.map(x=>{
   const vals=[
+   x.peso?'⚖️ Peso: '+esc(x.peso)+' kg':'',
    x.biceps?'💪 Bíceps: '+esc(x.biceps)+' cm':'',
    x.barriga?'🟠 Barriga/cintura: '+esc(x.barriga)+' cm':'',
    x.gluteos?'🍑 Glúteos/quadril: '+esc(x.gluteos)+' cm':'',
@@ -688,6 +734,7 @@ function editarMedidaCorporal(id){
  if(!form)return;
  form.dataset.editId=String(id);
  $('medidasData').value=item.data||'';
+ if($('medidasPeso'))$('medidasPeso').value=item.peso||'';
  $('medidasBiceps').value=item.biceps||'';
  $('medidasBarriga').value=item.barriga||'';
  $('medidasGluteos').value=item.gluteos||'';
@@ -714,6 +761,8 @@ function cancelarEdicaoMedidaCorporal(){
  delete form.dataset.editId;
  form.reset();
  $('medidasData').value=hojeLocal();
+ if($('medidasPeso'))$('medidasPeso').value=(get(K.p)[0]||{}).peso||'';
+ atualizarPainelMedidasInteligentes();
  const btn=form.querySelector('button[type="submit"]');
  if(btn)btn.textContent='💾 Salvar medidas';
  form.querySelector('.cancelar-edicao-medidas')?.remove();
@@ -776,11 +825,12 @@ function prepararContextoIA(){
  try{navigator.clipboard.writeText(ficha);alert('✅ Contexto preparado e copiado. Revise antes de colar na IA.');go('ia');}catch(e){go('ia');const t=$('iaInput');if(t){t.value=ficha;t.focus();}alert('O contexto foi preparado. Se a cópia automática não funcionar, ele ficou no campo da IA.');}
 }
 function findAlerts(d){for(let x of d){let s=(x.sint||'').toLowerCase();if(x.int>=9)return '🔴 Há registro de dor muito intensa (9–10/10). Se for atual, súbita, piorando ou acompanhada de outros sinais importantes, procure avaliação médica.';if(/falta de ar|desmaio|convuls|confusão|fraqueza de um lado|sangramento importante/.test(s))return '🔴 Foi registrado um possível sinal de alerta. Se estiver acontecendo agora, procure atendimento médico rapidamente.'}return ''}
-$('medidasForm')?.addEventListener('submit',e=>{
+$('medidasPeso')?.addEventListener('input',atualizarPainelMedidasInteligentes);$('pPeso')?.addEventListener('input',atualizarPainelMedidasInteligentes);$('pAltura')?.addEventListener('input',atualizarPainelMedidasInteligentes);$('medidasGuiaBtn')?.addEventListener('click',abrirGuiaMedidas);\n$('medidasForm')?.addEventListener('submit',e=>{
  e.preventDefault();
  const editId=e.target.dataset.editId||'';
- const item={id:editId?Number(editId):Date.now(),data:$('medidasData').value,biceps:$('medidasBiceps').value,barriga:$('medidasBarriga').value,gluteos:$('medidasGluteos').value,panturrilha:$('medidasPanturrilha').value,coxa:$('medidasCoxa').value,peito:$('medidasPeito').value,obs:$('medidasObs').value};
- if(!item.biceps&&!item.barriga&&!item.gluteos&&!item.panturrilha&&!item.coxa&&!item.peito){alert('Informe pelo menos uma medida corporal.');return}
+ const pesoMedido=$('medidasPeso')?.value||'';
+ const item={id:editId?Number(editId):Date.now(),data:$('medidasData').value,peso:pesoMedido,biceps:$('medidasBiceps').value,barriga:$('medidasBarriga').value,gluteos:$('medidasGluteos').value,panturrilha:$('medidasPanturrilha').value,coxa:$('medidasCoxa').value,peito:$('medidasPeito').value,obs:$('medidasObs').value};
+ if(!item.peso&&!item.biceps&&!item.barriga&&!item.gluteos&&!item.panturrilha&&!item.coxa&&!item.peito){alert('Informe o peso ou pelo menos uma medida corporal.');return}
  const a=get(K.medidas);
  if(editId){
   const idx=a.findIndex(x=>String(x.id)===String(editId));
@@ -790,6 +840,11 @@ $('medidasForm')?.addEventListener('submit',e=>{
   a.push(item);
  }
  if(!gravarOuAvisar(K.medidas,a))return;
+ if(pesoMedido){
+  const perfis=get(K.p),perfilAtual=perfis[0]||{},perfilNovo=Object.assign({},perfilAtual,{peso:pesoMedido});
+  if(perfis.length)perfis[0]=perfilNovo;else perfis.push(perfilNovo);
+  gravarOuAvisar(K.p,perfis);
+ }
  cancelarEdicaoMedidaCorporal();
  render();
  alert(editId?'📏 Medidas corporais atualizadas!':'📏 Medidas corporais salvas!');
