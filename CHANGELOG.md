@@ -1,3 +1,10 @@
+## V6.54 — “Informações que faltam” mais clara e completa
+- 😀 Cada informação pendente ganhou seu emoji (🏥 Cirurgias, 🆘 Contato de emergência, 💉 Vacinas, 🧬 Histórico familiar, 📄 Documentos, 📔 Diário do ciclo…) e cada grupo também (👤 Perfil, 🏃 Rotina, 📋 Histórico, 🗂️ Organização, 🌸 Saúde reprodutiva).
+- 🐞 Corrigido: o nome e o “Preencher →” apareciam grudados (ex.: “VacinasPreencher”) porque o botão usava uma classe diferente da que o estilo esperava.
+- ➕ A ficha agora também confere: telefone de emergência, tabagismo, consumo de álcool e, para mulheres, preventivo do colo do útero e mamografia.
+- 🎯 Itens de Rotina e Saúde reprodutiva levam direto ao campo certo do perfil.
+- 🔄 Versão sincronizada em V6.54 (a constante, o version.json e o cache estavam em V6.46 enquanto o site mostrava V6.53).
+
 ## V6.41 — Edição do perfil individual
 - ✏️ Adicionado formulário visível “Editar dados pessoais” dentro de cada ficha, aberto por padrão para facilitar encontrar o recurso.
 - 🧑 Permite alterar nome, relação, sexo, nascimento, idade, tipo sanguíneo, condição principal, alergias, contato e observações.
