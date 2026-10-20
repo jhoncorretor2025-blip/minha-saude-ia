@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V6.58 */
+/* Minha Saúde IA — aplicação principal V6.59 */
 
 const K=window.MSA_K||window.K;
 const get=k=>window.MSAStorage.get(k);
@@ -270,7 +270,11 @@ function mostrarAjudaIMCHome(){
  alert('O IMC é calculado dividindo o peso em quilos pela altura em metros ao quadrado. Para adultos, as faixas são: abaixo de 18,5 (abaixo do peso), 18,5 a 24,9 (faixa adequada), 25 a 29,9 (sobrepeso), 30 a 34,9 (obesidade grau I), 35 a 39,9 (grau II) e 40 ou mais (grau III). É uma triagem geral, não um diagnóstico, e pode ser menos representativo para pessoas muito musculosas, gestantes e alguns outros grupos.');
 }
 $('homeBmiHelp')?.addEventListener('click',mostrarAjudaIMCHome);
-function atualizarPerfilHome(){const p=get(K.p)[0]||{},foto=p.foto||'';if($('homeProfileName'))$('homeProfileName').textContent=p.nome||'Complete seu perfil';if($('homeProfileAge'))$('homeProfileAge').textContent=p.idade||'—';if($('homeProfileWeight'))$('homeProfileWeight').textContent=p.peso||'—';if($('homeProfileHeight'))$('homeProfileHeight').textContent=p.altura?formatarAltura(p.altura):'—';if($('homeProfileBlood'))$('homeProfileBlood').textContent=p.sangue||'—';if($('homeAvatar'))$('homeAvatar').innerHTML=foto?'<img src="'+esc(foto)+'" alt="Foto do perfil">':'<span>👤</span>';atualizarResumoCorporalHome();atualizarContagemAniversarioHome()}
+function atualizarPerfilHome(){const p=get(K.p)[0]||{},foto=p.foto||'';if($('homeProfileName'))$('homeProfileName').textContent=p.nome||'Complete seu perfil';if($('homeProfileAge'))$('homeProfileAge').textContent=p.idade||'—';if($('homeProfileWeight'))$('homeProfileWeight').textContent=p.peso||'—';if($('homeProfileHeight'))$('homeProfileHeight').textContent=p.altura?formatarAltura(p.altura):'—';const sangue=String(p.sangue||'').trim().toUpperCase().replace(/\s+/g,'');
+const grupos={'A+':'A positivo','A-':'A negativo','B+':'B positivo','B-':'B negativo','AB+':'AB positivo','AB-':'AB negativo','O+':'O positivo','O-':'O negativo'};
+if($('homeProfileBlood'))$('homeProfileBlood').textContent=sangue||'—';
+if($('homeProfileBloodFull'))$('homeProfileBloodFull').textContent=grupos[sangue]?'· '+grupos[sangue]:'';
+if($('homeProfileBloodBadge')){$('homeProfileBloodBadge').title=grupos[sangue]?'Grupo sanguíneo '+grupos[sangue]:'Grupo sanguíneo não informado';$('homeProfileBloodBadge').setAttribute('aria-label',$('homeProfileBloodBadge').title)}if($('homeAvatar'))$('homeAvatar').innerHTML=foto?'<img src="'+esc(foto)+'" alt="Foto do perfil">':'<span>👤</span>';atualizarResumoCorporalHome();atualizarContagemAniversarioHome()}
 const RECURSOS_PERSONALIZAVEIS=[
  {key:'academia',icon:'🏋️',label:'Academia e medidas corporais',desc:'Atividades de academia e medidas de bíceps, cintura, quadril, panturrilha etc.',targets:['fitness']},
  {key:'nutricao',icon:'🥗',label:'Nutrição',desc:'Diário de alimentação, hidratação e suplementos.',targets:['nutricao']},
