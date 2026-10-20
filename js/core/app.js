@@ -825,7 +825,8 @@ function prepararContextoIA(){
  try{navigator.clipboard.writeText(ficha);alert('✅ Contexto preparado e copiado. Revise antes de colar na IA.');go('ia');}catch(e){go('ia');const t=$('iaInput');if(t){t.value=ficha;t.focus();}alert('O contexto foi preparado. Se a cópia automática não funcionar, ele ficou no campo da IA.');}
 }
 function findAlerts(d){for(let x of d){let s=(x.sint||'').toLowerCase();if(x.int>=9)return '🔴 Há registro de dor muito intensa (9–10/10). Se for atual, súbita, piorando ou acompanhada de outros sinais importantes, procure avaliação médica.';if(/falta de ar|desmaio|convuls|confusão|fraqueza de um lado|sangramento importante/.test(s))return '🔴 Foi registrado um possível sinal de alerta. Se estiver acontecendo agora, procure atendimento médico rapidamente.'}return ''}
-$('medidasPeso')?.addEventListener('input',atualizarPainelMedidasInteligentes);$('pPeso')?.addEventListener('input',atualizarPainelMedidasInteligentes);$('pAltura')?.addEventListener('input',atualizarPainelMedidasInteligentes);$('medidasGuiaBtn')?.addEventListener('click',abrirGuiaMedidas);\n$('medidasForm')?.addEventListener('submit',e=>{
+$('medidasPeso')?.addEventListener('input',atualizarPainelMedidasInteligentes);$('pPeso')?.addEventListener('input',atualizarPainelMedidasInteligentes);$('pAltura')?.addEventListener('input',atualizarPainelMedidasInteligentes);$('medidasGuiaBtn')?.addEventListener('click',abrirGuiaMedidas);
+$('medidasForm')?.addEventListener('submit',e=>{
  e.preventDefault();
  const editId=e.target.dataset.editId||'';
  const pesoMedido=$('medidasPeso')?.value||'';
