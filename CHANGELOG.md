@@ -1,3 +1,8 @@
+## V6.55 — Perguntas da consulta: copiar e imprimir funcionando
+- 🐞 “Imprimir / salvar PDF” saía em branco: a regra de impressão da página escondia a caixa das perguntas. Agora abre uma folha só com as perguntas, nome, data e linhas para anotar a resposta do médico.
+- 📋 “Copiar perguntas” ficou mais confiável no iPhone (seleção do jeito que o Safari exige) e confirma na própria tela, sem depender de janela de alerta.
+- 🔄 Versão e cache atualizados para V6.55.
+
 ## V6.54 — “Informações que faltam” mais clara e completa
 - 😀 Cada informação pendente ganhou seu emoji (🏥 Cirurgias, 🆘 Contato de emergência, 💉 Vacinas, 🧬 Histórico familiar, 📄 Documentos, 📔 Diário do ciclo…) e cada grupo também (👤 Perfil, 🏃 Rotina, 📋 Histórico, 🗂️ Organização, 🌸 Saúde reprodutiva).
 - 🐞 Corrigido: o nome e o “Preencher →” apareciam grudados (ex.: “VacinasPreencher”) porque o botão usava uma classe diferente da que o estilo esperava.
