@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V6.59 */
+/* Minha Saúde IA — aplicação principal V6.60 */
 
 const K=window.MSA_K||window.K;
 const get=k=>window.MSAStorage.get(k);
@@ -274,7 +274,17 @@ function atualizarPerfilHome(){const p=get(K.p)[0]||{},foto=p.foto||'';if($('hom
 const grupos={'A+':'A positivo','A-':'A negativo','B+':'B positivo','B-':'B negativo','AB+':'AB positivo','AB-':'AB negativo','O+':'O positivo','O-':'O negativo'};
 if($('homeProfileBlood'))$('homeProfileBlood').textContent=sangue||'—';
 if($('homeProfileBloodFull'))$('homeProfileBloodFull').textContent=grupos[sangue]?'· '+grupos[sangue]:'';
-if($('homeProfileBloodBadge')){$('homeProfileBloodBadge').title=grupos[sangue]?'Grupo sanguíneo '+grupos[sangue]:'Grupo sanguíneo não informado';$('homeProfileBloodBadge').setAttribute('aria-label',$('homeProfileBloodBadge').title)}if($('homeAvatar'))$('homeAvatar').innerHTML=foto?'<img src="'+esc(foto)+'" alt="Foto do perfil">':'<span>👤</span>';atualizarResumoCorporalHome();atualizarContagemAniversarioHome()}
+if($('homeProfileBloodBadge')){$('homeProfileBloodBadge').title=grupos[sangue]?'Grupo sanguíneo '+grupos[sangue]:'Grupo sanguíneo não informado';$('homeProfileBloodBadge').setAttribute('aria-label',$('homeProfileBloodBadge').title)}
+const imc=calcularIMC(p),imcVal=$('homeProfileBMI'),imcClass=$('homeProfileBMIClass');
+if(imcVal)imcVal.textContent=imc?imc.bmi.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}):'—';
+if(imcClass)imcClass.textContent=imc?imc.cls: 'Informe peso e altura';
+if($('homeProfileBMIChip'))$('homeProfileBMIChip').title=imc?'IMC '+imc.bmi.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' — '+imc.cls:'Cadastre peso e altura no perfil';
+const regsMedidas=get(K.medidas).slice().sort((x,y)=>String(y.data||'').localeCompare(String(x.data||'')));
+const medCintura=regsMedidas.find(x=>parseFloat(String(x.barriga||'').replace(',','.'))>0);
+if($('homeProfileWaist'))$('homeProfileWaist').textContent=medCintura?String(medCintura.barriga).replace('.',',')+' cm':'—';
+if($('homeProfileWaistDate'))$('homeProfileWaistDate').textContent=medCintura?'Última medida · '+formatDateBR(medCintura.data):'Registre em medidas corporais';
+if($('homeProfileWaistChip'))$('homeProfileWaistChip').title=medCintura?'Circunferência registrada em '+formatDateBR(medCintura.data):'Ainda não há circunferência registrada. Acesse Academia e medidas corporais.';
+if($('homeAvatar'))$('homeAvatar').innerHTML=foto?'<img src="'+esc(foto)+'" alt="Foto do perfil">':'<span>👤</span>';atualizarResumoCorporalHome();atualizarContagemAniversarioHome()}
 const RECURSOS_PERSONALIZAVEIS=[
  {key:'academia',icon:'🏋️',label:'Academia e medidas corporais',desc:'Atividades de academia e medidas de bíceps, cintura, quadril, panturrilha etc.',targets:['fitness']},
  {key:'nutricao',icon:'🥗',label:'Nutrição',desc:'Diário de alimentação, hidratação e suplementos.',targets:['nutricao']},
