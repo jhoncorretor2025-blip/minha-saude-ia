@@ -692,7 +692,7 @@ function configurarLembreteMedidas(){
  freq.value=String(saved.dias||0);
  function refresh(){
   if(!saved.dias){status.textContent='Lembrete desativado.';return}
-  const regs=get(K.medidas).slice().sort((a,b)=>String(b.data||'').localeCompare(String(a.data||''))),base=saved.ultima||(regs[0]&&regs[0].data)||'';
+  const regs=get(K.medidas).slice().sort((a,b)=>String(b.data||'').localeCompare(String(a.data||''))),base=(regs[0]&&regs[0].data)||saved.ultima||'';
   if(!base){status.textContent='Lembrete ativo: registre a primeira medição para iniciar a contagem.';return}
   const d=new Date(base+'T12:00:00');d.setDate(d.getDate()+Number(saved.dias));const hoje=new Date();hoje.setHours(0,0,0,0);
   status.textContent='Próxima medição sugerida: '+d.toLocaleDateString('pt-BR')+'. O aviso aparece ao abrir o aplicativo.';
