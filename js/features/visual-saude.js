@@ -196,7 +196,7 @@ function atualizarCardPessoa(){
  var avatar=$('homeAvatar');if(avatar)avatar.innerHTML=p.foto?'<img src="'+pessoaEsc(p.foto)+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':(principal?'<span>👤</span>':(p.sexo==='Feminino'?'👩':'👤'));
  var greet=hero.querySelector('.home-greeting');if(greet)greet.textContent=principal?'👋 Olá!':'💙 Acompanhando';
  var b=$('msaPessoaAcompanhadaBtn');if(b){var name=b.querySelector('b');if(name)name.textContent=p.nome||'Pessoa selecionada';b.setAttribute('aria-label','Estou cuidando da saúde de '+(p.nome||'pessoa selecionada')+'. Clique para trocar')}
- var edit=hero.querySelector('.home-profile-edit');if(edit){edit.textContent=principal?'✏️ Editar':'✏️ Editar pessoa';edit.onclick=principal?function(){go('perfil')}:function(){go('familiares');setTimeout(function(){if(window.selecionarFamiliar)window.selecionarFamiliar(p.id)},180)}}
+ var edit=hero.querySelector('.home-profile-edit');if(edit){edit.textContent=principal?'✏️ Editar':'✏️ Editar pessoa';edit.onclick=principal?function(){go('perfil')}:function(){try{window.MSAStorage.set('msa2_familiar_selecionado',p.id)}catch(e){}go('familiares');setTimeout(function(){if(window.selecionarFamiliar)window.selecionarFamiliar(p.id);setTimeout(function(){if(window.focarEdicaoFamiliar)window.focarEdicaoFamiliar(p.id)},120)},180)}}
 }
 function abrirSeletorPessoa(){
  var old=$('msaPessoaAcompanhadaModal');if(old)old.remove();var active=pessoaAtual(),own=pessoaPrincipal(),list=pessoasAcompanhadas();
