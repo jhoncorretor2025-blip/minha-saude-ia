@@ -208,14 +208,33 @@ function abrirSeletorPessoa(){
  modal.querySelector('.msa-pessoa-manage').onclick=function(){fechar();go('familiares')};
 }
 function instalarSeletorPessoaAcompanhada(){
- var hero=$('homeProfileHero'),waist=$('homeProfileWaistChip');if(!hero||!waist)return;
- var btn=$('msaPessoaAcompanhadaBtn');if(!btn){btn=document.createElement('button');btn.id='msaPessoaAcompanhadaBtn';btn.type='button';btn.className='msa-pessoa-acompanhada';btn.innerHTML='👨‍👩‍👧 <span>Estou cuidando da saúde de:</span> <b>Meu perfil</b> <span aria-hidden="true">▾</span>';btn.setAttribute('aria-haspopup','dialog');btn.onclick=abrirSeletorPessoa;waist.insertAdjacentElement('afterend',btn)}
+ var hero=$('homeProfileHero'),waist=$('homeProfileWaistChip');
+ if(!hero)return false;
+ /* Busca o chip também pelo texto, caso algum ajuste de layout tenha trocado o ID. */
+ if(!waist){var chips=hero.querySelectorAll('.home-profile-metric-chip');for(var i=0;i<chips.length;i++){if(/Cintura/i.test(chips[i].textContent||'')){waist=chips[i];break}}}
+ if(!waist)return false;
+ var btn=$('msaPessoaAcompanhadaBtn');
+ if(!btn){
+  btn=document.createElement('button');btn.id='msaPessoaAcompanhadaBtn';btn.type='button';btn.className='msa-pessoa-acompanhada';
+  btn.innerHTML='👨‍👩‍👧 <span>Estou cuidando da saúde de:</span> <b>Meu perfil</b> <span aria-hidden="true">▾</span>';
+  btn.setAttribute('aria-haspopup','dialog');btn.onclick=abrirSeletorPessoa;
+ }
+ /* Reposiciona caso o card seja recriado ou o botão tenha ficado fora da linha de métricas. */
+ if(waist.nextElementSibling!==btn)waist.insertAdjacentElement('afterend',btn);
+ btn.style.display='inline-flex';btn.style.visibility='visible';
  atualizarCardPessoa();
+ return true;
+}
+/* Reaplica após a montagem assíncrona da Home, inclusive quando o card é recriado. */
+function garantirSeletorPessoaAcompanhada(){
+ var tentativas=0;
+ function tentar(){tentativas++;if(instalarSeletorPessoaAcompanhada())return;if(tentativas<20)setTimeout(tentar,250)}
+ tentar();
 }
 
 /* ---------- juntando ---------- */
 var agendado=false;
-function tudo(){agendado=false;try{melhorarHome();instalarSeletorPessoaAcompanhada();saudacao();semaforoVitais();semaforoDor();iconesRemedios();carteirinha();telasVazias();calendarioSemana()}catch(e){if(window.console)console.warn('[visual-saude]',e)}}
+function tudo(){agendado=false;try{melhorarHome();garantirSeletorPessoaAcompanhada();saudacao();semaforoVitais();semaforoDor();iconesRemedios();carteirinha();telasVazias();calendarioSemana()}catch(e){if(window.console)console.warn('[visual-saude]',e)}}
 function agendar(){if(agendado)return;agendado=true;setTimeout(tudo,60)}
 /* V6.64: corrige bug antigo — a lista de medições (pressão, açúcar…), lembretes e vacinas nunca era montada,
    porque renderAcompanhamento() não era chamada em lugar nenhum. */
