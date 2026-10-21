@@ -1,3 +1,13 @@
+## V6.64 — Visual mais claro
+- 🌈 Cor fixa por tipo: sintomas laranja, remédios azul, consultas verde, pressão/açúcar vermelho, exames roxo e lembretes azul-piscina (borda dos cards, títulos e botões do Início).
+- 🟢🟡🔴 Semáforo nas medições (pressão, açúcar, batimentos, oxigênio e temperatura) com legenda e aviso de que são valores de referência gerais; barra colorida de intensidade nos sintomas.
+- 👋 Saudação no Início com nome, período do dia e data.
+- 💊 Ícone do formato do remédio (comprimido, gotas, xarope, injeção, pomada, inalação, sachê): reconhecido pelo nome/dose e ajustável num toque (guardado à parte, sem mexer nos registros).
+- 🪪 Carteirinha com cara de cartão: degradê, iniciais grandes e tipo sanguíneo em destaque.
+- 📭 Telas vazias amigáveis, com emoji, explicação e botão “➕ Anotar agora”.
+- 🐞 Corrigido: a lista de medições (pressão, açúcar…), lembretes e vacinas nunca aparecia — a função que monta essa página não era chamada.
+- 🔄 Versão e cache atualizados para V6.64.
+
 ## V6.63 — Aviso do remédio, resumo para o médico, link para a família e anotar falando
 - 🔔 Aviso na hora de cada remédio da rotina com os botões “✅ Tomei” e “⏰ Lembrar em 15 min” (na notificação do celular e dentro do app). O cartão “Hoje” convida a ativar os avisos.
 - 🗓️ “Resumo para levar ao médico”: 1 página com tudo desde a última consulta (sintomas, remédios em uso e novos, pressão/açúcar, exames, alergias, condições) e as perguntas sugeridas, pronta para imprimir ou salvar em PDF.
