@@ -128,9 +128,23 @@ document.addEventListener('click',function(e){
  },650);
 },true);
 
+
+/* V6.67 — hierarquia da página inicial, ações prioritárias e responsividade */
+function melhorarHome(){
+ var home=$('home');if(!home)return;
+ var perfil=$('homeProfileHero'),atalhos=$('homeCommandCenter'),imc=$('homeSmartHealth'),aniversario=$('homeBirthdayCountdown'),rapidas=$('homeQuickActions'),intro=$('msaPurposeIntro'),pendencias=$('homeMissingInfoCard'),metricas=home.querySelector('.metric-panel'),backup=home.querySelector('.msa-backup-prompt');
+ if(perfil&&atalhos&&atalhos.previousElementSibling!==perfil)perfil.insertAdjacentElement('afterend',atalhos);
+ if(atalhos&&imc&&imc.previousElementSibling!==atalhos)atalhos.insertAdjacentElement('afterend',imc);
+ if(imc&&aniversario&&aniversario.previousElementSibling!==imc)imc.insertAdjacentElement('afterend',aniversario);
+ if(rapidas)rapidas.hidden=true;
+ if(intro)intro.hidden=true;
+ if(metricas&&pendencias&&pendencias.previousElementSibling!==metricas)metricas.insertAdjacentElement('afterend',pendencias);
+ if(metricas&&backup&&backup.previousElementSibling!==metricas)metricas.insertAdjacentElement('afterend',backup);
+}
+
 /* ---------- juntando ---------- */
 var agendado=false;
-function tudo(){agendado=false;try{saudacao();semaforoVitais();semaforoDor();iconesRemedios();carteirinha();telasVazias();calendarioSemana()}catch(e){if(window.console)console.warn('[visual-saude]',e)}}
+function tudo(){agendado=false;try{melhorarHome();saudacao();semaforoVitais();semaforoDor();iconesRemedios();carteirinha();telasVazias();calendarioSemana()}catch(e){if(window.console)console.warn('[visual-saude]',e)}}
 function agendar(){if(agendado)return;agendado=true;setTimeout(tudo,60)}
 /* V6.64: corrige bug antigo — a lista de medições (pressão, açúcar…), lembretes e vacinas nunca era montada,
    porque renderAcompanhamento() não era chamada em lugar nenhum. */
@@ -211,5 +225,68 @@ css.textContent=
   '@media(max-width:360px){.vs-week{padding:9px 6px}.vs-week-days{gap:2px}.vs-week-dot{width:28px;height:28px}}'+
   '@media print{.vs-forma,.vs-vazio button,.vs-saudacao,.vs-week,.vs-dose-pop{display:none!important}}';
 document.head.appendChild(css);
+
+var homePolish=document.createElement('style');homePolish.id='msa-home-polish-v667';
+homePolish.textContent=`
+#home{display:flex;flex-direction:column;gap:12px}
+#home #homeProfileHero{margin:0 0 2px;gap:16px}
+#home .home-command-center{order:1;margin:0;align-items:stretch;gap:12px}
+#home .home-command-main,#home .home-command-side{border-radius:18px;box-shadow:0 6px 20px rgba(15,23,42,.045)}
+#home .home-command-main{padding:17px}
+#home .home-command-main h2{font-size:clamp(20px,2.4vw,25px);letter-spacing:-.025em}
+#home .home-primary-actions button{min-height:88px;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+#home .home-primary-actions button:focus-visible,#home .home-command-side button:focus-visible,#home .home-secondary-actions button:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}
+#home .home-primary-actions button:hover{box-shadow:0 5px 14px rgba(37,99,235,.09)}
+#home #homeSmartHealth{margin:0}
+#home .home-bmi-card{border-radius:18px;padding:16px;box-shadow:0 6px 20px rgba(37,99,235,.055)}
+#home .home-missing-info-card,#home #homeMissingInfoCard{border-radius:16px!important}
+#home .metric-panel{margin:0;gap:9px}
+#home .metric-kpi{border-radius:15px;transition:border-color .15s ease}
+#home .home-quick-actions,#home .msa-purpose{display:none!important}
+#home .msa-backup-prompt{margin:0!important;border-radius:16px!important}
+#home .home-secondary-details{margin-top:0!important}
+body.msa-dark #home .home-command-main,body.msa-dark #home .home-command-side{background:#1a2940;border-color:#34445d;color:#dce6f3}
+body.msa-dark #home .home-command-main p,body.msa-dark #home .home-command-side button{color:#cbd5e1}
+body.msa-dark #home .home-primary-actions button,body.msa-dark #home .home-command-side button{background:#17243a;border-color:#34445d;color:#dce6f3}
+@media(max-width:760px){
+ #home{gap:10px}
+ #home #homeProfileHero{padding:13px;gap:10px;align-items:flex-start;flex-wrap:wrap}
+ #home .home-avatar{width:56px;height:56px;min-width:56px}
+ #home .home-profile-main h2{font-size:19px}
+ #home .home-profile-stats{gap:6px}
+ #home .home-profile-stats span{font-size:11px;padding:5px 8px}
+ #home .home-profile-actions{width:100%;display:flex;gap:7px}
+ #home .home-profile-actions button{flex:1;min-height:40px}
+ #home .home-command-center{grid-template-columns:1fr}
+ #home .home-command-side{display:none}
+ #home .home-command-main{padding:14px}
+ #home .home-command-main h2{font-size:21px}
+ #home .home-command-main p{font-size:13px;line-height:1.45}
+ #home .home-primary-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:11px}
+ #home .home-primary-actions button{min-height:72px;padding:10px 8px;border-radius:13px}
+ #home .home-primary-actions strong{font-size:21px}
+ #home .home-primary-actions span{font-size:12px}
+ #home .home-secondary-actions{gap:4px}
+ #home .home-bmi-card{grid-template-columns:minmax(0,1fr) minmax(92px,.55fr);gap:10px;padding:13px}
+ #home .home-bmi-summary p{font-size:11px}
+ #home .home-bmi-scale{grid-column:1/-1}
+ #home .home-bmi-note{grid-column:1/-1}
+ #home .metric-panel{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ #home .metric-kpi{padding:11px}
+ #home .metric-kpi b{font-size:20px}
+ #home #homeMissingInfoCard{align-items:flex-start!important;flex-direction:column;padding:13px!important;gap:10px!important}
+ #home #homeMissingInfoCard .btn{width:100%}
+ #home .msa-backup-prompt .row{display:grid;grid-template-columns:1fr}
+ #home .msa-backup-prompt .row button{width:100%}
+}
+@media(max-width:380px){
+ #home .home-profile-actions{flex-direction:column}
+ #home .home-bmi-card{grid-template-columns:1fr}
+ #home .home-bmi-figure-area{min-height:100px}
+}
+@media(prefers-reduced-motion:reduce){#home .home-primary-actions button{transition:none}}
+`;
+document.head.appendChild(homePolish);
+
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(iniciar,500)});else setTimeout(iniciar,500);
 })();
