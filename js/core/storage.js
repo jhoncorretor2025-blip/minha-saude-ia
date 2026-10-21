@@ -20,6 +20,7 @@ function globalGet(k){
   const parsed=JSON.parse(raw);
   if(Array.isArray(parsed))return parsed;
   if(k===K.p&&parsed&&typeof parsed==='object')return [parsed];
+  if(k==='msa2_humor'&&parsed&&typeof parsed==='object')return parsed;
   return [];
  }catch(e){console.warn('[Minha Saúde IA] leitura protegida:',k,e);return []}
 }
