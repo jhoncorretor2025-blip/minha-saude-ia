@@ -170,7 +170,7 @@ function pessoasAcompanhadas(){
  return Array.isArray(a)?a:[];
 }
 function pessoaAtual(){
- try{var id=window.MSAStorage.get('msa2_familiar_selecionado');if(id){var p=pessoasAcompanhadas().find(function(x){return String(x.id)===String(id)});if(p)return p}}catch(e){}
+ try{var raw=window.MSAStorage.raw('msa2_familiar_selecionado'),id=raw?JSON.parse(raw):'';if(id){var p=pessoasAcompanhadas().find(function(x){return String(x.id)===String(id)});if(p)return p}}catch(e){}
  return pessoaPrincipal();
 }
 function pessoaIdade(p){
