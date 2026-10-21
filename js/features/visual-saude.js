@@ -157,9 +157,62 @@ function melhorarHome(){
  if(metricas&&backup&&backup.previousElementSibling!==metricas)metricas.insertAdjacentElement('afterend',backup);
 }
 
+
+/* V6.73 — seletor de pessoa acompanhada no cartão de perfil */
+function pessoaEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+function pessoaPrincipal(){
+ var k=window.MSA_K||window.K||{},a=[];try{a=window.MSAStorage.get(k.p)||[]}catch(e){}
+ var p=Array.isArray(a)?(a[0]||{}):(a||{});
+ return {id:'__principal__',nome:p.nome||'Meu perfil',idade:p.idade||'',nasc:p.nasc||'',peso:p.peso||'',altura:p.altura||'',sangue:p.sangue||'',sexo:p.sexo||'',foto:p.foto||'',circ:p.circ||'',principal:true};
+}
+function pessoasAcompanhadas(){
+ var k=window.MSA_K||window.K||{},a=[];try{a=window.MSAStorage.get(k.familiares||'msa2_familiares')||[]}catch(e){}
+ return Array.isArray(a)?a:[];
+}
+function pessoaAtual(){
+ try{var id=window.MSAStorage.get('msa2_familiar_selecionado');if(id){var p=pessoasAcompanhadas().find(function(x){return String(x.id)===String(id)});if(p)return p}}catch(e){}
+ return pessoaPrincipal();
+}
+function pessoaIdade(p){
+ if(p.idade)return String(p.idade);
+ if(p.nasc){var d=new Date(p.nasc+'T12:00:00');if(!isNaN(d)){var n=new Date(),a=n.getFullYear()-d.getFullYear();if(n.getMonth()<d.getMonth()||(n.getMonth()===d.getMonth()&&n.getDate()<d.getDate()))a--;if(a>=0)return String(a)}}
+ return '—';
+}
+function pessoaAltura(p){
+ var h=String(p.altura||'').replace(',','.');if(!h)return '—';var n=Number(h);if(!isFinite(n))return h;
+ return n>3?(n/100).toFixed(2).replace('.',',')+' m':n+' m';
+}
+function atualizarCardPessoa(){
+ var hero=$('homeProfileHero');if(!hero)return;var p=pessoaAtual(),principal=!!p.principal;
+ var setText=function(id,v){var e=$(id);if(e)e.textContent=v||'—'};
+ setText('homeProfileName',p.nome||'Sem nome');setText('homeProfileAge',pessoaIdade(p));setText('homeProfileWeight',p.peso||'—');setText('homeProfileHeight',pessoaAltura(p));setText('homeProfileBlood',p.sangue||'—');
+ var h=Number(String(p.altura||'').replace(',','.'));if(h>3)h/=100;var w=Number(String(p.peso||'').replace(',','.'));var imc=h>0&&w>0?w/(h*h):0;
+ setText('homeProfileBMI',imc?imc.toFixed(1).replace('.',','):'—');setText('homeProfileBMIClass',!imc?'Informe peso e altura':imc<18.5?'Abaixo da faixa':imc<25?'Faixa adequada':imc<30?'Sobrepeso':'Acima da faixa');
+ var circ=p.circ||p.cintura||'';if(!circ&&p.medidas){var m=String(p.medidas).match(/cintura\s*[:=—-]?\s*(\d+(?:[,.]\d+)?)\s*(?:cm)?/i);if(m)circ=m[1]+' cm'}
+ setText('homeProfileWaist',circ?(/cm/i.test(String(circ))?circ:circ+' cm'):'—');setText('homeProfileWaistDate',principal?'Última medida registrada':'Medida não informada');
+ var avatar=$('homeAvatar');if(avatar)avatar.innerHTML=p.foto?'<img src="'+pessoaEsc(p.foto)+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':(principal?'<span>👤</span>':(p.sexo==='Feminino'?'👩':'👤'));
+ var greet=hero.querySelector('.home-greeting');if(greet)greet.textContent=principal?'👋 Olá!':'💙 Acompanhando';
+ var b=$('msaPessoaAcompanhadaBtn');if(b){var name=b.querySelector('b');if(name)name.textContent=p.nome||'Pessoa selecionada';b.setAttribute('aria-label','Estou cuidando da saúde de '+(p.nome||'pessoa selecionada')+'. Clique para trocar')}
+ var edit=hero.querySelector('.home-profile-edit');if(edit){edit.textContent=principal?'✏️ Editar':'✏️ Editar pessoa';edit.onclick=principal?function(){go('perfil')}:function(){go('familiares');setTimeout(function(){if(window.selecionarFamiliar)window.selecionarFamiliar(p.id)},180)}}
+}
+function abrirSeletorPessoa(){
+ var old=$('msaPessoaAcompanhadaModal');if(old)old.remove();var active=pessoaAtual(),own=pessoaPrincipal(),list=pessoasAcompanhadas();
+ var modal=document.createElement('div');modal.id='msaPessoaAcompanhadaModal';modal.className='msa-pessoa-modal';
+ modal.innerHTML='<div class="msa-pessoa-dialog" role="dialog" aria-modal="true" aria-labelledby="msaPessoaTitle"><div class="msa-pessoa-head"><div><small>👨‍👩‍👧‍👦 PERFIL ACOMPANHADO</small><h2 id="msaPessoaTitle">De quem você está cuidando?</h2><p>Escolha uma pessoa para atualizar o cartão de perfil.</p></div><button type="button" class="msa-pessoa-close" aria-label="Fechar">✕</button></div><div class="msa-pessoa-options"><button type="button" class="msa-pessoa-option '+(active.principal?'selected':'')+'" data-pessoa-id="__principal__"><span>👤</span><span><b>'+pessoaEsc(own.nome||'Meu perfil')+'</b><small>Meu perfil pessoal</small></span><span>✓</span></button>'+(list.length?list.map(function(p){return '<button type="button" class="msa-pessoa-option '+(String(active.id)===String(p.id)?'selected':'')+'" data-pessoa-id="'+pessoaEsc(p.id)+'"><span>'+(p.sexo==='Feminino'?'👩':'👤')+'</span><span><b>'+pessoaEsc(p.nome||'Sem nome')+'</b><small>'+pessoaEsc(p.parentesco||'Familiar')+' · '+pessoaEsc(p.idade||'Idade não informada')+' anos</small></span><span>✓</span></button>'}).join(''):'<p class="msa-pessoa-empty">Nenhum familiar cadastrado. Cadastre pessoas na área Família.</p>')+'</div><div class="msa-pessoa-foot"><button type="button" class="msa-pessoa-manage">➕ Cadastrar ou editar familiares</button></div></div>';
+ document.body.appendChild(modal);function fechar(){modal.remove();document.removeEventListener('keydown',tecla)}function tecla(e){if(e.key==='Escape')fechar()}
+ modal.querySelector('.msa-pessoa-close').onclick=fechar;modal.addEventListener('click',function(e){if(e.target===modal)fechar()});document.addEventListener('keydown',tecla);
+ modal.querySelectorAll('[data-pessoa-id]').forEach(function(btn){btn.onclick=function(){var id=btn.dataset.pessoaId;try{window.MSAStorage.set('msa2_familiar_selecionado',id==='__principal__'?'':id)}catch(e){}atualizarCardPessoa();fechar()}});
+ modal.querySelector('.msa-pessoa-manage').onclick=function(){fechar();go('familiares')};
+}
+function instalarSeletorPessoaAcompanhada(){
+ var hero=$('homeProfileHero'),waist=$('homeProfileWaistChip');if(!hero||!waist)return;
+ var btn=$('msaPessoaAcompanhadaBtn');if(!btn){btn=document.createElement('button');btn.id='msaPessoaAcompanhadaBtn';btn.type='button';btn.className='msa-pessoa-acompanhada';btn.innerHTML='👨‍👩‍👧 <span>Estou cuidando da saúde de:</span> <b>Meu perfil</b> <span aria-hidden="true">▾</span>';btn.setAttribute('aria-haspopup','dialog');btn.onclick=abrirSeletorPessoa;waist.insertAdjacentElement('afterend',btn)}
+ atualizarCardPessoa();
+}
+
 /* ---------- juntando ---------- */
 var agendado=false;
-function tudo(){agendado=false;try{melhorarHome();saudacao();semaforoVitais();semaforoDor();iconesRemedios();carteirinha();telasVazias();calendarioSemana()}catch(e){if(window.console)console.warn('[visual-saude]',e)}}
+function tudo(){agendado=false;try{melhorarHome();instalarSeletorPessoaAcompanhada();saudacao();semaforoVitais();semaforoDor();iconesRemedios();carteirinha();telasVazias();calendarioSemana()}catch(e){if(window.console)console.warn('[visual-saude]',e)}}
 function agendar(){if(agendado)return;agendado=true;setTimeout(tudo,60)}
 /* V6.64: corrige bug antigo — a lista de medições (pressão, açúcar…), lembretes e vacinas nunca era montada,
    porque renderAcompanhamento() não era chamada em lugar nenhum. */
@@ -242,6 +295,12 @@ css.textContent=
   '@media(max-width:360px){.vs-week{padding:9px 6px}.vs-week-days{gap:2px}.vs-week-dot{width:28px;height:28px}}'+
   '@media print{.vs-forma,.vs-vazio button,.vs-saudacao,.vs-week,.vs-dose-pop{display:none!important}}';
 document.head.appendChild(css);
+
+
+var pessoaCss=document.createElement('style');pessoaCss.id='msa-pessoa-acompanhada-css';pessoaCss.textContent=`
+.msa-pessoa-acompanhada{display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap;max-width:100%;padding:8px 10px;border:1px solid #cfe0ff;border-radius:11px;background:linear-gradient(135deg,#eff6ff,#f5f3ff);color:#2347a5;font:inherit;font-size:11px;font-weight:800;cursor:pointer;line-height:1.35}.msa-pessoa-acompanhada b{font-weight:900;color:#1d4ed8}.msa-pessoa-acompanhada:hover{border-color:#8fb0ff;background:#eaf1ff}
+.msa-pessoa-modal{position:fixed;inset:0;z-index:13000;background:rgba(15,23,42,.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px}.msa-pessoa-dialog{width:min(100%,480px);max-height:min(82vh,680px);overflow:auto;background:#fff;color:#172033;border:1px solid #dbe5f3;border-radius:20px;padding:18px;box-shadow:0 24px 80px rgba(15,23,42,.24)}.msa-pessoa-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}.msa-pessoa-head small{font-size:10px;font-weight:900;letter-spacing:.08em;color:#2563eb}.msa-pessoa-head h2{font-size:20px;line-height:1.2;margin:5px 0}.msa-pessoa-head p{font-size:13px;color:#64748b;margin:0}.msa-pessoa-close{width:36px;height:36px;border:1px solid #dbe4f0;border-radius:10px;background:#f8fafc;cursor:pointer;font-size:18px}.msa-pessoa-options{display:grid;gap:8px}.msa-pessoa-option{width:100%;display:flex;align-items:center;gap:11px;padding:12px;border:1px solid #e2e8f0;border-radius:13px;background:#fff;color:#172033;text-align:left;font:inherit;cursor:pointer}.msa-pessoa-option>span:first-child{font-size:25px}.msa-pessoa-option>span:nth-child(2){flex:1;min-width:0;display:grid;gap:3px}.msa-pessoa-option b{font-size:14px}.msa-pessoa-option small{font-size:11px;color:#64748b}.msa-pessoa-option>span:last-child{opacity:0;color:#2563eb;font-weight:900}.msa-pessoa-option.selected{border-color:#7da7ff;background:#eff6ff}.msa-pessoa-option.selected>span:last-child{opacity:1}.msa-pessoa-empty{padding:14px;border-radius:12px;background:#f8fafc;color:#64748b;font-size:13px}.msa-pessoa-foot{border-top:1px solid #e5eaf2;margin-top:14px;padding-top:12px}.msa-pessoa-manage{width:100%;padding:11px;border:1px dashed #9bb8ff;border-radius:12px;background:#f8fbff;color:#2457c5;font:inherit;font-size:13px;font-weight:800;cursor:pointer}body.msa-dark .msa-pessoa-dialog{background:#172338;color:#e5edf8;border-color:#34445d}body.msa-dark .msa-pessoa-option{background:#1c2b42;color:#e5edf8;border-color:#34445d}body.msa-dark .msa-pessoa-option.selected{background:#203a60;border-color:#719dff}body.msa-dark .msa-pessoa-close{background:#1c2b42;color:#e5edf8;border-color:#34445d}body.msa-dark .msa-pessoa-head p,body.msa-dark .msa-pessoa-option small{color:#b5c2d4}@media(max-width:600px){.msa-pessoa-acompanhada{flex-basis:100%;justify-content:flex-start}.msa-pessoa-dialog{padding:14px;border-radius:16px}.msa-pessoa-head h2{font-size:18px}}
+`;document.head.appendChild(pessoaCss);
 
 var homePolish=document.createElement('style');homePolish.id='msa-home-polish-v667';
 homePolish.textContent=`
