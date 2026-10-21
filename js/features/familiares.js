@@ -10,7 +10,7 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&l
 function uid(p){return p+'_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8)}
 function val(id){const x=document.getElementById(id);return x?(x.value||'').trim():''}
 function fmtDate(x){if(!x)return'Não informada';const s=String(x).slice(0,10),m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?m[3]+'/'+m[2]+'/'+m[1]:String(x)}
-function selectedId(){try{return storage.get(SELECTED)||''}catch(e){return''}}
+function selectedId(){try{if(storage&&typeof storage.selectedProfileId==='function')return String(storage.selectedProfileId()||'');const raw=storage&&typeof storage.rawGlobal==='function'?storage.rawGlobal(SELECTED):null;return String(raw?JSON.parse(raw)||'':'')}catch(e){return''}}
 function setSelected(id){try{storage.set(SELECTED,id||'')}catch(e){}}
 function findMember(id){const wanted=String(id??'');if(!wanted)return null;return getList().find(x=>String(x?.id??'')===wanted)||null}
 function ensure(p){p.medicamentos=Array.isArray(p.medicamentos)?p.medicamentos:[];p.consultas=Array.isArray(p.consultas)?p.consultas:[];p.crises=Array.isArray(p.crises)?p.crises:[];return p}
