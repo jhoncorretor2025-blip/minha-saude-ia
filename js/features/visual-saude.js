@@ -179,14 +179,17 @@ function pessoaIdade(p){
  return '—';
 }
 function pessoaAltura(p){
- var h=String(p.altura||'').replace(',','.');if(!h)return '—';var n=Number(h);if(!isFinite(n))return h;
- return n>3?(n/100).toFixed(2).replace('.',',')+' m':n+' m';
+ var h=String(p.altura||'').trim();if(!h)return '—';
+ var n=parseFloat(h.replace(',','.'));if(!isFinite(n))return h;
+ return n>3?(n/100).toFixed(2).replace('.',',')+' m':n.toFixed(2).replace('.',',')+' m';
 }
+function pessoaNumeroAltura(p){var n=parseFloat(String(p.altura||'').replace(',','.'));if(!isFinite(n))return 0;return n>3?n/100:n}
+function pessoaNumeroPeso(p){var n=parseFloat(String(p.peso||'').replace(',','.'));return isFinite(n)?n:0}
 function atualizarCardPessoa(){
  var hero=$('homeProfileHero');if(!hero)return;var p=pessoaAtual(),principal=!!p.principal;
  var setText=function(id,v){var e=$(id);if(e)e.textContent=v||'—'};
  setText('homeProfileName',p.nome||'Sem nome');setText('homeProfileAge',pessoaIdade(p));setText('homeProfileWeight',p.peso||'—');setText('homeProfileHeight',pessoaAltura(p));setText('homeProfileBlood',p.sangue||'—');
- var h=Number(String(p.altura||'').replace(',','.'));if(h>3)h/=100;var w=Number(String(p.peso||'').replace(',','.'));var imc=h>0&&w>0?w/(h*h):0;
+ var h=pessoaNumeroAltura(p),w=pessoaNumeroPeso(p),imc=h>0&&w>0?w/(h*h):0;
  setText('homeProfileBMI',imc?imc.toFixed(1).replace('.',','):'—');setText('homeProfileBMIClass',!imc?'Informe peso e altura':imc<18.5?'Abaixo da faixa':imc<25?'Faixa adequada':imc<30?'Sobrepeso':'Acima da faixa');
  var circ=p.circ||p.cintura||'';if(!circ&&p.medidas){var m=String(p.medidas).match(/cintura\s*[:=—-]?\s*(\d+(?:[,.]\d+)?)\s*(?:cm)?/i);if(m)circ=m[1]+' cm'}
  setText('homeProfileWaist',circ?(/cm/i.test(String(circ))?circ:circ+' cm'):'—');setText('homeProfileWaistDate',principal?'Última medida registrada':'Medida não informada');
