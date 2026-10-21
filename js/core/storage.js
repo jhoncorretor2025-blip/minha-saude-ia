@@ -82,11 +82,32 @@ function get(k){
  }
  return globalGet(k);
 }
-function set(k,v){return globalSet(scopedKey(k),v)}
+function syncFamilyMirror(k,v){
+ const id=selectedId();if(!id)return;
+ const families=globalGet(FAMILIES);if(!Array.isArray(families))return;
+ const idx=families.findIndex(p=>String(p&&p.id)===String(id));if(idx<0)return;
+ const member=Object.assign({},families[idx]);
+ if(k===K.p||k==='msa2_perfil'){
+  const profile=Array.isArray(v)?(v[0]||{}):(v||{});
+  ['nome','nasc','idade','sexo','peso','altura','sangue','foto','alerg','cond','emerg','tel','circ','info','supl'].forEach(key=>{if(profile[key]!==undefined)member[key]=profile[key]});
+ }else if(k===K.m||k==='msa2_meds')member.medicamentos=Array.isArray(v)?v:[];
+ else if(k===K.c||k==='msa2_consultas')member.consultas=Array.isArray(v)?v:[];
+ else return;
+ families[idx]=member;globalSet(FAMILIES,families);
+}
+function syncSelectedFamilyProfile(){
+ const id=selectedId();if(!id)return;
+ const member=globalGet(FAMILIES).find(p=>String(p&&p.id)===String(id));if(!member)return;
+ const key=scopedKey(K.p||'msa2_perfil'),current=globalGet(key),profile=Object.assign({},Array.isArray(current)?(current[0]||{}):(current||{}));
+ ['nome','nasc','idade','sexo','peso','altura','sangue','foto','alerg','cond','emerg','tel','circ','info','supl'].forEach(k=>{if(member[k]!==undefined&&member[k]!==null)profile[k]=member[k]});
+ globalSet(key,[profile]);
+}
+function set(k,v){const ok=globalSet(scopedKey(k),v);if(ok)syncFamilyMirror(k,v);return ok}
 function remove(k){try{return window.msaStorage.removeItem(scopedKey(k))===undefined}catch(e){return false}}
 function has(k){try{return window.msaStorage.getItem(scopedKey(k))!==null}catch(e){return false}}
 function clear(k){return remove(k)}
 function raw(k){try{return window.msaStorage.getItem(scopedKey(k))}catch(e){return null}}
 function setJSON(k,v){return set(k,v)}
 window.MSAStorage={get,set,remove,has,clear,raw,setJSON,getGlobal:globalGet,setGlobal:globalSet,rawGlobal:k=>{try{return window.msaStorage.getItem(k)}catch(e){return null}},selectedProfileId:selectedId};
+window.addEventListener('msa:familiares-atualizados',syncSelectedFamilyProfile);
 })();
