@@ -18,7 +18,7 @@
 </script>
 
 <script>
-/* V6.73 — proteção contra conteúdo de código aparecendo na interface. */
+/* V6.74 — proteção contra conteúdo de código aparecendo na interface. */
 (function(){
   function detectarContaminacao(){
     try{
@@ -39,7 +39,7 @@
       limpar.then(function(){
         var u=new URL(window.location.href);
         u.searchParams.set('cb',Date.now().toString());
-        u.searchParams.set('v','V6.73');
+        u.searchParams.set('v','V6.74');
         window.location.replace(u.toString());
       });
     }catch(e){}
@@ -49,7 +49,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V6.73</title>
+<title>Minha Saúde IA — V6.74</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -86,7 +86,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
  .nav-menu{min-width:210px;max-width:calc(100vw - 24px)}
 }
 
-/* V6.73 — Ferramentas em 2 colunas para reduzir a altura do menu */
+/* V6.74 — Ferramentas em 2 colunas para reduzir a altura do menu */
 .tools-menu{
  grid-template-columns:repeat(2,minmax(0,1fr));
  min-width:430px;
@@ -109,7 +109,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin:25px 0}
  }
 }
  
-/* V6.73 — experiência mobile dedicada, sem alterar o desktop */
+/* V6.74 — experiência mobile dedicada, sem alterar o desktop */
 .msa-mobile-bar,.msa-mobile-drawer,.msa-mobile-backdrop{display:none}
 @media(max-width:760px){
   body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
@@ -304,7 +304,7 @@ footer{padding-bottom:20px}
 /* V4.82 — métricas corporais e rotina */
 .lifestyle-card{position:relative}.body-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric-panel{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 14px}.metric-kpi{background:#fff;border:1px solid var(--border);border-radius:16px;padding:13px}.metric-kpi span{display:block;font-size:12px;color:var(--muted)}.metric-kpi b{display:block;font-size:23px;margin:5px 0}.metric-kpi small{color:var(--muted);font-size:11px}.body-metrics .metric-kpi{min-height:100px}.body-metrics .metric-kpi b{font-size:20px}@media(max-width:700px){.body-metrics,.metric-panel{grid-template-columns:1fr 1fr}}
 
-/* V6.73 — resumo corporal visual e contagem regressiva de aniversário */
+/* V6.74 — resumo corporal visual e contagem regressiva de aniversário */
 .home-smart-health{margin:0 0 14px}
 .home-bmi-card{display:grid;grid-template-columns:minmax(190px,1fr) minmax(130px,.62fr) minmax(340px,1.5fr);gap:16px;align-items:center;border:1px solid #dbe7f8;border-radius:22px;padding:18px;background:linear-gradient(125deg,#fff 0%,#f4f8ff 55%,#f0fdf7 100%);box-shadow:0 10px 30px rgba(37,99,235,.07)}
 .home-bmi-kicker{font-size:11px;font-weight:900;letter-spacing:.04em;color:#536783}
@@ -356,7 +356,7 @@ footer{padding-bottom:20px}
 }
 @media(max-width:430px){#cicloMenuBtn{font-size:11px}}
 
-/* V6.73 — experiência adaptável */
+/* V6.74 — experiência adaptável */
 .experience-setting{grid-column:1/-1;border:1px solid #cfdcf8;border-radius:16px;padding:14px;background:linear-gradient(135deg,#f5f8ff,#fbf9ff)}
 .experience-setting-title{font-size:17px;font-weight:900;margin-bottom:5px}
 .msa-experience-off{display:none!important}
@@ -376,30 +376,30 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
  body.msa-exp-simple .msa-mobile-links button{min-height:54px;font-size:14px}
  body.msa-exp-simple .msa-mobile-quick button{min-height:78px}
 }
-/* V6.73 — navegação reorganizada */
+/* V6.74 — navegação reorganizada */
 @media(min-width:761px){.grouped-nav{justify-content:flex-start;align-items:center;gap:6px}.grouped-nav .nav-group{flex:0 0 auto}.grouped-nav .nav-group:last-child .nav-menu{left:auto;right:0}}
 @media(max-width:760px){.msa-mobile-menu-fab{display:none!important}.msa-mobile-bar{grid-template-columns:repeat(4,1fr)}}
 
-/* V6.73 — respostas de bem-estar opcionais e acessíveis */
+/* V6.74 — respostas de bem-estar opcionais e acessíveis */
 .wellbeing-choice{display:flex;align-items:flex-start;gap:9px;padding:9px 5px;font-size:14px;font-weight:600;line-height:1.4;cursor:pointer}
 .wellbeing-choice input[type="radio"]{width:18px;min-width:18px;height:18px;margin:1px 0 0;accent-color:var(--blue)}
 #bemForm fieldset{min-width:0}
 #bemForm legend{font-size:15px}
-/* V6.73 — informação completa do grupo sanguíneo na Home */
+/* V6.74 — informação completa do grupo sanguíneo na Home */
 .home-profile-stats #homeProfileBloodBadge{display:inline-flex;align-items:center;gap:3px;flex-wrap:wrap}
 .home-profile-blood-full{font-size:10px;font-weight:700;color:#64748b;white-space:nowrap}
 @media(max-width:520px){.home-profile-blood-full{font-size:9px}}
-/* V6.73 — IMC e circunferência visíveis no resumo do perfil */
+/* V6.74 — IMC e circunferência visíveis no resumo do perfil */
 .home-profile-stats #homeProfileBMIChip,.home-profile-stats #homeProfileWaistChip{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap;border:1px solid #d8e5f8;background:linear-gradient(135deg,#f0f7ff,#f4fbf7);border-radius:12px}
 .home-profile-metric-chip b{font-weight:900;color:#1d4ed8}
 .home-profile-metric-chip small{font-size:10px;font-weight:700;color:#64748b;white-space:normal}
 @media(max-width:520px){.home-profile-stats{gap:6px}.home-profile-stats #homeProfileBMIChip,.home-profile-stats #homeProfileWaistChip{border-radius:10px}.home-profile-metric-chip small{font-size:9px}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V6.73">
+  <link rel="stylesheet" href="css/design-system.css?v=V6.74">
 
 <style id="v519-progressive-ui">
-/* V6.73 — melhorias progressivas de dashboard, favoritos e alertas */
+/* V6.74 — melhorias progressivas de dashboard, favoritos e alertas */
 .progressive-hub{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:13px}
 .progressive-card{background:#fff;border:1px solid #e6eaf1;border-radius:20px;padding:17px;box-shadow:0 8px 24px rgba(15,23,42,.06)}
 .progressive-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.progressive-head h2{margin:0 0 4px}
@@ -482,7 +482,7 @@ body.msa-dark .metric-edit-btn{background:#0f172a;color:#93c5fd;border-color:#33
  </div>
 </div>
 <script>
-/* V6.73 — ações da Central de Comando da Home */
+/* V6.74 — ações da Central de Comando da Home */
 (function(){
   window.closeHomeModal=function(){
     ['msaHomeMoreOverlay','msaHomeGuideOverlay'].forEach(function(id){
@@ -521,8 +521,8 @@ body.msa-dark .metric-edit-btn{background:#0f172a;color:#93c5fd;border-color:#33
 })();
 </script>
 <style id="v530-preferences-css">
-/* V6.73: onboarding legado totalmente desativado para evitar bloqueio de toque no iPhone */
-/* V6.73 — reforço Safari/iPhone: viewport, área segura e toque */
+/* V6.74: onboarding legado totalmente desativado para evitar bloqueio de toque no iPhone */
+/* V6.74 — reforço Safari/iPhone: viewport, área segura e toque */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden}
 body{min-height:100dvh;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
 button,a,input,select,textarea{touch-action:manipulation}
@@ -539,7 +539,7 @@ body{overflow-x:hidden;}
 body.msa-dark #settingsPreferences label{background:#111827!important;color:#e5e7eb;border-color:#263244!important}
 </style>
 <style>.familiar-people-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.familiar-person-card{display:flex;align-items:center;gap:10px;text-align:left;width:100%;padding:12px;border:1px solid #e3e8f0;background:#fff;border-radius:15px;cursor:pointer;font:inherit;color:var(--text)}.familiar-person-card:hover,.familiar-person-card.selected{border-color:#8fb0ff;background:#f5f8ff}.familiar-person-icon{font-size:28px;flex:0 0 34px}.familiar-person-info{display:grid;gap:2px;min-width:0;flex:1}.familiar-person-info b,.familiar-person-info small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.familiar-person-info small{color:var(--muted);font-size:12px}.familiar-person-count{font-size:11px;font-weight:900;color:#64748b;text-align:right}.familiar-detail-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}.familiar-kicker{font-size:10px;font-weight:900;letter-spacing:.08em;color:#2563eb}.familiar-alert{padding:13px;border:1px solid #dbe5ff;background:#f5f8ff;border-radius:15px;line-height:1.5}.familiar-alert span{color:#64748b;font-size:13px}.familiar-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:12px 0}.familiar-summary-grid>div{padding:12px;border:1px solid #e5eaf2;border-radius:14px;background:#fff}.familiar-summary-grid span{display:block;color:#687386;font-size:11px;margin-bottom:5px}.familiar-summary-grid b{font-size:13px;word-break:break-word}.familiar-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.familiar-subcard{margin:0!important}@media(max-width:760px){.familiar-people-list,.familiar-grid{grid-template-columns:1fr}.familiar-summary-grid{grid-template-columns:1fr 1fr}.familiar-detail-head{flex-direction:column}.familiar-detail-head .row{width:100%}.familiar-detail-head .row .btn{flex:1}}</style><style id="v593-pendencias-fix">
-/* V6.73 — Pendências: o modal precisa ficar sobre a tela, não no final do documento. */
+/* V6.74 — Pendências: o modal precisa ficar sobre a tela, não no final do documento. */
 #msaPendenciasModal{
   position:fixed !important;
   inset:0 !important;
@@ -605,7 +605,7 @@ body.msa-dark #settingsPreferences label{background:#111827!important;color:#e5e
 <div id="msa99-status" role="status" aria-live="polite"></div>
 
 <style id="msa646-pendencias-friendly">
-/* V6.73 — Pendências com leitura fácil, visual consistente e toque confortável. */
+/* V6.74 — Pendências com leitura fácil, visual consistente e toque confortável. */
 #msaPendenciasModal{background:rgba(8,15,35,.68)!important;backdrop-filter:blur(5px)!important;-webkit-backdrop-filter:blur(5px)!important;color:#172033!important}
 #msaPendenciasModal .msa-pendencias-card{background:var(--card,#fff)!important;color:var(--text,#172033)!important;border:1px solid rgba(148,163,184,.28)!important;border-radius:24px!important;padding:clamp(16px,3vw,26px)!important;box-shadow:0 24px 70px rgba(0,0,0,.28)!important;scrollbar-width:thin}
 #msaPendenciasModal .msa-pendencias-kicker{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#eaf2ff;color:#1d4ed8;font-size:12px;font-weight:800;margin-bottom:8px}
@@ -626,7 +626,7 @@ body.msa-dark #settingsPreferences label{background:#111827!important;color:#e5e
 </style>
 
 <style id="msa648-pendencias-polish">
-/* V6.73 — Modal de pendências: hierarquia visual, acolhimento e acessibilidade. */
+/* V6.74 — Modal de pendências: hierarquia visual, acolhimento e acessibilidade. */
 #msaPendenciasModal .msa-pendencias-card{width:min(760px,100%)!important;padding:clamp(20px,3.4vw,30px)!important;border-radius:28px!important;background:linear-gradient(180deg,#fff 0%,#fbfdff 100%)!important;box-shadow:0 28px 90px rgba(15,23,42,.32),0 2px 8px rgba(15,23,42,.06)!important}
 #msaPendenciasModal .msa-pendencias-kicker{padding:7px 12px!important;background:#eaf2ff!important;border:1px solid #d8e7ff!important;color:#1d4ed8!important;letter-spacing:.01em}
 #msaPendenciasModal #msaPendenciasTitle{font-size:clamp(24px,4vw,32px)!important;font-weight:850!important;letter-spacing:-.035em!important;margin:5px 0 9px!important}
@@ -722,7 +722,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.73</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V6.74</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 
 <!-- V6.20 — retorno persistente, feedback de navegação e validação do perfil -->
@@ -769,7 +769,7 @@ function syncBar(id){
  bar.hidden=!isInternal;
  if(title)title.textContent=pageTitle(id);
  document.body.classList.toggle('msa-page-internal',isInternal);
- /* V6.73: o cartão de perfil fica logo abaixo do cabeçalho do app, antes do menu principal. */
+ /* V6.74: o cartão de perfil fica logo abaixo do cabeçalho do app, antes do menu principal. */
  var hero=document.getElementById('homeProfileHero'),nav=document.getElementById('nav'),wrap=document.getElementById('main-content');
  if(hero&&nav&&wrap&&hero.parentElement!==wrap)nav.insertAdjacentElement('beforebegin',hero);
  if(hero)hero.hidden=isInternal;
@@ -1617,7 +1617,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 
 <script>
-/* V6.73 — perguntas rápidas personalizadas com o perfil já cadastrado */
+/* V6.74 — perguntas rápidas personalizadas com o perfil já cadastrado */
 window.msaPerguntarPerfil = function(pergunta){
   var input = document.getElementById('iaInput');
   if (typeof window.homeGo === 'function') window.homeGo('ia');
@@ -1990,7 +1990,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.73. Importação instantânea por IA com revisão antes de salvar. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V6.74. Importação instantânea por IA com revisão antes de salvar. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -2011,18 +2011,18 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/core/constants.js?v=V6.73" defer></script>
-<script src="js/core/storage.js?v=V6.73" defer></script>
-<script src="js/core/utils.js?v=V6.73" defer></script>
-<script src="js/core/stability-v599.js?v=V6.73" defer></script>
-<script src="js/features/comeco-rapido.js?v=V6.73" defer></script>
-<script src="js/navigation/menu.js?v=V6.73" defer></script>
-<script src="js/core/app.js?v=V6.73" defer></script>
-<script src="js/features/notificacoes-remotas.js?v=V6.73" defer></script>
-<script src="js/features/perfil-compartilhado.js?v=V6.73" defer></script>
-<script src="js/features/perfil-save.js?v=V6.73" defer></script>
-<script src="js/features/familiares.js?v=V6.73" defer></script>
-<script src="js/features/recursos.js?v=V6.73" defer></script>
+<script src="js/core/constants.js?v=V6.74" defer></script>
+<script src="js/core/storage.js?v=V6.74" defer></script>
+<script src="js/core/utils.js?v=V6.74" defer></script>
+<script src="js/core/stability-v599.js?v=V6.74" defer></script>
+<script src="js/features/comeco-rapido.js?v=V6.74" defer></script>
+<script src="js/navigation/menu.js?v=V6.74" defer></script>
+<script src="js/core/app.js?v=V6.74" defer></script>
+<script src="js/features/notificacoes-remotas.js?v=V6.74" defer></script>
+<script src="js/features/perfil-compartilhado.js?v=V6.74" defer></script>
+<script src="js/features/perfil-save.js?v=V6.74" defer></script>
+<script src="js/features/familiares.js?v=V6.74" defer></script>
+<script src="js/features/recursos.js?v=V6.74" defer></script>
 
 
 <script>
@@ -2045,12 +2045,12 @@ function iniciarImportacao(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
-<script src="js/features/inteligencia.js?v=V6.73" defer></script>
-<script src="js/ai/importacao.js?v=V6.73" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/legacy/melhorias-primeiras.js?v=V6.73" defer></script>
-<script src="js/features/expansoes.js?v=V6.73" defer></script>
-<script src="js/ai/importacao-fluxo-v514.js?v=V6.73" defer></script>
-<script src="js/legacy/melhorias-v513.js?v=V6.73" defer></script>
+<script src="js/features/inteligencia.js?v=V6.74" defer></script>
+<script src="js/ai/importacao.js?v=V6.74" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/legacy/melhorias-primeiras.js?v=V6.74" defer></script>
+<script src="js/features/expansoes.js?v=V6.74" defer></script>
+<script src="js/ai/importacao-fluxo-v514.js?v=V6.74" defer></script>
+<script src="js/legacy/melhorias-v513.js?v=V6.74" defer></script>
 
 
 <script>
@@ -2155,12 +2155,12 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
-<script src="js/reports/relatorios-v599.js?v=V6.73" defer></script>
+<script src="js/reports/relatorios-v599.js?v=V6.74" defer></script>
 
 
 
 
-<!-- V6.73 — melhorias gráficas e funções de personalização -->
+<!-- V6.74 — melhorias gráficas e funções de personalização -->
 <style id="v520-visual">
 body.msa-dark{--bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--border:#263244;--shadow:0 8px 24px rgba(0,0,0,.28);background:#0b1220;color:#e5e7eb}
 body.msa-dark .card,body.msa-dark .box,body.msa-dark .progressive-card,body.msa-dark .modal-card,body.msa-dark .msa-fab-action{background:#111827!important;color:#e5e7eb!important;border-color:#263244!important}
@@ -2223,7 +2223,7 @@ body.msa-dark input::placeholder,body.msa-dark textarea::placeholder{color:#94a3
  });
 })();
 </script>
-<!-- V6.73 — ações rápidas globais -->
+<!-- V6.74 — ações rápidas globais -->
 <style id="v518-quick-actions">
 .msa-fab-wrap{position:fixed;right:22px;bottom:22px;z-index:11900;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .msa-fab-menu{display:none;flex-direction:column;gap:7px;align-items:flex-end;margin-bottom:2px}
@@ -2253,7 +2253,7 @@ function msaFabGo(id){toggleMsaFab();if(typeof go==='function')go(id)}
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){const m=document.getElementById('msaFabMenu');if(m&&m.classList.contains('open'))toggleMsaFab()}});
 </script>
 <style id="msaV539Enhancements">
-/* V6.73 — refinamento geral de UX, acessibilidade e Home */
+/* V6.74 — refinamento geral de UX, acessibilidade e Home */
 :root{--msa-focus:0 0 0 4px rgba(37,99,235,.22)}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #7aa2ff;outline-offset:2px;box-shadow:var(--msa-focus)}
 button[disabled]{cursor:not-allowed;opacity:.55}
@@ -2372,7 +2372,7 @@ function boot(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else setTimeout(boot,0);
 })();
 </script>
-<!-- V6.73 — jornada curta: confirmação e retorno após registros -->
+<!-- V6.74 — jornada curta: confirmação e retorno após registros -->
 <style id="msaV540Journey">
 .msa-next-step{margin-top:12px;padding:12px 14px;border:1px solid #dbeafe;background:#f4f8ff;border-radius:15px;display:flex;align-items:center;justify-content:space-between;gap:10px}
 .msa-next-step strong{font-size:13px}.msa-next-step span{display:block;color:#64748b;font-size:12px;margin-top:2px}
@@ -2412,7 +2412,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
-<!-- V6.73 — refinamento visual profissional e amigável -->
+<!-- V6.74 — refinamento visual profissional e amigável -->
 <style id="msaV545Design">
 :root{
  --msa-primary:#2563eb;
@@ -3002,12 +3002,12 @@ body.msa-dark .msa-settings-grid>label small{color:#cbd5e1}
 body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 @media(max-width:600px){.msa-settings-grid{grid-template-columns:minmax(0,1fr)}.msa-settings-professional .row>.btn{flex:1 1 100%;width:100%}}
 </style>
-<script src="js/features/configuracoes-profissionais.js?v=V6.73" defer></script>
-<script src="js/features/perguntas-saude.js?v=V6.73" defer></script>
-<script src="js/features/navegacao-facil.js?v=V6.73" defer></script>
-<script src="js/features/saude-facil.js?v=V6.73" defer></script>
-<script src="js/features/saude-plus.js?v=V6.73" defer></script>
-<script src="js/features/visual-saude.js?v=V6.73" defer></script>
+<script src="js/features/configuracoes-profissionais.js?v=V6.74" defer></script>
+<script src="js/features/perguntas-saude.js?v=V6.74" defer></script>
+<script src="js/features/navegacao-facil.js?v=V6.74" defer></script>
+<script src="js/features/saude-facil.js?v=V6.74" defer></script>
+<script src="js/features/saude-plus.js?v=V6.74" defer></script>
+<script src="js/features/visual-saude.js?v=V6.74" defer></script>
 
 <style id="msa-welcome-v623">
 #msaWelcomeModal{position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.64);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto}
@@ -3036,7 +3036,7 @@ body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion
 @media(prefers-reduced-motion:reduce){#msaWelcomeModal .msa-welcome-choice{transition:none}}
 </style>
 
-<!-- V6.73 — Correção de layout da área de perfil da página inicial -->
+<!-- V6.74 — Correção de layout da área de perfil da página inicial -->
 <style id="msa-home-layout-fix-v634">
 #home #homeProfileHero.home-profile-hero{display:grid!important;grid-template-columns:80px minmax(0,1fr) 150px;align-items:center;gap:16px;min-width:0;}
 #home #homeProfileHero>.home-avatar{grid-column:1;grid-row:1;width:72px;height:72px;min-width:72px;}
@@ -3052,7 +3052,7 @@ body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion
 </style>
 
 <style id="msa-v651-familia-edit-fix">
-/* V6.73: garantir interação e edição dos formulários da ficha de familiares */
+/* V6.74: garantir interação e edição dos formulários da ficha de familiares */
 #familiares #familiarDetalhe,
 #familiares #familiarDetalhe form,
 #familiares #familiarDetalhe form label,
@@ -3076,7 +3076,7 @@ body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion
 </style>
 
 <style id="msa-v652-familia-click-layer-fix">
-/* V6.73: correção de camada de clique na área de familiares */
+/* V6.74: correção de camada de clique na área de familiares */
 #familiares #familiarDetalhe{
   position:relative!important;
   z-index:20!important;
@@ -3107,7 +3107,7 @@ body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion
 #familiares #familiarDetalhe summary{cursor:pointer!important}
 </style>
 
-<!-- V6.73 — atalho mobile direto para Perguntas sobre minha saúde -->
+<!-- V6.74 — atalho mobile direto para Perguntas sobre minha saúde -->
 <style id="msaV656MobileHealthQuestions">
 @media(max-width:760px){
  #msaMobileHealthQuestions{
