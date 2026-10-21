@@ -524,7 +524,7 @@ atualizarEngajamento();atualizarSmartHome();renderMedidasCorporais();
 
 function registrarHumor(valor){
  const key='msa2_humor'; const hoje=new Date().toISOString().slice(0,10);
- window.msaStorage.setItem(key,JSON.stringify({data:hoje,valor:valor}));
+ window.MSAStorage.set(key,{data:hoje,valor:valor});
  const st=$('moodStatus');if(st)st.textContent='Registrado hoje: '+valor;
  const done=$('moodDone');if(done){done.textContent='✓ Feito';done.style.background='#ecfdf3';done.style.color='#059669'}
 }
@@ -579,7 +579,7 @@ function abrirPendenciasPreenchimento(){
 window.abrirPendenciasPreenchimento=abrirPendenciasPreenchimento;
 function atualizarEngajamento(){
  const hoje=new Date().toISOString().slice(0,10);
- const h=JSON.parse(window.msaStorage.getItem('msa2_humor')||'null');
+ const h=window.MSAStorage.get('msa2_humor');
  if(h&&h.data===hoje){const st=$('moodStatus');if(st)st.textContent='Registrado hoje: '+h.valor;const d=$('moodDone');if(d){d.textContent='✓ Feito';d.style.background='#ecfdf3';d.style.color='#059669'}}
  const c=calcularCompletudeSaude(),pct=c.percentual;
  const pe=$('profilePercent'),pf=$('profileProgress');if(pe)pe.textContent=pct+'%';if(pf)pf.style.width=pct+'%';
