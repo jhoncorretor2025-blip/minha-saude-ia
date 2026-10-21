@@ -181,6 +181,8 @@ css.textContent=
  '.sf-hoje{margin:0 0 14px;padding:14px 16px;border-radius:18px;background:var(--card,#fff);border:1px solid var(--line,#e2e8f0)}.sf-hoje ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}'+
  '.sf-hoje li{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:12px;background:#f8fafc;font-size:15px}.sf-hoje li.ok{background:#f0fdf4}'+
  '.sf-hoje li button{min-height:44px;padding:6px 12px;border-radius:12px;border:1px solid #93c5fd;background:#fff;color:#1d4ed8;font:inherit;font-weight:800;cursor:pointer}.sf-hoje li.ok button{border-color:#86efac;color:#15803d}'+
+ /* V6.71: o Início já tem o quadro “O que você quer fazer?” logo abaixo do perfil: os botões repetidos daqui somem (o resumo para o médico continua) */
+ 'body:has(#homeCommandCenter) #sfBotoes>h2,body:has(#homeCommandCenter) #sfBotoes>.sf-grade{display:none!important}'+
  '.sf-menu{display:none}body.sf-menu-on .sf-menu{display:flex;flex-wrap:wrap;gap:8px;padding:6px}body.sf-menu-on .sf-menu button{min-height:46px;padding:8px 16px;border-radius:14px;border:1px solid var(--line,#e2e8f0);background:var(--card,#fff);color:inherit;font:inherit;font-weight:800;font-size:15px;cursor:pointer}'+
  'body.sf-menu-on:not(.sf-menu-completo) #nav>*:not(#sfMenu){display:none!important}'+
  '.sf-modal{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(15,23,42,.55)}'+

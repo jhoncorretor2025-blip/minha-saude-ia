@@ -1,3 +1,11 @@
+## V6.71 — Cartão do perfil no topo, arrumado
+- 👤 O cartão do perfil (nome, idade, peso, altura, tipo sanguíneo) fica logo abaixo do cabeçalho, como o primeiro do Início.
+- 🐞 No celular o nome ficava com largura zero e os botões “Editar” e “Ver carteirinha” por cima dos dados: agora são foto + dados lado a lado e os botões numa linha embaixo.
+- 🐞 O atalho “Pergunte à IA” entrava dentro do cartão do perfil e espremia tudo: agora fica fora dele.
+- 🐞 A regra “#home{display:flex}” fazia o Início aparecer embaixo de todas as outras páginas: agora vale só quando o Início está aberto.
+- 👋 A saudação do horário (“🌤️ Boa tarde!”) vai para o próprio cartão, sem um bloco repetido; os 4 botões repetidos saem porque o Início já tem “O que você quer fazer?”.
+- 🔄 Versão sincronizada em V6.71 (o version.json estava em V6.64, a constante em V6.65 e o cache em v6-64 enquanto a página mostrava V6.70).
+
 ## V6.64 — Visual mais claro
 - 🌈 Cor fixa por tipo: sintomas laranja, remédios azul, consultas verde, pressão/açúcar vermelho, exames roxo e lembretes azul-piscina (borda dos cards, títulos e botões do Início).
 - 🟢🟡🔴 Semáforo nas medições (pressão, açúcar, batimentos, oxigênio e temperatura) com legenda e aviso de que são valores de referência gerais; barra colorida de intensidade nos sintomas.

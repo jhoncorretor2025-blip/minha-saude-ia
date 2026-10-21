@@ -141,7 +141,7 @@ function render(){
  /* atalho no Início */
  var home=document.getElementById('home');
  if(home&&!document.getElementById('psAtalhoHome')){var a=document.createElement('button');a.type='button';a.id='psAtalhoHome';a.className='ps-atalho-home';a.innerHTML='<span>💬</span><span><b>Pergunte à IA sobre sua saúde</b><small>Alimentos bons e ruins, hábitos que faltam, o que levar ao médico…</small></span><span class="ps-seta">→</span>';
-  a.addEventListener('click',function(){if(typeof go==='function')go(ID)});var alvo=home.querySelector('.home-profile-actions')||home.firstElementChild;if(alvo&&alvo.parentNode)alvo.parentNode.insertBefore(a,alvo.nextSibling);else home.insertBefore(a,home.firstChild)}
+  a.addEventListener('click',function(){if(typeof go==='function')go(ID)});/* V6.71: fica no começo do Início, fora do cartão do perfil (antes entrava dentro dele e espremia nome e dados) */home.insertBefore(a,home.firstChild)}
 }
 var css=document.createElement('style');css.id='msa-perguntas-saude';
 css.textContent='#'+ID+' .ps-pessoa-label{display:block;font-weight:900;margin:12px 0 6px}'+ '#'+ID+' .ps-pessoa{display:block;width:100%;max-width:520px;padding:12px;border:1px solid #bfdbfe;border-radius:12px;background:var(--card,#fff);color:inherit;font:inherit;font-weight:800;margin-bottom:12px}'+ '#'+ID+' .ps-grupo{margin:18px 0 8px;font-size:15px}'+

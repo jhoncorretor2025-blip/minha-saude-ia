@@ -15,6 +15,9 @@ function saudacao(){
  var home=$('home');if(!home)return;var h=new Date().getHours();
  var s=h<5?['🌙','Boa noite']:h<12?['☀️','Bom dia']:h<18?['🌤️','Boa tarde']:['🌙','Boa noite'];
  var nome=((lista('p')[0]||{}).nome||'').trim().split(/\s+/)[0];
+ /* V6.71: o cartão do perfil já diz “Olá!”: a saudação do horário vai para ele, sem repetir outro bloco */
+ var g=document.querySelector('#homeProfileHero .home-greeting');
+ if(g){g.textContent=s[0]+' '+s[1]+'!';var velho=$('vsSaudacao');if(velho)velho.remove();return}
  var el=$('vsSaudacao');if(!el){el=document.createElement('div');el.id='vsSaudacao';el.className='vs-saudacao'}var cab=document.querySelector('header .head');if(cab&&el.parentElement!==cab)cab.appendChild(el);else if(!cab&&!el.parentElement)home.insertBefore(el,home.firstChild);
  el.innerHTML='<span class="vs-sol" aria-hidden="true">'+s[0]+'</span><div><b>'+s[1]+(nome?', '+esc(nome):'')+'!</b><small>'+new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})+'</small></div>';
 }
@@ -177,6 +180,8 @@ css.textContent=
  '#listD>.item{border-left:6px solid var(--vs-sint)!important}#listM>.item,#medRotList>.item{border-left:6px solid var(--vs-med)!important}#listC>.item{border-left:6px solid var(--vs-cons)!important}#vList>.item{border-left:6px solid var(--vs-vit)!important}#listE>.item{border-left:6px solid var(--vs-ex)!important}#rList>.item{border-left:6px solid var(--vs-lemb)!important}'+
  '#dor>.card:first-child h2{color:var(--vs-sint)}#meds>.card:first-child h2{color:var(--vs-med)}#consultas>.card:first-child h2{color:var(--vs-cons)}#acompanhamento>.card:first-child h2{color:var(--vs-vit)}#exames>.card:first-child h2{color:var(--vs-ex)}'+
  '#sfBotoes .sf-grade button:nth-child(1){border-color:#fed7aa;background:linear-gradient(160deg,#fff7ed,#fff)}#sfBotoes .sf-grade button:nth-child(2){border-color:#bfdbfe;background:linear-gradient(160deg,#eff6ff,#fff)}#sfBotoes .sf-grade button:nth-child(3){border-color:#bbf7d0;background:linear-gradient(160deg,#f0fdf4,#fff)}#sfBotoes .sf-grade button:nth-child(4){border-color:#ddd6fe;background:linear-gradient(160deg,#f5f3ff,#fff)}'+
+ /* V6.71: cartão do perfil no celular — o nome ficava com largura zero (foto e botões numa linha só) */
+ '@media(max-width:700px){body:has(#home.active) #homeProfileHero{display:grid!important;grid-template-columns:64px minmax(0,1fr)!important;gap:12px!important;align-items:start!important}#homeProfileHero>.home-profile-main{min-width:0!important;width:auto!important}#homeProfileHero>.home-profile-actions{grid-column:1/-1!important;width:100%!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important}#homeProfileHero .home-profile-stats{display:flex!important;flex-wrap:wrap!important;gap:6px!important}}'+
  /* 2) semáforo */
  '.vs-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.vs-chip{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:999px;font-size:13.5px;font-weight:800;border:1px solid}.vs-chip small{font-weight:600;opacity:.85}'+
  '.vs-v{background:#f0fdf4;border-color:#86efac;color:#14532d}.vs-a{background:#fffbeb;border-color:#fcd34d;color:#78350f}.vs-r{background:#fef2f2;border-color:#fca5a5;color:#7f1d1d}'+
@@ -241,7 +246,8 @@ document.head.appendChild(css);
 var homePolish=document.createElement('style');homePolish.id='msa-home-polish-v667';
 homePolish.textContent=`
 .msa-birthday-crumb-host{display:flex!important;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.msa-birthday-crumb-host>.home-birthday-countdown{flex:1 1 260px;min-width:0;max-width:560px;margin:0!important;padding:7px 12px!important;border-radius:12px!important;box-shadow:none!important;gap:8px!important;background:#fff7e6!important;border-color:#f5d58a!important}.msa-birthday-crumb-host .home-birthday-icon{font-size:22px!important}.msa-birthday-crumb-host .home-birthday-countdown strong{font-size:12px!important;line-height:1.3}.msa-birthday-crumb-host .home-birthday-countdown small{font-size:10px!important;margin-top:1px!important}.msa-birthday-crumb-host>.home-birthday-countdown[hidden]{display:none!important}@media(max-width:600px){.msa-birthday-crumb-host{gap:7px}.msa-birthday-crumb-host>.home-birthday-countdown{flex-basis:100%;max-width:none;padding:7px 9px!important}.msa-birthday-crumb-host .home-birthday-icon{font-size:19px!important}} 
-#home{display:flex;flex-direction:column;gap:12px}
+/* V6.71: só quando o Início está ativo — “#home{display:flex}” fazia o Início aparecer embaixo de todas as outras páginas */
+#home.active{display:flex;flex-direction:column;gap:12px}
 #home #homeProfileHero{margin:0 0 2px;gap:16px}
 #home .home-command-center{order:1;margin:0;align-items:stretch;gap:12px}
 #home .home-command-main,#home .home-command-side{border-radius:18px;box-shadow:0 6px 20px rgba(15,23,42,.045)}
