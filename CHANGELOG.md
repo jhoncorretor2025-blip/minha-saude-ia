@@ -1,3 +1,10 @@
+## V6.63 — Aviso do remédio, resumo para o médico, link para a família e anotar falando
+- 🔔 Aviso na hora de cada remédio da rotina com os botões “✅ Tomei” e “⏰ Lembrar em 15 min” (na notificação do celular e dentro do app). O cartão “Hoje” convida a ativar os avisos.
+- 🗓️ “Resumo para levar ao médico”: 1 página com tudo desde a última consulta (sintomas, remédios em uso e novos, pressão/açúcar, exames, alergias, condições) e as perguntas sugeridas, pronta para imprimir ou salvar em PDF.
+- 👀 “Link para a família acompanhar”: resumo só leitura (remédios tomados hoje e na semana, sintomas dos últimos 7 dias, medições e próximas consultas). Os dados vão dentro do próprio link, não passam por servidor, e mostram a situação do momento.
+- 🎙️ Anotar falando: no sintoma (“dor de cabeça forte desde ontem” → Cabeça · 7/10 · desde ontem, com confirmação antes de salvar) e botão 🎙️ Falar nos campos de texto de sintomas e consultas.
+- 🔄 Versão e cache atualizados para V6.63 (o service worker passa a tratar os botões do aviso).
+
 ## V6.62 — Mais fácil para quem não tem prática com tecnologia
 - 🏠 Início com 4 botões grandes: Anotar como estou me sentindo, Meus remédios, Minhas consultas e Minha carteirinha.
 - 📅 “Hoje”: remédios da rotina com horário (marcar como tomado num toque), consultas de hoje/amanhã e lembretes do dia.
