@@ -772,12 +772,13 @@ function syncBar(id){
  if(isInternal)bar.setAttribute('data-page',id);else bar.removeAttribute('data-page');
 }
 function goTopSection(id){
- var target=document.getElementById(id);
+ /* Na página inicial, alinhar o cartão de perfil no topo, não apenas a seção inteira. */
+ var target=(id==='home'&&document.getElementById('homeProfileHero'))||document.getElementById(id);
  if(!target)return;
- target.style.scrollMarginTop='76px';
+ target.style.scrollMarginTop=id==='home'?'12px':'76px';
  requestAnimationFrame(function(){
   try{target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'})}
-  catch(e){window.scrollTo({top:0,behavior:'smooth'})}
+  catch(e){window.scrollTo({top:target.getBoundingClientRect().top+window.pageYOffset-(id==='home'?12:76),behavior:'auto'})}
  });
 }
 function wrapNavigation(){
@@ -800,7 +801,9 @@ function init(){
  if(back)back.addEventListener('click',function(){startProgress();if(typeof window.go==='function')window.go('home');else{history.replaceState({pagina:'home'},'','?pagina=home');syncBar('home');window.scrollTo({top:0,behavior:'smooth'})}});
  wrapNavigation();
  syncBar(currentPage());
- setTimeout(function(){wrapNavigation();syncBar(currentPage());},120);
+ /* Corrige a posição inicial: ao abrir a Home, mostrar o cartão de perfil desde o topo. */
+ if(currentPage()==='home')setTimeout(function(){goTopSection('home')},80);
+ setTimeout(function(){wrapNavigation();syncBar(currentPage());if(currentPage()==='home')goTopSection('home')},220);
  window.addEventListener('popstate',function(){startProgress();setTimeout(function(){syncBar(currentPage());goTopSection(currentPage());stopProgress()},80)});
  document.addEventListener('click',function(ev){
   var btn=ev.target.closest('button[data-tab]');
