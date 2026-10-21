@@ -9,7 +9,7 @@ const SCOPED=new Set([
 'msa2_vitais','msa2_lembretes','msa2_vacinas','msa2_familia','msa2_documentos','msa2_nutri',
 'msa2_suplementos','msa2_reacoes_alimentares','msa2_hidratacao','msa2_sono','msa2_bemestar',
 'msa2_gatilhos','msa2_medicamentos_rotina','msa2_medicamentos_tomados','msa2_anticoncepcional',
-'msa2_medidas_corporais'
+'msa2_medidas_corporais','msa2_medidas','msa2_humor','msa2_metas_pessoais','msa2_historico_alteracoes','msa2_preferencias'
 ]);
 function parse(raw){try{return raw?JSON.parse(raw):null}catch(e){return null}}
 function globalGet(k){
@@ -35,7 +35,7 @@ function globalSet(k,v){
  }catch(e){console.error('[Minha Saúde IA] falha ao salvar',k,e);return false}
 }
 function selectedId(){const raw=window.msaStorage.getItem(SELECTED);const v=parse(raw);return String(v||'')}
-function scopedKey(k){const id=selectedId();return id&&SCOPED.has(k)?SPACE+'_'+encodeURIComponent(id)+'_'+k:k}
+function scopedKey(k){const id=selectedId(),healthAlert=/^msa2_(?:alerta_|anticoncepcional_alerta_)/.test(k);return id&&(SCOPED.has(k)||healthAlert)?SPACE+'_'+encodeURIComponent(id)+'_'+k:k}
 function seedFamilySpace(id,k){
  const families=globalGet(FAMILIES),p=families.find(x=>String(x&&x.id)===String(id));
  if(!p)return undefined;
