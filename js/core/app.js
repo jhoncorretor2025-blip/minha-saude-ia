@@ -139,7 +139,7 @@ function renderTimelineFiltros(){
 window.definirFiltroTimeline=function(f){window.__msaTimelineFiltro=f||'todos';renderTimelineFiltros();const el=$('timelineFull');if(el)el.innerHTML=buildTimeline().map(timelineHTML).join('')||'<div class="muted">Nenhum registro neste filtro.</div>'};
 function timelineHTML(x){
  const dateLabel=x.date?formatDateBR(x.date):'⚠️ Data não informada',issue=x.invalid?'<span class="timeline-review-tag">⚠️ Revisar</span>':'';
- return '<div class="timeline-row '+(x.invalid?'timeline-row-invalid':'')+'"><div class="timeline-date">'+esc(dateLabel)+'</div><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title"><b>'+x.icon+' '+esc(x.title)+'</b>'+issue+'</div><small>'+esc(x.sub||'Sem detalhes informados')+'</small></div></div>';
+ return '<div class="timeline-row timeline-row-'+esc(x.type)+' '+(x.invalid?'timeline-row-invalid':'')+'"><div class="timeline-date">'+esc(dateLabel)+'</div><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title"><b>'+x.icon+' '+esc(x.title)+'</b>'+issue+'</div><small>'+esc(x.sub||'Sem detalhes informados')+'</small></div></div>';
 }
 function atualizarSmartHome(){
  const issues=obterQualidadeRegistros(),next=getNextCare(),box=$('nextCareList'),timeline=buildTimeline('todos');
