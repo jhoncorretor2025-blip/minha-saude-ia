@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V6.60 */
+/* Minha Saúde IA — aplicação principal V6.65 */
 
 const K=window.MSA_K||window.K;
 const get=k=>window.MSAStorage.get(k);
@@ -1025,7 +1025,7 @@ function confirmarDose(id){
  let r=get(K.medRot),med=r.find(x=>x.id===id);
  if(idx>=0){a.splice(idx,1);set(K.medTaken,a);if(med&&med.estoque!==undefined&&med.estoque!==''){med.estoque=Number(med.estoque||0)+1;set(K.medRot,r)}renderNovosModulos();alert('↩️ Confirmação desfeita e estoque devolvido.');return}
  if(med&&med.estoque!==undefined&&med.estoque!==''&&Number(med.estoque)<=0){alert('⚠️ O estoque está zerado. Atualize a reposição antes de registrar uma dose como retirada do estoque.');return}
- a.push({id:id,medId:id,data:new Date().toISOString()});set(K.medTaken,a);
+ a.push({id:id,medId:id,data:hoje+'T'+[new Date().getHours(),new Date().getMinutes(),new Date().getSeconds()].map(n=>String(n).padStart(2,'0')).join(':')});set(K.medTaken,a);
  if(med&&med.estoque!==undefined&&med.estoque!==''){med.estoque=Math.max(0,Number(med.estoque||0)-1);set(K.medRot,r)}
  renderNovosModulos();alert('✅ Dose confirmada e estoque atualizado.');
 }
