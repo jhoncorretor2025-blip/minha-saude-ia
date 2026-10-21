@@ -209,16 +209,28 @@ function bindForms(id){
 }
 function addRecord(memberId,type,data){const list=getList(),p=list.find(x=>x.id===memberId);if(!p)return;ensure(p);p[type].push(Object.assign({id:uid(type.slice(0,3)),criadoEm:new Date().toISOString()},data));if(!saveList(list)){alert('Não foi possível salvar.');return}setSelected(memberId);renderFamiliares()}
 window.atualizarLadoFamiliar=function(id,lado){const list=getList(),p=list.find(x=>x.id===id);if(!p)return;p.ladoFamilia=String(lado||'');if(!saveList(list)){alert('Não foi possível salvar o lado da família.');return}setSelected(selectedId()||id);renderFamiliares();};
+function atualizarAppAposSelecaoFamiliar(){
+ // Recarrega os componentes que leem o perfil ativo, sem trocar a tela atual.
+ try{if(typeof window.loadProfile==='function')window.loadProfile()}catch(e){console.warn('[Minha Saúde IA] Não foi possível atualizar o formulário do perfil:',e)}
+ try{if(typeof window.renderCarteirinha==='function')window.renderCarteirinha()}catch(e){}
+ try{if(typeof window.renderNovosModulos==='function')window.renderNovosModulos()}catch(e){}
+ try{if(typeof window.atualizarSaudeReprodutiva==='function')window.atualizarSaudeReprodutiva()}catch(e){}
+ try{if(typeof window.aplicarPreferencias==='function')window.aplicarPreferencias()}catch(e){}
+ try{window.dispatchEvent(new CustomEvent('msa:perfil-selecionado',{detail:{id:selectedId()}}))}catch(e){}
+}
 window.selecionarFamiliar=id=>{
  const pessoa=getList().find(p=>String(p.id)===String(id));
  if(!pessoa){console.warn('[Minha Saúde IA] Perfil familiar não encontrado:',id);return}
  setSelected(pessoa.id);
+ atualizarAppAposSelecaoFamiliar();
  renderFamiliares();
- // Confirma que a seleção sobrevive ao redesenho da lista.
+ // Confirma que a seleção sobrevive ao redesenho da lista e mantém a tela sincronizada.
  setTimeout(()=>{
   const selecionado=getList().find(p=>String(p.id)===String(selectedId()));
   if(!selecionado||String(selecionado.id)!==String(pessoa.id)){
-   setSelected(pessoa.id);renderFamiliares();
+   setSelected(pessoa.id);
+   atualizarAppAposSelecaoFamiliar();
+   renderFamiliares();
   }
   document.getElementById('familiarDetalhe')?.scrollIntoView({behavior:'smooth',block:'start'});
  },80);
