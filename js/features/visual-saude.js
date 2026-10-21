@@ -1,4 +1,4 @@
-/* Minha Saúde IA — melhorias visuais (V6.65)
+/* Minha Saúde IA — melhorias visuais (V6.78)
  * Cores por registro, semáforos, barra de dor, saudação, formato do remédio, carteirinha e telas vazias
  * V6.65: sequência semanal de doses, animação ao confirmar e tema escuro azul-marinho mais suave
  * Só muda a aparência: não altera nenhum dado salvo (o formato do remédio fica numa preferência à parte).
@@ -163,7 +163,7 @@ function pessoaEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m)
 function pessoaPrincipal(){
  var k=window.MSA_K||window.K||{},a=[];try{a=window.MSAStorage.getGlobal?window.MSAStorage.getGlobal(k.p):window.MSAStorage.get(k.p)}catch(e){}
  var p=Array.isArray(a)?(a[0]||{}):(a||{});
- return {id:'__principal__',nome:p.nome||'Meu perfil',idade:p.idade||'',nasc:p.nasc||'',peso:p.peso||'',altura:p.altura||'',sangue:p.sangue||'',sexo:p.sexo||'',foto:p.foto||'',circ:p.circ||'',principal:true};
+ return {id:'__principal__',nome:p.nome||'Meu perfil',idade:p.idade||'',nasc:p.nasc||p.nascimento||p.dataNascimento||'',peso:p.peso||p.pesoKg||'',altura:p.altura||p.alturaCm||'',sangue:p.sangue||p.tipoSanguineo||'',sexo:p.sexo||'',foto:p.foto||'',circ:p.circ||p.cintura||'',tel:p.tel||p.telefone||p.contato||'',emerg:p.emerg||p.contatoEmergencia||'',alerg:p.alerg||p.alergias||'',cond:p.cond||p.condicaoSaude||'',info:p.info||p.obs||'',principal:true};
 }
 function pessoasAcompanhadas(){
  var k=window.MSA_K||window.K||{},a=[];try{a=window.MSAStorage.get(k.familiares||'msa2_familiares')||[]}catch(e){}
