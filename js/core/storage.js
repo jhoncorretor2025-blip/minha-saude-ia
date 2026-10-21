@@ -74,7 +74,7 @@ function get(k){
  const physical=scopedKey(k);
  if(physical!==k){
   const raw=window.msaStorage.getItem(physical);
-  if(raw!==null)return globalGet(physical);
+  if(raw!==null)return k==='msa2_humor'?parse(raw):globalGet(physical);
   const id=selectedId(),seed=seedFamilySpace(id,k);
   if(seed!==undefined){globalSet(physical,seed);return seed}
   return [];
