@@ -14,7 +14,7 @@ function write(payload){
 }
 function readProfile(){
  const K=window.MSA_K||window.K||{},s=window.MSAStorage;
- const raw=s&&K.p?s.get(K.p):[];const p=Array.isArray(raw)?(raw[0]||{}):(raw||{});
+ const raw=s&&K.p?(s.getGlobal?s.getGlobal(K.p):s.get(K.p)):[];const p=Array.isArray(raw)?(raw[0]||{}):(raw||{});
  return {nome:p.nome||'',idade:p.idade||'',nascimento:p.nasc||'',pesoKg:p.peso||'',alturaCm:p.altura||'',sexo:p.sexo||''};
 }
 function publishProfile(profile){
@@ -34,10 +34,10 @@ function applyShared(data){
  if(!data||!data.profile)return;
  const p=data.profile,K=window.MSA_K||window.K||{},s=window.MSAStorage;if(!s||!K.p)return;
  try{
-  const oldRaw=s.get(K.p),old=Array.isArray(oldRaw)?(oldRaw[0]||{}):(oldRaw||{}),merged=Object.assign({},old);
+  const oldRaw=s.getGlobal?s.getGlobal(K.p):s.get(K.p),old=Array.isArray(oldRaw)?(oldRaw[0]||{}):(oldRaw||{}),merged=Object.assign({},old);
   if(p.nome)merged.nome=p.nome;if(String(p.idade||'').trim())merged.idade=String(p.idade);if(p.nascimento)merged.nasc=p.nascimento;
   if(String(p.pesoKg||'').trim())merged.peso=String(p.pesoKg);if(String(p.alturaCm||'').trim())merged.altura=String(p.alturaCm);if(p.sexo)merged.sexo=p.sexo;
-  s.set(K.p,[merged]);
+  (s.setGlobal?s.setGlobal(K.p,[merged]):s.set(K.p,[merged]));
   const mapping={pNome:merged.nome,pIdade:merged.idade,pNasc:merged.nasc,pPeso:merged.peso,pAltura:merged.altura,pSexo:merged.sexo};
   Object.keys(mapping).forEach(id=>{const el=document.getElementById(id);if(el&&mapping[id]!==undefined&&mapping[id]!==null)el.value=mapping[id]});
   if(Array.isArray(data.familiares)){
