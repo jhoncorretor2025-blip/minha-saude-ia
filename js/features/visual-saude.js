@@ -15,10 +15,10 @@ function saudacao(){
  var home=$('home');if(!home)return;var h=new Date().getHours();
  var s=h<5?['🌙','Boa noite']:h<12?['☀️','Bom dia']:h<18?['🌤️','Boa tarde']:['🌙','Boa noite'];
  var nome=((lista('p')[0]||{}).nome||'').trim().split(/\s+/)[0];
- /* V6.71: o cartão do perfil já diz “Olá!”: a saudação do horário vai para ele, sem repetir outro bloco */
- var g=document.querySelector('#homeProfileHero .home-greeting');
- if(g){g.textContent=s[0]+' '+s[1]+'!';var velho=$('vsSaudacao');if(velho)velho.remove();return}
- var el=$('vsSaudacao');if(!el){el=document.createElement('div');el.id='vsSaudacao';el.className='vs-saudacao'}var cab=document.querySelector('header .head');if(cab&&el.parentElement!==cab)cab.appendChild(el);else if(!cab&&!el.parentElement)home.insertBefore(el,home.firstChild);
+ /* V6.72: saudação e data compactas no canto direito do cabeçalho/logo. */
+ var el=$('vsSaudacao'),cab=document.querySelector('header .head');
+ if(!el){el=document.createElement('div');el.id='vsSaudacao';el.className='vs-saudacao'}
+ if(cab&&el.parentElement!==cab)cab.appendChild(el);
  el.innerHTML='<span class="vs-sol" aria-hidden="true">'+s[0]+'</span><div><b>'+s[1]+(nome?', '+esc(nome):'')+'!</b><small>'+new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})+'</small></div>';
 }
 
@@ -140,7 +140,7 @@ function melhorarHome(){
  if(aniversario){
   var crumbCards=Array.from(document.querySelectorAll('div,nav,section,aside')).filter(function(el){
    var t=(el.innerText||'').trim();
-   return /Você está em/i.test(t)&&/Início/i.test(t)&&el.querySelectorAll('button').length>=3&&t.length<220;
+   return /Você está em/i.test(t)&&/Início/i.test(t)&&el.querySelectorAll('button').length>=3&&t.length<320&&(!el.parentElement||!el.parentElement.classList.contains('msa-birthday-crumb-host'));
   }).sort(function(a,b){return (a.innerText||'').length-(b.innerText||'').length;});
   var crumb=crumbCards[0];
   if(crumb&&aniversario.parentElement!==crumb){
@@ -150,7 +150,7 @@ function melhorarHome(){
  }
  if(perfil&&atalhos&&atalhos.previousElementSibling!==perfil)perfil.insertAdjacentElement('afterend',atalhos);
  if(atalhos&&imc&&imc.previousElementSibling!==atalhos)atalhos.insertAdjacentElement('afterend',imc);
- if(imc&&aniversario&&aniversario.previousElementSibling!==imc)imc.insertAdjacentElement('afterend',aniversario);
+ /* Não mover aniversário para baixo do IMC: ele pertence ao cartão superior de navegação. */
  if(rapidas)rapidas.hidden=true;
  if(intro)intro.hidden=true;
  if(metricas&&pendencias&&pendencias.previousElementSibling!==metricas)metricas.insertAdjacentElement('afterend',pendencias);
