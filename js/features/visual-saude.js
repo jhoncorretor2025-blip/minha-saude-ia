@@ -161,7 +161,7 @@ function melhorarHome(){
 /* V6.73 — seletor de pessoa acompanhada no cartão de perfil */
 function pessoaEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
 function pessoaPrincipal(){
- var k=window.MSA_K||window.K||{},a=[];try{a=window.MSAStorage.get(k.p)||[]}catch(e){}
+ var k=window.MSA_K||window.K||{},a=[];try{a=window.MSAStorage.getGlobal?window.MSAStorage.getGlobal(k.p):window.MSAStorage.get(k.p)}catch(e){}
  var p=Array.isArray(a)?(a[0]||{}):(a||{});
  return {id:'__principal__',nome:p.nome||'Meu perfil',idade:p.idade||'',nasc:p.nasc||'',peso:p.peso||'',altura:p.altura||'',sangue:p.sangue||'',sexo:p.sexo||'',foto:p.foto||'',circ:p.circ||'',principal:true};
 }
@@ -204,9 +204,24 @@ function abrirSeletorPessoa(){
  modal.innerHTML='<div class="msa-pessoa-dialog" role="dialog" aria-modal="true" aria-labelledby="msaPessoaTitle"><div class="msa-pessoa-head"><div><small>👨‍👩‍👧‍👦 PERFIL ACOMPANHADO</small><h2 id="msaPessoaTitle">De quem você está cuidando?</h2><p>Escolha uma pessoa para atualizar o cartão de perfil.</p></div><button type="button" class="msa-pessoa-close" aria-label="Fechar">✕</button></div><div class="msa-pessoa-options"><button type="button" class="msa-pessoa-option '+(active.principal?'selected':'')+'" data-pessoa-id="__principal__"><span>👤</span><span><b>'+pessoaEsc(own.nome||'Meu perfil')+'</b><small>Meu perfil pessoal</small></span><span>✓</span></button>'+(list.length?list.map(function(p){return '<button type="button" class="msa-pessoa-option '+(String(active.id)===String(p.id)?'selected':'')+'" data-pessoa-id="'+pessoaEsc(p.id)+'"><span>'+(p.sexo==='Feminino'?'👩':'👤')+'</span><span><b>'+pessoaEsc(p.nome||'Sem nome')+'</b><small>'+pessoaEsc(p.parentesco||'Familiar')+' · '+pessoaEsc(p.idade||'Idade não informada')+' anos</small></span><span>✓</span></button>'}).join(''):'<p class="msa-pessoa-empty">Nenhum familiar cadastrado. Cadastre pessoas na área Família.</p>')+'</div><div class="msa-pessoa-foot"><button type="button" class="msa-pessoa-manage">➕ Cadastrar ou editar familiares</button></div></div>';
  document.body.appendChild(modal);function fechar(){modal.remove();document.removeEventListener('keydown',tecla)}function tecla(e){if(e.key==='Escape')fechar()}
  modal.querySelector('.msa-pessoa-close').onclick=fechar;modal.addEventListener('click',function(e){if(e.target===modal)fechar()});document.addEventListener('keydown',tecla);
- modal.querySelectorAll('[data-pessoa-id]').forEach(function(btn){btn.onclick=function(){var id=btn.dataset.pessoaId;try{window.MSAStorage.set('msa2_familiar_selecionado',id==='__principal__'?'':id)}catch(e){}atualizarCardPessoa();fechar()}});
+ modal.querySelectorAll('[data-pessoa-id]').forEach(function(btn){btn.onclick=function(){var id=btn.dataset.pessoaId;try{window.MSAStorage.set('msa2_familiar_selecionado',id==='__principal__'?'':id)}catch(e){}fechar();aplicarPerfilSelecionado();}});
  modal.querySelector('.msa-pessoa-manage').onclick=function(){fechar();go('familiares')};
 }
+function aplicarPerfilSelecionado(){
+ /* Os módulos leem MSAStorage; a seleção agora troca o espaço de dados ativo, não apenas o nome do card. */
+ try{if(typeof window.loadProfile==='function')window.loadProfile()}catch(e){}
+ try{if(typeof window.render==='function')window.render()}catch(e){console.warn('[perfil ativo] render:',e)}
+ try{if(typeof window.renderCarteirinha==='function')window.renderCarteirinha()}catch(e){}
+ try{if(typeof window.renderNovosModulos==='function')window.renderNovosModulos()}catch(e){}
+ try{if(typeof window.renderFamiliares==='function')window.renderFamiliares()}catch(e){}
+ atualizarCardPessoa();
+}
+(function instalarNavegacaoCarteirinha(){
+ if(window.__msaCarteirinhaPerfilWrap||typeof window.go!=='function')return;
+ var original=window.go;
+ window.go=function(id){var r=original.apply(this,arguments);if(id==='carteirinha'){setTimeout(function(){try{if(typeof window.renderCarteirinha==='function')window.renderCarteirinha()}catch(e){}},0)}return r};
+ window.__msaCarteirinhaPerfilWrap=true;
+})();
 function instalarSeletorPessoaAcompanhada(){
  var hero=$('homeProfileHero'),waist=$('homeProfileWaistChip');
  if(!hero)return false;
