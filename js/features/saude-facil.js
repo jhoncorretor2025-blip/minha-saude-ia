@@ -1,4 +1,4 @@
-/* Minha Saúde IA — mais fácil para quem não tem prática com tecnologia (V6.62)
+/* Minha Saúde IA — mais fácil para quem não tem prática com tecnologia (V6.81)
  * 1 Início com 4 botões grandes · 2 “Hoje” (remédios e consultas) · 3 Voltar + Você está em
  * 4 “Estou cuidando de” · 5 menu simples com 4 opções · 6 “?” em cada tela · 7 palavras do dia a dia
  * 8 anotar sintoma em passos · 9 letra maior e alto contraste · 10 botão de emergência sempre à mão
@@ -73,13 +73,28 @@ function emergencia(){if(typeof window.abrirModoEmergencia==='function')window.a
 function aplicarVisao(){document.documentElement.classList.toggle('sf-letra',ui('letra')==='1');document.documentElement.classList.toggle('sf-contraste',ui('contraste')==='1')}
 
 /* ---------- 4) estou cuidando de ---------- */
-function pessoas(){var reg=[];try{reg=JSON.parse(localStorage.getItem('msa3_perfis_locais')||'[]')}catch(e){}var atualId=String(window.msaStoragePerfil||new URLSearchParams(location.search).get('perfil')||'');var eu=(lista('p')[0]||{}).nome;return {atualId:atualId,itens:[{id:'',name:'Eu'+(eu&&!atualId?' ('+eu+')':'')}].concat(reg.filter(function(x){return x&&x.id}))}}
+function pessoas(){
+ var reg=[];try{if(window.MSAStorage&&typeof window.MSAStorage.getGlobal==='function')reg=window.MSAStorage.getGlobal('msa2_familiares')||[];else if(window.MSAStorage&&typeof window.MSAStorage.get==='function')reg=window.MSAStorage.get('msa2_familiares')||[]}catch(e){}
+ if(!Array.isArray(reg))reg=[];
+ var atualId='';try{atualId=window.MSAStorage&&typeof window.MSAStorage.selectedProfileId==='function'?String(window.MSAStorage.selectedProfileId()||''):''}catch(e){}
+ var eu=(lista('p')[0]||{}).nome;
+ return {atualId:atualId,itens:[{id:'',name:'Eu'+(eu&&!atualId?' ('+eu+')':'')}].concat(reg.filter(function(x){return x&&x.id}).map(function(x){return {id:String(x.id),name:String(x.nome||x.name||'Pessoa sem nome'),parentesco:x.parentesco||''}}))}
+}
+function focarCadastroFamiliar(){
+ var tentativas=0;function tentar(){tentativas++;var form=$('familiarForm'),campo=$('fNome'),card=$('familiaCadastroCard');
+ if(form&&campo){if(card)card.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(function(){try{campo.focus({preventScroll:true})}catch(e){campo.focus()}},180);return}
+ if(tentativas<12)setTimeout(tentar,180)}
+ tentar();
+}
 function montarCuidando(){
  var home=$('home');if(!home||$('sfCuidando'))return;var p=pessoas();
  var w=document.createElement('div');w.id='sfCuidando';w.className='sf-cuidando';
- w.innerHTML='<label for="sfPessoa">👨‍👩‍👧 Estou cuidando da saúde de:</label><select id="sfPessoa">'+p.itens.map(function(x){return '<option value="'+esc(x.id)+'"'+(x.id===p.atualId?' selected':'')+'>'+esc(x.name)+'</option>'}).join('')+'<option value="__novo">➕ Adicionar outra pessoa…</option></select>';
+ w.innerHTML='<label for="sfPessoa">👨‍👩‍👧 Estou cuidando da saúde de:</label><select id="sfPessoa">'+p.itens.map(function(x){return '<option value="'+esc(x.id)+'"'+(x.id===p.atualId?' selected':'')+'>'+esc(x.name)+(x.parentesco?' · '+esc(x.parentesco):'')+'</option>'}).join('')+'<option value="__novo">➕ Adicionar outra pessoa…</option></select>';
  home.insertBefore(w,home.firstChild);
- $('sfPessoa').onchange=function(){var v=this.value;if(v==='__novo'){ir('perfis-locais');this.value=p.atualId;return}location.href=location.origin+location.pathname+(v?'?perfil='+encodeURIComponent(v):'')};
+ $('sfPessoa').onchange=function(){var v=this.value;if(v==='__novo'){this.value=p.atualId;ir('familiares');[250,550,900].forEach(function(ms){setTimeout(focarCadastroFamiliar,ms)});return}
+ try{if(window.MSAStorage&&typeof window.MSAStorage.set==='function')window.MSAStorage.set('msa2_familiar_selecionado',v||'')}catch(e){}
+ location.href=location.origin+location.pathname+'?pagina=home';
+ };
 }
 
 /* ---------- 1, 2) início com botões grandes e “Hoje” ---------- */
