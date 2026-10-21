@@ -277,6 +277,28 @@
         }).join('')+'</div></div>';
     }
 
+    function atualizarVisibilidadeCiclo(){
+      var ciclo=drawer.querySelector('[data-mobile-ciclo]');
+      if(!ciclo)return;
+      var sexo='';
+      try{
+        var id=window.MSAStorage&&typeof window.MSAStorage.selectedProfileId==='function'?String(window.MSAStorage.selectedProfileId()||''):'';
+        var fam=window.MSAStorage&&typeof window.MSAStorage.getGlobal==='function'?window.MSAStorage.getGlobal('msa2_familiares'):[];
+        if(!Array.isArray(fam))fam=[];
+        if(id){
+          var pessoa=fam.find(function(x){return x&&String(x.id)===id});
+          sexo=pessoa?String(pessoa.sexo||''):'';
+        }
+        if(!sexo&&window.MSAStorage&&typeof window.MSAStorage.get==='function'){
+          var perfil=window.MSAStorage.get('msa2_perfil');
+          if(Array.isArray(perfil)&&perfil[0])sexo=String(perfil[0].sexo||'');
+        }
+      }catch(e){}
+      var masculino=/^(masculino|homem|male)$/i.test(sexo.trim());
+      ciclo.hidden=masculino;
+      ciclo.style.display=masculino?'none':'';
+      ciclo.setAttribute('aria-hidden',masculino?'true':'false');
+    }
     function closeDrawer(){
       drawer.setAttribute('aria-hidden','true');
       backdrop.setAttribute('aria-hidden','true');
@@ -290,6 +312,7 @@
       backdrop.setAttribute('aria-hidden','false');
       document.body.classList.add('msa-mobile-menu-open');
       var close=drawer.querySelector('.msa-mobile-drawer-close');
+      atualizarVisibilidadeCiclo();
       if(close)close.focus();
     }
     function focusSearch(){
@@ -316,7 +339,12 @@
       else if(action==='menu')openDrawer();
     });
 
+    var closeButton=drawer.querySelector('.msa-mobile-drawer-close');
+    if(closeButton)closeButton.addEventListener('click',function(ev){
+      ev.preventDefault();ev.stopPropagation();closeDrawer();
+    });
     drawer.addEventListener('click',function(ev){
+      if(ev.target.closest&&ev.target.closest('.msa-mobile-drawer-close')){ev.preventDefault();closeDrawer();return;}
       var tab=ev.target.closest ? ev.target.closest('[data-mobile-tab]') : null;
       if(tab){
         ev.preventDefault();
