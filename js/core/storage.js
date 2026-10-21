@@ -1,4 +1,4 @@
-/* Minha Saúde IA — armazenamento compartilhado e perfis isolados V6.76 */
+/* Minha Saúde IA — armazenamento compartilhado e perfis isolados V6.78 */
 (function(){
 'use strict';
 const K=window.MSA_K||window.K||{};
@@ -9,7 +9,7 @@ const SCOPED=new Set([
 'msa2_vitais','msa2_lembretes','msa2_vacinas','msa2_familia','msa2_documentos','msa2_nutri',
 'msa2_suplementos','msa2_reacoes_alimentares','msa2_hidratacao','msa2_sono','msa2_bemestar',
 'msa2_gatilhos','msa2_medicamentos_rotina','msa2_medicamentos_tomados','msa2_anticoncepcional',
-'msa2_medidas_corporais','msa2_medidas','msa2_humor','msa2_metas_pessoais','msa2_historico_alteracoes','msa2_preferencias'
+'msa2_medidas_corporais','msa2_medidas','msa2_humor','msa2_metas_pessoais','msa2_historico_alteracoes','msa2_preferencias','msa2_historico_medico'
 ]);
 function parse(raw){try{return raw?JSON.parse(raw):null}catch(e){return null}}
 function globalGet(k){
