@@ -1,6 +1,6 @@
-/* Minha Saúde IA — melhorias visuais (V6.64)
- * 1 cor por tipo de registro · 2 semáforo 🟢🟡🔴 nas medições e na dor · 4 saudação com nome e hora
- * 6 ícone do formato do remédio · 8 carteirinha com cara de cartão · 9 telas vazias amigáveis
+/* Minha Saúde IA — melhorias visuais (V6.65)
+ * Cores por registro, semáforos, barra de dor, saudação, formato do remédio, carteirinha e telas vazias
+ * V6.65: sequência semanal de doses, animação ao confirmar e tema escuro azul-marinho mais suave
  * Só muda a aparência: não altera nenhum dado salvo (o formato do remédio fica numa preferência à parte).
  */
 (function(){
@@ -21,7 +21,7 @@ function saudacao(){
 
 /* ---------- 2) semáforo ---------- */
 function nivelPressao(t){var m=String(t||'').match(/(\d{1,3})\s*[\/x×]\s*(\d{1,3})/);if(!m)return null;var s=Number(m[1]),d=Number(m[2]);if(s<30){s*=10;d*=10}
- if(s>=140||d>=90)return['r','alta'];if(s<90||d<60)return['a','baixa'];if(s>=130||d>=85)return['a','um pouco alta'];return['v','normal']}
+ if(s>=180||d>=110)return['r','muito alta'];if(s>=140||d>=90)return['a','alta'];if(s<90||d<60)return['a','baixa'];if(s>=130||d>=80)return['v','acompanhar tendência'];return['v','na faixa verde do app']}
 function nivelGlic(t){var n=parseFloat(String(t||'').replace(',','.'));if(!isFinite(n))return null;if(n<70)return['r','baixa'];if(n>=126)return['r','alta'];if(n>=100)return['a','um pouco alta'];return['v','normal']}
 function nivelFC(t){var n=parseFloat(t);if(!isFinite(n))return null;if(n<50||n>110)return['r',n<50?'baixa':'alta'];if(n>100||n<60)return['a',n>100?'um pouco alta':'um pouco baixa'];return['v','normal']}
 function nivelSat(t){var n=parseFloat(String(t||'').replace(',','.'));if(!isFinite(n))return null;if(n<90)return['r','baixa'];if(n<95)return['a','um pouco baixa'];return['v','normal']}
@@ -33,7 +33,7 @@ function semaforoVitais(){
  box.querySelectorAll(':scope > .item').forEach(function(it,i){if(it.querySelector('.vs-chips'))return;var x=v[i];if(!x)return;
   var c=chip('Pressão',x.pressao,nivelPressao(x.pressao))+chip('Açúcar',x.glic,nivelGlic(x.glic))+chip('Batimentos',x.fc,nivelFC(x.fc))+chip('Oxigênio',x.sat,nivelSat(x.sat))+chip('Temp.',x.temp,nivelTemp(x.temp));
   if(c){var d=document.createElement('div');d.className='vs-chips';d.innerHTML=c;var p=it.querySelector('p');(p||it).insertAdjacentElement(p?'beforebegin':'beforeend',d)}});
- if(v.length&&!$('vsLegenda')){var l=document.createElement('p');l.id='vsLegenda';l.className='vs-legenda';l.innerHTML='🟢 normal · 🟡 atenção · 🔴 converse com seu médico<br><small>Cores com valores de referência gerais para adultos (açúcar considerado em jejum). Seu médico pode definir metas diferentes para você.</small>';box.parentNode.insertBefore(l,box)}
+ if(v.length&&!$('vsLegenda')){var l=document.createElement('p');l.id='vsLegenda';l.className='vs-legenda';l.innerHTML='🟢 faixa verde do app · 🟡 atenção/alta · 🔴 muito alta<br><small>Referências gerais para adultos; glicemia considerada em jejum. Uma medição isolada não confirma diagnóstico. Pressão alta repetida deve ser avaliada por um profissional; procure urgência diante de pressão muito alta com dor no peito, falta de ar, confusão ou alteração neurológica.</small>';box.parentNode.insertBefore(l,box)}
 }
 function semaforoDor(){
  var box=$('listD');if(!box)return;var d=lista('d').slice().reverse();
@@ -74,9 +74,63 @@ function telasVazias(){
 }
 document.addEventListener('click',function(e){var b=e.target.closest('[data-vs-form]');if(!b)return;var f=$(b.getAttribute('data-vs-form'));if(!f)return;f.scrollIntoView({behavior:'smooth',block:'start'});var i=f.querySelector('input:not([type=hidden]),select,textarea');if(i)setTimeout(function(){try{i.focus({preventScroll:true})}catch(x){}},350)});
 
+
+/* ---------- 7) calendário semanal de adesão aos remédios ---------- */
+function isoLocalDia(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function calendarioSemana(){
+ var host=$('sfHoje');if(!host)return;
+ var titulo=host.querySelector('h2');if(!titulo)return;
+ var box=$('vsWeekCalendar');
+ if(!box){box=document.createElement('div');box.id='vsWeekCalendar';box.className='vs-week';titulo.insertAdjacentElement('afterend',box)}
+ else if(box.parentNode!==host)titulo.insertAdjacentElement('afterend',box);
+ var meds=lista('medRot').filter(function(m){return m&&m.nome});
+ var taken=lista('medTaken');
+ var agora=new Date(),hoje=isoLocalDia(agora);agora.setHours(12,0,0,0);
+ var inicio=new Date(agora);inicio.setDate(inicio.getDate()-((inicio.getDay()+6)%7));
+ var nomes=['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
+ var letras=['S','T','Q','Q','S','S','D'];
+ var dias=[];
+ for(var i=0;i<7;i++){
+  var dt=new Date(inicio);dt.setDate(inicio.getDate()+i);
+  var iso=isoLocalDia(dt),ids=[];
+  taken.forEach(function(t){if(String(t.data||'').slice(0,10)===iso&&t.medId!=null)ids.push(String(t.medId))});
+  var distinct=Array.from(new Set(ids)),estado='sem-registro',mensagem='Nenhuma confirmação registrada — isso não quer dizer que a dose foi esquecida.';
+  if(iso>hoje){estado='futuro';mensagem='Dia futuro';}
+  else if(!meds.length){estado='sem-rotina';mensagem='Cadastre os remédios da rotina para acompanhar a sequência.';}
+  else if(meds.every(function(m){return distinct.indexOf(String(m.id))>=0})){estado='completo';mensagem='Todos os remédios da rotina foram marcados como tomados.';}
+  else if(distinct.length){estado='parcial';mensagem='Há doses marcadas, mas nem todos os remédios da rotina foram confirmados.';}
+  var hojeClasse=iso===hoje?' hoje':'';
+  var miolo=estado==='completo'?'✓':estado==='parcial'?'•':String(dt.getDate());
+  dias.push('<div class="vs-week-day vs-week-'+estado+hojeClasse+'" title="'+esc(nomes[i]+', '+iso+': '+mensagem)+'" aria-label="'+esc(nomes[i]+', dia '+dt.getDate()+'. '+mensagem)+'"><small>'+letras[i]+'</small><span class="vs-week-dot">'+miolo+'</span><em>'+dt.getDate()+'</em></div>');
+ }
+ var rodape=meds.length?'Verde = todos os remédios da rotina confirmados':'Cadastre remédios na rotina para começar a acompanhar.';
+ var html='<div class="vs-week-head"><b>🗓️ Esta semana</b><small>'+esc(rodape)+'</small></div><div class="vs-week-days">'+dias.join('')+'</div>';
+ if(box.innerHTML!==html)box.innerHTML=html;
+}
+
+/* ---------- 5) retorno visual ao marcar uma dose ---------- */
+document.addEventListener('click',function(e){
+ var botao=e.target&&e.target.closest?e.target.closest('[data-sf-dose]'):null;
+ if(!botao||botao.getAttribute('aria-pressed')==='true')return;
+ var id=String(botao.getAttribute('data-sf-dose')||'');
+ setTimeout(function(){
+  var host=$('sfHoje');if(!host)return;
+  var atual=Array.prototype.find.call(host.querySelectorAll('button[data-sf-dose]'),function(b){return String(b.getAttribute('data-sf-dose'))===id});
+  if(!atual||atual.getAttribute('aria-pressed')!=='true')return;
+  var item=atual.closest('li');if(!item)return;
+  item.classList.remove('vs-dose-complete');
+  var velho=item.querySelector('.vs-dose-pop');if(velho)velho.remove();
+  void item.offsetWidth;
+  item.classList.add('vs-dose-complete');
+  var ok=document.createElement('span');ok.className='vs-dose-pop';ok.setAttribute('role','status');ok.textContent='✔️';ok.setAttribute('aria-label','Dose marcada como tomada');
+  item.appendChild(ok);
+  setTimeout(function(){item.classList.remove('vs-dose-complete');if(ok.parentNode)ok.remove()},1700);
+ },650);
+},true);
+
 /* ---------- juntando ---------- */
 var agendado=false;
-function tudo(){agendado=false;try{saudacao();semaforoVitais();semaforoDor();iconesRemedios();carteirinha();telasVazias()}catch(e){if(window.console)console.warn('[visual-saude]',e)}}
+function tudo(){agendado=false;try{saudacao();semaforoVitais();semaforoDor();iconesRemedios();carteirinha();telasVazias();calendarioSemana()}catch(e){if(window.console)console.warn('[visual-saude]',e)}}
 function agendar(){if(agendado)return;agendado=true;setTimeout(tudo,60)}
 /* V6.64: corrige bug antigo — a lista de medições (pressão, açúcar…), lembretes e vacinas nunca era montada,
    porque renderAcompanhamento() não era chamada em lugar nenhum. */
@@ -121,7 +175,35 @@ css.textContent=
  'body.msa-dark .vs-saudacao{background:linear-gradient(135deg,#172554,#2e1065);border-color:#1e3a8a}body.msa-dark .vs-saudacao small,body.msa-dark .vs-vazio small,body.msa-dark .vs-forma{color:#cbd5e1}body.msa-dark .vs-vazio b{color:#f1f5f9}'+
  'body.msa-dark .vs-v{background:#052e16;color:#bbf7d0;border-color:#166534}body.msa-dark .vs-a{background:#3b2a0c;color:#fde68a;border-color:#b45309}body.msa-dark .vs-r{background:#3b0c0c;color:#fecaca;border-color:#991b1b}body.msa-dark .vs-legenda{background:#0f172a;border-color:#334155}body.msa-dark .vs-legenda small{color:#cbd5e1}body.msa-dark .vs-dor{background:#1e293b}'+
  'body.msa-dark #sfBotoes .sf-grade button{background:#111827!important}'+
- '@media print{.vs-forma,.vs-vazio button,.vs-saudacao{display:none!important}}';
+ '@media print{.vs-forma,.vs-vazio button,.vs-saudacao{display:none!important}}'+
+  /* Barra de dor contínua do verde ao vermelho */
+  '.vs-dor span,.vs-dor.vs-v span,.vs-dor.vs-a span,.vs-dor.vs-r span{background:linear-gradient(90deg,#22c55e 0%,#facc15 52%,#f97316 76%,#ef4444 100%)!important}'+
+  /* Calendário semanal */
+  '.vs-week{margin:9px 0 14px;padding:12px;border:1px solid var(--border);border-radius:16px;background:var(--card);color:var(--text)}'+
+  '.vs-week-head{display:flex;flex-direction:column;gap:3px;margin-bottom:10px}.vs-week-head>b{font-size:14px}.vs-week-head>small{font-size:11px;color:var(--muted);line-height:1.35}'+
+  '.vs-week-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}'+
+  '.vs-week-day{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}.vs-week-day>small{font-size:11px;font-weight:900;color:var(--muted)}'+
+  '.vs-week-dot{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#eef2f7;color:#526071;border:1px solid #d9e0e9;font-size:13px;font-weight:900}'+
+  '.vs-week-day>em{font-style:normal;font-size:10px;color:var(--muted)}.vs-week-day.vs-week-completo .vs-week-dot{background:#16a34a;color:#fff;border-color:#15803d}'+
+  '.vs-week-day.vs-week-parcial .vs-week-dot{background:#fef3c7;color:#92400e;border-color:#f59e0b}.vs-week-day.vs-week-futuro .vs-week-dot{opacity:.55}'+
+  '.vs-week-day.hoje .vs-week-dot{outline:2px solid #60a5fa;outline-offset:2px}.vs-week-day.vs-week-sem-rotina .vs-week-dot{background:#f1f5f9;color:#94a3b8}'+
+  /* Microanimação ao concluir uma dose */
+  '.sf-hoje li.vs-dose-complete{animation:vsDoseCard .62s cubic-bezier(.2,.75,.25,1);background:#f0fdf4!important;border-color:#86efac!important}'+
+  '.vs-dose-pop{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;width:28px;height:28px;border-radius:50%;background:#16a34a;color:#fff;font-size:17px;box-shadow:0 4px 12px rgba(22,163,74,.25);animation:vsCheckPop .55s cubic-bezier(.2,.9,.25,1.4)}'+
+  '@keyframes vsDoseCard{0%{transform:scale(1)}38%{transform:scale(1.015)}100%{transform:scale(1)}}@keyframes vsCheckPop{0%{transform:scale(.35);opacity:0}70%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}'+
+  /* Tema escuro azul-marinho, contraste suave e bordas discretas */
+  'body.msa-dark{--bg:#111b2f;--card:#1a2940;--text:#dce6f3;--muted:#a9b7cb;--border:#34445d;--shadow:0 8px 24px rgba(0,0,0,.18);background:#111b2f!important;color:#dce6f3!important}'+
+  'body.msa-dark .card,body.msa-dark .item,body.msa-dark .box,body.msa-dark .progressive-card,body.msa-dark .modal-card,body.msa-dark .msa-fab-action,body.msa-dark .msa-mobile-drawer{background:#1a2940!important;color:#dce6f3!important;border-color:#34445d!important;box-shadow:0 7px 22px rgba(0,0,0,.14)}'+
+  'body.msa-dark input,body.msa-dark select,body.msa-dark textarea{background:#17243a!important;color:#dce6f3!important;border-color:#34445d!important}'+
+  'body.msa-dark .vs-week,body.msa-dark .vs-legenda{background:#17243a!important;color:#dce6f3!important;border-color:#34445d!important}'+
+  'body.msa-dark .vs-week-head small,body.msa-dark .vs-week-day>small,body.msa-dark .vs-week-day>em{color:#a9b7cb!important}'+
+  'body.msa-dark .vs-week-dot{background:#24344c;color:#dce6f3;border-color:#40516a}body.msa-dark .vs-week-day.vs-week-completo .vs-week-dot{background:#166534;color:#dcfce7;border-color:#22c55e}'+
+  'body.msa-dark .vs-week-day.vs-week-parcial .vs-week-dot{background:#493815;color:#fde68a;border-color:#a16207}'+
+  'body.msa-dark .sf-hoje li{background:#1a2940!important;color:#dce6f3!important;border-color:#34445d!important}body.msa-dark .sf-hoje li.vs-dose-complete{background:#143626!important;border-color:#27834e!important}'+
+  'body.msa-dark .vs-saudacao{background:linear-gradient(135deg,#192d4d,#29264a);border-color:#34445d}'+
+  '@media(prefers-reduced-motion:reduce){.vs-dose-pop,.sf-hoje li.vs-dose-complete{animation:none!important;transition:none!important}}body.msa-reduce-motion .vs-dose-pop,body.msa-reduce-motion .sf-hoje li.vs-dose-complete{animation:none!important}'+
+  '@media(max-width:360px){.vs-week{padding:9px 6px}.vs-week-days{gap:2px}.vs-week-dot{width:28px;height:28px}}'+
+  '@media print{.vs-forma,.vs-vazio button,.vs-saudacao,.vs-week,.vs-dose-pop{display:none!important}}';
 document.head.appendChild(css);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(iniciar,500)});else setTimeout(iniciar,500);
 })();
