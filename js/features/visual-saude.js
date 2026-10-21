@@ -133,6 +133,18 @@ document.addEventListener('click',function(e){
 function melhorarHome(){
  var home=$('home');if(!home)return;
  var perfil=$('homeProfileHero'),atalhos=$('homeCommandCenter'),imc=$('homeSmartHealth'),aniversario=$('homeBirthdayCountdown'),rapidas=$('homeQuickActions'),intro=$('msaPurposeIntro'),pendencias=$('homeMissingInfoCard'),metricas=home.querySelector('.metric-panel'),backup=home.querySelector('.msa-backup-prompt');
+ /* Coloca a contagem do aniversário no cartão superior "Você está em / Início", junto aos controles do cabeçalho. */
+ if(aniversario){
+  var crumbCards=Array.from(document.querySelectorAll('div,nav,section,aside')).filter(function(el){
+   var t=(el.innerText||'').trim();
+   return /Você está em/i.test(t)&&/Início/i.test(t)&&el.querySelectorAll('button').length>=3&&t.length<220;
+  }).sort(function(a,b){return (a.innerText||'').length-(b.innerText||'').length;});
+  var crumb=crumbCards[0];
+  if(crumb&&aniversario.parentElement!==crumb){
+   crumb.appendChild(aniversario);
+   crumb.classList.add('msa-birthday-crumb-host');
+  }
+ }
  if(perfil&&atalhos&&atalhos.previousElementSibling!==perfil)perfil.insertAdjacentElement('afterend',atalhos);
  if(atalhos&&imc&&imc.previousElementSibling!==atalhos)atalhos.insertAdjacentElement('afterend',imc);
  if(imc&&aniversario&&aniversario.previousElementSibling!==imc)imc.insertAdjacentElement('afterend',aniversario);
@@ -228,6 +240,7 @@ document.head.appendChild(css);
 
 var homePolish=document.createElement('style');homePolish.id='msa-home-polish-v667';
 homePolish.textContent=`
+.msa-birthday-crumb-host{display:flex!important;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.msa-birthday-crumb-host>.home-birthday-countdown{flex:1 1 260px;min-width:0;max-width:560px;margin:0!important;padding:7px 12px!important;border-radius:12px!important;box-shadow:none!important;gap:8px!important;background:#fff7e6!important;border-color:#f5d58a!important}.msa-birthday-crumb-host .home-birthday-icon{font-size:22px!important}.msa-birthday-crumb-host .home-birthday-countdown strong{font-size:12px!important;line-height:1.3}.msa-birthday-crumb-host .home-birthday-countdown small{font-size:10px!important;margin-top:1px!important}.msa-birthday-crumb-host>.home-birthday-countdown[hidden]{display:none!important}@media(max-width:600px){.msa-birthday-crumb-host{gap:7px}.msa-birthday-crumb-host>.home-birthday-countdown{flex-basis:100%;max-width:none;padding:7px 9px!important}.msa-birthday-crumb-host .home-birthday-icon{font-size:19px!important}} 
 #home{display:flex;flex-direction:column;gap:12px}
 #home #homeProfileHero{margin:0 0 2px;gap:16px}
 #home .home-command-center{order:1;margin:0;align-items:stretch;gap:12px}
