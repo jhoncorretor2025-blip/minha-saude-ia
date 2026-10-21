@@ -178,6 +178,12 @@ css.textContent=
  '@media print{.vs-forma,.vs-vazio button,.vs-saudacao{display:none!important}}'+
   /* Barra de dor contínua do verde ao vermelho */
   '.vs-dor span,.vs-dor.vs-v span,.vs-dor.vs-a span,.vs-dor.vs-r span{background:linear-gradient(90deg,#22c55e 0%,#facc15 52%,#f97316 76%,#ef4444 100%)!important}'+
+  /* Cores de categoria também na linha do tempo */
+  '.timeline-row-sintomas .timeline-dot{background:#f97316!important}.timeline-row-sintomas .timeline-content{border-left:4px solid #f97316;padding-left:10px}'+
+  '.timeline-row-medicamentos .timeline-dot{background:#2563eb!important}.timeline-row-medicamentos .timeline-content{border-left:4px solid #2563eb;padding-left:10px}'+
+  '.timeline-row-consultas .timeline-dot{background:#16a34a!important}.timeline-row-consultas .timeline-content{border-left:4px solid #16a34a;padding-left:10px}'+
+  '.timeline-row-sinais .timeline-dot{background:#dc2626!important}.timeline-row-sinais .timeline-content{border-left:4px solid #dc2626;padding-left:10px}'+
+  '.timeline-row-exames .timeline-dot{background:#7c3aed!important}.timeline-row-exames .timeline-content{border-left:4px solid #7c3aed;padding-left:10px}'+
   /* Calendário semanal */
   '.vs-week{margin:9px 0 14px;padding:12px;border:1px solid var(--border);border-radius:16px;background:var(--card);color:var(--text)}'+
   '.vs-week-head{display:flex;flex-direction:column;gap:3px;margin-bottom:10px}.vs-week-head>b{font-size:14px}.vs-week-head>small{font-size:11px;color:var(--muted);line-height:1.35}'+
