@@ -15,7 +15,7 @@ function saudacao(){
  var home=$('home');if(!home)return;var h=new Date().getHours();
  var s=h<5?['🌙','Boa noite']:h<12?['☀️','Bom dia']:h<18?['🌤️','Boa tarde']:['🌙','Boa noite'];
  var nome=((lista('p')[0]||{}).nome||'').trim().split(/\s+/)[0];
- var el=$('vsSaudacao');if(!el){el=document.createElement('div');el.id='vsSaudacao';el.className='vs-saudacao';home.insertBefore(el,home.firstChild)}
+ var el=$('vsSaudacao');if(!el){el=document.createElement('div');el.id='vsSaudacao';el.className='vs-saudacao'}var cab=document.querySelector('header .head');if(cab&&el.parentElement!==cab)cab.appendChild(el);else if(!cab&&!el.parentElement)home.insertBefore(el,home.firstChild);
  el.innerHTML='<span class="vs-sol" aria-hidden="true">'+s[0]+'</span><div><b>'+s[1]+(nome?', '+esc(nome):'')+'!</b><small>'+new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})+'</small></div>';
 }
 
@@ -157,7 +157,7 @@ css.textContent=
  '.vs-legenda{margin:0 0 10px;padding:10px 12px;border-radius:12px;background:#f8fafc;border:1px dashed #cbd5e1;font-size:14px;font-weight:700}.vs-legenda small{font-weight:500;color:#475569}'+
  '.vs-dor{position:relative;height:26px;margin:8px 0;border-radius:999px;background:#f1f5f9;overflow:hidden;border:0!important}.vs-dor span{position:absolute;inset:0 auto 0 0;border-radius:999px}.vs-dor.vs-v span{background:#86efac}.vs-dor.vs-a span{background:#fcd34d}.vs-dor.vs-r span{background:#fca5a5}.vs-dor b{position:relative;display:block;padding:0 10px;line-height:26px;font-size:13px;color:#0f172a}'+
  /* 4) saudação */
- '.vs-saudacao{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:14px 16px;border-radius:18px;background:linear-gradient(135deg,#eff6ff,#f5f3ff);border:1px solid #dbeafe}.vs-sol{font-size:38px;line-height:1}.vs-saudacao b{display:block;font-size:20px}.vs-saudacao small{display:block;font-size:14px;color:#475569;text-transform:capitalize}'+
+ '.vs-saudacao{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin:0 0 0 auto;padding:7px 0 7px 14px;border:0;background:transparent;color:#fff;min-width:0;max-width:300px;flex:0 1 auto}.vs-sol{font-size:25px;line-height:1;flex:0 0 auto}.vs-saudacao>div{min-width:0;text-align:right}.vs-saudacao b{display:block;font-size:15px;line-height:1.35;color:#fff;white-space:nowrap}.vs-saudacao small{display:block;font-size:11px;color:rgba(255,255,255,.85);text-transform:capitalize;white-space:nowrap}.head{display:flex;align-items:center;justify-content:space-between;gap:16px}.head>.brand,.head>.sub{flex:0 0 100%}.head{position:relative}.head>.brand,.head>.sub{max-width:calc(100% - 250px)}@media(max-width:600px){.head{display:block;padding-right:0}.head>.brand,.head>.sub{max-width:100%}.vs-saudacao{position:absolute;right:0;top:0;max-width:44%;padding:4px 0 4px 6px;gap:5px}.vs-sol{font-size:19px}.vs-saudacao b{font-size:11px;white-space:normal}.vs-saudacao small{font-size:9px;white-space:normal}.head>.brand{padding-right:35%}.head>.sub{padding-right:0}}'+
  /* 6) formato */
  '.vs-forma{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:13.5px;font-weight:700;color:#475569}.vs-forma select{min-height:40px;padding:4px 8px;border-radius:10px;font:inherit;font-size:14px}'+
  /* 8) carteirinha */
