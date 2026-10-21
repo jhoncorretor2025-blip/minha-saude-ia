@@ -1,3 +1,15 @@
+## V6.62 — Mais fácil para quem não tem prática com tecnologia
+- 🏠 Início com 4 botões grandes: Anotar como estou me sentindo, Meus remédios, Minhas consultas e Minha carteirinha.
+- 📅 “Hoje”: remédios da rotina com horário (marcar como tomado num toque), consultas de hoje/amanhã e lembretes do dia.
+- 🔙 Barra fixa no topo de todas as telas: ← Voltar, “Você está em”, 🌙 Tema, ❓ ajuda e 🆘 Emergência (abre o modo emergência com alergias, tipo sanguíneo e remédios).
+- 👨‍👩‍👧 “Estou cuidando da saúde de: Eu ▾”: troca entre os perfis locais (mãe, pai…) num toque.
+- 🗂️ Menu do computador com 4 opções (Minha saúde, ➕ Anotar, Família, ☰ Mais) — o menu completo continua no ☰ Mais.
+- ❓ Botão “?” explica cada tela em linguagem simples e liga 🔠 letra maior e 🌗 cores mais fortes.
+- 🗣️ Palavras do dia a dia: Sinais vitais → Pressão, açúcar e batimentos; Exportar → Guardar ou enviar minha ficha; Backup → Cópia de segurança; FHIR em “Avançado”.
+- 🧩 Anotar sintoma em 3 passos (onde, de 0 a 10, desde quando), usando o formulário que já existia; depois sugere perguntar à IA.
+- 🐞 A barra do topo não grudava (overflow-x:hidden no body); o atalho flutuante de perguntas e o botão Tema ficavam por cima do conteúdo.
+- 🔄 Versão e cache atualizados para V6.62.
+
 ## V6.61 — Navegação mais fácil no celular e convite para compartilhar
 - 💬 Barra de baixo do celular ganhou “Perguntar” (abre as Perguntas sobre minha saúde) — 5 botões numa linha só.
 - 🤖 No topo das páginas de IA: “O que você quer fazer com a IA?” com 4 caminhos (Perguntar, Preencher minha ficha, Preparar consulta, Enviar minha ficha).
