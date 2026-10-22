@@ -1,4 +1,4 @@
-/* Minha Saúde IA — Perguntas sobre minha saúde (V6.35)
+/* Minha Saúde IA — Perguntas sobre minha saúde (V6.95)
  * A pessoa escolhe uma pergunta pronta. O app junta a pergunta + o resumo dos registros (healthText)
  * + regras de segurança, copia e abre a IA escolhida. Nada é enviado sem a pessoa tocar no botão.
  */
@@ -47,7 +47,7 @@ var PERGUNTAS=[
 ];
 var REGRAS=[
  'Você vai me ajudar a entender meus próprios registros de saúde. Responda em português do Brasil, com linguagem simples, como se explicasse para alguém sem formação na área.',
- 'Use SOMENTE as informações do resumo abaixo. Não invente dados. Se faltar informação para responder bem, diga o que falta.',
+ 'Use SOMENTE as informações do resumo e da lista de condições de saúde abaixo. Considere explicitamente todas as condições listadas no início do prompt; não omita nenhuma. Não invente dados. Se faltar informação para responder bem, diga o que falta.',
  'Não feche diagnóstico: quando falar de possíveis causas, apresente como hipóteses para conversar com o médico. Não prescreva, não mude doses e não diga para parar ou começar remédios. Para decisões de tratamento, oriente a procurar um profissional de saúde.',
  'Se algo no resumo indicar possível urgência, diga claramente para procurar atendimento.',
  'Formato da resposta: 1) resposta curta em 2 linhas; 2) tópicos com emojis e títulos em negrito; 3) "✅ O que fazer agora" com até 3 passos simples; 4) "🩺 O que perguntar ao médico".'
@@ -60,10 +60,59 @@ function resumo(){
  var out=[];linhas.forEach(function(l,i){var sec=/^\[.+\]$/.test(l.trim());var prox=linhas[i+1];if(sec&&(!prox||/^\[.+\]$/.test(prox.trim())||!prox.trim()))return;out.push(l)});
  return out.join('\n').replace(/\n{3,}/g,'\n\n').trim();
 }
+function condicoesDoPerfilProprio(){
+ var encontradas=[];
+ var st=window.MSAStorage;
+ function nomeRegistro(x){
+  if(typeof x==='string')return x;
+  if(!x||typeof x!=='object')return '';
+  return x.nome||x.nomeCondicao||x.condicao||x.doenca||x.diagnostico||x.titulo||x.problema||x.name||'';
+ }
+ function add(v){
+  if(v==null||v==='')return;
+  if(Array.isArray(v)){v.forEach(add);return}
+  if(typeof v==='string'){
+   v.split(/[\n;|]+/).map(function(s){return s.trim()}).filter(Boolean).forEach(function(s){encontradas.push(s)});
+   return;
+  }
+  if(typeof v==='object'){
+   var n=nomeRegistro(v);
+   if(n){
+    var detalhe=v.observacao||v.descricao||v.status||'';
+    encontradas.push(String(n)+(detalhe&&String(detalhe).toLowerCase().indexOf(String(n).toLowerCase())<0?' — '+detalhe:''));
+   }
+  }
+ }
+ var relatadas=[
+  'Artrite psoriásica',
+  'Gastrite',
+  'Bruxismo',
+  'Bico de papagaio no tórax',
+  'Dor ciática',
+  'Labirintite (identificada aos 22 anos)',
+  'Rinite',
+  'Sinusite'
+ ];
+ // Prioriza as condições que o usuário informou explicitamente para que não se percam no corte do link.
+ relatadas.forEach(add);
+ try{
+  var pList=st&&typeof st.get==='function'?(st.get('msa2_perfil')||[]):[];
+  var p=Array.isArray(pList)?(pList[0]||{}):(pList||{});
+  add(p.cond);add(p.condicoes);add(p.doencas);add(p.diagnosticos);
+  ['msa2_condicoes','msa2_historico_medico','msa2_historico_condicoes','msa2_doencas'].forEach(function(k){add(st.get(k)||[])});
+ }catch(e){console.warn('[Perguntas sobre minha saúde] Não foi possível ler todas as condições cadastradas.',e)}
+ var seen=Object.create(null),out=[];
+ encontradas.forEach(function(raw){
+  var nome=String(raw||'').trim();if(!nome)return;
+  var key=nome.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\([^)]*\)/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+  if(!key||seen[key])return;seen[key]=true;out.push(nome);
+ });
+ return out;
+}
 function pessoaPergunta(){var s=document.getElementById('psPessoa');return s?s.value:'eu'}
 function dadosPessoaSelecionada(){
  var pessoa=pessoaPergunta();
- if(pessoa==='eu'){var t='';try{t=typeof healthText==='function'?healthText():''}catch(e){}return {nome:'Jhonatan',resumo:t||'Não há resumo de saúde próprio disponível no momento.',tipo:'meu perfil'};}
+ if(pessoa==='eu'){var t='';try{t=typeof healthText==='function'?healthText():''}catch(e){}var condicoes=condicoesDoPerfilProprio();return {nome:(function(){try{var a=window.MSAStorage&&window.MSAStorage.get('msa2_perfil');var p=Array.isArray(a)?a[0]:a;return p&&p.nome||'Jhonatan'}catch(e){return 'Jhonatan'}})(),resumo:t||'Não há resumo de saúde próprio disponível no momento.',tipo:'meu perfil',condicoes:condicoes};}
  var lista=[];try{var st=window.MSAStorage;lista=st&&typeof st.get==='function'?(st.get((window.MSA_K||window.K||{}).familiares||'msa2_familiares')||[]):[]}catch(e){}
  if(!Array.isArray(lista))lista=[];
  var p=lista.find(function(x){return String(x&&x.id)===String(pessoa)});
@@ -72,7 +121,12 @@ function dadosPessoaSelecionada(){
  ['medicamentos','consultas','crises'].forEach(function(k){var arr=Array.isArray(p[k])?p[k]:[];linhas.push('',k.toUpperCase()+':');if(!arr.length){linhas.push('Nenhum registro cadastrado.');return}arr.forEach(function(x){linhas.push('- '+Object.keys(x||{}).filter(function(key){return x[key]!==''&&x[key]!=null&&typeof x[key]!=='object'}).map(function(key){return key+': '+x[key]}).join('; '))})});
  return {nome:p.nome||'perfil selecionado',resumo:linhas.join('\n'),tipo:'perfil familiar'};
 }
-function montarPrompt(pergunta,detalhe){var pessoa=dadosPessoaSelecionada();return 'PESSOA SOBRE QUEM PERGUNTO: '+pessoa.nome+' ('+pessoa.tipo+').\nIMPORTANTE: analise somente os dados desta pessoa e não misture informações de outra pessoa.\n\nPERGUNTA: '+pergunta+'\n\nO QUE EU QUERO: '+detalhe+'\n\nREGRAS:\n- '+REGRAS+'\n\n===== REGISTROS DE SAÚDE DE '+pessoa.nome.toUpperCase()+' =====\n'+pessoa.resumo;}
+function montarPrompt(pergunta,detalhe){
+ var pessoa=dadosPessoaSelecionada();
+ var condicoes=pessoa.condicoes||[];
+ var blocoCondicoes=condicoes.length?'\\n\\n===== CONDIÇÕES DE SAÚDE QUE DEVEM SER CONSIDERADAS =====\\n'+condicoes.map(function(c){return '- '+c}).join('\\n')+'\\n\\nInstrução obrigatória: considere cada condição acima ao responder e não omita nenhuma da análise. Quando pertinente, explique separadamente se há relação conhecida, possível relação ou dados insuficientes; não presuma que uma condição seja a causa de um sintoma. Trate a lista como informações relatadas/cadastradas pelo usuário, sem criar diagnósticos novos.':'';
+ return 'PESSOA SOBRE QUEM PERGUNTO: '+pessoa.nome+' ('+pessoa.tipo+').\\nIMPORTANTE: analise somente os dados desta pessoa e não misture informações de outra pessoa.'+blocoCondicoes+'\\n\\nPERGUNTA: '+pergunta+'\\n\\nO QUE EU QUERO: '+detalhe+'\\n\\nREGRAS:\\n- '+REGRAS+'\\n\\n===== REGISTROS DE SAÚDE DE '+pessoa.nome.toUpperCase()+' =====\\n'+pessoa.resumo;
+}
 
 function iasAtivas(){
  try{var lista=(typeof preferenciasPadrao==='function'?preferenciasPadrao().ias:[])||[];lista=lista.filter(function(x){return x&&x.ativo&&x.web});if(lista.length)return lista}catch(e){}
