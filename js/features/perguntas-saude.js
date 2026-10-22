@@ -124,8 +124,8 @@ function dadosPessoaSelecionada(){
 function montarPrompt(pergunta,detalhe){
  var pessoa=dadosPessoaSelecionada();
  var condicoes=pessoa.condicoes||[];
- var blocoCondicoes=condicoes.length?'\\n\\n===== CONDIÇÕES DE SAÚDE QUE DEVEM SER CONSIDERADAS =====\\n'+condicoes.map(function(c){return '- '+c}).join('\\n')+'\\n\\nInstrução obrigatória: considere cada condição acima ao responder e não omita nenhuma da análise. Quando pertinente, explique separadamente se há relação conhecida, possível relação ou dados insuficientes; não presuma que uma condição seja a causa de um sintoma. Trate a lista como informações relatadas/cadastradas pelo usuário, sem criar diagnósticos novos.':'';
- return 'PESSOA SOBRE QUEM PERGUNTO: '+pessoa.nome+' ('+pessoa.tipo+').\\nIMPORTANTE: analise somente os dados desta pessoa e não misture informações de outra pessoa.'+blocoCondicoes+'\\n\\nPERGUNTA: '+pergunta+'\\n\\nO QUE EU QUERO: '+detalhe+'\\n\\nREGRAS:\\n- '+REGRAS+'\\n\\n===== REGISTROS DE SAÚDE DE '+pessoa.nome.toUpperCase()+' =====\\n'+pessoa.resumo;
+ var blocoCondicoes=condicoes.length?'\n\n===== CONDIÇÕES DE SAÚDE QUE DEVEM SER CONSIDERADAS =====\n'+condicoes.map(function(c){return '- '+c}).join('\n')+'\n\nInstrução obrigatória: considere cada condição acima ao responder e não omita nenhuma da análise. Quando pertinente, explique separadamente se há relação conhecida, possível relação ou dados insuficientes; não presuma que uma condição seja a causa de um sintoma. Trate a lista como informações relatadas/cadastradas pelo usuário, sem criar diagnósticos novos.':'';
+ return 'PESSOA SOBRE QUEM PERGUNTO: '+pessoa.nome+' ('+pessoa.tipo+').\nIMPORTANTE: analise somente os dados desta pessoa e não misture informações de outra pessoa.'+blocoCondicoes+'\n\nPERGUNTA: '+pergunta+'\n\nO QUE EU QUERO: '+detalhe+'\n\nREGRAS:\n- '+REGRAS+'\n\n===== REGISTROS DE SAÚDE DE '+pessoa.nome.toUpperCase()+' =====\n'+pessoa.resumo;
 }
 
 function iasAtivas(){
