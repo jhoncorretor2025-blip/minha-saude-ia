@@ -1,4 +1,4 @@
-/* Minha Saúde IA V6.98 — geração dinâmica do prompt de importação com contexto do perfil local. */
+/* Minha Saúde IA V6.99 — prompt compacto para NotebookLM e outras IAs. */
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
@@ -39,38 +39,74 @@ function collectContext(){
  try{if(typeof window.healthText==='function')summary=window.healthText();else if(typeof healthText==='function')summary=healthText()}catch(e){console.warn('[Prompt IA] Não foi possível montar o resumo completo:',e)}
  return {name:p.nome||'perfil selecionado',conditions:collectConditions(),important:String(p.info||p.informacoesImportantes||p.informacoes||p.historicoClinico||'').trim(),summary:String(summary||'').trim()};
 }
-function makeContextBlock(ctx){
+const MAX_PROMPT_CHARS=8000;
+const FICHA_FIELDS=[
+'NOME','DATA_NASCIMENTO','IDADE','SEXO','TIPO_SANGUINEO','ALTURA','PESO','OBJETIVO_CORPORAL',
+'ACADEMIA','FREQUENCIA_ACADEMIA','ATIVIDADE_FISICA','TRABALHO_TIPO','HORAS_SENTADO','HORAS_EM_PE',
+'AGUA_POR_DIA','FREQUENCIA_URINARIA','FREQUENCIA_EVACUACAO','EXPOSICAO_CALOR_SUOR','ALIMENTACAO',
+'DOENCAS','DOENCAS_PAI','DOENCAS_MAE','ALERGIAS','CIRURGIAS_INTERNACOES','CONTATO_EMERGENCIA',
+'TELEFONE_EMERGENCIA','ULTIMA_MENSTRUACAO','CICLO_MENSTRUAL','DURACAO_MENSTRUACAO','FREQUENCIA_SEXUAL_MIN',
+'FREQUENCIA_SEXUAL_MAX','MASTURBACAO_POR_DIA','USO_PRESERVATIVO','JA_ENGRAVIDOU','JA_FOI_MAE',
+'NUMERO_GESTACOES','HISTORICO_REPRODUTIVO','ULTIMO_PREVENTIVO_COLO','ULTIMA_MAMOGRAFIA','ULTIMO_TESTE_IST',
+'VACINA_HPV','PROXIMO_PREVENTIVO','OBSERVACOES_PREVENCAO','FREQUENCIA_DORCELAX','FREQUENCIA_PARACETAMOL',
+'OUTROS_REMEDIOS_DOR','JA_TEVE_CATAPORA','QUANDO_CATAPORA','MEDICAMENTOS','SUPLEMENTOS','ULTIMO_SINTOMA',
+'LOCAL_SINTOMA','DATA_INICIO_SINTOMA','INTENSIDADE','OUTROS_SINTOMAS','CONSULTAS','EXAMES','SINAIS_VITAIS',
+'VACINAS','HISTORICO_FAMILIAR','LEMBRETES','DOCUMENTOS','INFORMACOES_IMPORTANTES'
+];
+function compactTemplate(){
  return [
- '===== CONTEXTO LOCAL DO MINHA SAÚDE IA — PERFIL ATUAL =====',
- 'Perfil ativo: '+ctx.name,'',
- 'CONDIÇÕES DE SAÚDE CADASTRADAS ('+ctx.conditions.length+'):',
- ...(ctx.conditions.length?ctx.conditions.map(x=>'- '+x):['Nenhuma condição encontrada nos campos estruturados de doenças/condições.']),
- '',
- 'INFORMAÇÕES IMPORTANTES DO PERFIL (texto original):',
- ctx.important||'Não informado no campo de informações importantes.',
- '',
- 'RESUMO DOS DADOS JÁ REGISTRADOS NO APLICATIVO:',
- ctx.summary||'O resumo local não estava disponível no momento em que o prompt foi gerado.',
- '',
- 'INSTRUÇÃO DE PRIORIDADE: use este contexto local como fonte prioritária sobre condições e informações que já estejam cadastradas. Preserve o nome de cada condição e todos os detalhes fornecidos; não omita condições que aparecem na lista ou nas informações importantes. Não transforme sintomas em diagnósticos, não invente dados e não misture dados de familiares. Para campos realmente ausentes, escreva "Não informado".',
- '===== FIM DO CONTEXTO LOCAL ====='
+ 'Prepare uma ficha organizada para importar no aplicativo Minha Saúde IA.',
+ 'Responda em português, SEM fazer perguntas. Use somente dados conhecidos nas fontes/memória e no contexto local abaixo. Nunca invente nem estime dados; campo ausente = "Não informado". Não faça diagnóstico, não indique tratamento e não misture informações de familiares.',
+ 'CONDIÇÕES: preserve TODOS os nomes e detalhes. Em DOENCAS liste todas as condições da pessoa; em DOENCAS_PAI e DOENCAS_MAE registre somente antecedentes do respectivo pai/mãe. Diferencie doença diagnosticada, sintoma e suspeita quando isso estiver claro na fonte.',
+ 'FORMATO OBRIGATÓRIO: devolva somente os campos abaixo, na mesma ordem, um por linha, exatamente como [CHAVE]: valor. Para listas com vários registros, separe itens por ponto e vírgula. Não acrescente explicações, Markdown ou texto fora dos campos.',
+ ...FICHA_FIELDS.map(k=>'['+k+']: Não informado'),
+ 'REGRAS: preserve todos os dados relevantes disponíveis. Inclua datas, dose e frequência de medicamentos quando conhecidas; em exames e sinais vitais mantenha data e resultado/valor. Para vacinas informe nome, data e dose quando conhecida. No histórico familiar identifique o parentesco. Preserve informações corporais, hábitos e saúde reprodutiva somente quando disponíveis. Se houver divergência, registre-a em INFORMACOES_IMPORTANTES. Não crie exames, documentos ou medicamentos inexistentes.'
  ].join('\n');
+}
+function makePriorityContext(ctx){
+ const lines=[
+ '===== CONTEXTO LOCAL DO PERFIL ATIVO =====',
+ 'Perfil: '+ctx.name,
+ 'CONDIÇÕES CADASTRADAS ('+ctx.conditions.length+'):',
+ ...(ctx.conditions.length?ctx.conditions.map(x=>'- '+x):['Nenhuma condição encontrada nos campos estruturados.']),
+ 'INFORMAÇÕES IMPORTANTES DO PERFIL:',
+ ctx.important||'Não informado.',
+ '===== FIM DO CONTEXTO PRIORITÁRIO ====='
+ ];
+ return lines.join('\n');
 }
 function generate(){
  const field=$('promptIA');if(!field)return '';
- if(!basePrompt)basePrompt=field.value||'';
- const ctx=collectContext(),block=makeContextBlock(ctx);let prompt=basePrompt;
- const firstDouble=prompt.indexOf('\n\n');
- if(firstDouble>=0)prompt=prompt.slice(0,firstDouble+2)+block+'\n\n'+prompt.slice(firstDouble+2);else prompt=block+'\n\n'+prompt;
- prompt=prompt.replace(
-  '- **DOENÇAS E CONDIÇÕES DE SAÚDE:** use somente o que já estiver disponível no seu contexto/memória. Se não houver informação suficiente, registre exatamente "Não informado" em [DOENCAS].',
-  '- **DOENÇAS E CONDIÇÕES DE SAÚDE:** use primeiro a lista "CONDIÇÕES DE SAÚDE CADASTRADAS" e as "INFORMAÇÕES IMPORTANTES DO PERFIL" do contexto local acima, somadas às informações confiáveis disponíveis no seu contexto/memória. Preserve todos os nomes e detalhes das condições; não omita doenças só porque a lista é longa. Se um detalhe não estiver disponível, mantenha o nome da condição e marque somente o detalhe ausente como "Não informado".'
- );
- prompt=prompt.replace(
-  '- Para doenças/condições, verifique primeiro o contexto/memória disponível. Se não houver informação, use "Não informado". Nunca faça pergunta para completar a ficha.',
-  '- Para doenças/condições, confira primeiro o contexto local do aplicativo acima e depois o contexto/memória disponível. Inclua todas as condições de saúde encontradas, sem omitir nenhuma e sem inventar novas. Se não houver nenhuma informação sobre um campo, use "Não informado". Nunca faça pergunta para completar a ficha.'
- );
- field.value=prompt;const guide=$('iaGuidePrompt');if(guide)guide.value=prompt;lastContext=ctx;updateStatus(ctx);return prompt;
+ const ctx=collectContext();
+ const template=compactTemplate();
+ const priority=makePriorityContext(ctx);
+ const summaryHeader='\n\nRESUMO COMPLEMENTAR DOS REGISTROS LOCAIS (use apenas o que couber; as condições acima têm prioridade):\n';
+ const separator='\n\n';
+ const notice='\n[Resumo complementar reduzido para respeitar o limite da mensagem; consulte primeiro a lista completa de condições e informações importantes acima.]';
+ const fixed=template+separator+priority+summaryHeader;
+ let budget=Math.max(0,MAX_PROMPT_CHARS-fixed.length-notice.length);
+ let summary=String(ctx.summary||'').trim();
+ let clipped=false;
+ if(summary.length>budget){summary=summary.slice(0,budget).replace(/\s+\S*$/,'').trim();clipped=true}
+ let prompt=fixed+summary+(clipped?notice:'');
+ // In unusually large profiles, preserve the disease list and concise schema first; reduce only the long free-text notes/summary.
+ if(prompt.length>MAX_PROMPT_CHARS){
+  let shrink=Math.min(ctx.important.length,prompt.length-MAX_PROMPT_CHARS+20);
+  if(shrink>0){
+   ctx.important=ctx.important.slice(0,Math.max(0,ctx.important.length-shrink))+' [texto reduzido por limite de caracteres]';
+   const p2=makePriorityContext(ctx);
+   const f2=template+separator+p2+summaryHeader;
+   budget=Math.max(0,MAX_PROMPT_CHARS-f2.length-notice.length);
+   summary=String(ctx.summary||'').trim();
+   if(summary.length>budget){summary=summary.slice(0,budget).replace(/\s+\S*$/,'').trim();clipped=true}
+   prompt=f2+summary+(clipped?notice:'');
+  }
+ }
+ field.value=prompt;
+ const guide=$('iaGuidePrompt');if(guide)guide.value=prompt;
+ lastContext=ctx;
+ updateStatus(ctx,'✅ Prompt compacto: '+prompt.length.toLocaleString('pt-BR')+' de '+MAX_PROMPT_CHARS.toLocaleString('pt-BR')+' caracteres. '+ctx.conditions.length+' condição(ões) priorizadas. '+(clipped?'O resumo complementar foi reduzido para caber no limite. ':'')+'Revise antes de compartilhar.');
+ return prompt;
 }
 function ensureStatus(){
  let s=$('msaPromptContextStatus');if(s)return s;
@@ -83,7 +119,7 @@ function ensureStatus(){
 function updateStatus(ctx,message){
  const s=ensureStatus();if(!s)return;
  if(message){s.textContent=message;return}
- s.textContent='✅ Prompt atualizado com os dados do perfil "'+ctx.name+'", '+ctx.conditions.length+' condição(ões) identificada(s) e o resumo dos registros locais. Revise o texto antes de enviar; nada é compartilhado automaticamente.';
+ const n=document.getElementById('promptIA')?.value?.length||0;s.textContent='✅ Prompt compacto: '+n.toLocaleString('pt-BR')+' de '+MAX_PROMPT_CHARS.toLocaleString('pt-BR')+' caracteres. '+ctx.conditions.length+' condição(ões) identificadas. Revise antes de enviar; nada é compartilhado automaticamente.';
 }
 function copyFallback(){const field=$('promptIA')||$('iaGuidePrompt');if(!field)return false;try{field.focus();field.select();return document.execCommand('copy')}catch(_){return false}}
 function copyPrompt(){
@@ -105,7 +141,7 @@ function openAI(provider){
 }
 function buildButton(){
  const cta=document.querySelector('.ai-cta');if(!cta||$('msaGenerateImportPrompt'))return;
- const button=document.createElement('button');button.id='msaGenerateImportPrompt';button.type='button';button.className='btn secondary';button.textContent='🔄 Gerar prompt com meus dados';button.title='Atualiza o prompt com doenças, informações importantes e registros do perfil ativo.';
+ const button=document.createElement('button');button.id='msaGenerateImportPrompt';button.type='button';button.className='btn secondary';button.textContent='🔄 Gerar prompt compacto com meus dados';button.title='Gera um prompt de até 8.000 caracteres com doenças, informações importantes e registros do perfil ativo.';
  button.addEventListener('click',function(){generate();const field=$('promptIA');if(field)field.scrollIntoView({behavior:'smooth',block:'center'});updateStatus(lastContext,'✅ Prompt atualizado com '+lastContext.conditions.length+' condição(ões). Revise o texto e toque em "Copiar Prompt Pronto (V3)" para copiar.')});
  cta.appendChild(button);
 }
