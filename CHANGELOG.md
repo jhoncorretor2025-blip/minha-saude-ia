@@ -1,3 +1,10 @@
+## V6.93 — Perguntas para a próxima consulta
+- 🗒️ Nova área dentro de Minhas doenças para anotar dúvidas durante a semana e organizar perguntas para a próxima consulta.
+- 💡 Sugestões rápidas por assunto: diagnóstico, sintomas, medicamentos, exames, sinais de alerta e retorno.
+- ✅ Permite marcar perguntas como discutidas, excluir e copiar somente as pendentes.
+- 🔐 As perguntas ficam separadas por perfil de saúde no armazenamento local deste navegador.
+- 🔄 Versão, cache, scripts e metadados sincronizados em V6.93.
+
 ## V6.92 — Melhorias da Linha do Tempo e Minhas doenças
 - 🎨 Cards de doenças com cores sutis por categoria, ícones coloridos, badges de origem e aviso visual para datas pendentes.
 - 🔎 Filtro rápido para registros que precisam de revisão ou estão sem data, com busca e sugestões enquanto digita.
