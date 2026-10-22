@@ -95,7 +95,7 @@ function copyPrompt(){
 }
 function openAI(provider){
  const prompt=generate();if(!prompt)return;
- const win=window.open(provider==='gemini'?'https://gemini.google.com/app':'https://chatgpt.com/','_blank','noopener');
+ const win=window.open(provider==='gemini'?'https://gemini.google.com/app':'https://chatgpt.com/','_blank');if(win){try{win.opener=null}catch(_){}}
  const status=$('iaGuideStatus');
  const done=()=>{updateStatus(lastContext,'✅ Prompt copiado. Na aba da IA, clique na caixa de mensagem e cole o texto.');if(status)status.textContent='✅ Prompt gerado e copiado. Na aba da IA, clique na caixa de mensagem e cole o texto.'};
  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(prompt).then(done).catch(()=>{if(copyFallback())done();else if(status)status.textContent='Prompt gerado. Selecione e copie manualmente antes de enviar.'});
