@@ -1,3 +1,9 @@
+## V6.97 — Validação final do contexto de saúde no prompt
+- 🩺 Condições cadastradas e o campo “Informações importantes” são colocados no início do prompt para reduzir omissões quando o resumo completo ultrapassa o limite do link.
+- 🔎 O prompt consolida as condições do perfil e dos registros de saúde disponíveis; as condições não são fixadas como texto no código público.
+- 🧪 Validada a montagem do prompt em um teste com várias condições, incluindo a preservação de quebras de linha reais e do contexto prioritário.
+- 🔄 Cache e versão sincronizados em V6.97.
+
 ## V6.96 — Contexto completo e prioritário no prompt de saúde
 - 🩺 O prompt consolida condições de saúde dos campos do perfil e dos registros médicos disponíveis.
 - 📌 As condições e o campo “Informações importantes” são colocados no início da pergunta enviada à IA, reduzindo o risco de serem cortados quando o link precisa ser encurtado.
