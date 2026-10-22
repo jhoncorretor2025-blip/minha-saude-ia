@@ -1,3 +1,10 @@
+## V7.03 — Campos preenchidos omitidos sem perda de dados
+- 🧠 Os modos padrão e NotebookLM omitem campos já preenchidos no perfil e removem linhas duplicadas do resumo do perfil.
+- 📓 O modo NotebookLM continua respeitando o limite de 3.849 caracteres; o modo padrão permanece completo até seu limite de segurança.
+- 🛡️ A importação valida a resposta primeiro e, antes de salvar, preserva campos atuais quando a IA não os devolve e mantém categorias de histórico que foram omitidas.
+- 📝 A tela de revisão informa que campos e categorias omitidos são mantidos no perfil atual.
+- 🔄 Versão e cache atualizados para V7.03.
+
 ## V7.02 — Prompt inteligente com campos pendentes
 - 🧠 O prompt normal e o modo NotebookLM agora omitem campos já preenchidos no perfil (por exemplo, nome, data de nascimento/idade, sexo, altura, peso, condições e registros existentes).
 - 📋 O contexto instrui a IA a devolver somente os campos pendentes; campos omitidos devem permanecer como estão.
