@@ -442,6 +442,28 @@ window.cancelarImportacaoPendente=function(){
  const modal=byId('importReviewOverlay');if(modal)modal.style.display='none';
  if(byId('resultadoImport'))byId('resultadoImport').innerHTML='<div class="alert">↩️ Importação cancelada. Nada foi salvo.</div>';
 };
+function importValueMissing(v){
+ const s=String(v==null?'':v).trim().toLowerCase();
+ return !s||/^(não informado|nao informado|não informada|nao informada|não disponível|nao disponivel|n\/a|-)$/i.test(s);
+}
+function preserveOmittedImportData(target){
+ if(!target||typeof target!=='object')return target;
+ const currentProfile=(storage.get(K.p)||[])[0]||{};
+ if(!target.p||typeof target.p!=='object')target.p={};
+ Object.keys(currentProfile).forEach(key=>{
+  if(importValueMissing(target.p[key])&&!importValueMissing(currentProfile[key]))target.p[key]=currentProfile[key];
+ });
+ const collections=[
+  ['dores',K.d],['consultas',K.c],['meds',K.m],['exames',K.e],['vitais',K.v],
+  ['vacinas',K.vax],['familia',K.fam],['lembretes',K.r],['documentos',K.doc]
+ ];
+ collections.forEach(([prop,key])=>{
+  const incoming=Array.isArray(target[prop])?target[prop]:[];
+  const current=storage.get(key)||[];
+  if(!incoming.length&&current.length)target[prop]=current;
+ });
+ return target;
+}
 window.confirmarImportacaoPendente=function(){
  const n=window._importPendente,plan=window._msaImportConflictPlan;if(!n)return;
  let revisado=n;
@@ -458,7 +480,7 @@ window.confirmarImportacaoPendente=function(){
    return;
   }
  }
- const chosen=JSON.parse(JSON.stringify(revisado));
+ const chosen=preserveOmittedImportData(JSON.parse(JSON.stringify(revisado)));
  (plan?.records||[]).forEach(x=>{
   const el=document.querySelector('input[name="ic_'+x.id+'"]:checked'),choice=el?.value||'skip';
   if(choice==='skip'&&Array.isArray(chosen[x.prop]))chosen[x.prop]=chosen[x.prop].filter((_,i)=>i!==x.index);
