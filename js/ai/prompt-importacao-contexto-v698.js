@@ -1,4 +1,4 @@
-/* Minha Saúde IA V7.02 — prompt inteligente que omite campos já preenchidos. */
+/* Minha Saúde IA V7.03 — prompt inteligente que omite campos já preenchidos. */
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
