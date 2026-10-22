@@ -1,3 +1,10 @@
+## V7.02 — Prompt inteligente com campos pendentes
+- 🧠 O prompt normal e o modo NotebookLM agora omitem campos já preenchidos no perfil (por exemplo, nome, data de nascimento/idade, sexo, altura, peso, condições e registros existentes).
+- 📋 O contexto instrui a IA a devolver somente os campos pendentes; campos omitidos devem permanecer como estão.
+- 🔢 O contador continua mostrando o tamanho do prompt; o modo NotebookLM mantém o limite de 3.849 caracteres.
+- 🛡️ Na confirmação da importação, campos de perfil ausentes/“Não informado” não substituem valores atuais; categorias de histórico omitidas preservam os registros existentes.
+- 🔄 Versão, cache e scripts sincronizados em V7.02.
+
 ## V7.01 — Seletor de modo e contador do prompt
 - 🔢 Exibe a contagem de caracteres do prompt padrão assim que a página é carregada.
 - ☑️ Adiciona a opção “Modo NotebookLM”; marcada, gera o prompt compacto com teto de 3.849 caracteres; desmarcada, retorna ao prompt padrão.
