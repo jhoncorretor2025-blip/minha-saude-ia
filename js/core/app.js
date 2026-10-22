@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V6.98 */
+/* Minha Saúde IA — aplicação principal V6.99 */
 
 const K=window.MSA_K||window.K;
 const get=k=>window.MSAStorage.get(k);
