@@ -101,7 +101,7 @@ function obterQualidadeRegistros(){
  const problemas=[];defs.forEach(d=>get(d[1]).forEach((x,i)=>{const issues=registroProblemas(d[0],x);if(issues.length)problemas.push({tipo:d[0],label:d[2],indice:i,issues:issues,record:x})}));
  return problemas;
 }
-function timelineItem(type,date,icon,title,sub,record){return {type:type,date:date?String(date):'',icon:icon,title:title,sub:sub||'',record:record||null,invalid:registroProblemas(type,record).length>0}}
+function timelineItem(type,date,icon,title,sub,record){const keys={sintomas:K.d,consultas:K.c,medicamentos:K.m,exames:K.e,sinais:K.v,vacinas:K.vax,lembretes:K.r,nutricao:K.nutri,suplementos:K.suplReg,reacoes:K.food,agua:K.agua,sono:K.sono,bemestar:K.bem,gatilhos:K.gat,familia:K.fam,documentos:K.doc,medidas:K.medidas,ciclo:K.ciclo,anticoncepcional:K.anticoncepcional,doses:K.medTaken};const lista=keys[type]?get(keys[type]):[];return {type:type,date:date?String(date):'',icon:icon,title:title,sub:sub||'',record:record||null,index:record?lista.indexOf(record):-1,invalid:registroProblemas(type,record).length>0}}
 function getTimelineRecords(){
  const out=[],add=(type,date,icon,title,sub,record)=>out.push(timelineItem(type,date,icon,title,sub,record));
  get(K.d).forEach(x=>{const n=Number(x.int),loc=String(x.local||'').trim(),validLoc=loc&&!/^(valor|local|não informado|nao informado|n\/a|-)$/i.test(loc);let sub='';if(validLoc&&Number.isFinite(n)&&n>0)sub=loc+' — intensidade '+n+'/10';else if(validLoc)sub=loc;else if(Number.isFinite(n)&&n>0)sub='Intensidade '+n+'/10';add('sintomas',x.data,'😣','Sintoma',sub,x)});
@@ -139,7 +139,7 @@ function renderTimelineFiltros(){
 window.definirFiltroTimeline=function(f){window.__msaTimelineFiltro=f||'todos';renderTimelineFiltros();const el=$('timelineFull');if(el)el.innerHTML=buildTimeline().map(timelineHTML).join('')||'<div class="muted">Nenhum registro neste filtro.</div>'};
 function timelineHTML(x){
  const dateLabel=x.date?formatDateBR(x.date):'⚠️ Data não informada',issue=x.invalid?'<span class="timeline-review-tag">⚠️ Revisar</span>':'';
- return '<div class="timeline-row timeline-row-'+esc(x.type)+' '+(x.invalid?'timeline-row-invalid':'')+'"><div class="timeline-date">'+esc(dateLabel)+'</div><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title"><b>'+x.icon+' '+esc(x.title)+'</b>'+issue+'</div><small>'+esc(x.sub||'Sem detalhes informados')+'</small></div></div>';
+ return '<div class="timeline-row timeline-row-'+esc(x.type)+' '+(x.invalid?'timeline-row-invalid':'')+'" data-timeline-type="'+esc(x.type)+'" data-record-index="'+esc(x.index)+'" data-timeline-date="'+esc(x.date||'')+'"><div class="timeline-date">'+esc(dateLabel)+'</div><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title"><b>'+x.icon+' '+esc(x.title)+'</b>'+issue+'</div><small>'+esc(x.sub||'Sem detalhes informados')+'</small></div></div>';
 }
 function atualizarSmartHome(){
  const issues=obterQualidadeRegistros(),next=getNextCare(),box=$('nextCareList'),timeline=buildTimeline('todos');
