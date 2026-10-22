@@ -1,4 +1,4 @@
-/* Minha Saúde IA V6.91 — atalho de doenças e condições na linha do tempo. */
+/* Minha Saúde IA V6.92 — apresentação visual de doenças e condições. */
 (function(){
 'use strict';
 const $=(s,r=document)=>r.querySelector(s);
@@ -9,7 +9,7 @@ function profile(){return read('msa2_perfil')[0]||{}}
 function conditions(){
  const p=profile(),out=[];
  const cond=p.cond??p.condicoes??p.doencas??p.diagnosticos;
- if(typeof cond==='string')cond.split(/[\n;,]+/).map(x=>x.trim()).filter(Boolean).forEach(name=>out.push({name,source:'Meu perfil'}));
+ if(typeof cond==='string')cond.split(/[\n;|]+/).map(x=>x.trim()).filter(Boolean).forEach(name=>out.push({name,source:'Meu perfil'}));
  else arr(cond).forEach(x=>out.push({name:typeof x==='string'?x:(x.nome||x.nomeCondicao||x.condicao||x.doenca||x.diagnostico||'Condição registrada'),detail:typeof x==='object'?(x.observacao||x.descricao||x.status||''): '',source:'Meu perfil'}));
  ['msa2_condicoes','msa2_historico_medico','msa2_historico_condicoes','msa2_doencas'].forEach(key=>read(key).forEach(x=>{
   const name=typeof x==='string'?x:(x.nome||x.nomeCondicao||x.condicao||x.doenca||x.diagnostico||x.titulo);
@@ -17,17 +17,45 @@ function conditions(){
  }));
  const seen=new Set();return out.filter(x=>{const k=String(x.name).toLowerCase().trim();if(!k||seen.has(k))return false;seen.add(k);return true});
 }
+function formatDiseaseDate(v){if(!v)return '';const raw=String(v).trim();const m=raw.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return m[3]+'/'+m[2]+'/'+m[1];const d=new Date(v);return Number.isNaN(d.getTime())?raw:d.toLocaleDateString('pt-BR')}
+function diseaseType(x){const s=(String(x.name||'')+' '+String(x.detail||'')).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();if(/\b(exame|ultrassom|ressonancia|laboratorio|hemograma|radiografia|tomografia)\b/.test(s))return{key:'exam',label:'Exame',icon:'🧪'};if(/\b(medicamento|remedio|adalimumabe|hyrimoz|cosentyx|comprimido|injecao)\b/.test(s))return{key:'medication',label:'Medicamento',icon:'💊'};if(/\b(sintoma|dor|febre|coceira|nausea|tontura|fadiga)\b/.test(s))return{key:'symptom',label:'Sintoma',icon:'😣'};if(/\b(consulta|retorno medico|especialista)\b/.test(s))return{key:'consult',label:'Consulta',icon:'🩺'};return{key:'condition',label:'Condição de saúde',icon:'🩺'}}
+function ensureStyles(){if($('#msa92DiseasesStyles'))return;const s=document.createElement('style');s.id='msa92DiseasesStyles';s.textContent=[
+'#msa90DiseasesActions{margin-top:10px;gap:8px;flex-wrap:wrap}',
+'#msa90DiseasesActions #msa90DiseasesButton{border:1px solid #d9defb;background:#f4f5ff;color:#4338ca;min-height:44px;border-radius:13px;padding:11px 15px;font-weight:850;box-shadow:none}',
+'#msa90DiseasesActions #msa90DiseasesButton:hover{background:#eceeff;border-color:#bfc8ff}',
+'#msa90DiseasesPanel{margin-top:12px;border:1px solid #cdd5ff;background:var(--card,#fff);border-radius:18px;padding:16px}',
+'#msa90DiseasesPanel[hidden]{display:none!important}',
+'#msa90DiseasesPanel .msa92-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}',
+'#msa90DiseasesPanel .msa92-heading{min-width:0;flex:1}',
+'#msa90DiseasesPanel .msa92-heading h3{font-size:17px;line-height:1.35;font-weight:850;color:var(--text,#172033);margin:0 0 5px}',
+'#msa90DiseasesPanel .msa92-intro{font-size:12px;line-height:1.55;color:var(--muted,#64748b);margin:0}',
+'#msa90DiseasesPanel .msa92-list{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-top:16px}',
+'#msa90DiseasesPanel .msa92-card{--cc:#7c3aed;--ct:#f5f3ff;border:1px solid var(--border,#e2e8f0);border-left:4px solid var(--cc);background:var(--card,#fff);border-radius:15px;padding:14px 15px;min-width:0;box-shadow:0 3px 10px rgba(15,23,42,.035)}',
+'#msa90DiseasesPanel .msa92-card.kind-exam{--cc:#2563eb;--ct:#eff6ff}#msa90DiseasesPanel .msa92-card.kind-medication{--cc:#059669;--ct:#ecfdf5}#msa90DiseasesPanel .msa92-card.kind-symptom{--cc:#d97706;--ct:#fffbeb}#msa90DiseasesPanel .msa92-card.kind-consult{--cc:#0d9488;--ct:#f0fdfa}',
+'#msa90DiseasesPanel .msa92-top{display:flex;align-items:flex-start;gap:9px;min-width:0}',
+'#msa90DiseasesPanel .msa92-icon{display:inline-grid;place-items:center;flex:0 0 31px;width:31px;height:31px;border-radius:10px;background:var(--ct);font-size:16px}',
+'#msa90DiseasesPanel .msa92-copy{min-width:0;flex:1}',
+'#msa90DiseasesPanel .msa92-name{display:block;font-size:15px;font-weight:850;line-height:1.45;overflow-wrap:anywhere;color:var(--text,#172033)}',
+'#msa90DiseasesPanel .msa92-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}',
+'#msa90DiseasesPanel .msa92-badge{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;font-size:10px;line-height:1.35;font-weight:800;white-space:normal}',
+'#msa90DiseasesPanel .msa92-cat{background:var(--ct);color:var(--cc)}#msa90DiseasesPanel .msa92-source{background:#f1f5f9;color:#475569}#msa90DiseasesPanel .msa92-date{background:#ecfdf5;color:#047857}#msa90DiseasesPanel .msa92-missing{background:#fff7ed;color:#b45309;border:1px solid #fed7aa}',
+'#msa90DiseasesPanel .msa92-detail{font-size:13px;line-height:1.55;color:var(--muted,#64748b);margin:9px 0 0;overflow-wrap:anywhere}',
+'#msa90DiseasesPanel .msa92-empty{margin-top:14px;padding:15px;border-radius:14px;border:1px dashed #cbd5e1;background:#f8fafc}#msa90DiseasesPanel .msa92-empty strong{font-size:14px;line-height:1.5}#msa90DiseasesPanel .msa92-empty p{font-size:13px;line-height:1.55;color:var(--muted,#64748b);margin:7px 0 12px}',
+'body.msa-dark #msa90DiseasesPanel .msa92-card{background:#111827;border-color:#334155}body.msa-dark #msa90DiseasesPanel .msa92-source{background:#273449;color:#e2e8f0}body.msa-dark #msa90DiseasesPanel .msa92-empty{background:#111827;border-color:#475569}',
+'@media(max-width:600px){#msa90DiseasesPanel{padding:13px;border-radius:16px}#msa90DiseasesPanel .msa92-heading{flex-basis:100%}#msa90DiseasesPanel #msa90Close{width:100%}#msa90DiseasesPanel .msa92-list{gap:12px;margin-top:14px}#msa90DiseasesPanel .msa92-card{padding:13px;border-radius:14px}#msa90DiseasesPanel .msa92-name{font-size:15px}#msa90DiseasesPanel .msa92-detail{font-size:13px;line-height:1.6}#msa90DiseasesPanel .msa92-badge{font-size:10px;padding:5px 8px}}'
+].join('\n');document.head.appendChild(s)}
 function render(){
  const section=$('#timeline');if(!section||$('#msa90DiseasesButton'))return;
  const filters=$('#timelineFilters');if(!filters)return;
  const btn=document.createElement('button');btn.type='button';btn.id='msa90DiseasesButton';btn.className='btn secondary';btn.textContent='🩺 Minhas doenças';
- const panel=document.createElement('div');panel.id='msa90DiseasesPanel';panel.className='card';panel.hidden=true;panel.style.cssText='margin-top:12px;border:1px solid #c7d2fe;background:var(--card,#fff);border-radius:16px;padding:15px';
+ ensureStyles();const panel=document.createElement('div');panel.id='msa90DiseasesPanel';panel.className='card';panel.hidden=true;panel.setAttribute('role','region');panel.setAttribute('aria-label','Minhas doenças e condições');
  const actions=document.createElement('div');actions.id='msa90DiseasesActions';actions.className='row';actions.style.cssText='margin-top:8px;gap:7px;flex-wrap:wrap';actions.appendChild(btn);filters.insertAdjacentElement('afterend',actions);actions.insertAdjacentElement('afterend',panel);
  function draw(){
   const items=conditions(),name=profile().nome||'perfil atual';
-  panel.innerHTML='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><h3 style="margin:0 0 5px">🩺 Minhas doenças e condições</h3><p style="margin:0;color:var(--muted,#64748b);font-size:13px">Informações cadastradas em '+esc(name)+'. Confira se está no perfil correto.</p></div><button type="button" id="msa90Close" class="btn secondary">Fechar</button></div>'+
-   (items.length?'<div style="display:grid;gap:9px;margin-top:13px">'+items.map(x=>'<article style="border:1px solid var(--border,#e2e8f0);border-radius:12px;padding:12px"><strong>🩺 '+esc(x.name)+'</strong>'+(x.detail?'<p style="margin:5px 0 0;font-size:13px;color:var(--muted,#64748b)">'+esc(x.detail)+'</p>':'')+(x.date?'<small style="display:block;margin-top:5px;color:var(--muted,#64748b)">Data: '+esc(x.date)+'</small>':'')+'<small style="display:block;margin-top:5px;color:var(--muted,#64748b)">'+esc(x.source)+'</small></article>').join('')+'</div>':'<div style="margin-top:13px;padding:13px;border-radius:12px;background:var(--surface,#f8fafc)"><strong>Nenhuma doença ou condição encontrada.</strong><p style="font-size:13px;color:var(--muted,#64748b);margin:6px 0 10px">Cadastre as condições já diagnosticadas no seu perfil para que apareçam aqui. Não inclua suspeitas como se fossem diagnósticos confirmados.</p><button type="button" id="msa90GoProfile" class="btn secondary">Abrir meu perfil</button></div>');
-  $('#msa90Close',panel).onclick=()=>{panel.hidden=true;btn.setAttribute('aria-expanded','false')};
+  const cards=items.map(x=>{const cat=diseaseType(x),hasDate=Boolean(x.date);return '<article class="msa92-card kind-'+cat.key+'"><div class="msa92-top"><span class="msa92-icon" aria-hidden="true">'+cat.icon+'</span><div class="msa92-copy"><strong class="msa92-name">'+esc(x.name)+'</strong><div class="msa92-badges"><span class="msa92-badge msa92-cat">'+esc(cat.label)+'</span><span class="msa92-badge msa92-source">'+esc(x.source||'Registro de saúde')+'</span><span class="msa92-badge '+(hasDate?'msa92-date':'msa92-missing')+'">'+(hasDate?'📅 ':'⚠️ ')+esc(hasDate?formatDiseaseDate(x.date):'Data não informada')+'</span></div></div></div>'+(x.detail?'<p class="msa92-detail">'+esc(x.detail)+'</p>':'')+'</article>'}).join('');
+  panel.innerHTML='<div class="msa92-head"><div class="msa92-heading"><h3>🩺 Minhas doenças e condições</h3><p class="msa92-intro">Informações cadastradas em '+esc(name)+'. Confira se está no perfil correto.</p></div><button type="button" id="msa90Close" class="btn secondary">Fechar</button></div>'+
+   (items.length?'<div class="msa92-list">'+cards+'</div>':'<div class="msa92-empty"><strong>Nenhuma doença ou condição encontrada.</strong><p>Cadastre no seu perfil as condições já informadas por um profissional de saúde. Não inclua suspeitas como se fossem diagnósticos confirmados.</p><button type="button" id="msa90GoProfile" class="btn secondary">Abrir meu perfil</button></div>');
+  $('#msa90Close',panel).onclick=()=>{panel.hidden=true;btn.setAttribute('aria-expanded','false');btn.focus()};
   const go=$('#msa90GoProfile',panel);if(go)go.onclick=()=>{if(typeof window.go==='function')window.go('perfil');else location.hash='perfil'};
  }
  btn.setAttribute('aria-controls',panel.id);btn.setAttribute('aria-expanded','false');
