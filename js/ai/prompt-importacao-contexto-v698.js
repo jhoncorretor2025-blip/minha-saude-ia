@@ -1,4 +1,4 @@
-/* Minha Saúde IA V7.00 — prompt específico para NotebookLM com limite de 3.600 caracteres. */
+/* Minha Saúde IA V7.00 — prompt específico para NotebookLM com limite de 3.849 caracteres. */
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
@@ -123,14 +123,14 @@ function updateStatus(ctx,message){
 }
 function copyFallback(){const field=$('promptIA')||$('iaGuidePrompt');if(!field)return false;try{field.focus();field.select();return document.execCommand('copy')}catch(_){return false}}
 function copyPrompt(){
- const prompt=generate();if(!prompt)return;
+ const prompt=generateSelectedMode();if(!prompt)return;
  const status=$('copiado');
  const done=()=>{if(status)status.textContent='✅ Prompt gerado e copiado! Abra o ChatGPT ou Gemini e cole a mensagem.';updateStatus(lastContext,'✅ Prompt gerado com '+lastContext.conditions.length+' condição(ões) e copiado. Abra a IA e cole o texto. Nada foi enviado automaticamente.')};
  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(prompt).then(done).catch(()=>{if(copyFallback())done();else{if(status)status.textContent='⚠️ Prompt gerado, mas não copiou automaticamente. Selecione o texto e copie manualmente.';updateStatus(lastContext,'⚠️ Prompt gerado. A cópia automática falhou; selecione o texto e copie manualmente.')}});
  else if(copyFallback())done();else if(status)status.textContent='⚠️ Prompt gerado. Selecione o texto e copie manualmente.';
 }
 function openAI(provider){
- const prompt=generate();if(!prompt)return;
+ const prompt=generateSelectedMode();if(!prompt)return;
  const win=window.open(provider==='gemini'?'https://gemini.google.com/app':'https://chatgpt.com/','_blank');if(win){try{win.opener=null}catch(_){}}
  const status=$('iaGuideStatus');
  const done=()=>{updateStatus(lastContext,'✅ Prompt copiado. Na aba da IA, clique na caixa de mensagem e cole o texto.');if(status)status.textContent='✅ Prompt gerado e copiado. Na aba da IA, clique na caixa de mensagem e cole o texto.'};
@@ -140,7 +140,7 @@ function openAI(provider){
  const modal=$('iaGuide');if(modal)modal.style.display='none';
 }
 
-const NOTEBOOKLM_MAX_CHARS=3600;
+const NOTEBOOKLM_MAX_CHARS=3849;
 const NOTEBOOKLM_ESSENTIAL_FIELDS=[
 'NOME','DATA_NASCIMENTO','IDADE','SEXO','ALTURA','PESO','DOENCAS','DOENCAS_PAI','DOENCAS_MAE',
 'ALERGIAS','CIRURGIAS_INTERNACOES','MEDICAMENTOS','SUPLEMENTOS','ULTIMO_SINTOMA','LOCAL_SINTOMA',
@@ -255,23 +255,34 @@ function copyNotebookPrompt(){
  }else if(copyFallback())done();
  else if(status)status.textContent='⚠️ Prompt NotebookLM gerado. Selecione o texto e copie manualmente.';
 }
+function isNotebookMode(){return Boolean($('msaNotebookLMMode')&&$('msaNotebookLMMode').checked)}
+function generateSelectedMode(){return isNotebookMode()?generateNotebookLM():generate()}
+function updatePromptCount(prompt,mode,note){
+ const count=$('msaPromptCharCount'),hint=$('msaPromptModeHint'),bar=$('msaPromptModeBar');
+ if(count)count.textContent=mode==='notebook'?'NotebookLM: '+prompt.length.toLocaleString('pt-BR')+' / '+NOTEBOOKLM_MAX_CHARS.toLocaleString('pt-BR')+' caracteres':'Prompt padrão: '+prompt.length.toLocaleString('pt-BR')+' caracteres';
+ if(hint)hint.textContent=note||(mode==='notebook'?'Modo NotebookLM ativo: limite de 3.849 caracteres. As condições de saúde têm prioridade.':'Modo padrão ativo: prompt completo, com limite de segurança de 8.000 caracteres.');
+ if(bar)bar.dataset.mode=mode;
+}
 function buildNotebookLMButton(){
- const cta=document.querySelector('.ai-cta');if(!cta||$('msaNotebookLMButton'))return;cta.style.flexWrap='wrap';
- const button=document.createElement('button');
- button.id='msaNotebookLMButton';button.type='button';button.className='btn';
- button.textContent='📓 Gerar e copiar prompt para NotebookLM';
- button.title='Gera um prompt com limite rígido de 3.600 caracteres e prioriza as condições de saúde.';
- button.style.cssText='margin-top:8px;background:#e8f4ff;color:#174ea6;border:1px solid #b6d7ff;font-weight:850;flex:1 1 240px;min-height:44px';
- button.addEventListener('click',copyNotebookPrompt);
+ const field=$('promptIA');if(!field||$('msaPromptModeBar'))return;
+ const bar=document.createElement('div');bar.id='msaPromptModeBar';
+ bar.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:12px 0;padding:12px 14px;border:1px solid #dbe5f2;border-radius:14px;background:#f8faff;color:#172033';
+ bar.innerHTML='<label for="msaNotebookLMMode" style="display:flex;align-items:center;gap:9px;min-width:220px;font-weight:850;font-size:13px;cursor:pointer;margin:0"><input id="msaNotebookLMMode" type="checkbox" style="width:19px;height:19px;min-height:19px;flex:0 0 auto;accent-color:#2563eb"> 📓 Modo NotebookLM</label><div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end;min-width:155px"><strong id="msaPromptCharCount" style="font-size:13px">Prompt padrão: calculando…</strong><span id="msaPromptModeHint" style="font-size:11px;line-height:1.4;color:#64748b;text-align:right">Desmarcado: gera o prompt padrão.</span></div>';
+ field.insertAdjacentElement('beforebegin',bar);
+ const checkbox=$('msaNotebookLMMode');
+ checkbox.addEventListener('change',function(){
+  const prompt=generateSelectedMode();
+  if(prompt)updatePromptCount(prompt,isNotebookMode()?'notebook':'normal');
+  field.scrollIntoView({behavior:'smooth',block:'center'});
+ });
+}
+function buildButton(){
+ const cta=document.querySelector('.ai-cta');if(!cta||$('msaGenerateImportPrompt'))return;
+ const button=document.createElement('button');button.id='msaGenerateImportPrompt';button.type='button';button.className='btn secondary';button.textContent='🔄 Atualizar prompt no modo selecionado';button.title='Atualiza o prompt normal ou o prompt NotebookLM conforme a opção marcada.';
+ button.addEventListener('click',function(){const prompt=generateSelectedMode();const field=$('promptIA');if(field)field.scrollIntoView({behavior:'smooth',block:'center'});if(prompt)updatePromptCount(prompt,isNotebookMode()?'notebook':'normal')});
  cta.appendChild(button);
 }
 
-function buildButton(){
- const cta=document.querySelector('.ai-cta');if(!cta||$('msaGenerateImportPrompt'))return;
- const button=document.createElement('button');button.id='msaGenerateImportPrompt';button.type='button';button.className='btn secondary';button.textContent='🔄 Gerar prompt completo com meus dados';button.title='Gera o prompt completo com doenças, informações importantes e registros do perfil ativo.';
- button.addEventListener('click',function(){generate();const field=$('promptIA');if(field)field.scrollIntoView({behavior:'smooth',block:'center'});updateStatus(lastContext,'✅ Prompt atualizado com '+lastContext.conditions.length+' condição(ões). Revise o texto e toque em "Copiar Prompt Pronto (V3)" para copiar.')});
- cta.appendChild(button);
-}
 function applyDesktopDrawerStyle(){
  if($('msaV698DesktopDrawerFix'))return;
  const style=document.createElement('style');style.id='msaV698DesktopDrawerFix';
@@ -305,10 +316,10 @@ function applyDesktopDrawerStyle(){
 }
 function init(){
  const field=$('promptIA');if(field&&!basePrompt)basePrompt=field.value||'';
- applyDesktopDrawerStyle();buildButton();buildNotebookLMButton();if(field)generate();
+ applyDesktopDrawerStyle();buildButton();buildNotebookLMButton();if(field){const prompt=generate();if(prompt)updatePromptCount(prompt,'normal')}
  window.copiarPrompt=copyPrompt;window.copiarPromptIA=copyPrompt;window.copiarEAvancarIA=copyPrompt;
  window.abrirIAGuiaIA=openAI;window.abrirChatGPT=function(){return openAI('chatgpt')};window.abrirGemini=function(){return openAI('gemini')};
- window.abrirPaginaIA=function(){const prompt=generate();const o=$('onboarding');if(o)o.style.display='none';if(typeof window.go==='function')window.go('importar');copyPrompt();setTimeout(()=>$('promptIA')?.scrollIntoView({behavior:'smooth',block:'center'}),100);return prompt};
+ window.abrirPaginaIA=function(){const prompt=generateSelectedMode();const o=$('onboarding');if(o)o.style.display='none';if(typeof window.go==='function')window.go('importar');copyPrompt();setTimeout(()=>$('promptIA')?.scrollIntoView({behavior:'smooth',block:'center'}),100);return prompt};
  window.copiarPromptAntesDeAbrir=copyPrompt;
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
