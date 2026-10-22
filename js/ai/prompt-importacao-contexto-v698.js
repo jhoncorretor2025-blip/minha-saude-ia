@@ -105,7 +105,8 @@ function generate(){
  field.value=prompt;
  const guide=$('iaGuidePrompt');if(guide)guide.value=prompt;
  lastContext=ctx;
- updateStatus(ctx,'✅ Prompt compacto: '+prompt.length.toLocaleString('pt-BR')+' de '+MAX_PROMPT_CHARS.toLocaleString('pt-BR')+' caracteres. '+ctx.conditions.length+' condição(ões) priorizadas. '+(clipped?'O resumo complementar foi reduzido para caber no limite. ':'')+'Revise antes de compartilhar.');
+ updateStatus(ctx,'✅ Prompt padrão: '+prompt.length.toLocaleString('pt-BR')+' caracteres. '+ctx.conditions.length+' condição(ões) priorizadas. '+(clipped?'O resumo complementar foi reduzido para caber no limite. ':'')+'Revise antes de compartilhar.');
+ updatePromptCount(prompt,'normal',clipped?'O resumo complementar foi reduzido para respeitar o limite do modo padrão.':'Modo padrão ativo: prompt completo, com limite de segurança de 8.000 caracteres.');
  return prompt;
 }
 function ensureStatus(){
@@ -241,6 +242,7 @@ function generateNotebookLM(){
  if(result.importantClipped)message+=' Informações complementares reduzidas.';
  if(result.fieldsMode==='essencial')message+=' Perfil muito extenso: ficha usa campos essenciais para caber no limite.';
  updateStatus(ctx,message);
+ updatePromptCount(result.prompt,'notebook',message);
  return result.prompt;
 }
 function copyNotebookPrompt(){
