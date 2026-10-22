@@ -1,4 +1,4 @@
-/* Minha Saúde IA V6.88 — tendências históricas, resumo clínico, perfil ativo e adesão.
+/* Minha Saúde IA V6.89 — tendências históricas, resumo clínico, perfil ativo e adesão.
  * Lê somente o espaço do perfil atualmente selecionado. Não realiza diagnóstico.
  */
 (function(){
