@@ -1,4 +1,4 @@
-/* Minha Saúde IA V6.92 — apresentação visual de doenças e condições. */
+/* Minha Saúde IA V6.93 — apresentação visual de doenças e condições. */
 (function(){
 'use strict';
 const $=(s,r=document)=>r.querySelector(s);
