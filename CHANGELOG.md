@@ -1,3 +1,11 @@
+## V6.98 — Correção do prompt de importação e do menu no desktop
+- 🤖 O prompt agora é gerado a partir do perfil ativo, das condições registradas, de informações importantes e do resumo de saúde local.
+- 📋 A caixa “Antes de abrir a IA” recebe o mesmo prompt; os botões de copiar e abrir IA regeneram o texto antes de executar a ação.
+- 🔎 Foi adicionado o botão “Gerar prompt com meus dados” e um status indicando quantas condições foram identificadas.
+- 🔒 Os dados permanecem no navegador e só são copiados/compartilhados quando a pessoa aciona uma ação explícita; a abertura da IA evita colocar dados de saúde na URL.
+- 🖥️ Corrigido o estilo do menu completo quando aberto em tela de computador.
+- 🔄 Versão e cache sincronizados em V6.98.
+
 ## V6.97 — Validação final do contexto de saúde no prompt
 - 🩺 Condições cadastradas e o campo “Informações importantes” são colocados no início do prompt para reduzir omissões quando o resumo completo ultrapassa o limite do link.
 - 🔎 O prompt consolida as condições do perfil e dos registros de saúde disponíveis; as condições não são fixadas como texto no código público.
