@@ -201,9 +201,9 @@ function fitNotebookPrompt(ctx){
   let lo=0,hi=important.length,best='';
   while(lo<=hi){
    const mid=Math.floor((lo+hi)/2),candidate=cutAtWord(important,mid);
-   if(notebookPrompt(ctx,candidate,'',fields).length<=NOTEBOOKLM_MAX_CHARS){best=candidate;lo=mid+1}else hi=mid-1;
+   const finalValue=candidate.length<important.length?(candidate?candidate+' ':'')+'[informações complementares reduzidas]':candidate;
+   if(notebookPrompt(ctx,finalValue,'',fields).length<=NOTEBOOKLM_MAX_CHARS){best=finalValue;lo=mid+1}else hi=mid-1;
   }
-  if(best.length<important.length)best=(best?best+' ':'')+'[informações complementares reduzidas]';
   prompt=notebookPrompt(ctx,best,'',fields);
   if(prompt.length<=NOTEBOOKLM_MAX_CHARS)return {prompt,fieldsMode:'completo',importantClipped:true,summaryClipped:summary.length>0};
  }
@@ -214,9 +214,9 @@ function fitNotebookPrompt(ctx){
   let lo=0,hi=important.length,best='';
   while(lo<=hi){
    const mid=Math.floor((lo+hi)/2),candidate=cutAtWord(important,mid);
-   if(notebookPrompt(ctx,candidate,'',fields).length<=NOTEBOOKLM_MAX_CHARS){best=candidate;lo=mid+1}else hi=mid-1;
+   const finalValue=candidate.length<important.length?(candidate?candidate+' ':'')+'[informações complementares reduzidas]':candidate;
+   if(notebookPrompt(ctx,finalValue,'',fields).length<=NOTEBOOKLM_MAX_CHARS){best=finalValue;lo=mid+1}else hi=mid-1;
   }
-  if(best.length<important.length)best=(best?best+' ':'')+'[informações complementares reduzidas]';
   prompt=notebookPrompt(ctx,best,'',fields);
   if(prompt.length<=NOTEBOOKLM_MAX_CHARS)return {prompt,fieldsMode:'essencial',importantClipped:true,summaryClipped:summary.length>0};
  }
