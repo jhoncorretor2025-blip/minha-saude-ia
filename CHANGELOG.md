@@ -1,3 +1,10 @@
+## V7.01 — Seletor de modo e contador do prompt
+- 🔢 Exibe a contagem de caracteres do prompt padrão assim que a página é carregada.
+- ☑️ Adiciona a opção “Modo NotebookLM”; marcada, gera o prompt compacto com teto de 3.849 caracteres; desmarcada, retorna ao prompt padrão.
+- 📋 Os botões de copiar, abrir a IA e atualizar o prompt respeitam a opção selecionada.
+- 🩺 No modo NotebookLM, preserva as condições encontradas e reduz primeiro o resumo complementar para caber no limite. Se não for possível preservar a lista de condições, não copia um prompt incompleto.
+- 🔄 Versão e cache sincronizados em V7.01.
+
 ## V7.00 — Botão dedicado para NotebookLM
 - 📓 Adicionado o botão “Gerar e copiar prompt para NotebookLM”, com limite rígido de 3.600 caracteres (abaixo dos 3.849 relatados pelo usuário).
 - 🩺 A lista completa de condições cadastradas é priorizada; o sistema reduz primeiro o resumo complementar e depois as informações livres, sem cortar silenciosamente doenças.
