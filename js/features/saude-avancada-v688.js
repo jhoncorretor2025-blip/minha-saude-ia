@@ -1,4 +1,4 @@
-/* Minha Saúde IA V6.89 — tendências históricas, resumo clínico, perfil ativo e adesão.
+/* Minha Saúde IA V7.04 — tendências históricas, resumo clínico, perfil ativo e adesão.
  * Lê somente o espaço do perfil atualmente selecionado. Não realiza diagnóstico.
  */
 (function(){
@@ -14,10 +14,14 @@ const fmtDate=d=>d?d.toLocaleDateString('pt-BR'):'data não informada';
 const profile=()=>get('msa2_perfil')[0]||{};
 function measurements(){
  const out=[];
- const groups=[['msa2_medidas_corporais',['peso','weight','cintura','quadril','biceps','altura']],['msa2_medidas',['peso','weight','cintura','quadril','biceps','altura']],['msa2_vitais',['pressao','pressaoArterial','pa','glicemia','glicose','temperatura','frequenciaCardiaca','saturacao','dor','peso']]];
+ const groups=[['msa2_medidas_corporais',['peso','weight','cintura','quadril','biceps','altura']],['msa2_medidas',['peso','weight','cintura','quadril','biceps','altura']],['msa2_vitais',['glic','glicemia','glicose','temp','temperatura','fc','frequenciaCardiaca','sat','saturacao','peso']]];
  groups.forEach(([key,fields])=>get(key).forEach(o=>fields.forEach(f=>{const value=num(o?.[f]);if(value!==null)out.push({key,field:f,value,date:dateOf(o),raw:o})})));
+/* V7.04: dor vem dos sintomas (campo int) e a pressão é lida como “12/8” → máxima 120 (não vira 128) */
+ get('msa2_dores').forEach(o=>{const value=num(o&&o.int);if(value!==null)out.push({key:'msa2_dores',field:'dor',value,date:dateOf(o),raw:o})});
+ get('msa2_vitais').forEach(o=>{const pa=pressao(o&&o.pressao);if(pa)out.push({key:'msa2_vitais',field:'pressaoMax',value:pa.max,texto:pa.texto,date:dateOf(o),raw:o})});
  return out;
 }
+function pressao(t){const m=String(t||'').match(/(\d{1,3})\s*[\/x×]\s*(\d{1,3})/);if(!m)return null;let a=Number(m[1]),b=Number(m[2]);if(a<30){a*=10;b*=10}return {max:a,min:b,texto:a+'/'+b+' mmHg'}}
 function familyName(){const p=profile();return first(p,['nome','name'])||'Perfil atual';}
 function familyNotice(){
  const host=$('#msa87Panel');if(!host||$('#msa88Family'))return;
@@ -32,7 +36,8 @@ function chart(){
  const defs=[
   {name:'Peso',keys:['peso','weight'],unit:'kg',color:'#2563eb'},
   {name:'Cintura',keys:['cintura'],unit:'cm',color:'#0d9488'},
-  {name:'Glicemia',keys:['glicemia','glicose'],unit:'',color:'#7c3aed'},
+  {name:'Pressão (máxima)',keys:['pressaoMax'],unit:'mmHg',color:'#dc2626'},
+  {name:'Açúcar (glicemia)',keys:['glic','glicemia','glicose'],unit:'mg/dL',color:'#7c3aed'},
   {name:'Dor',keys:['dor'],unit:'/10',color:'#ea580c'}
  ];
  const sections=defs.map(def=>{
@@ -44,17 +49,66 @@ function chart(){
  host.innerHTML=sections;
 }
 function report(){
- const p=profile(),v=get('msa2_vitais'),m=get('msa2_medidas_corporais').concat(get('msa2_medidas')),meds=get('msa2_meds').concat(get('msa2_medicamentos_rotina')),taken=get('msa2_medicamentos_tomados'),consults=get('msa2_consultas'),exams=get('msa2_exames'),pain=get('msa2_dores');
- const lines=['MINHA SAÚDE IA — RESUMO PARA CONSULTA','Gerado em: '+new Date().toLocaleString('pt-BR'),'Perfil: '+familyName(),'','Este documento organiza registros informados pelo usuário; não é diagnóstico.','', 'PERFIL',...['idade','sexo','sangue','alerg','cond'].filter(k=>first(p,[k])!==null).map(k=>k+': '+first(p,[k])),'','INDICADORES RECENTES'];
- const all=measurements();
- ['peso','weight','pressao','pressaoArterial','pa','glicemia','glicose','cintura','dor'].forEach(k=>{const x=all.filter(r=>r.field===k).sort((a,b)=>(b.date?.getTime()||0)-(a.date?.getTime()||0))[0];if(x)lines.push(k+': '+x.value+' ('+fmtDate(x.date)+')')});
- lines.push('','MEDICAMENTOS ('+meds.length+')');meds.forEach((x,i)=>lines.push((i+1)+'. '+(first(x,['nome','medicamento','name','titulo'])||'Nome não informado')+(first(x,['dose','dosagem','quantidade'])?' — '+first(x,['dose','dosagem','quantidade']):'')));
- lines.push('Registros de doses tomadas: '+taken.length,'','CONSULTAS ('+consults.length+')');consults.slice(-15).forEach(x=>lines.push('- '+fmtDate(dateOf(x))+' — '+(first(x,['especialidade','medico','profissional','motivo','titulo'])||'Consulta registrada')));
- lines.push('','EXAMES ('+exams.length+')');exams.slice(-15).forEach(x=>lines.push('- '+fmtDate(dateOf(x))+' — '+(first(x,['nome','exame','titulo','tipo'])||'Exame registrado')+(first(x,['resultado','descricao'])?' — '+first(x,['resultado','descricao']):'')));
- lines.push('','SINTOMAS / DORES ('+pain.length+')');pain.slice(-15).forEach(x=>lines.push('- '+fmtDate(dateOf(x))+' — '+(first(x,['sintoma','nome','dor','descricao','tipo'])||'Registro de sintoma')+(first(x,['intensidade','nivel'])?' (intensidade '+first(x,['intensidade','nivel'])+')':'')));
- lines.push('','Sinais vitais cadastrados: '+v.length,'Medidas corporais cadastradas: '+m.length,'','Leve os exames originais e confirme os dados com o profissional de saúde.');
- return lines.join('\n');
+ /* V7.04: relatório com os dados certos (pressão 12/8, sintomas com local e intensidade, consultas completas), “antes × agora” e adesão aos remédios */
+ const p=profile(),meds=get('msa2_meds'),rot=get('msa2_medicamentos_rotina'),consults=get('msa2_consultas'),exams=get('msa2_exames'),pain=get('msa2_dores'),vit=get('msa2_vitais');
+ const L=[],sec=t=>{L.push('',t,'-'.repeat(Math.min(40,t.length)))};
+ L.push('MINHA SAÚDE IA — RELATÓRIO EVOLUTIVO PARA A CONSULTA','Gerado em: '+new Date().toLocaleString('pt-BR'),'Pessoa: '+familyName(),'Organiza registros feitos pela própria pessoa. Não é diagnóstico.');
+ sec('DADOS PRINCIPAIS');
+ [['Nascimento','nasc'],['Sexo','sexo'],['Tipo sanguíneo','sangue'],['Alergias','alerg'],['Condições de saúde','cond'],['Cirurgias/internações','circ'],['Peso (cadastro)','peso'],['Altura','altura']].forEach(([r,k])=>{const v=first(p,[k]);if(v!==null)L.push(r+': '+v)});
+ sec('ANTES × AGORA (últimos 90 dias)');
+ const lim=Date.now()-90*86400000,all=measurements();
+ [['Peso','peso','kg'],['Pressão','pressaoMax','mmHg'],['Açúcar (glicemia)','glic','mg/dL'],['Batimentos','fc','bpm'],['Dor (sintomas)','dor','/10']].forEach(([r,f,u])=>{
+  const rows=all.filter(x=>x.field===f&&x.date&&x.date.getTime()>=lim).sort((a,b)=>a.date-b.date);if(!rows.length)return;
+  const ini=rows[0],fim=rows[rows.length-1],txt=x=>x.texto||((x.value)+' '+u);
+  if(rows.length===1){L.push(r+': '+txt(fim)+' ('+fmtDate(fim.date)+') — só 1 registro');return}
+  const d=fim.value-ini.value,seta=Math.abs(d)<0.0001?'➡️ igual':d>0?'⬆️ subiu':'⬇️ desceu';
+  L.push(r+': '+txt(ini)+' ('+fmtDate(ini.date)+') → '+txt(fim)+' ('+fmtDate(fim.date)+') · '+seta+' · '+rows.length+' registros');
+ });
+ if(L[L.length-1].startsWith('-'))L.push('Sem medições suficientes no período.');
+ sec('ÚLTIMAS MEDIÇÕES');
+ vit.slice().sort((a,b)=>(dateOf(b)?.getTime()||0)-(dateOf(a)?.getTime()||0)).slice(0,6).forEach(x=>{const pa=pressao(x.pressao),v=[];if(pa)v.push('Pressão '+pa.texto);if(x.glic)v.push('Açúcar '+x.glic+' mg/dL');if(x.fc)v.push('Batimentos '+x.fc);if(x.sat)v.push('Saturação '+x.sat+'%');if(x.temp)v.push('Temperatura '+x.temp+'°C');if(x.peso)v.push('Peso '+x.peso+' kg');if(v.length)L.push('- '+fmtDate(dateOf(x))+': '+v.join(' · '))});
+ if(!vit.length)L.push('Nenhuma medição registrada.');
+ sec('REMÉDIOS');
+ const ades=adesao();
+ rot.forEach(x=>{const a=ades.find(y=>String(y.id)===String(x.id));L.push('- '+(x.nome||'Sem nome')+(x.dose?' — '+x.dose:'')+(x.hora?' às '+x.hora:'')+(a?' · tomou em '+a.dias+' de '+a.total+' dias (últimos 7)':''))});
+ meds.forEach(x=>L.push('- '+(x.nome||'Sem nome')+(x.dose?' — '+x.dose:'')+(x.freq?' · '+x.freq:'')+(x.inicio?' · desde '+x.inicio:'')+(x.fim?' até '+x.fim:'')));
+ if(!rot.length&&!meds.length)L.push('Nenhum remédio cadastrado.');
+ sec('SINTOMAS (mais recentes)');
+ pain.slice().sort((a,b)=>(dateOf(b)?.getTime()||0)-(dateOf(a)?.getTime()||0)).slice(0,12).forEach(x=>L.push('- '+fmtDate(dateOf(x))+': '+(x.local||'local não informado')+(x.int!=null&&x.int!==''?' · intensidade '+x.int+'/10':'')+(x.tipo?' · '+x.tipo:'')+(x.sint?' · '+x.sint:'')+(x.obs?' · '+x.obs:'')));
+ if(!pain.length)L.push('Nenhum sintoma registrado.');
+ sec('CONSULTAS');
+ consults.slice().sort((a,b)=>(dateOf(b)?.getTime()||0)-(dateOf(a)?.getTime()||0)).slice(0,10).forEach(x=>L.push('- '+fmtDate(dateOf(x))+': '+(x.esp||'Consulta')+(x.med?' · '+x.med:'')+(x.mot?' · motivo: '+x.mot:'')+(x.obs?' · orientação: '+x.obs:'')+(x.ret?' · retorno: '+x.ret:'')));
+ if(!consults.length)L.push('Nenhuma consulta registrada.');
+ sec('EXAMES');
+ exams.slice().sort((a,b)=>(dateOf(b)?.getTime()||0)-(dateOf(a)?.getTime()||0)).slice(0,10).forEach(x=>L.push('- '+fmtDate(dateOf(x))+': '+(x.nome||'Exame')+(x.res?' · resultado: '+x.res:'')+(x.obs?' · '+x.obs:'')));
+ if(!exams.length)L.push('Nenhum exame registrado.');
+ L.push('','Leve os exames originais e confirme estes dados com o profissional de saúde.');
+ return L.join('\n');
 }
+/* V7.04: adesão por remédio nos últimos 7 dias */
+function adesao(){
+ const rot=get('msa2_medicamentos_rotina'),tom=get('msa2_medicamentos_tomados'),hoje=new Date();hoje.setHours(0,0,0,0);
+ const dias=[];for(let i=6;i>=0;i--){const d=new Date(hoje);d.setDate(d.getDate()-i);dias.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'))}
+ return rot.map(m=>{const feitos=dias.map(d=>tom.some(t=>String(t.medId)===String(m.id)&&String(t.data||'').slice(0,10)===d));
+  const agoraHm=new Date().toTimeString().slice(0,5);const hojePend=!feitos[6]&&(!m.hora||m.hora<=agoraHm);
+  const esquecidos=dias.slice(0,6).filter((d,i)=>!feitos[i]);
+  return {id:m.id,nome:m.nome||'Sem nome',dose:m.dose||'',hora:m.hora||'',dias:feitos.filter(Boolean).length,total:7,feitos,diasISO:dias,hojePend,esquecidos}});
+}
+function cartaoAdesao(){
+ const host=$('#msa88Advanced');if(!host)return;let c=$('#msa90Adesao');
+ if(!c){c=document.createElement('section');c.id='msa90Adesao';c.className='msa88-card';host.insertBefore(c,host.firstChild)}
+ const a=adesao();
+ if(!a.length){c.innerHTML='<h3>💊 Remédios: como está indo</h3><p class="msa88-muted">Cadastre seus remédios com horário em Lembretes para acompanhar aqui se você está tomando todos os dias.</p>';return}
+ const sem=['D','S','T','Q','Q','S','S'];
+ c.innerHTML='<h3>💊 Remédios: como está indo (7 dias)</h3>'+a.map(x=>{const pct=Math.round(x.dias/7*100),cor=pct>=85?'#16a34a':pct>=60?'#d97706':'#dc2626';
+  return '<div class="msa90-med"><div class="msa90-top"><b>'+esc(x.nome)+'</b>'+(x.dose?' <span>'+esc(x.dose)+'</span>':'')+'<em style="color:'+cor+'">'+x.dias+' de 7 dias</em></div>'+
+   '<div class="msa90-barra"><i style="width:'+pct+'%;background:'+cor+'"></i></div>'+
+   '<div class="msa90-dias">'+x.feitos.map((f,i)=>'<span class="'+(f?'ok':(i===6&&!x.hojePend?'hoje':'falta'))+'" title="'+x.diasISO[i].split('-').reverse().join('/')+'">'+sem[new Date(x.diasISO[i]+'T12:00:00').getDay()]+'</span>').join('')+'</div>'+
+   (x.hojePend?'<p class="msa90-alerta">⏰ A dose de hoje'+(x.hora?' ('+esc(x.hora)+')':'')+' ainda não foi marcada.</p>':'')+
+   (x.esquecidos.length?'<p class="msa90-esq">⚠️ Sem registro em '+x.esquecidos.length+' dia(s): '+x.esquecidos.slice(-3).map(d=>d.split('-').reverse().slice(0,2).join('/')).join(', ')+'.</p>':'')+'</div>'}).join('')+
+  '<p class="msa88-muted">Conta os dias em que a dose foi marcada como tomada. Esqueceu de marcar? Marque no “Hoje”, no Início.</p>';
+}
+
 function exportReport(){
  const text=report(),blob=new Blob([text],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
  a.href=url;a.download='resumo-saude-'+new Date().toISOString().slice(0,10)+'.txt';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
@@ -78,6 +132,7 @@ function render(){
   $('#msa88Copy').addEventListener('click',copyForAI);
  }
  chart();
+ cartaoAdesao();
  return true;
 }
 function init(){

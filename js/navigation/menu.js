@@ -23,6 +23,7 @@
         '<button type="button" data-tab="nutricao" data-feature-nav="nutricao">🥗 Nutrição</button>'+
       '</div></div>'+
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="followup">📊 Acompanhar ▾</button><div class="nav-menu">'+
+        '<button type="button" data-tab="msa87Panel">📊 Meu painel de saúde</button>'+
         '<button type="button" data-tab="timeline">🕐 Linha do tempo</button>'+
         '<button type="button" data-tab="sono" data-feature-nav="sonoBem">😴 Sono e bem-estar</button>'+
         '<button type="button" data-tab="avisos">🔔 Atenção e avisos</button>'+
@@ -231,7 +232,7 @@
         mobileSection('Principal',[['home','🏠 Início'],['timeline','🕐 Linha do tempo'],['inteligencia','🧠 Inteligência'],['perfil','👤 Meu perfil']])+ 
         mobileSection('Registrar',[
           ['dor','😣 Sintoma ou dor'],['meds','💊 Medicamentos'],['consultas','👨‍⚕️ Consultas'],
-          ['exames','🧪 Exames'],['acompanhamento','❤️ Sinais vitais'],['acompanhamento','📏 Medidas corporais','academia'],
+          ['msa87Panel','📊 Meu painel de saúde'],['exames','🧪 Exames'],['acompanhamento','❤️ Sinais vitais'],['acompanhamento','📏 Medidas corporais','academia'],
           ['nutricao','🥗 Nutrição','nutricao']
         ])+
         mobileSection('Acompanhar',[

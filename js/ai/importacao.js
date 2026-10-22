@@ -66,7 +66,8 @@ function limparLinhaFicha(line){
 function arr(x){return Array.isArray(x)?x:[]}
 function first(o){for(var i=1;i<arguments.length;i++){var k=arguments[i];if(o&&o[k]!==undefined&&o[k]!==null&&String(o[k]).trim()!=='')return o[k]}return ''}
 function normalizarImport(d){
- var fonte=normalObj(d.perfil||d.profile||d.pessoa||d.paciente),raiz=normalObj(d),p={};
+ /* V6.90: a revisão guarda o perfil em “p” — antes ele era ignorado e os dados pessoais importados se perdiam */
+ var fonte=normalObj(d.perfil||d.profile||d.pessoa||d.paciente||(d.p&&typeof d.p==='object'&&!Array.isArray(d.p)?d.p:null)),raiz=normalObj(d),p={};
  if(!Object.keys(fonte).length)fonte=raiz;
  var mapa={
   nome:['nome','NOME','nome_completo','NOME_COMPLETO','paciente','PACIENTE'],
@@ -127,8 +128,8 @@ function normalizarImport(d){
  };
  Object.keys(mapa).forEach(function(k){var v=first.apply(null,[fonte].concat(mapa[k]));if(v!=='')p[k]=v});
  var dores=arr(raiz.dores||raiz.dores_e_sintomas||raiz.sintomas).map(function(x){var rawInt=first(x,'int','intensidade','intensidade_0_10');return {data:first(x,'data','inicio','quando','datetime'),local:first(x,'local','onde','regiao','região'),int:rawInt===''?'':Number(rawInt),tipo:first(x,'tipo','caracteristica','característica'),freq:first(x,'freq','frequencia','frequência'),gatilho:first(x,'gatilho','gatilhos','piora_melhora'),sint:first(x,'sint','sintomas','outros_sintomas'),obs:first(x,'obs','observacoes','observações')}});
- var consultas=arr(raiz.consultas).map(function(x){return {data:first(x,'data'),esp:first(x,'especialidade'),med:first(x,'med','medico','médico'),mot:first(x,'motivo'),perg:first(x,'perguntas'),obs:first(x,'obs','orientacoes','orientações'),ret:first(x,'ret','retorno')}});
- var meds=arr(raiz.medicamentos||raiz.remedios||raiz.remédios).map(function(x){return {nome:first(x,'nome','medicamento','remedio','remédio'),dose:first(x,'dose'),freq:first(x,'freq','frequencia','frequência'),inicio:first(x,'inicio','início'),fim:first(x,'fim'),pres:first(x,'pres','prescritor','prescrito_por'),obs:first(x,'obs','observacoes','observações')}});
+ var consultas=arr(raiz.consultas).map(function(x){return {data:first(x,'data'),esp:first(x,'esp','especialidade'),med:first(x,'med','medico','médico'),mot:first(x,'mot','motivo'),perg:first(x,'perg','perguntas'),obs:first(x,'obs','orientacoes','orientações'),ret:first(x,'ret','retorno')}});
+ var meds=arr(raiz.meds||raiz.medicamentos||raiz.remedios||raiz.remédios).map(function(x){return {nome:first(x,'nome','medicamento','remedio','remédio'),dose:first(x,'dose'),freq:first(x,'freq','frequencia','frequência'),inicio:first(x,'inicio','início'),fim:first(x,'fim'),pres:first(x,'pres','prescritor','prescrito_por'),obs:first(x,'obs','observacoes','observações')}});
  var exames=arr(raiz.exames).map(function(x){return {nome:first(x,'nome','exame'),data:first(x,'data'),res:first(x,'res','resultado'),obs:first(x,'obs','observacoes','observações')}});
  var vitais=arr(raiz.vitais||raiz.sinais_vitais||raiz.sinaisVitais),vacinas=arr(raiz.vacinas||raiz.vax),familia=arr(raiz.familia||raiz.historico_familiar||raiz.historicoFamiliar),lembretes=arr(raiz.lembretes||raiz.reminders),documentos=arr(raiz.documentos||raiz.docs);
  return {p:p,dores:dores,consultas:consultas,meds:meds,exames:exames,vitais:vitais,vacinas:vacinas,familia:familia,lembretes:lembretes,documentos:documentos};
@@ -489,3 +490,26 @@ async function lerPDFParaImportacao(ev){
  try{var r=await extrairTextoPDFArquivo(file);if(!r.text.trim()){r=await extrairTextoPDFComOCR(file,status);if(!r.text.trim())throw new Error('Não foi possível reconhecer texto neste PDF.');}var ficha=normalizarTextoPDFParaImportacao(r.text),area=document.getElementById('importIA');if(area)area.value=ficha;if(status)status.innerHTML='✅ PDF lido com sucesso. Nenhum dado foi salvo ainda.';if(preview){preview.style.display='block';preview.innerHTML='<b>🔎 PDF analisado</b><br><span class="muted">'+r.pages+' página(s) · '+ficha.split(/\n/).filter(Boolean).length+' linhas estruturadas.</span><br><br><b>Próximo passo:</b> revise a ficha e clique em <b>✨ Importar e salvar</b>. O aplicativo ainda mostrará a prévia antes de gravar.'}if(area)area.scrollIntoView({behavior:'smooth',block:'center'})}catch(e){if(status)status.innerHTML='⚠️ '+(e.message||'Não foi possível ler o PDF.')}finally{if(ev&&ev.target)ev.target.value=''}
 }
 window.lerPDFParaImportacao=lerPDFParaImportacao;
+
+/* V6.90: esta função foi apagada sem querer na V5.97 — desde então a importação mostrava “concluída” mas não gravava nada.
+   Restaurada do histórico. Campos já preenchidos são preservados (só sexo, alergias e contato de emergência são atualizados quando mudam). */
+if(typeof window.importarNormalizado!=='function'){
+function importarNormalizado(n){
+ var pk=['nome','nasc','idade','sexo','sangue','altura','peso','objetivoCorporal','academia','academiaFreq','atividadeFisica','trabalhoTipo','horasSentado','horasPe','aguaDia','urinaDia','evacuacaoDia','calorSuor','alimentacao','cond','alerg','circ','supl','info','emerg','tel','menstruacao','ciclo','duracaoMenstr','regularidade','sexoFreq','sexoFreqMin','sexoFreqMax','masturbacaoDia','camisinha','engravidou','mae','gestacoes','reproObs','usaAnticoncepcional','anticoncepcionalMetodo','anticoncepcionalNome','anticoncepcionalHora','anticoncepcionalInicio','anticoncepcionalRegime','minipilulaTipo','prevColo','mamografia','ist','hpv','prevProx','prevObs','dorcelaxFreq','paracetamolFreq','outrosDor','catapora','cataporaQuando'],has=function(k){var v=String((n.p||{})[k]||'').trim();return v&&v.toLowerCase()!=='não informado'};
+ if((n.dores||[]).length)set(K.d,get(K.d).concat(n.dores||[]));
+ if((n.consultas||[]).length)set(K.c,get(K.c).concat(n.consultas||[]));
+ if((n.meds||[]).length)set(K.m,get(K.m).concat(n.meds||[]));
+ if((n.exames||[]).length)set(K.e,get(K.e).concat(n.exames||[]));
+ if((n.vitais||[]).length)set(K.v,get(K.v).concat(n.vitais||[]));
+ if((n.vacinas||[]).length)set(K.vax,get(K.vax).concat(n.vacinas||[]));
+ if((n.familia||[]).length)set(K.fam,get(K.fam).concat(n.familia||[]));
+ if((n.lembretes||[]).length)set(K.r,get(K.r).concat(n.lembretes||[]));
+ if((n.documentos||[]).length)set(K.doc,get(K.doc).concat(n.documentos||[]));
+ if(pk.some(has)){var old=get(K.p)[0]||{},merged=Object.assign({},old),novos=0,ignorados=0;pk.forEach(function(k){if(has(k)){var atual=String(merged[k]||'').trim().toLowerCase(),novo=String(n.p[k]||'').trim();var provisoria=!atual||atual==='valor'||atual==='value'||atual==='não informado';if(provisoria||k==='sexo'||k==='alerg'||k==='emerg'||k==='tel'){if(atual!==novo.toLowerCase()){merged[k]=n.p[k];novos++}else ignorados++;}else ignorados++;}});set(K.p,[merged]);window._importPerfilNovos=novos;window._importPerfilIgnorados=ignorados}
+ try{render();if(typeof loadProfile==='function')loadProfile();if(typeof renderCarteirinha==='function')renderCarteirinha();if(typeof renderNovosModulos==='function')renderNovosModulos()}catch(renderError){console.error('[Minha Saúde IA] render após importação',renderError);window._importRenderWarning=String(renderError&&renderError.message||renderError)}
+ var falhas=verificarGravacaoImportacao(n),ns=Number(window._importPerfilNovos||0),ig=Number(window._importPerfilIgnorados||0),hist=(n.dores||[]).length+(n.consultas||[]).length+(n.meds||[]).length+(n.exames||[]).length+(n.vitais||[]).length+(n.vacinas||[]).length+(n.familia||[]).length+(n.lembretes||[]).length+(n.documentos||[]).length;
+ var aviso=falhas.length?'⚠️ Alguns registros não puderam ser confirmados após o salvamento. Recarregue a página e confira os dados. ':window._importRenderWarning?'⚠️ Os dados foram salvos, mas houve um aviso ao atualizar a tela. Recarregue a página para conferir. ':'';
+ if($('resultadoImport'))$('resultadoImport').innerHTML='<div class="alert safe">✅ <b>Importação concluída!</b> '+ns+' campo(s) novo(s) do perfil e '+hist+' registro(s) novo(s) foram salvos. '+(ig?ig+' campo(s) já preenchido(s) foram preservados. ':'')+aviso+'</div>';
+}
+window.importarNormalizado=importarNormalizado;
+}

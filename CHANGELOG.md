@@ -1,3 +1,12 @@
+## V7.04 — Painel visível, relatório com dados certos, adesão aos remédios e importação que salva
+- 📊 “Meu painel de saúde” virou uma página de verdade (antes ficava escondido: o app oculta toda seção que não está aberta), com botão no Início e nos menus.
+- 🧪 Painel e tendências: açúcar lido do campo correto (glic), dor vinda dos sintomas e gráfico de pressão (máxima).
+- 🧾 Relatório evolutivo e “Copiar para IA”: pressão 12/8 sai como 120/80 mmHg (antes virava “128”), sintomas com local/intensidade, consultas com especialidade/médico/orientação e seção “Antes × agora” dos últimos 90 dias.
+- 💊 “Remédios: como está indo”: adesão por remédio nos últimos 7 dias, dias em verde/vermelho, dose de hoje pendente e dias sem registro.
+- 🐞 Importação: a função que grava os dados tinha sido apagada na V5.97 (mostrava “concluída” sem salvar). Restaurada, preservando o que já estava preenchido.
+- 🐞 Revisão da importação: não perde mais os remédios, a especialidade/motivo das consultas nem os dados pessoais.
+- 🔄 Versão e cache atualizados para V7.04.
+
 ## V7.03 — Campos preenchidos omitidos sem perda de dados
 - 🧠 Os modos padrão e NotebookLM omitem campos já preenchidos no perfil e removem linhas duplicadas do resumo do perfil.
 - 📓 O modo NotebookLM continua respeitando o limite de 3.849 caracteres; o modo padrão permanece completo até seu limite de segurança.

@@ -18,6 +18,7 @@ function ui(k,v){try{if(v===undefined)return localStorage.getItem('msaFacil_'+k)
 
 /* ---------- nomes, explicações e palavras simples ---------- */
 var PAG={
+ msa87Panel:['📊','Meu painel de saúde','Como sua saúde está evoluindo: peso, pressão, açúcar, dor, remédios em dia e o relatório para a consulta.'],
  home:['🏠','Início','Resumo da sua saúde e atalhos para o que você mais usa.'],
  dor:['🤒','Como estou me sentindo','Anote uma dor ou sintoma: onde é, quanto dói e desde quando.'],
  meds:['💊','Meus remédios','Remédios e vitaminas que você toma, com dose e horário.'],
