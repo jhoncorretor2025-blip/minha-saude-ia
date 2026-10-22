@@ -1,3 +1,7 @@
+## V6.91 — Correção do botão Minhas doenças na Linha do Tempo
+- 🩺 O atalho “Minhas doenças” agora fica em uma faixa própria, fora da área de filtros que é recriada pelo aplicativo.
+- 🔄 Atualização dos parâmetros de cache, versão e service worker para carregar a correção publicada.
+
 ## V6.71 — Cartão do perfil no topo, arrumado
 - 👤 O cartão do perfil (nome, idade, peso, altura, tipo sanguíneo) fica logo abaixo do cabeçalho, como o primeiro do Início.
 - 🐞 No celular o nome ficava com largura zero e os botões “Editar” e “Ver carteirinha” por cima dos dados: agora são foto + dados lado a lado e os botões numa linha embaixo.
