@@ -1,4 +1,4 @@
-/* Minha Saúde IA V6.90 — atalho de doenças e condições na linha do tempo. */
+/* Minha Saúde IA V6.91 — atalho de doenças e condições na linha do tempo. */
 (function(){
 'use strict';
 const $=(s,r=document)=>r.querySelector(s);
@@ -22,7 +22,7 @@ function render(){
  const filters=$('#timelineFilters');if(!filters)return;
  const btn=document.createElement('button');btn.type='button';btn.id='msa90DiseasesButton';btn.className='btn secondary';btn.textContent='🩺 Minhas doenças';
  const panel=document.createElement('section');panel.id='msa90DiseasesPanel';panel.className='card';panel.hidden=true;panel.style.cssText='margin-top:12px;border:1px solid #c7d2fe;background:var(--card,#fff);border-radius:16px;padding:15px';
- filters.appendChild(btn);filters.insertAdjacentElement('afterend',panel);
+ const actions=document.createElement('div');actions.id='msa90DiseasesActions';actions.className='row';actions.style.cssText='margin-top:8px;gap:7px;flex-wrap:wrap';actions.appendChild(btn);filters.insertAdjacentElement('afterend',actions);actions.insertAdjacentElement('afterend',panel);
  function draw(){
   const items=conditions(),name=profile().nome||'perfil atual';
   panel.innerHTML='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><h3 style="margin:0 0 5px">🩺 Minhas doenças e condições</h3><p style="margin:0;color:var(--muted,#64748b);font-size:13px">Informações cadastradas em '+esc(name)+'. Confira se está no perfil correto.</p></div><button type="button" id="msa90Close" class="btn secondary">Fechar</button></div>'+
