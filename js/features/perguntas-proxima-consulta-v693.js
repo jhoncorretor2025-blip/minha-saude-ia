@@ -50,6 +50,7 @@ function renderItems(root){
 function mount(panel){
  if(!panel||panel.hidden)return;
  let root=$('#msa93QuestionPanel',panel);
+ if(root)return;
  if(!root){
   root=document.createElement('section');root.id='msa93QuestionPanel';root.setAttribute('aria-labelledby','msa93QuestionsTitle');
   root.innerHTML='<h4 id="msa93QuestionsTitle">🗒️ Dúvidas para a próxima consulta</h4><p class="msa93-question-intro">Anote perguntas quando elas surgirem durante a semana. Elas ficam salvas no perfil de saúde selecionado e podem ser marcadas depois da consulta.</p><form id="msa93QuestionForm"><label for="msa93QuestionInput">Sua dúvida</label><textarea id="msa93QuestionInput" name="question" maxlength="700" placeholder="Ex.: preciso repetir o exame? Esse sintoma pode ter relação com meu tratamento?" required></textarea><div class="msa93-question-actions"><button type="submit" class="btn green">➕ Guardar pergunta</button><button type="button" class="btn secondary" id="msa93CopyQuestions">📋 Copiar pendentes</button></div></form><div class="msa93-question-suggestions" aria-label="Sugestões de perguntas">'+suggestions.map((s,i)=>'<button type="button" data-q-suggest="'+i+'">'+['🩺 Diagnóstico','😣 Sintomas','💊 Medicamentos','🧪 Exames','🚨 Sinais de alerta','📅 Retorno'][i]+'</button>').join('')+'</div><div class="msa93-question-count"></div><div class="msa93-question-list-host"></div><p class="msa93-question-status" role="status" aria-live="polite"></p>';
@@ -79,8 +80,8 @@ function mount(panel){
     else fallbackCopy(textOut,status);
    }
   });
+  renderItems(root);
  }
- renderItems(root);
 }
 function fallbackCopy(text,status){
  const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();
