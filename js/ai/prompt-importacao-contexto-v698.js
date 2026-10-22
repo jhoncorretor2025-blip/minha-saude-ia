@@ -1,4 +1,4 @@
-/* Minha Saúde IA V7.00 — prompt específico para NotebookLM com limite de 3.849 caracteres. */
+/* Minha Saúde IA V7.02 — prompt inteligente que omite campos já preenchidos. */
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
@@ -37,7 +37,7 @@ function collectConditions(){
 function collectContext(){
  const p=getProfile();let summary='';
  try{if(typeof window.healthText==='function')summary=window.healthText();else if(typeof healthText==='function')summary=healthText()}catch(e){console.warn('[Prompt IA] Não foi possível montar o resumo completo:',e)}
- return {name:p.nome||'perfil selecionado',conditions:collectConditions(),important:String(p.info||p.informacoesImportantes||p.informacoes||p.historicoClinico||'').trim(),summary:String(summary||'').trim()};
+ return prepararContextoCampos({profile:p,name:p.nome||'perfil selecionado',conditions:collectConditions(),important:String(p.info||p.informacoesImportantes||p.informacoes||p.historicoClinico||'').trim(),summary:String(summary||'').trim()});
 }
 const MAX_PROMPT_CHARS=8000;
 const FICHA_FIELDS=[
@@ -53,13 +53,129 @@ const FICHA_FIELDS=[
 'LOCAL_SINTOMA','DATA_INICIO_SINTOMA','INTENSIDADE','OUTROS_SINTOMAS','CONSULTAS','EXAMES','SINAIS_VITAIS',
 'VACINAS','HISTORICO_FAMILIAR','LEMBRETES','DOCUMENTOS','INFORMACOES_IMPORTANTES'
 ];
-function compactTemplate(){
+const PROFILE_FIELD_MAP={
+ 'NOME':['nome'],'DATA_NASCIMENTO':['nasc','nascimento'],'IDADE':['idade'],'SEXO':['sexo'],
+ 'TIPO_SANGUINEO':['sangue','tipoSanguineo'],'ALTURA':['altura'],'PESO':['peso'],
+ 'OBJETIVO_CORPORAL':['objetivoCorporal'],'ACADEMIA':['academia'],'FREQUENCIA_ACADEMIA':['academiaFreq'],
+ 'ATIVIDADE_FISICA':['atividadeFisica'],'TRABALHO_TIPO':['trabalhoTipo'],'HORAS_SENTADO':['horasSentado'],
+ 'HORAS_EM_PE':['horasPe'],'AGUA_POR_DIA':['aguaDia'],'FREQUENCIA_URINARIA':['urinaDia'],
+ 'FREQUENCIA_EVACUACAO':['evacuacaoDia'],'EXPOSICAO_CALOR_SUOR':['calorSuor'],'ALIMENTACAO':['alimentacao'],
+ 'ALERGIAS':['alerg','alergias'],'CIRURGIAS_INTERNACOES':['circ'],'CONTATO_EMERGENCIA':['emerg'],
+ 'TELEFONE_EMERGENCIA':['tel'],'ULTIMA_MENSTRUACAO':['menstruacao'],'CICLO_MENSTRUAL':['ciclo'],
+ 'DURACAO_MENSTRUACAO':['duracaoMenstr'],'FREQUENCIA_SEXUAL_MIN':['sexoFreqMin','sexoFreq'],
+ 'FREQUENCIA_SEXUAL_MAX':['sexoFreqMax'],'MASTURBACAO_POR_DIA':['masturbacaoDia'],
+ 'USO_PRESERVATIVO':['camisinha'],'JA_ENGRAVIDOU':['engravidou'],'JA_FOI_MAE':['mae'],
+ 'NUMERO_GESTACOES':['gestacoes'],'HISTORICO_REPRODUTIVO':['reproObs'],
+ 'USA_ANTICONCEPCIONAL':['usaAnticoncepcional'],'METODO_ANTICONCEPCIONAL':['anticoncepcionalMetodo'],
+ 'NOME_ANTICONCEPCIONAL':['anticoncepcionalNome'],'HORARIO_ANTICONCEPCIONAL':['anticoncepcionalHora'],
+ 'INICIO_ANTICONCEPCIONAL':['anticoncepcionalInicio'],'REGIME_ANTICONCEPCIONAL':['anticoncepcionalRegime'],
+ 'TIPO_MINIPILULA':['minipilulaTipo'],'ULTIMO_PREVENTIVO_COLO':['prevColo'],'ULTIMA_MAMOGRAFIA':['mamografia'],
+ 'ULTIMO_TESTE_IST':['ist'],'VACINA_HPV':['hpv'],'PROXIMO_PREVENTIVO':['prevProx'],
+ 'OBSERVACOES_PREVENCAO':['prevObs'],'FREQUENCIA_DORCELAX':['dorcelaxFreq'],
+ 'FREQUENCIA_PARACETAMOL':['paracetamolFreq'],'OUTROS_REMEDIOS_DOR':['outrosDor'],
+ 'JA_TEVE_CATAPORA':['catapora'],'QUANDO_CATAPORA':['cataporaQuando'],'INFORMACOES_IMPORTANTES':['info']
+};
+function isKnownValue(value){
+ if(Array.isArray(value))return value.length>0;
+ if(value&&typeof value==='object')return Object.keys(value).length>0;
+ if(typeof value==='boolean')return value;
+ return !isEmpty(value);
+}
+function calculateAgeFromBirthdate(value){
+ if(!value)return '';
+ const raw=String(value).trim();let d;
+ const iso=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/),br=raw.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+ if(iso)d=new Date(Number(iso[1]),Number(iso[2])-1,Number(iso[3]));
+ else if(br)d=new Date(Number(br[3]),Number(br[2])-1,Number(br[1]));
+ else d=new Date(raw);
+ if(!d||Number.isNaN(d.getTime()))return '';
+ const now=new Date();let age=now.getFullYear()-d.getFullYear();
+ if(now.getMonth()<d.getMonth()||(now.getMonth()===d.getMonth()&&now.getDate()<d.getDate()))age--;
+ return age>=0&&age<130?String(age):'';
+}
+function matchingFamilyEntries(family,needle){
+ return family.some(x=>norm(x&&x.parente||'').includes(needle)&&isKnownValue(x&&(x.info||x.cond||x.condicao||x.diagnostico)));
+}
+function calculateFilledFields(ctx){
+ const p=ctx.profile||{},filled=new Set();
+ const mark=(field,...values)=>{if(values.some(isKnownValue))filled.add(field)};
+ Object.keys(PROFILE_FIELD_MAP).forEach(field=>mark(field,...PROFILE_FIELD_MAP[field].map(k=>p[k])));
+ if(isKnownValue(p.idade)||calculateAgeFromBirthdate(p.nasc))filled.add('IDADE');
+ const conditionRecords=[...read('msa2_condicoes'),...read('msa2_historico_medico'),...read('msa2_historico_condicoes'),...read('msa2_doencas')];
+ mark('DOENCAS',p.cond,p.condicoes,p.doencas,p.diagnosticos,ctx.conditions,conditionRecords);
+ const family=read('msa2_familia');
+ mark('DOENCAS_PAI',p.doencasPai,p.doencas_pai,p.historicoDoencasPai,matchingFamilyEntries(family,'pai')?'informado':'');
+ mark('DOENCAS_MAE',p.doencasMae,p.doencas_mae,p.historicoDoencasMae,matchingFamilyEntries(family,'mae')?'informado':'',matchingFamilyEntries(family,'mãe')?'informado':'');
+ if(family.length)filled.add('HISTORICO_FAMILIAR');
+ const meds=read('msa2_meds'),supplements=read('msa2_suplementos'),symptoms=read('msa2_dores');
+ mark('MEDICAMENTOS',p.medicamentos,meds);
+ mark('SUPLEMENTOS',p.supl,p.suplementos,supplements);
+ mark('CONSULTAS',read('msa2_consultas'));
+ mark('EXAMES',read('msa2_exames'));
+ mark('SINAIS_VITAIS',read('msa2_vitais'));
+ mark('VACINAS',read('msa2_vacinas'));
+ mark('LEMBRETES',read('msa2_lembretes'));
+ mark('DOCUMENTOS',read('msa2_documentos'));
+ const last=symptoms.length?symptoms[symptoms.length-1]:{};
+ mark('ULTIMO_SINTOMA',p.ultimoSintoma,last.sint,last.sintoma,last.outros_sintomas);
+ mark('LOCAL_SINTOMA',p.localSintoma,last.local,last.onde,last.regiao);
+ mark('DATA_INICIO_SINTOMA',p.dataInicioSintoma,last.data,last.inicio,last.quando);
+ mark('INTENSIDADE',p.intensidade,last.int,last.intensidade,last.intensidade_0_10);
+ mark('OUTROS_SINTOMAS',p.outrosSintomas,last.outros_sintomas,last.obs,last.observacoes);
+ mark('ALIMENTACAO',p.alimentacao,read('msa2_nutri'));
+ mark('CONTATO_EMERGENCIA',p.emerg,read('msa2_emergencia'));
+ mark('TELEFONE_EMERGENCIA',p.tel,read('msa2_emergencia'));
+ mark('ALERGIAS',p.alerg,p.alergias,read('msa2_alergias'));
+ mark('PESO',p.peso,read('msa2_medidas_corporais').map(x=>x&&x.peso));
+ if(isKnownValue(p.endereco||p.endereço||p.address))filled.add('ENDERECO');
+ return filled;
+}
+const SUMMARY_PROFILE_LABELS={
+ 'nome':'NOME','nascimento':'DATA_NASCIMENTO','idade':'IDADE','sexo':'SEXO',
+ 'tipo sanguineo':'TIPO_SANGUINEO','altura':'ALTURA','peso':'PESO','objetivo corporal':'OBJETIVO_CORPORAL',
+ 'academia':'ACADEMIA','frequencia academia':'FREQUENCIA_ACADEMIA','atividade fisica':'ATIVIDADE_FISICA',
+ 'trabalho':'TRABALHO_TIPO','horas sentado':'HORAS_SENTADO','horas em pe':'HORAS_EM_PE',
+ 'agua por dia':'AGUA_POR_DIA','frequencia urinaria (opcional)':'FREQUENCIA_URINARIA',
+ 'frequencia de evacuacao (opcional)':'FREQUENCIA_EVACUACAO','exposicao a calor/suor':'EXPOSICAO_CALOR_SUOR',
+ 'alimentacao':'ALIMENTACAO','alergias':'ALERGIAS','condicoes':'DOENCAS',
+ 'cirurgias/internacoes':'CIRURGIAS_INTERNACOES','informacoes importantes':'INFORMACOES_IMPORTANTES',
+ 'uso de dorcelax':'FREQUENCIA_DORCELAX','uso de paracetamol':'FREQUENCIA_PARACETAMOL',
+ 'outros remedios para dor/febre':'OUTROS_REMEDIOS_DOR','ja teve catapora':'JA_TEVE_CATAPORA','quando teve catapora':'QUANDO_CATAPORA'
+};
+function stripPrefilledProfileLines(summary,filled){
+ let section='',out=[];
+ String(summary||'').split('\n').forEach(line=>{
+  const t=line.trim();
+  if(/^\[[A-ZÁÉÍÓÚÂÊÔÃÕÇ_ ]+\]$/.test(t)){section=norm(t.slice(1,-1));out.push(line);return}
+  if(section==='perfil'){
+   const colon=t.indexOf(':');
+   if(colon>0){
+    const label=norm(t.slice(0,colon)),field=SUMMARY_PROFILE_LABELS[label];
+    if(field&&filled.has(field))return;
+   }
+  }
+  out.push(line);
+ });
+ return out.join('\n').replace(/\n{3,}/g,'\n\n').trim();
+}
+function prepararContextoCampos(ctx){
+ const filled=calculateFilledFields(ctx);
+ ctx.filledFields=filled;
+ ctx.alreadyFilled=FICHA_FIELDS.filter(k=>filled.has(k));
+ ctx.pendingFields=FICHA_FIELDS.filter(k=>!filled.has(k));
+ ctx.summary=stripPrefilledProfileLines(ctx.summary,filled);
+ return ctx;
+}
+
+function compactTemplate(fields){
+ fields=Array.isArray(fields)?fields:FICHA_FIELDS;
  return [
  'Prepare uma ficha organizada para importar no aplicativo Minha Saúde IA.',
  'Responda em português, SEM fazer perguntas. Use somente dados conhecidos nas fontes/memória e no contexto local abaixo. Nunca invente nem estime dados; campo ausente = "Não informado". Não faça diagnóstico, não indique tratamento e não misture informações de familiares.',
  'CONDIÇÕES: preserve TODOS os nomes e detalhes. Em DOENCAS liste todas as condições da pessoa; em DOENCAS_PAI e DOENCAS_MAE registre somente antecedentes do respectivo pai/mãe. Diferencie doença diagnosticada, sintoma e suspeita quando isso estiver claro na fonte.',
+ 'O formato de saída abaixo contém SOMENTE campos ainda não preenchidos no aplicativo. Campos já preenchidos foram omitidos: não pergunte sobre eles e não os devolva novamente. Campos omitidos devem permanecer exatamente como já estão no perfil.',
  'FORMATO OBRIGATÓRIO: devolva somente os campos abaixo, na mesma ordem, um por linha, exatamente como [CHAVE]: valor. Para listas com vários registros, separe itens por ponto e vírgula. Não acrescente explicações, Markdown ou texto fora dos campos.',
- ...FICHA_FIELDS.map(k=>'['+k+']: Não informado'),
+ ...(fields.length?fields.map(k=>'['+k+']: Não informado'):['NENHUM_CAMPO_PENDENTE: Todos os campos estruturados já estão preenchidos; não peça nem repita informações existentes.']),
  'REGRAS: preserve todos os dados relevantes disponíveis. Inclua datas, dose e frequência de medicamentos quando conhecidas; em exames e sinais vitais mantenha data e resultado/valor. Para vacinas informe nome, data e dose quando conhecida. No histórico familiar identifique o parentesco. Preserve informações corporais, hábitos e saúde reprodutiva somente quando disponíveis. Se houver divergência, registre-a em INFORMACOES_IMPORTANTES. Não crie exames, documentos ou medicamentos inexistentes.'
  ].join('\n');
 }
@@ -78,7 +194,8 @@ function makePriorityContext(ctx){
 function generate(){
  const field=$('promptIA');if(!field)return '';
  const ctx=collectContext();
- const template=compactTemplate();
+ if(!ctx.pendingFields.length){const message='Todos os campos estruturados deste modelo já parecem preenchidos. Não há campos pendentes para gerar; confira seu perfil antes de importar novas informações.';const status=ensureStatus();if(status)status.textContent=message;const guide=$('iaGuidePrompt');if(guide)guide.value=message;updatePromptCount('', 'normal', message);return '';}
+ const template=compactTemplate(ctx.pendingFields);
  const priority=makePriorityContext(ctx);
  const summaryHeader='\n\nRESUMO COMPLEMENTAR DOS REGISTROS LOCAIS (use apenas o que couber; as condições acima têm prioridade):\n';
  const separator='\n\n';
@@ -153,6 +270,7 @@ function notebookTemplate(fields){
  'Crie uma ficha para importar no Minha Saúde IA, usando as fontes deste notebook e o contexto local abaixo.',
  'Responda em português, sem perguntas. Use apenas informações sustentadas nas fontes/contexto; não invente, diagnostique ou prescreva. Não misture dados de familiares. Dados ausentes = "Não informado".',
  'Preserve TODAS as doenças/condições e seus detalhes. Separe condições da pessoa, do pai e da mãe. Mantenha sintomas distintos de diagnósticos.',
+ 'O formato abaixo contém SOMENTE campos ainda não preenchidos no aplicativo. Não solicite nem devolva os campos omitidos; mantenha os dados já preenchidos sem alterações.',
  'SAÍDA: somente os campos listados, exatamente no formato [CHAVE]: valor, um por linha, na ordem apresentada. Sem Markdown ou comentários. Para vários registros, separe por ponto e vírgula.',
  ...fields.map(k=>'['+k+']:'),
  'Mantenha datas, nomes de medicamentos, doses, frequências, resultados e observações quando existirem. Não invente exames, documentos ou tratamentos.'
@@ -182,7 +300,7 @@ function cutAtWord(text,max){
 function fitNotebookPrompt(ctx){
  let important=String(ctx.important||'').trim();
  let summary=String(ctx.summary||'').trim();
- let fields=FICHA_FIELDS.slice();
+ let fields=(ctx.pendingFields||FICHA_FIELDS).slice();
  let prompt=notebookPrompt(ctx,important,summary,fields);
  if(prompt.length<=NOTEBOOKLM_MAX_CHARS)return {prompt,fieldsMode:'completo',importantClipped:false,summaryClipped:false};
  // Primeiro reduz o resumo dos registros, nunca a lista estruturada de condições.
@@ -209,7 +327,7 @@ function fitNotebookPrompt(ctx){
   if(prompt.length<=NOTEBOOKLM_MAX_CHARS)return {prompt,fieldsMode:'completo',importantClipped:true,summaryClipped:summary.length>0};
  }
  // Em perfis excepcionalmente longos, preserva doenças e usa apenas os campos essenciais.
- fields=NOTEBOOKLM_ESSENTIAL_FIELDS.slice();
+ fields=NOTEBOOKLM_ESSENTIAL_FIELDS.filter(k=>fields.includes(k));
  const minimalBase=notebookPrompt(ctx,'','',fields);
  if(minimalBase.length<=NOTEBOOKLM_MAX_CHARS){
   let lo=0,hi=important.length,best='';
@@ -226,6 +344,7 @@ function fitNotebookPrompt(ctx){
 }
 function generateNotebookLM(){
  const ctx=collectContext();
+ if(!ctx.pendingFields.length){const message='Todos os campos estruturados deste modelo já parecem preenchidos. Não há campos pendentes para enviar ao NotebookLM; confira seu perfil antes de importar novas informações.';const s=ensureStatus();if(s)s.textContent=message;if($('copiado'))$('copiado').textContent=message;updatePromptCount('', 'notebook', message);return '';}
  const result=fitNotebookPrompt(ctx);
  const statusText=result.error||'';
  if(!result.prompt){
