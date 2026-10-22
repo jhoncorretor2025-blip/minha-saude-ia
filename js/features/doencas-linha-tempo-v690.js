@@ -21,7 +21,7 @@ function render(){
  const section=$('#timeline');if(!section||$('#msa90DiseasesButton'))return;
  const filters=$('#timelineFilters');if(!filters)return;
  const btn=document.createElement('button');btn.type='button';btn.id='msa90DiseasesButton';btn.className='btn secondary';btn.textContent='🩺 Minhas doenças';
- const panel=document.createElement('section');panel.id='msa90DiseasesPanel';panel.className='card';panel.hidden=true;panel.style.cssText='margin-top:12px;border:1px solid #c7d2fe;background:var(--card,#fff);border-radius:16px;padding:15px';
+ const panel=document.createElement('div');panel.id='msa90DiseasesPanel';panel.className='card';panel.hidden=true;panel.style.cssText='margin-top:12px;border:1px solid #c7d2fe;background:var(--card,#fff);border-radius:16px;padding:15px';
  const actions=document.createElement('div');actions.id='msa90DiseasesActions';actions.className='row';actions.style.cssText='margin-top:8px;gap:7px;flex-wrap:wrap';actions.appendChild(btn);filters.insertAdjacentElement('afterend',actions);actions.insertAdjacentElement('afterend',panel);
  function draw(){
   const items=conditions(),name=profile().nome||'perfil atual';
