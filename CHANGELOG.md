@@ -1,3 +1,10 @@
+## V6.95 — Prompt de perguntas sobre saúde com condições completas
+- 🩺 O prompt de “Perguntas sobre minha saúde” agora inclui uma lista consolidada das condições cadastradas no perfil e das condições relatadas explicitamente pelo usuário.
+- ✅ Inclui Artrite psoriásica, Gastrite, Bruxismo, Bico de papagaio no tórax, Dor ciática, Labirintite (identificada aos 22 anos), Rinite e Sinusite.
+- 📌 A lista de condições aparece no início do prompt para não ser perdida quando o link do ChatGPT precisar encurtar o restante do resumo.
+- 🔒 As condições específicas do usuário só entram no fluxo do perfil próprio; não são acrescentadas ao prompt de familiares.
+- 🔄 Versão, cache e metadados sincronizados em V6.95.
+
 ## V6.94 — Contador e hashtags de doenças
 - 🔢 O painel Minhas doenças passa a mostrar a quantidade de condições cadastradas no perfil ativo.
 - #️⃣ Cada doença recebe uma hashtag curta; tocar na hashtag filtra a lista para essa condição e “#Todas” restaura a lista completa.
