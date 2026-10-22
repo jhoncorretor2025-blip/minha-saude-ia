@@ -480,7 +480,7 @@ window.confirmarImportacaoPendente=function(){
    return;
   }
  }
- const chosen=preserveOmittedImportData(JSON.parse(JSON.stringify(revisado)));
+ const chosen=JSON.parse(JSON.stringify(revisado));
  (plan?.records||[]).forEach(x=>{
   const el=document.querySelector('input[name="ic_'+x.id+'"]:checked'),choice=el?.value||'skip';
   if(choice==='skip'&&Array.isArray(chosen[x.prop]))chosen[x.prop]=chosen[x.prop].filter((_,i)=>i!==x.index);
@@ -498,6 +498,7 @@ window.confirmarImportacaoPendente=function(){
    return;
   }
  }
+ preserveOmittedImportData(chosen);
  const modal=byId('importReviewOverlay');if(modal)modal.style.display='none';
  try{
   if(typeof window.importarNormalizado==='function')window.importarNormalizado(chosen);
