@@ -1,4 +1,4 @@
-/* Minha Saúde IA V7.00 — prompt específico para NotebookLM com limite de 3.700 caracteres. */
+/* Minha Saúde IA V7.00 — prompt específico para NotebookLM com limite de 3.600 caracteres. */
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
@@ -140,7 +140,7 @@ function openAI(provider){
  const modal=$('iaGuide');if(modal)modal.style.display='none';
 }
 
-const NOTEBOOKLM_MAX_CHARS=3700;
+const NOTEBOOKLM_MAX_CHARS=3600;
 const NOTEBOOKLM_ESSENTIAL_FIELDS=[
 'NOME','DATA_NASCIMENTO','IDADE','SEXO','ALTURA','PESO','DOENCAS','DOENCAS_PAI','DOENCAS_MAE',
 'ALERGIAS','CIRURGIAS_INTERNACOES','MEDICAMENTOS','SUPLEMENTOS','ULTIMO_SINTOMA','LOCAL_SINTOMA',
@@ -221,7 +221,7 @@ function fitNotebookPrompt(ctx){
   if(prompt.length<=NOTEBOOKLM_MAX_CHARS)return {prompt,fieldsMode:'essencial',importantClipped:true,summaryClipped:summary.length>0};
  }
  // Não corta silenciosamente a lista de doenças. Explica o bloqueio se a lista sozinha não couber.
- return {prompt:'',fieldsMode:'erro',importantClipped:false,summaryClipped:true,error:'A lista de doenças/condições é longa demais para caber no limite de 3.700 caracteres junto com a ficha. Não copiei um prompt incompleto. Revise duplicidades no perfil ou use o prompt completo em outra IA.'};
+ return {prompt:'',fieldsMode:'erro',importantClipped:false,summaryClipped:true,error:'A lista de doenças/condições é longa demais para caber no limite de 3.600 caracteres junto com a ficha. Não copiei um prompt incompleto. Revise duplicidades no perfil ou use o prompt completo em outra IA.'};
 }
 function generateNotebookLM(){
  const ctx=collectContext();
@@ -256,12 +256,12 @@ function copyNotebookPrompt(){
  else if(status)status.textContent='⚠️ Prompt NotebookLM gerado. Selecione o texto e copie manualmente.';
 }
 function buildNotebookLMButton(){
- const cta=document.querySelector('.ai-cta');if(!cta||$('msaNotebookLMButton'))return;
+ const cta=document.querySelector('.ai-cta');if(!cta||$('msaNotebookLMButton'))return;cta.style.flexWrap='wrap';
  const button=document.createElement('button');
  button.id='msaNotebookLMButton';button.type='button';button.className='btn';
  button.textContent='📓 Gerar e copiar prompt para NotebookLM';
- button.title='Gera um prompt com limite rígido de 3.700 caracteres e prioriza as condições de saúde.';
- button.style.cssText='margin-top:8px;background:#e8f4ff;color:#174ea6;border:1px solid #b6d7ff;font-weight:850';
+ button.title='Gera um prompt com limite rígido de 3.600 caracteres e prioriza as condições de saúde.';
+ button.style.cssText='margin-top:8px;background:#e8f4ff;color:#174ea6;border:1px solid #b6d7ff;font-weight:850;flex:1 1 240px;min-height:44px';
  button.addEventListener('click',copyNotebookPrompt);
  cta.appendChild(button);
 }
