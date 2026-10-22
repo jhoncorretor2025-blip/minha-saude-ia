@@ -1,4 +1,4 @@
-/* Minha Saúde IA V6.87 — painel, evolução, rotina e backup local. */
+/* Minha Saúde IA V6.89 — painel, evolução, rotina e backup local. */
 (function(){
 'use strict';
 const $=(s,r=document)=>r.querySelector(s);
@@ -47,7 +47,7 @@ function status(s){const e=$('#msa87Status');if(e)e.textContent=s}
 function exportBackup(){
  try{
   const keys=['msa2_ciclo_menstrual','msa2_dores','msa2_consultas','msa2_meds','msa2_exames','msa2_perfil','msa2_vitais','msa2_lembretes','msa2_vacinas','msa2_familia','msa2_documentos','msa2_nutri','msa2_suplementos','msa2_reacoes_alimentares','msa2_hidratacao','msa2_sono','msa2_bemestar','msa2_gatilhos','msa2_medicamentos_rotina','msa2_medicamentos_tomados','msa2_anticoncepcional','msa2_medidas_corporais','msa2_medidas','msa2_humor','msa2_metas_pessoais','msa2_historico_alteracoes','msa2_preferencias','msa2_historico_medico','msa2_alergias','msa2_condicoes','msa2_emergencia','msa2_atividade_fisica','msa2_alimentacao','msa2_peso','msa2_cintura','msa2_pressao','msa2_glicemia','msa2_documentos_medicos','msa2_alertas_saude','msa2_familiares','msa2_familiar_selecionado'];
-  const data={app:'Minha Saúde IA',format:1,version:window.MSA_VERSION||'V6.87',createdAt:new Date().toISOString(),data:{}};
+  const data={app:'Minha Saúde IA',format:1,version:window.MSA_VERSION||'V6.89',createdAt:new Date().toISOString(),data:{}};
   keys.forEach(k=>{const raw=(k==='msa2_familiares'||k==='msa2_familiar_selecionado')?store()?.rawGlobal?.(k):store()?.raw?.(k);if(raw!==null&&raw!==undefined){try{data.data[k]=JSON.parse(raw)}catch(e){data.data[k]=raw}}});
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download='minha-saude-ia-backup-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);status('Backup exportado. Guarde o arquivo em local seguro; ele contém dados pessoais de saúde.');
