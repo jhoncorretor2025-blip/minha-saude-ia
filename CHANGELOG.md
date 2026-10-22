@@ -1,6 +1,13 @@
+## V6.96 — Contexto completo e prioritário no prompt de saúde
+- 🩺 O prompt consolida condições de saúde dos campos do perfil e dos registros médicos disponíveis.
+- 📌 As condições e o campo “Informações importantes” são colocados no início da pergunta enviada à IA, reduzindo o risco de serem cortados quando o link precisa ser encurtado.
+- 🔒 As condições são lidas dinamicamente do perfil local; dados pessoais de saúde não ficam fixos no código da página.
+- 🛡️ Regras do prompt instruem a IA a considerar todas as condições sem tratar relatos como novos diagnósticos nem presumir causalidade.
+- 🔄 Versão, cache e metadados sincronizados em V6.96.
+
 ## V6.95 — Prompt de perguntas sobre saúde com condições completas
 - 🩺 O prompt de “Perguntas sobre minha saúde” agora inclui uma lista consolidada das condições cadastradas no perfil e das condições relatadas explicitamente pelo usuário.
-- ✅ Inclui Artrite psoriásica, Gastrite, Bruxismo, Bico de papagaio no tórax, Dor ciática, Labirintite (identificada aos 22 anos), Rinite e Sinusite.
+- ✅ Consolida condições cadastradas e informações importantes do perfil, sem embutir dados pessoais de saúde no código público.
 - 📌 A lista de condições aparece no início do prompt para não ser perdida quando o link do ChatGPT precisar encurtar o restante do resumo.
 - 🔒 As condições específicas do usuário só entram no fluxo do perfil próprio; não são acrescentadas ao prompt de familiares.
 - 🔄 Versão, cache e metadados sincronizados em V6.95.
