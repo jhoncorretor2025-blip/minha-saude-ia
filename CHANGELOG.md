@@ -1,3 +1,9 @@
+## V6.94 — Contador e hashtags de doenças
+- 🔢 O painel Minhas doenças passa a mostrar a quantidade de condições cadastradas no perfil ativo.
+- #️⃣ Cada doença recebe uma hashtag curta; tocar na hashtag filtra a lista para essa condição e “#Todas” restaura a lista completa.
+- 📱 Hashtags e contador responsivos para desktop e celular, com contraste adaptado ao tema escuro.
+- 🔄 Versão e cache sincronizados em V6.94.
+
 ## V6.93 — Perguntas para a próxima consulta
 - 🗒️ Nova área dentro de Minhas doenças para anotar dúvidas durante a semana e organizar perguntas para a próxima consulta.
 - 💡 Sugestões rápidas por assunto: diagnóstico, sintomas, medicamentos, exames, sinais de alerta e retorno.
