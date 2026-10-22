@@ -1,4 +1,4 @@
-/* Minha Saúde IA V6.99 — prompt compacto para NotebookLM e outras IAs. */
+/* Minha Saúde IA V7.00 — prompt específico para NotebookLM com limite de 3.700 caracteres. */
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
@@ -139,9 +139,136 @@ function openAI(provider){
  if(!win){const msg='O navegador bloqueou a nova aba. Permita pop-ups e toque novamente.';if(status)status.textContent=msg;if($('copiado'))$('copiado').textContent='⚠️ '+msg}
  const modal=$('iaGuide');if(modal)modal.style.display='none';
 }
+
+const NOTEBOOKLM_MAX_CHARS=3700;
+const NOTEBOOKLM_ESSENTIAL_FIELDS=[
+'NOME','DATA_NASCIMENTO','IDADE','SEXO','ALTURA','PESO','DOENCAS','DOENCAS_PAI','DOENCAS_MAE',
+'ALERGIAS','CIRURGIAS_INTERNACOES','MEDICAMENTOS','SUPLEMENTOS','ULTIMO_SINTOMA','LOCAL_SINTOMA',
+'DATA_INICIO_SINTOMA','INTENSIDADE','OUTROS_SINTOMAS','CONSULTAS','EXAMES','SINAIS_VITAIS','VACINAS',
+'HISTORICO_FAMILIAR','LEMBRETES','AGUA_POR_DIA','ALIMENTACAO','INFORMACOES_IMPORTANTES'
+];
+function notebookTemplate(fields){
+ return [
+ 'Crie uma ficha para importar no Minha Saúde IA, usando as fontes deste notebook e o contexto local abaixo.',
+ 'Responda em português, sem perguntas. Use apenas informações sustentadas nas fontes/contexto; não invente, diagnostique ou prescreva. Não misture dados de familiares. Dados ausentes = "Não informado".',
+ 'Preserve TODAS as doenças/condições e seus detalhes. Separe condições da pessoa, do pai e da mãe. Mantenha sintomas distintos de diagnósticos.',
+ 'SAÍDA: somente os campos listados, exatamente no formato [CHAVE]: valor, um por linha, na ordem apresentada. Sem Markdown ou comentários. Para vários registros, separe por ponto e vírgula.',
+ ...fields.map(k=>'['+k+']:'),
+ 'Mantenha datas, nomes de medicamentos, doses, frequências, resultados e observações quando existirem. Não invente exames, documentos ou tratamentos.'
+ ].join('\n');
+}
+function notebookPrompt(ctx,important,summary,fields){
+ const cond=ctx.conditions.length?ctx.conditions.map(x=>'- '+x).join('\n'):'Não informado nos campos de condições do perfil.';
+ return [
+ '===== CONTEXTO LOCAL — PERFIL ATIVO =====',
+ 'Perfil: '+ctx.name,
+ 'DOENÇAS E CONDIÇÕES CADASTRADAS ('+ctx.conditions.length+'):',
+ cond,
+ 'INFORMAÇÕES IMPORTANTES DO PERFIL:',
+ important||'Não informado.',
+ 'RESUMO COMPLEMENTAR DOS REGISTROS LOCAIS:',
+ summary||'Resumo omitido para respeitar o limite de caracteres.',
+ '===== FIM DO CONTEXTO LOCAL =====',
+ notebookTemplate(fields)
+ ].join('\n\n');
+}
+function cutAtWord(text,max){
+ const s=String(text||'');
+ if(s.length<=max)return s;
+ if(max<=0)return '';
+ return s.slice(0,max).replace(/\s+\S*$/,'').trim();
+}
+function fitNotebookPrompt(ctx){
+ let important=String(ctx.important||'').trim();
+ let summary=String(ctx.summary||'').trim();
+ let fields=FICHA_FIELDS.slice();
+ let prompt=notebookPrompt(ctx,important,summary,fields);
+ if(prompt.length<=NOTEBOOKLM_MAX_CHARS)return {prompt,fieldsMode:'completo',importantClipped:false,summaryClipped:false};
+ // Primeiro reduz o resumo dos registros, nunca a lista estruturada de condições.
+ const noSummary=notebookPrompt(ctx,important,'',fields);
+ if(noSummary.length<=NOTEBOOKLM_MAX_CHARS){
+  let lo=0,hi=summary.length,best='';
+  while(lo<=hi){
+   const mid=Math.floor((lo+hi)/2),candidate=cutAtWord(summary,mid);
+   if(notebookPrompt(ctx,important,candidate,fields).length<=NOTEBOOKLM_MAX_CHARS){best=candidate;lo=mid+1}else hi=mid-1;
+  }
+  prompt=notebookPrompt(ctx,important,best,fields);
+  return {prompt,fieldsMode:'completo',importantClipped:false,summaryClipped:best.length<summary.length};
+ }
+ // Se ainda não couber, reduz as informações complementares; as condições ficam intactas.
+ const noFreeText=notebookPrompt(ctx,'','',fields);
+ if(noFreeText.length<=NOTEBOOKLM_MAX_CHARS){
+  let lo=0,hi=important.length,best='';
+  while(lo<=hi){
+   const mid=Math.floor((lo+hi)/2),candidate=cutAtWord(important,mid);
+   if(notebookPrompt(ctx,candidate,'',fields).length<=NOTEBOOKLM_MAX_CHARS){best=candidate;lo=mid+1}else hi=mid-1;
+  }
+  if(best.length<important.length)best=(best?best+' ':'')+'[informações complementares reduzidas]';
+  prompt=notebookPrompt(ctx,best,'',fields);
+  if(prompt.length<=NOTEBOOKLM_MAX_CHARS)return {prompt,fieldsMode:'completo',importantClipped:true,summaryClipped:summary.length>0};
+ }
+ // Em perfis excepcionalmente longos, preserva doenças e usa apenas os campos essenciais.
+ fields=NOTEBOOKLM_ESSENTIAL_FIELDS.slice();
+ const minimalBase=notebookPrompt(ctx,'','',fields);
+ if(minimalBase.length<=NOTEBOOKLM_MAX_CHARS){
+  let lo=0,hi=important.length,best='';
+  while(lo<=hi){
+   const mid=Math.floor((lo+hi)/2),candidate=cutAtWord(important,mid);
+   if(notebookPrompt(ctx,candidate,'',fields).length<=NOTEBOOKLM_MAX_CHARS){best=candidate;lo=mid+1}else hi=mid-1;
+  }
+  if(best.length<important.length)best=(best?best+' ':'')+'[informações complementares reduzidas]';
+  prompt=notebookPrompt(ctx,best,'',fields);
+  if(prompt.length<=NOTEBOOKLM_MAX_CHARS)return {prompt,fieldsMode:'essencial',importantClipped:true,summaryClipped:summary.length>0};
+ }
+ // Não corta silenciosamente a lista de doenças. Explica o bloqueio se a lista sozinha não couber.
+ return {prompt:'',fieldsMode:'erro',importantClipped:false,summaryClipped:true,error:'A lista de doenças/condições é longa demais para caber no limite de 3.700 caracteres junto com a ficha. Não copiei um prompt incompleto. Revise duplicidades no perfil ou use o prompt completo em outra IA.'};
+}
+function generateNotebookLM(){
+ const ctx=collectContext();
+ const result=fitNotebookPrompt(ctx);
+ const statusText=result.error||'';
+ if(!result.prompt){
+  const s=ensureStatus();if(s)s.textContent='⚠️ '+statusText;
+  if($('copiado'))$('copiado').textContent='⚠️ Prompt não copiado para evitar omitir doenças.';
+  return '';
+ }
+ const field=$('promptIA');if(!field)return '';
+ field.value=result.prompt;
+ const guide=$('iaGuidePrompt');if(guide)guide.value=result.prompt;
+ lastContext=ctx;
+ let message='📓 Prompt NotebookLM: '+result.prompt.length.toLocaleString('pt-BR')+' de '+NOTEBOOKLM_MAX_CHARS.toLocaleString('pt-BR')+' caracteres. '+ctx.conditions.length+' condição(ões) preservadas.';
+ if(result.summaryClipped)message+=' Resumo longo reduzido.';
+ if(result.importantClipped)message+=' Informações complementares reduzidas.';
+ if(result.fieldsMode==='essencial')message+=' Perfil muito extenso: ficha usa campos essenciais para caber no limite.';
+ updateStatus(ctx,message);
+ return result.prompt;
+}
+function copyNotebookPrompt(){
+ const prompt=generateNotebookLM();if(!prompt)return;
+ const status=$('copiado');
+ const done=()=>{if(status)status.textContent='✅ Prompt NotebookLM copiado ('+prompt.length.toLocaleString('pt-BR')+' caracteres). Agora cole no NotebookLM.';updateStatus(lastContext,'📓 Prompt NotebookLM copiado: '+prompt.length.toLocaleString('pt-BR')+' de '+NOTEBOOKLM_MAX_CHARS.toLocaleString('pt-BR')+' caracteres. Revise antes de enviar.')};
+ if(navigator.clipboard&&navigator.clipboard.writeText){
+  navigator.clipboard.writeText(prompt).then(done).catch(()=>{
+   if(copyFallback())done();
+   else{if(status)status.textContent='⚠️ Prompt gerado, mas a cópia automática falhou. O texto está selecionável na caixa.';updateStatus(lastContext,'⚠️ Prompt NotebookLM gerado. Selecione e copie manualmente.')}
+  });
+ }else if(copyFallback())done();
+ else if(status)status.textContent='⚠️ Prompt NotebookLM gerado. Selecione o texto e copie manualmente.';
+}
+function buildNotebookLMButton(){
+ const cta=document.querySelector('.ai-cta');if(!cta||$('msaNotebookLMButton'))return;
+ const button=document.createElement('button');
+ button.id='msaNotebookLMButton';button.type='button';button.className='btn';
+ button.textContent='📓 Gerar e copiar prompt para NotebookLM';
+ button.title='Gera um prompt com limite rígido de 3.700 caracteres e prioriza as condições de saúde.';
+ button.style.cssText='margin-top:8px;background:#e8f4ff;color:#174ea6;border:1px solid #b6d7ff;font-weight:850';
+ button.addEventListener('click',copyNotebookPrompt);
+ cta.appendChild(button);
+}
+
 function buildButton(){
  const cta=document.querySelector('.ai-cta');if(!cta||$('msaGenerateImportPrompt'))return;
- const button=document.createElement('button');button.id='msaGenerateImportPrompt';button.type='button';button.className='btn secondary';button.textContent='🔄 Gerar prompt compacto com meus dados';button.title='Gera um prompt de até 8.000 caracteres com doenças, informações importantes e registros do perfil ativo.';
+ const button=document.createElement('button');button.id='msaGenerateImportPrompt';button.type='button';button.className='btn secondary';button.textContent='🔄 Gerar prompt completo com meus dados';button.title='Gera o prompt completo com doenças, informações importantes e registros do perfil ativo.';
  button.addEventListener('click',function(){generate();const field=$('promptIA');if(field)field.scrollIntoView({behavior:'smooth',block:'center'});updateStatus(lastContext,'✅ Prompt atualizado com '+lastContext.conditions.length+' condição(ões). Revise o texto e toque em "Copiar Prompt Pronto (V3)" para copiar.')});
  cta.appendChild(button);
 }
@@ -178,7 +305,7 @@ function applyDesktopDrawerStyle(){
 }
 function init(){
  const field=$('promptIA');if(field&&!basePrompt)basePrompt=field.value||'';
- applyDesktopDrawerStyle();buildButton();if(field)generate();
+ applyDesktopDrawerStyle();buildButton();buildNotebookLMButton();if(field)generate();
  window.copiarPrompt=copyPrompt;window.copiarPromptIA=copyPrompt;window.copiarEAvancarIA=copyPrompt;
  window.abrirIAGuiaIA=openAI;window.abrirChatGPT=function(){return openAI('chatgpt')};window.abrirGemini=function(){return openAI('gemini')};
  window.abrirPaginaIA=function(){const prompt=generate();const o=$('onboarding');if(o)o.style.display='none';if(typeof window.go==='function')window.go('importar');copyPrompt();setTimeout(()=>$('promptIA')?.scrollIntoView({behavior:'smooth',block:'center'}),100);return prompt};
