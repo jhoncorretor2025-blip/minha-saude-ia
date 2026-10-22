@@ -1,5 +1,5 @@
 ## V7.00 — Botão dedicado para NotebookLM
-- 📓 Adicionado o botão “Gerar e copiar prompt para NotebookLM”, com limite rígido de 3.700 caracteres (abaixo dos 3.849 relatados pelo usuário).
+- 📓 Adicionado o botão “Gerar e copiar prompt para NotebookLM”, com limite rígido de 3.600 caracteres (abaixo dos 3.849 relatados pelo usuário).
 - 🩺 A lista completa de condições cadastradas é priorizada; o sistema reduz primeiro o resumo complementar e depois as informações livres, sem cortar silenciosamente doenças.
 - 📋 Mantém a estrutura de campos reconhecida pelo importador. Em perfis excepcionalmente extensos, usa campos essenciais; se nem assim couber a lista de condições, bloqueia a cópia e explica o motivo.
 - 🔢 Mostra a contagem de caracteres, as condições preservadas e informa quando algum conteúdo complementar foi reduzido.
