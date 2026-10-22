@@ -122,13 +122,13 @@ function montarPrompt(pergunta,detalhe){
  var partes=[];
  var condicoes=pessoa.condicoes||[];
  if(condicoes.length){
-  partes.push('CONDIÇÕES DE SAÚDE CADASTRADAS NO PERFIL:\\n'+condicoes.map(function(c){return '- '+c}).join('\\n'));
+  partes.push('CONDIÇÕES DE SAÚDE CADASTRADAS NO PERFIL:\n'+condicoes.map(function(c){return '- '+c}).join('\n'));
  }
  if(pessoa.informacoesComplementares){
-  partes.push('INFORMAÇÕES IMPORTANTES DO PERFIL (preservadas no texto original; podem conter outras condições de saúde):\\n'+pessoa.informacoesComplementares);
+  partes.push('INFORMAÇÕES IMPORTANTES DO PERFIL (preservadas no texto original; podem conter outras condições de saúde):\n'+pessoa.informacoesComplementares);
  }
- var blocoCondicoes=partes.length?'\\n\\n===== CONTEXTO DE SAÚDE PRIORITÁRIO — NÃO OMITIR =====\\n'+partes.join('\\n\\n')+'\\n\\nInstrução obrigatória: considere explicitamente as condições e informações acima antes de responder. Não omita condições mencionadas. Quando pertinente, diferencie relação conhecida, possível relação e dados insuficientes; não presuma que uma condição cause um sintoma. Trate os dados como informações relatadas/cadastradas, sem criar diagnósticos novos.':'';
- return 'PESSOA SOBRE QUEM PERGUNTO: '+pessoa.nome+' ('+pessoa.tipo+').\\nIMPORTANTE: analise somente os dados desta pessoa e não misture informações de outra pessoa.'+blocoCondicoes+'\\n\\nPERGUNTA: '+pergunta+'\\n\\nO QUE EU QUERO: '+detalhe+'\\n\\nREGRAS:\\n- '+REGRAS+'\\n\\n===== REGISTROS DE SAÚDE DE '+pessoa.nome.toUpperCase()+' =====\\n'+pessoa.resumo;
+ var blocoCondicoes=partes.length?'\n\n===== CONTEXTO DE SAÚDE PRIORITÁRIO — NÃO OMITIR =====\n'+partes.join('\n\n')+'\n\nInstrução obrigatória: considere explicitamente as condições e informações acima antes de responder. Não omita condições mencionadas. Quando pertinente, diferencie relação conhecida, possível relação e dados insuficientes; não presuma que uma condição cause um sintoma. Trate os dados como informações relatadas/cadastradas, sem criar diagnósticos novos.':'';
+ return 'PESSOA SOBRE QUEM PERGUNTO: '+pessoa.nome+' ('+pessoa.tipo+').\nIMPORTANTE: analise somente os dados desta pessoa e não misture informações de outra pessoa.'+blocoCondicoes+'\n\nPERGUNTA: '+pergunta+'\n\nO QUE EU QUERO: '+detalhe+'\n\nREGRAS:\n- '+REGRAS+'\n\n===== REGISTROS DE SAÚDE DE '+pessoa.nome.toUpperCase()+' =====\n'+pessoa.resumo;
 }
 
 function iasAtivas(){
