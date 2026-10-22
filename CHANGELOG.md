@@ -1,3 +1,11 @@
+## V6.92 — Melhorias da Linha do Tempo e Minhas doenças
+- 🎨 Cards de doenças com cores sutis por categoria, ícones coloridos, badges de origem e aviso visual para datas pendentes.
+- 🔎 Filtro rápido para registros que precisam de revisão ou estão sem data, com busca e sugestões enquanto digita.
+- ✏️ Edição inline de data e informação principal em registros compatíveis, sem abrir outra tela.
+- 📄 Exportação da linha do tempo para CSV e relatório imprimível/salvável em PDF pelo navegador.
+- 🐛 Correção: vírgulas decimais (como “1,0 cm”) deixam de dividir incorretamente nomes de condições.
+- 🔄 Versão, parâmetros de cache e service worker sincronizados em V6.92.
+
 ## V6.91 — Correção do botão Minhas doenças na Linha do Tempo
 - 🩺 O atalho “Minhas doenças” agora fica em uma faixa própria, fora da área de filtros que é recriada pelo aplicativo.
 - 🔄 Atualização dos parâmetros de cache, versão e service worker para carregar a correção publicada.
