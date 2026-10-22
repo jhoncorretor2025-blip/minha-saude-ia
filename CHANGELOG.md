@@ -1,3 +1,10 @@
+## V6.99 — Prompt compacto para NotebookLM
+- ✂️ O prompt de importação foi refeito em formato compacto e com limite de segurança de 8.000 caracteres por mensagem.
+- 🩺 Prioriza todas as condições encontradas e o campo de informações importantes; reduz apenas o resumo complementar quando necessário.
+- 📋 Mantém os 63 campos estruturados da ficha num formato conciso, compatível com o importador do aplicativo.
+- 🔢 O status mostra o total de caracteres, o limite e quantas condições foram incluídas.
+- 🔄 Versão e cache sincronizados em V6.99.
+
 ## V6.98 — Correção do prompt de importação e do menu no desktop
 - 🤖 O prompt agora é gerado a partir do perfil ativo, das condições registradas, de informações importantes e do resumo de saúde local.
 - 📋 A caixa “Antes de abrir a IA” recebe o mesmo prompt; os botões de copiar e abrir IA regeneram o texto antes de executar a ação.
