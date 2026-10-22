@@ -81,6 +81,12 @@ function render(){
  return true;
 }
 function init(){
+ // Garante que a área avançada apareça mesmo se o painel-base não for criado.
+ if(!$('#msa87Panel')){
+  const base=document.createElement('section');base.id='msa87Panel';base.setAttribute('aria-label','Painel de saúde');
+  const anchor=$('header')||$('main')||document.body;
+  if(anchor===document.body)anchor.prepend(base);else anchor.insertAdjacentElement(anchor.tagName==='HEADER'?'afterend':'afterbegin',base);
+ }
  const attempt=()=>render();
  if(!attempt()){
   const obs=new MutationObserver(()=>{if(attempt())obs.disconnect()});
