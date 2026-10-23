@@ -1,3 +1,11 @@
+## V7.05 — Prompt do NotebookLM otimizado
+- 📓 NotebookLM: prompt novo, enxuto (a base de dados é o próprio notebook): com todos os campos que faltam ficou com cerca de 1.700 caracteres (antes ~3.800 e, em perfis grandes, campos eram cortados).
+- ✂️ Se passar do limite, o app divide em partes (Parte 1, 2, 3…) agrupadas por assunto, sem perder nem repetir nenhum campo; botões “Copiar parte” com ✅ e instruções para colar todas as respostas juntas na importação.
+- ⚙️ Limite do NotebookLM ajustável na tela (padrão 3.849 caracteres) e botão “📓 Abrir NotebookLM”.
+- 👨 Perfil masculino: ciclo menstrual, gestação, preventivo e mamografia saem dos prompts (NotebookLM e ChatGPT/Gemini).
+- 🧭 A página “Preencher com a IA” abre com a importação à mostra; o seletor ChatGPT/NotebookLM saiu da parte recolhida.
+- 🔄 Versão e cache atualizados para V7.05.
+
 ## V7.04 — Painel visível, relatório com dados certos, adesão aos remédios e importação que salva
 - 📊 “Meu painel de saúde” virou uma página de verdade (antes ficava escondido: o app oculta toda seção que não está aberta), com botão no Início e nos menus.
 - 🧪 Painel e tendências: açúcar lido do campo correto (glic), dor vinda dos sintomas e gráfico de pressão (máxima).

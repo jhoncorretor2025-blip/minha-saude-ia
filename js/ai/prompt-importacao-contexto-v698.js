@@ -1,4 +1,4 @@
-/* Minha Saúde IA V7.03 — prompt inteligente que omite campos já preenchidos. */
+/* Minha Saúde IA V7.05 — prompt inteligente que omite campos já preenchidos. */
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
@@ -377,7 +377,7 @@ function copyNotebookPrompt(){
  else if(status)status.textContent='⚠️ Prompt NotebookLM gerado. Selecione o texto e copie manualmente.';
 }
 function isNotebookMode(){return Boolean($('msaNotebookLMMode')&&$('msaNotebookLMMode').checked)}
-function generateSelectedMode(){return isNotebookMode()?generateNotebookLM():generate()}
+function generateSelectedMode(){if(isNotebookMode()&&typeof gerarPartesNotebookV705==='function'){const r=gerarPartesNotebookV705();if(r.partes.length){const f=$('promptIA');if(f)f.value=r.partes[0].texto;if(typeof painelPartesV705==='function')setTimeout(painelPartesV705,0);if(r.partes.length>1){const st=$('copiado');if(st)st.textContent='✂️ O NotebookLM precisa de '+r.partes.length+' partes: use os botões “Copiar parte”. Esta é a parte 1.'}return r.partes[0].texto}}return isNotebookMode()?generateNotebookLM():generate()}
 function updatePromptCount(prompt,mode,note){
  const count=$('msaPromptCharCount'),hint=$('msaPromptModeHint'),bar=$('msaPromptModeBar');
  if(count)count.textContent=mode==='notebook'?'NotebookLM: '+prompt.length.toLocaleString('pt-BR')+' / '+NOTEBOOKLM_MAX_CHARS.toLocaleString('pt-BR')+' caracteres':'Prompt padrão: '+prompt.length.toLocaleString('pt-BR')+' caracteres';
@@ -444,4 +444,98 @@ function init(){
  window.copiarPromptAntesDeAbrir=copyPrompt;
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+
+/* ===== V7.05 — NotebookLM em partes: nada fica de fora e cada parte cabe no limite ===== */
+const SO_MULHER_V705=['ULTIMA_MENSTRUACAO','CICLO_MENSTRUAL','DURACAO_MENSTRUACAO','JA_ENGRAVIDOU','JA_FOI_MAE','NUMERO_GESTACOES','ULTIMO_PREVENTIVO_COLO','ULTIMA_MAMOGRAFIA','PROXIMO_PREVENTIVO'];
+const GRUPOS_V705=[
+ ['👤','Dados pessoais, corpo e rotina',['NOME','DATA_NASCIMENTO','IDADE','SEXO','TIPO_SANGUINEO','ALTURA','PESO','OBJETIVO_CORPORAL','ACADEMIA','FREQUENCIA_ACADEMIA','ATIVIDADE_FISICA','TRABALHO_TIPO','HORAS_SENTADO','HORAS_EM_PE','AGUA_POR_DIA','FREQUENCIA_URINARIA','FREQUENCIA_EVACUACAO','EXPOSICAO_CALOR_SUOR','ALIMENTACAO','CONTATO_EMERGENCIA','TELEFONE_EMERGENCIA']],
+ ['🩺','Doenças, alergias, remédios e sintomas',['DOENCAS','DOENCAS_PAI','DOENCAS_MAE','ALERGIAS','CIRURGIAS_INTERNACOES','MEDICAMENTOS','SUPLEMENTOS','FREQUENCIA_DORCELAX','FREQUENCIA_PARACETAMOL','OUTROS_REMEDIOS_DOR','ULTIMO_SINTOMA','LOCAL_SINTOMA','DATA_INICIO_SINTOMA','INTENSIDADE','OUTROS_SINTOMAS','JA_TEVE_CATAPORA','QUANDO_CATAPORA','INFORMACOES_IMPORTANTES']],
+ ['📋','Consultas, exames, vacinas e família',['CONSULTAS','EXAMES','SINAIS_VITAIS','VACINAS','HISTORICO_FAMILIAR','LEMBRETES','DOCUMENTOS']],
+ ['🌸','Saúde íntima e prevenção',['ULTIMA_MENSTRUACAO','CICLO_MENSTRUAL','DURACAO_MENSTRUACAO','FREQUENCIA_SEXUAL_MIN','FREQUENCIA_SEXUAL_MAX','MASTURBACAO_POR_DIA','USO_PRESERVATIVO','JA_ENGRAVIDOU','JA_FOI_MAE','NUMERO_GESTACOES','HISTORICO_REPRODUTIVO','ULTIMO_PREVENTIVO_COLO','ULTIMA_MAMOGRAFIA','ULTIMO_TESTE_IST','VACINA_HPV','PROXIMO_PREVENTIVO','OBSERVACOES_PREVENCAO']]
+];
+function limiteNotebookV705(){const v=Number(localStorage.getItem('msaNotebookLimite')||'');return v>=800&&v<=20000?v:NOTEBOOKLM_MAX_CHARS}
+function ehHomemV705(ctx){return /^m(asc)?/i.test(String((ctx.profile||{}).sexo||'').trim())}
+function camposPendentesV705(ctx){let f=ctx.pendingFields.slice();if(ehHomemV705(ctx))f=f.filter(k=>SO_MULHER_V705.indexOf(k)<0);return f}
+function jaNoAppV705(ctx,grupo){
+ /* só o que ajuda a IA a não repetir — curto de propósito */
+ const nomes=arr=>Array.from(new Set(arr.map(x=>x&&x.nome).filter(Boolean)));
+ const ult=arr=>arr.map(x=>String(x&&x.data||'').slice(0,10)).filter(Boolean).sort().pop()||'';
+ const br=d=>d?d.split('-').reverse().join('/'):'';
+ const L=[];
+ if(grupo===1){if(ctx.conditions.length)L.push('Doenças já cadastradas: '+ctx.conditions.join('; '));const m=nomes(read('msa2_meds').concat(read('msa2_medicamentos_rotina')));if(m.length)L.push('Remédios já cadastrados: '+m.join('; '))}
+ if(grupo===2){[['msa2_consultas','consulta(s)'],['msa2_exames','exame(s)'],['msa2_vacinas','vacina(s)']].forEach(([k,r])=>{const a=read(k);if(a.length)L.push('Já tenho '+a.length+' '+r+(ult(a)?', a mais recente em '+br(ult(a)):''))})}
+ return L.length?'JÁ ESTÁ NO APP (não repita, envie só o que for novo):\n'+L.join('\n'):'';
+}
+function cabecalhoV705(n,total,titulo){
+ return (total>1?'PARTE '+n+' DE '+total+' — ':'')+titulo.toUpperCase()+' (ficha para o app Minha Saúde IA)\n'+
+ 'Use só as fontes deste notebook. Responda em português, sem perguntas. Não invente, não diagnostique e não misture dados de familiares. Dado ausente = Não informado.\n'+
+ 'SAÍDA: somente as linhas abaixo, no formato [CHAVE]: valor, uma por linha, sem Markdown. Vários registros: separe por ponto e vírgula. Datas em DD/MM/AAAA.';
+}
+function montarParteV705(n,total,g,campos,extra){return [cabecalhoV705(n,total,g[1]),extra,campos.map(k=>'['+k+']:').join('\n')].filter(Boolean).join('\n\n')}
+function gerarPartesNotebookV705(){
+ const ctx=collectContext(),lim=limiteNotebookV705(),pend=camposPendentesV705(ctx);
+ if(!pend.length)return {partes:[],lim,msg:'Todos os campos já estão preenchidos.'};
+ const usados=new Set(),blocos=[];
+ GRUPOS_V705.forEach((g,i)=>{const campos=g[2].filter(k=>pend.indexOf(k)>=0);campos.forEach(k=>usados.add(k));if(campos.length)blocos.push({g,i,campos})});
+ const sobra=pend.filter(k=>!usados.has(k));if(sobra.length){if(blocos.length)blocos[0].campos=blocos[0].campos.concat(sobra);else blocos.push({g:GRUPOS_V705[0],i:0,campos:sobra})}
+ /* se um grupo passar do limite, divide os campos dele; o contexto é cortado por último */
+ let partes=[];
+ blocos.forEach(b=>{let extra=jaNoAppV705(ctx,b.i);let fila=b.campos.slice();
+  /* mede no mesmo formato da parte final (cabeçalho “PARTE 9 DE 9” + título do grupo), com folga de 20 caracteres */
+  const medir=(campos,ex)=>(cabecalhoV705(9,9,b.g[1])+'\n\n— '+b.g[0]+' '+b.g[1]+' —'+(ex?'\n'+ex:'')+'\n'+campos.map(k=>'['+k+']:').join('\n')).length+20;
+  while(fila.length){let k=fila.length;while(k>1&&medir(fila.slice(0,k),extra)>lim)k--;
+   if(medir(fila.slice(0,k),extra)>lim&&extra){extra=cutAtWord(extra,Math.max(0,extra.length-(medir(fila.slice(0,k),extra)-lim)-10));extra=extra?extra+' …':''}
+   partes.push({g:b.g,campos:fila.slice(0,k),extra});fila=fila.slice(k);extra='';}
+ });
+ /* junta grupos vizinhos enquanto couber no limite: menos partes para copiar */
+ const juntar=(lista)=>{const corpo=lista.map(p=>'— '+p.g[0]+' '+p.g[1]+' —'+(p.extra?'\n'+p.extra:'')+'\n'+p.campos.map(k=>'['+k+']:').join('\n')).join('\n\n');return corpo};
+ const unicos=lista=>lista.filter((p,i)=>lista.findIndex(q=>q.g===p.g)===i);
+ const tituloDe=(lista,umaSo)=>umaSo?unicos(lista).map(p=>p.g[0]).join('')+' Ficha completa':unicos(lista).length===1?lista[0].g[0]+' '+lista[0].g[1]:unicos(lista).map(p=>p.g[0]).join('')+' '+unicos(lista).map(p=>p.g[1].split(',')[0]).join(' + ');
+ const tituloTexto=(lista,total)=>total===1?'ficha completa':unicos(lista).map(p=>p.g[1].split(',')[0]).join(' + ');
+ const texto=(n,total,lista)=>cabecalhoV705(n,total,tituloTexto(lista,total))+'\n\n'+juntar(lista);
+ const pacotes=[];partes.forEach(p=>{const ult=pacotes[pacotes.length-1];if(ult&&texto(9,9,ult.concat([p])).length<=lim)ult.push(p);else pacotes.push([p])});
+ const total=pacotes.length;
+ partes=pacotes.map((lista,i)=>({titulo:tituloDe(lista,total===1),campos:lista.flatMap(p=>p.campos),texto:texto(i+1,total,lista)}));
+ return {partes,lim,homem:ehHomemV705(ctx)};
+}
+function copiarTextoV705(t){if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t).then(()=>true,()=>fallbackV705(t));return Promise.resolve(fallbackV705(t))}
+function fallbackV705(t){try{const a=document.createElement('textarea');a.value=t;a.setAttribute('readonly','');a.style.cssText='position:fixed;opacity:0;top:0;left:0';document.body.appendChild(a);a.select();const ok=document.execCommand('copy');a.remove();return ok}catch(e){return false}}
+function painelPartesV705(){
+ const bar=$('msaPromptModeBar');if(!bar)return;
+ /* o seletor ChatGPT/NotebookLM ficava dentro de uma parte recolhida (details) e quase ninguém via: vai para logo abaixo do botão principal */
+ const cta=document.querySelector('#importar .ai-cta');if(cta&&bar.closest('details')&&!bar.dataset.v705){bar.dataset.v705='1';cta.insertAdjacentElement('afterend',bar)}
+ let box=$('msaNotebookPartes');
+ if(!isNotebookMode()){if(box)box.style.display='none';return}
+ if(!box){box=document.createElement('div');box.id='msaNotebookPartes';box.className='msa-nb-partes';bar.insertAdjacentElement('afterend',box)}
+ box.style.display='';
+ const r=gerarPartesNotebookV705();
+ if(!r.partes.length){box.innerHTML='<b>📓 NotebookLM</b><p>'+r.msg+'</p>';return}
+ const copiadas=JSON.parse(sessionStorage.getItem('msaNbCopiadas')||'[]');
+ const uma=r.partes.length===1;
+ box.innerHTML='<div class="msa-nb-top"><b>'+(uma?'📓 Prompt do NotebookLM pronto — cabe numa mensagem só':'✂️ NotebookLM em '+r.partes.length+' partes — nada fica de fora')+'</b><span>'+(uma?'Tem <b>'+r.partes[0].texto.length.toLocaleString('pt-BR')+'</b> de <b>'+r.lim.toLocaleString('pt-BR')+'</b> caracteres permitidos, com todos os campos que faltam.':'Cada parte tem até <b>'+r.lim.toLocaleString('pt-BR')+'</b> caracteres.')+'</span></div>'+
+  (uma?'<ol class="msa-nb-passos"><li>Abra seu notebook no NotebookLM.</li><li>Copie o prompt abaixo, cole no chat do NotebookLM e envie.</li><li>Copie a resposta e cole na caixa de importação.</li></ol>':'<ol class="msa-nb-passos"><li>Abra seu notebook no NotebookLM.</li><li>Copie a <b>parte 1</b>, cole no chat do NotebookLM e envie. Faça o mesmo com as outras partes.</li><li>Copie <b>todas as respostas</b> e cole <b>juntas</b> (uma embaixo da outra) na caixa de importação.</li></ol>')+
+  '<div class="msa-nb-lista">'+r.partes.map((p,i)=>'<button type="button" data-nb-parte="'+i+'" class="'+(copiadas.indexOf(i)>=0?'ok':'')+'"><span>'+(copiadas.indexOf(i)>=0?'✅':'📋')+(uma?' Copiar prompt do NotebookLM':' Copiar parte '+(i+1))+'</span><small>'+p.titulo+' · '+p.campos.length+' campo(s) · '+p.texto.length.toLocaleString('pt-BR')+' caracteres</small></button>').join('')+'</div>'+
+  '<div class="msa-nb-rodape"><a href="https://notebooklm.google.com/" target="_blank" rel="noopener noreferrer">📓 Abrir NotebookLM</a><label>Limite do NotebookLM <input id="msaNbLimite" type="number" min="800" max="20000" step="50" value="'+r.lim+'"> caracteres</label>'+(r.homem?'<small>Perfil masculino: perguntas de ciclo, gestação, preventivo e mamografia foram retiradas.</small>':'')+'</div><p class="msa-nb-status" id="msaNbStatus" role="status" aria-live="polite"></p>';
+ box._partes=r.partes;
+ const f=$('promptIA');if(f&&r.partes[0])f.value=r.partes[0].texto;
+}
+document.addEventListener('click',function(e){
+ const b=e.target.closest('[data-nb-parte]');if(!b)return;const box=$('msaNotebookPartes');const i=Number(b.getAttribute('data-nb-parte'));const p=box&&box._partes&&box._partes[i];if(!p)return;
+ copiarTextoV705(p.texto).then(ok=>{const st=$('msaNbStatus');if(!ok){if(st)st.textContent='Não consegui copiar. Toque e segure no texto para copiar manualmente.';const f=$('promptIA');if(f){f.value=p.texto;f.focus();f.select()}return}
+  const c=JSON.parse(sessionStorage.getItem('msaNbCopiadas')||'[]');if(c.indexOf(i)<0)c.push(i);sessionStorage.setItem('msaNbCopiadas',JSON.stringify(c));
+  const f=$('promptIA');if(f)f.value=p.texto;painelPartesV705();const st2=$('msaNbStatus');if(st2)st2.textContent='✅ '+(box._partes.length>1?'Parte '+(i+1)+' copiada':'Prompt copiado')+' ('+p.texto.length.toLocaleString('pt-BR')+' caracteres). Cole no NotebookLM e depois copie a próxima.'});
+});
+document.addEventListener('change',function(e){if(e.target&&e.target.id==='msaNbLimite'){const v=Number(e.target.value);if(v>=800&&v<=20000){localStorage.setItem('msaNotebookLimite',String(v));sessionStorage.removeItem('msaNbCopiadas');painelPartesV705()}}
+ if(e.target&&e.target.id==='msaNotebookLMMode')setTimeout(painelPartesV705,50)});
+/* o modo padrão (ChatGPT/Gemini) também deixa de pedir dados femininos para perfil masculino */
+const _prepararV705=prepararContextoCampos;
+prepararContextoCampos=function(ctx){const r=_prepararV705(ctx);if(ehHomemV705(r)){r.pendingFields=r.pendingFields.filter(k=>SO_MULHER_V705.indexOf(k)<0)}return r};
+(function(){const st=document.createElement('style');st.id='msaNbPartesCss';st.textContent='.msa-nb-partes{margin:10px 0 12px;padding:14px;border-radius:16px;border:2px solid #7c3aed;background:#faf5ff}.msa-nb-top>b{display:block;font-size:16px;color:#5b21b6}.msa-nb-top span{display:block}.msa-nb-top span{font-size:13.5px;color:#4c1d95}.msa-nb-passos{margin:10px 0;padding-left:20px;font-size:14px;line-height:1.5}.msa-nb-lista{display:grid;gap:8px}.msa-nb-lista button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:52px;padding:10px 14px;border-radius:14px;border:1px solid #c4b5fd;background:#fff;color:#2e1065;font:inherit;text-align:left;cursor:pointer}.msa-nb-lista button span{font-weight:900;font-size:15px}.msa-nb-lista button small{font-size:12.5px;color:#6b21a8}.msa-nb-lista button.ok{border-color:#86efac;background:#f0fdf4}.msa-nb-rodape{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:10px;font-size:13px}.msa-nb-rodape a{display:inline-flex;align-items:center;min-height:44px;padding:8px 14px;border-radius:12px;background:#7c3aed;color:#fff;font-weight:900;text-decoration:none}.msa-nb-rodape input{width:90px;min-height:40px;margin:0 4px;padding:4px 8px;border-radius:10px;border:1px solid #c4b5fd;font:inherit}.msa-nb-rodape small{flex-basis:100%;color:#6b21a8}.msa-nb-status{margin:8px 0 0;font-weight:800;color:#166534;min-height:18px}body.msa-dark .msa-nb-partes{background:#1e1035;border-color:#6d28d9}body.msa-dark .msa-nb-lista button{background:#0f172a;color:#e9d5ff;border-color:#4c1d95}body.msa-dark .msa-nb-lista button small,body.msa-dark .msa-nb-top span,body.msa-dark .msa-nb-rodape small{color:#d8b4fe}body.msa-dark .msa-nb-lista button.ok{background:#052e16}';document.head.appendChild(st)})();
+/* a página “Preencher com a IA” abre já com a importação à mostra (antes ela ficava recolhida em “Precisa importar seu perfil com outra IA?”) */
+function abrirImportacaoV705(){const sec=$('importar');if(!sec||!sec.classList.contains('active'))return;const cta=sec.querySelector('.ai-cta');const d=cta&&cta.closest('details');if(d&&!d.open)d.open=true;painelPartesV705()}
+new MutationObserver(()=>abrirImportacaoV705()).observe(document.getElementById('importar')||document.body,{attributes:true,attributeFilter:['class']});
+setTimeout(abrirImportacaoV705,900);
+setTimeout(painelPartesV705,900);
+window.msaGerarPartesNotebook=gerarPartesNotebookV705;
+
 })();
