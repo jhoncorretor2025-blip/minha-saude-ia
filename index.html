@@ -732,12 +732,14 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 #msaPrimaryNav button:hover,#msaPrimaryNav button:focus-visible{background:#eaf1ff;border-color:#93b4ff;color:#1d4ed8;outline-offset:2px}
 #msaPrimaryNav .msa-nav-ai{background:#eef2ff;border-color:#c7d2fe;color:#4338ca}
 #msaPrimaryNav .msa-nav-family{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+#msaPrimaryNav .msa-nav-share{background:#ecfdf5;border-color:#a7f3d0;color:#065f46;font-weight:900}
 @media(max-width:760px){#msaPrimaryNav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:8px}#msaPrimaryNav button{width:100%;min-height:46px;padding:9px 7px;font-size:12px;white-space:normal}}
 @media(max-width:360px){#msaPrimaryNav{grid-template-columns:1fr 1fr}#msaPrimaryNav button{font-size:11px}}
 </style>
 <nav id="msaPrimaryNav" aria-label="Atalhos principais">
 <button type="button" data-tab="home">🏠 Início</button>
 <button type="button" class="msa-nav-family" data-tab="familiares">👨‍👩‍👧 Família</button>
+<button type="button" class="msa-nav-share" data-tab="familiares" title="Abrir o compartilhamento dos meus dados básicos" aria-label="Compartilhar meus dados básicos com minha namorada">💑 Compartilhar</button>
 <button type="button" class="msa-nav-ai" data-tab="ia">🤖 IA e ferramentas</button>
 <button type="button" id="msaOpenAllMenus">☰ Todos os menus</button>
 </nav>
@@ -3279,9 +3281,9 @@ body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion
 </script>
 
 <script src="js/features/primeiros-passos-v714.js?v=V7.14" defer></script>
-<script src="js/features/compartilhar-perfil-basico-v715.js?v=V7.19" defer></script>
+<script src="js/features/compartilhar-perfil-basico-v715.js?v=V7.20" defer></script>
 <script src="js/features/cuidado-a-dois-v716.js?v=V7.16" defer></script>
-<script src="js/features/compartilhar-facil-v717.js?v=V7.19" defer></script>
+<script src="js/features/compartilhar-facil-v717.js?v=V7.20" defer></script>
 </body></html>
 
 <!-- V7.13 — correção de fechamento do menu móvel sobre as páginas -->
