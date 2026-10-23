@@ -1,9 +1,9 @@
-/* Minha Saúde IA — constantes compartilhadas V7.09
+/* Minha Saúde IA — constantes compartilhadas V7.10
  * Fonte única dos nomes de armazenamento.
  */
 (function(){
 'use strict';
-const APP_VERSION='V7.09';
+const APP_VERSION='V7.10';
 window.MSA_VERSION=APP_VERSION;
 const K={
  ciclo:'msa2_ciclo_menstrual',d:'msa2_dores',c:'msa2_consultas',m:'msa2_meds',e:'msa2_exames',
