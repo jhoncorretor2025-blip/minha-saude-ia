@@ -1,3 +1,10 @@
+## V7.09 — Contraste do fundo das doenças na carteirinha
+- 🎨 Fundo do bloco de doenças alterado para azul-marinho/roxo escuro translúcido, com detalhe amarelo para destacar a seção no degradê azul-roxo.
+- 🏷️ Etiquetas em fundo claro com texto azul-escuro, contraste reforçado com seletores específicos e prioridades contra estilos globais.
+- 👁️ Correção para impedir que nomes das condições fiquem invisíveis por herança de estilos de spans.
+- 🖨️ Cores preservadas para impressão/PDF e layout responsivo mantido.
+- 🔄 HTML, CSS, scripts, service worker e versão sincronizados em V7.09.
+
 ## V7.08 — Destaque visual das doenças na carteirinha
 - 🩺 O bloco de doenças/condições ganhou destaque de largura total, contraste mais alto e borda de acento.
 - 🏷️ Cada condição é exibida em uma etiqueta separada, com um contador que mostra a quantidade cadastrada.
