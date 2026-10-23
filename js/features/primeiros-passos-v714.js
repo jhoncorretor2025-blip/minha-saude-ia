@@ -44,7 +44,6 @@ function showProfileCard(){
  card.querySelector('#msa714ProfileBtn').addEventListener('click',goProfile);
  card.querySelector('#msa714LaterBtn').addEventListener('click',function(){write(REMIND_KEY,String(Date.now()));card.remove()});
  }
-}
 function init(){
  if(!document.getElementById('home'))return;
  if(!read(TOUR_KEY)){
