@@ -1,3 +1,11 @@
+## V7.11 — Atalho na Home para gerar prompt só com pendências
+- 🧩 Adicionado ao card “✨ Comece por aqui”, ao lado de “🤖 Me ajude a escolher”, o botão “Prompt: pedir só o que falta”.
+- 📋 O botão usa o perfil ativo e gera o prompt com os campos pendentes já detectados pelo gerador, sem solicitar novamente o que está preenchido.
+- 🔀 Respeita o modo padrão ou NotebookLM já selecionado; quando o NotebookLM dividir o prompt, orienta a usar os botões das partes.
+- 🧭 Depois de gerar, abre “Importar com IA” e rola até o prompt/status para facilitar copiar e enviar.
+- 🎨 Estilo responsivo, foco visível e suporte ao tema escuro.
+- 🔄 Versão e cache sincronizados em V7.11.
+
 ## V7.10 — Correção da seleção de familiar
 - 🧭 A seleção de pessoa valida se o familiar ainda existe e confirma que o perfil ativo foi gravado.
 - 🛡️ Se o armazenamento falhar, o seletor permanece aberto e mostra um aviso em vez de fechar sem trocar o perfil.
