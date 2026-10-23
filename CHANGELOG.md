@@ -1,3 +1,10 @@
+## V7.10 — Correção da seleção de familiar
+- 🧭 A seleção de pessoa valida se o familiar ainda existe e confirma que o perfil ativo foi gravado.
+- 🛡️ Se o armazenamento falhar, o seletor permanece aberto e mostra um aviso em vez de fechar sem trocar o perfil.
+- ⚡ A troca fecha o modal antes de atualizar a interface; os módulos são atualizados em etapas protegidas para evitar congelamento por falha de renderização.
+- 🖱️ Reforçadas as camadas e a área clicável dos cartões de seleção.
+- 🔄 HTML, scripts, versão e service worker sincronizados em V7.10.
+
 ## V7.09 — Contraste do fundo das doenças na carteirinha
 - 🎨 Fundo do bloco de doenças alterado para azul-marinho/roxo escuro translúcido, com detalhe amarelo para destacar a seção no degradê azul-roxo.
 - 🏷️ Etiquetas em fundo claro com texto azul-escuro, contraste reforçado com seletores específicos e prioridades contra estilos globais.
