@@ -672,3 +672,15 @@ body.msa-dark .msa-next-step-copy p{color:#cbd5e1}
 @media print{
  .health-card-grid>.health-card-conditions{print-color-adjust:exact;-webkit-print-color-adjust:exact}
 }
+
+/* V7.08 — reforço de contraste contra estilos globais dos spans */
+.health-card-grid>.health-card-conditions .health-card-conditions-head>span{
+ display:inline;opacity:1;margin:0;font-size:12px;font-weight:950;line-height:1.35;color:#7c2d12;
+}
+.health-card-grid>.health-card-conditions .health-condition-tag>span:last-child{
+ display:inline;opacity:1;margin:0;font-size:12px;font-weight:850;line-height:1.4;color:#7f1d1d;
+}
+.health-card-grid>.health-card-conditions .health-condition-tag>.health-condition-dot{
+ display:block;flex:0 0 7px;width:7px;height:7px;min-width:7px;
+ opacity:1;margin:5px 0 0;background:#ea580c;
+}
