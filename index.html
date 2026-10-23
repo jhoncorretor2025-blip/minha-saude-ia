@@ -3264,10 +3264,9 @@ body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion
     if(trigger && !trigger.dataset.v708){
       trigger.dataset.v708='1';
       trigger.setAttribute('aria-expanded','false');
-      trigger.addEventListener('click',function(ev){
-        ev.preventDefault();
-        if(drawer && drawer.getAttribute('aria-hidden')==='false') closeMsaMenu();
-        else openMsaMenu();
+      trigger.addEventListener('click',function(){
+        // Outro handler legado também abre o menu; reabrir após ele terminar evita conflito.
+        setTimeout(openMsaMenu,0);
       });
     }
     if(backdrop && !backdrop.dataset.v708){
