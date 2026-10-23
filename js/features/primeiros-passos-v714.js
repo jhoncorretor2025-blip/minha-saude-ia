@@ -48,7 +48,7 @@ function init(){
  if(!document.getElementById('home'))return;
  if(!read(TOUR_KEY)){
    setTimeout(function(){if(!document.getElementById('msa714Tour')&&!read(TOUR_KEY))openTour(0)},1800);
- }else if(read(TOUR_KEY)==='done'&&!hasData()&&Date.now()-Number(read(REMIND_KEY)||0)>3*86400000){
+ }else if((read(TOUR_KEY)==='done'||read(TOUR_KEY)==='later')&&!hasData()&&Date.now()-Number(read(REMIND_KEY)||0)>3*86400000){
    showProfileCard();
  }
  var helpBtns=[].slice.call(document.querySelectorAll('button,a')).filter(function(b){return /ajuda|guia|primeiros passos/i.test((b.innerText||b.textContent||'').trim())});
