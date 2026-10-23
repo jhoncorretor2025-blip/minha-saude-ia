@@ -751,3 +751,18 @@ body.msa-dark .msa-next-step-copy p{color:#cbd5e1}
   print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important;
  }
 }
+
+
+/* V7.11 — atalho da Home para solicitar somente informações pendentes */
+.home-secondary-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.home-missing-prompt-btn{
+ display:inline-flex!important;align-items:center;justify-content:center;gap:7px;
+ min-height:42px;padding:10px 13px!important;border:1px solid #b8d7ff!important;
+ border-radius:12px!important;background:linear-gradient(135deg,#e8f3ff,#f4f0ff)!important;
+ color:#174ea6!important;font:inherit;font-size:13px;font-weight:900!important;
+ line-height:1.3;white-space:normal;cursor:pointer;box-shadow:0 2px 6px rgba(37,99,235,.08);
+}
+.home-missing-prompt-btn:hover{background:linear-gradient(135deg,#dbeafe,#ede9fe)!important;border-color:#7daeff!important;transform:translateY(-1px)}
+.home-missing-prompt-btn:focus-visible{outline:3px solid #60a5fa;outline-offset:2px}
+body.msa-dark .home-missing-prompt-btn{background:linear-gradient(135deg,#172554,#312e81)!important;border-color:#4f6bb9!important;color:#dbeafe!important}
+@media(max-width:760px){.home-secondary-actions{align-items:stretch}.home-secondary-actions .home-more-btn,.home-secondary-actions .home-guide-btn,.home-secondary-actions .home-missing-prompt-btn{flex:1 1 100%;min-height:44px;text-align:center}}
