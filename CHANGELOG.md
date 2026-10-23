@@ -1,3 +1,10 @@
+## V7.08 — Destaque visual das doenças na carteirinha
+- 🩺 O bloco de doenças/condições ganhou destaque de largura total, contraste mais alto e borda de acento.
+- 🏷️ Cada condição é exibida em uma etiqueta separada, com um contador que mostra a quantidade cadastrada.
+- 📱 Os rótulos quebram em várias linhas no celular para evitar texto espremido ou transbordamento.
+- 🖨️ O destaque é preservado na impressão/PDF.
+- 🔄 Versão e cache sincronizados em V7.08.
+
 ## V7.07 — Página de importação mais fácil
 - 🔢 Passo a passo (Preparar → Conversar → Colar → Revisar → Salvar) no topo da importação, avançando sozinho e marcando em verde as etapas feitas.
 - 📋 Botão “Colar resposta da IA” (puxa da área de transferência) e “Limpar caixa”.
