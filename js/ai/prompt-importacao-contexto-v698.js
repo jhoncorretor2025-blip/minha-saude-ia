@@ -1,4 +1,4 @@
-/* Minha Saúde IA V7.06 — prompt inteligente que omite campos já preenchidos. */
+/* Minha Saúde IA V7.11 — botão na Home para gerar somente campos pendentes. */
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
@@ -442,6 +442,32 @@ function init(){
  window.abrirIAGuiaIA=openAI;window.abrirChatGPT=function(){return openAI('chatgpt')};window.abrirGemini=function(){return openAI('gemini')};
  window.abrirPaginaIA=function(){const prompt=generateSelectedMode();const o=$('onboarding');if(o)o.style.display='none';if(typeof window.go==='function')window.go('importar');copyPrompt();setTimeout(()=>$('promptIA')?.scrollIntoView({behavior:'smooth',block:'center'}),100);return prompt};
  window.copiarPromptAntesDeAbrir=copyPrompt;
+ window.abrirPromptCamposPendentesHome=function(){
+  let prompt='';
+  try{prompt=generateSelectedMode()}catch(e){console.error('[Prompt campos pendentes] Falha ao gerar:',e)}
+  if(typeof window.go==='function')window.go('importar');
+  if(!prompt){
+   setTimeout(function(){
+    const st=$('msaPromptContextStatus')||$('copiado');
+    const msg='Não encontrei campos pendentes para gerar. Confira se o perfil atual está preenchido e se escolheu a pessoa correta.';
+    if(st)st.textContent=msg;
+    const target=$('msaPromptContextStatus')||$('promptIA');
+    if(target&&target.scrollIntoView)target.scrollIntoView({behavior:'smooth',block:'center'});
+   },160);
+   return '';
+  }
+  setTimeout(function(){
+   const field=$('promptIA');
+   if(field){field.value=prompt;field.scrollIntoView({behavior:'smooth',block:'center'})}
+   const message=isNotebookMode()
+    ?'📓 Prompt das informações pendentes gerado no modo NotebookLM. Use os botões de cada parte se o aplicativo dividir a ficha.'
+    :'✅ Prompt gerado somente com os campos pendentes. Confira o texto e copie para enviar à IA.';
+   const status=$('msaPromptContextStatus')||$('copiado');
+   if(status)status.textContent=message;
+   if(isNotebookMode()&&$('msaNotebookPartes'))$('msaNotebookPartes').scrollIntoView({behavior:'smooth',block:'center'});
+  },180);
+  return prompt;
+ };
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 
