@@ -204,9 +204,18 @@ function normalizarFichaIA(raw){
  var rawInt=(String(inten||'').match(/-?\d+(?:[\.,]\d+)?/)||[])[0],n=rawInt!==undefined&&rawInt!==''?Number(String(rawInt).replace(',','.')):'';
  var dores=sint&&sint.toLowerCase()!=='não informado'?[{data:data,local:local,int:n,tipo:'',freq:'',gatilho:'',sint:outros?sint+' — '+outros:sint,obs:'Importado da IA'}]:[];
  var ct=field('CONSULTAS'),et=field('EXAMES');
- var consultas=ct&&ct.toLowerCase()!=='não informado'?splitRecords(ct).map(function(x){var m=x.match(/^(\d{1,2}\/\d{1,2}\/\d{4})\s*[:\-]?\s*(.*)$/);return {data:m?date(m[1]):'',esp:'',med:'',mot:m?m[2]:x,perg:'',obs:'Importado da IA',ret:''}}):[];
- var exames=et&&et.toLowerCase()!=='não informado'?splitRecords(et).map(function(x){var m=x.match(/^(.*?)(?:\s*\((\d{1,2}\/\d{1,2}\/\d{4})\))$/);return {nome:m?m[1].trim():'Exame informado',data:m?date(m[2]):'',res:m?m[1].trim():x,obs:'Importado da IA'}}):[];
- var meds=medText&&medText.toLowerCase()!=='não informado'?splitRecords(medText).map(function(x){return {nome:x,dose:'',freq:'',inicio:'',fim:'',pres:'',obs:'Importado da IA'}}):[];
+ /* V7.06: lê “DD/MM/AAAA - Especialidade - Motivo - Orientação” separando cada parte */
+ var consultas=ct&&ct.toLowerCase()!=='não informado'?splitRecords(ct).map(function(x){var m=x.match(/^(\d{1,2}\/\d{1,2}\/\d{4})\s*[:\-–—]?\s*(.*)$/);var resto=m?m[2]:x,partes=resto.split(/\s+[-–—]\s+|\s*\|\s*/).map(function(t){return t.trim()}).filter(Boolean);
+  var esp='',mot=resto,orient='';if(partes.length>=2){esp=partes[0];mot=partes[1];orient=partes.slice(2).join(' - ')}else{var c=resto.split(/,\s*/);if(c.length>1&&/(ista|logia|logo|clínic|clinic|geral|pediatr|obstetr|psiqui|nutri|fisio|dentista|odonto|ortoped)/i.test(c[0])){esp=c[0];mot=c.slice(1).join(', ')}}
+  return {data:m?date(m[1]):'',esp:esp,med:'',mot:mot,perg:'',obs:orient||'Importado da IA',ret:''}}):[];
+ /* V7.06: lê “Nome (DD/MM/AAAA): resultado” ou “Nome - DD/MM/AAAA - resultado”; antes o resultado virava o próprio nome do exame */
+ var exames=et&&et.toLowerCase()!=='não informado'?splitRecords(et).map(function(x){var m=x.match(/^(.*?)\s*\((\d{1,2}\/\d{1,2}\/\d{4})\)\s*[:\-–—]?\s*(.*)$/)||x.match(/^(.*?)\s+[-–—]\s+(\d{1,2}\/\d{1,2}\/\d{4})\s*(?:[-–—:]\s*(.*))?$/);
+  if(m)return {nome:m[1].trim()||'Exame informado',data:date(m[2]),res:(m[3]||'').trim(),obs:'Importado da IA'};var c=x.split(/\s*:\s*/);return {nome:c[0].trim()||'Exame informado',data:'',res:c.slice(1).join(': ').trim(),obs:'Importado da IA'}}):[];
+ /* V7.06: separa nome, dose e frequência (“Losartana - 50mg - 1x ao dia” ou “Losartana 50mg 1x ao dia”) */
+ var meds=medText&&medText.toLowerCase()!=='não informado'?splitRecords(medText).map(function(x){var nome=x,dose='',freq='',p=x.split(/\s+[-–—]\s+|\s*\|\s*/).map(function(t){return t.trim()}).filter(Boolean);
+  if(p.length>=2){nome=p[0];dose=p[1];freq=p.slice(2).join(' ')}else{var md=x.match(/(\d+[.,]?\d*\s?(?:mg|mcg|µg|g|ml|mL|UI|ui|gts|gotas|%|comprimidos?|cps?))\b/i);if(md){dose=md[1];var depois=x.slice(md.index+md[1].length).replace(/^[\s,;]+/,'');nome=x.slice(0,md.index).replace(/[\s,;-]+$/,'');freq=depois}}
+  if(!freq){var mf=nome.match(/\s+((?:\d+\s?x|\d+\s?vez(?:es)?)\s.*|de\s\d+\sem\s\d+.*|a cada.*)$/i);if(mf){freq=mf[1];nome=nome.slice(0,mf.index)}}
+  return {nome:nome.trim()||x,dose:dose.trim(),freq:freq.trim(),inicio:'',fim:'',pres:'',obs:'Importado da IA'}}):[];
  var vt=field('SINAIS_VITAIS'),v=vt&&vt.toLowerCase()!=='não informado'?splitRecords(vt).map(parseVital):[];
  var vx=field('VACINAS'),vax=vx&&vx.toLowerCase()!=='não informado'?splitRecords(vx).map(parseVaccine).filter(function(x){return x.nome}):[];
  var fh=field('HISTORICO_FAMILIAR'),fam=fh&&fh.toLowerCase()!=='não informado'?splitRecords(fh).map(parseFamily).filter(function(x){return x.parente||x.info}):[];
@@ -497,9 +506,15 @@ if(typeof window.importarNormalizado!=='function'){
 function importarNormalizado(n){
  var pk=['nome','nasc','idade','sexo','sangue','altura','peso','objetivoCorporal','academia','academiaFreq','atividadeFisica','trabalhoTipo','horasSentado','horasPe','aguaDia','urinaDia','evacuacaoDia','calorSuor','alimentacao','cond','alerg','circ','supl','info','emerg','tel','menstruacao','ciclo','duracaoMenstr','regularidade','sexoFreq','sexoFreqMin','sexoFreqMax','masturbacaoDia','camisinha','engravidou','mae','gestacoes','reproObs','usaAnticoncepcional','anticoncepcionalMetodo','anticoncepcionalNome','anticoncepcionalHora','anticoncepcionalInicio','anticoncepcionalRegime','minipilulaTipo','prevColo','mamografia','ist','hpv','prevProx','prevObs','dorcelaxFreq','paracetamolFreq','outrosDor','catapora','cataporaQuando'],has=function(k){var v=String((n.p||{})[k]||'').trim();return v&&v.toLowerCase()!=='não informado'};
  if((n.dores||[]).length)set(K.d,get(K.d).concat(n.dores||[]));
- if((n.consultas||[]).length)set(K.c,get(K.c).concat(n.consultas||[]));
- if((n.meds||[]).length)set(K.m,get(K.m).concat(n.meds||[]));
- if((n.exames||[]).length)set(K.e,get(K.e).concat(n.exames||[]));
+ /* V7.06: se o item já existe (mesmo remédio, mesma consulta ou mesmo exame), completa os campos vazios em vez de duplicar */
+ function vazioV706(v){return importarVazio(v)}
+ function chaveV706(t){return String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim()}
+ function juntarV706(chave,novos,achar){var atuais=get(chave),add=0,comp=0;(novos||[]).forEach(function(x){var novo=!!x._novoV706;delete x._novoV706;var i=novo?-1:achar(atuais,x);if(i>=0){var a=atuais[i],mudou=false;Object.keys(x).forEach(function(k){if(k==='id'||k==='criadoEm')return;if(vazioV706(a[k])&&!vazioV706(x[k])&&x[k]!=='Importado da IA'){a[k]=x[k];mudou=true}});if(mudou)comp++}else{atuais.push(x);add++}});set(chave,atuais);return {add:add,comp:comp}}
+ var resumoV706=[];
+ if((n.meds||[]).length){var rm=juntarV706(K.m,n.meds,function(lista,x){var c=chaveV706(x.nome).split(' ')[0];return c?lista.findIndex(function(a){return chaveV706(a.nome).split(' ')[0]===c}):-1});if(rm.comp)resumoV706.push(rm.comp+' remédio(s) completado(s)')}
+ if((n.consultas||[]).length){var rc=juntarV706(K.c,n.consultas,function(lista,x){var d=String(x.data||'').slice(0,10);if(!d)return -1;return lista.findIndex(function(a){return String(a.data||'').slice(0,10)===d&&(vazioV706(a.esp)||vazioV706(x.esp)||chaveV706(a.esp)===chaveV706(x.esp))})});if(rc.comp)resumoV706.push(rc.comp+' consulta(s) completada(s)')}
+ if((n.exames||[]).length){var re=juntarV706(K.e,n.exames,function(lista,x){var c=chaveV706(x.nome),d=String(x.data||'').slice(0,10);if(!c)return -1;return lista.findIndex(function(a){return chaveV706(a.nome)===c&&(!d||!a.data||String(a.data).slice(0,10)===d)})});if(re.comp)resumoV706.push(re.comp+' exame(s) completado(s)')}
+ window.__msaImportCompletados=resumoV706;
  if((n.vitais||[]).length)set(K.v,get(K.v).concat(n.vitais||[]));
  if((n.vacinas||[]).length)set(K.vax,get(K.vax).concat(n.vacinas||[]));
  if((n.familia||[]).length)set(K.fam,get(K.fam).concat(n.familia||[]));

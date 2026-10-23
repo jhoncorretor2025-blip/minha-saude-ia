@@ -1,4 +1,4 @@
-/* Minha Saúde IA V7.05 — prompt inteligente que omite campos já preenchidos. */
+/* Minha Saúde IA V7.06 — prompt inteligente que omite campos já preenchidos. */
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
@@ -537,5 +537,41 @@ new MutationObserver(()=>abrirImportacaoV705()).observe(document.getElementById(
 setTimeout(abrirImportacaoV705,900);
 setTimeout(painelPartesV705,900);
 window.msaGerarPartesNotebook=gerarPartesNotebookV705;
+
+
+/* ===== V7.06 — o prompt pede só o que está vazio OU incompleto ===== */
+let ctxV706=null;
+function incompletosV706(){
+ const br=d=>d?String(d).slice(0,10).split('-').reverse().join('/'):'sem data';
+ const vaz=v=>isEmpty(v);
+ const L={meds:[],consultas:[],exames:[]};
+ read('msa2_meds').forEach(m=>{if(!m||vaz(m.nome))return;const f=[];if(vaz(m.dose))f.push('dose');if(vaz(m.freq)&&vaz(m.hora))f.push('frequência/horário');if(f.length)L.meds.push(m.nome+': falta '+f.join(' e '))});
+ read('msa2_medicamentos_rotina').forEach(m=>{if(!m||vaz(m.nome))return;if(vaz(m.dose))L.meds.push(m.nome+' (rotina): falta dose')});
+ read('msa2_consultas').forEach(c=>{if(!c)return;const f=[];if(vaz(c.esp))f.push('especialidade');if(vaz(c.mot)&&vaz(c.obs))f.push('motivo ou orientação do médico');if(f.length)L.consultas.push('Consulta de '+br(c.data)+(c.esp?' ('+c.esp+')':'')+': falta '+f.join(' e '))});
+ read('msa2_exames').forEach(e=>{if(!e||vaz(e.nome))return;if(vaz(e.res))L.exames.push(e.nome+' ('+br(e.data)+'): falta resultado')});
+ return L;
+}
+function blocoCompletarV706(campos){
+ const L=incompletosV706(),linhas=[];
+ if(L.meds.length&&(!campos||campos.indexOf('MEDICAMENTOS')>=0))linhas.push(...L.meds.map(x=>'- '+x));
+ if(L.consultas.length&&(!campos||campos.indexOf('CONSULTAS')>=0))linhas.push(...L.consultas.map(x=>'- '+x));
+ if(L.exames.length&&(!campos||campos.indexOf('EXAMES')>=0))linhas.push(...L.exames.map(x=>'- '+x));
+ if(!linhas.length)return '';
+ return 'COMPLETAR (já estão no app, mas incompletos):\n'+linhas.slice(0,20).join('\n')+(linhas.length>20?'\n- … e mais '+(linhas.length-20):'')+
+  '\nSe as fontes tiverem a informação, devolva o item COMPLETO no campo correspondente ([MEDICAMENTOS], [CONSULTAS] ou [EXAMES]) com o MESMO nome e a MESMA data: o app completa o registro existente, sem duplicar. Se não souber, não devolva o item.';
+}
+/* garante que listas com itens incompletos sejam perguntadas */
+const _prepararV706=prepararContextoCampos;
+prepararContextoCampos=function(ctx){const r=_prepararV706(ctx);const L=incompletosV706();
+ [['MEDICAMENTOS',L.meds],['CONSULTAS',L.consultas],['EXAMES',L.exames]].forEach(([k,arr])=>{if(arr.length&&r.pendingFields.indexOf(k)<0)r.pendingFields.push(k)});
+ ctxV706=r;return r};
+/* ChatGPT/Gemini: o bloco entra logo depois da lista de campos */
+const _compactV706=compactTemplate;
+const FORMATO_LISTAS_V706='FORMATO DAS LISTAS: [MEDICAMENTOS] Nome - dose - frequência; [CONSULTAS] DD/MM/AAAA - Especialidade - Motivo - Orientação; [EXAMES] Nome (DD/MM/AAAA): resultado.';
+compactTemplate=function(fields){const t=_compactV706(fields),b=blocoCompletarV706(fields);const usaLista=fields&&fields.some(k=>['MEDICAMENTOS','CONSULTAS','EXAMES'].indexOf(k)>=0);return [t,usaLista?FORMATO_LISTAS_V706:'',b].filter(Boolean).join('\n\n')};
+/* NotebookLM em partes: o bloco entra na parte que tem o campo */
+const _jaNoAppV706=jaNoAppV705;
+jaNoAppV705=function(ctx,grupo){const base=_jaNoAppV706(ctx,grupo);const g=GRUPOS_V705[grupo];const b=g?blocoCompletarV706(g[2]):'';const lst=g&&g[2].some(k=>['MEDICAMENTOS','CONSULTAS','EXAMES'].indexOf(k)>=0)?FORMATO_LISTAS_V706:'';return [base,lst,b].filter(Boolean).join('\n')};
+window.msaIncompletosPrompt=incompletosV706;
 
 })();

@@ -408,7 +408,11 @@ function buildImportConflictPlan(n){
    if(!item||typeof item!=='object')return;
    const exact=current.some(x=>conflictSignature(x,cfg.exact)===conflictSignature(item,cfg.exact));
    const similar=!exact&&current.some(x=>conflictSignature(x,cfg.match)===conflictSignature(item,cfg.match)&&conflictSignature(item,cfg.match)!==(''.repeat(cfg.match.length)));
-   if(exact||similar)records.push({id:cfg.prop+'_'+index,prop:cfg.prop,index,label:cfg.label,kind:exact?'igual':'parecido',choice:'skip',incoming:item});
+   /* V7.06: se o registro parecido que já existe está incompleto e a IA trouxe o que falta, a opção padrão é completar */
+   const par=similar?current.find(x=>conflictSignature(x,cfg.match)===conflictSignature(item,cfg.match)):null;
+   const vazioC=v=>v==null||String(v).trim()===''||/^(não informado|nao informado)$/i.test(String(v).trim());
+   const completa=par?Object.keys(item).filter(k=>k!=='id'&&k!=='obs'&&vazioC(par[k])&&!vazioC(item[k])):[];
+   if(exact||similar)records.push({id:cfg.prop+'_'+index,prop:cfg.prop,index,label:cfg.label,kind:exact?'igual':completa.length?'incompleto no app':'parecido',choice:completa.length?'complete':'skip',completa,incoming:item});
   });
  });
  const pCurrent=storage.get(K.p)[0]||{},profile=[];
@@ -420,7 +424,7 @@ function buildImportConflictPlan(n){
 }
 function importConflictSummary(plan){
  if(!plan.records.length&&!plan.profile.length)return '<div class="msa-feedback msa-feedback-success">✅ Nenhum conflito detectado. Os dados novos podem ser adicionados normalmente.</div>';
- const rec=plan.records.map(x=>'<div class="item"><div class="itemtop"><b>🔎 '+esc(x.label)+' — '+esc(x.kind)+'</b><span class="tag">Entrada '+(x.index+1)+'</span></div><p>Escolha o que fazer com esta entrada.</p><label><input type="radio" name="ic_'+esc(x.id)+'" value="skip" checked> Manter o que já existe</label> <label><input type="radio" name="ic_'+esc(x.id)+'" value="add"> Adicionar a entrada da IA</label></div>').join('');
+ const rec=plan.records.map(x=>'<div class="item"><div class="itemtop"><b>🔎 '+esc(x.label)+' — '+esc(x.kind)+'</b><span class="tag">Entrada '+(x.index+1)+'</span></div><p>'+(x.choice==='complete'?'A IA trouxe o que falta: <b>'+esc(x.completa.join(', '))+'</b>.':'Escolha o que fazer com esta entrada.')+'</p>'+(x.completa&&x.completa.length?'<label><input type="radio" name="ic_'+esc(x.id)+'" value="complete"'+(x.choice==='complete'?' checked':'')+'> ✅ Completar o registro existente</label> ':'')+'<label><input type="radio" name="ic_'+esc(x.id)+'" value="skip"'+(x.choice==='skip'?' checked':'')+'> Manter o que já existe</label> <label><input type="radio" name="ic_'+esc(x.id)+'" value="add"> Adicionar como novo</label></div>').join('');
  const prof=plan.profile.map(x=>'<div class="item"><b>👤 '+esc(x.label)+'</b><p>Atual: <b>'+esc(x.valueCurrent)+'</b><br>Importado: <b>'+esc(x.valueIncoming)+'</b></p><label><input type="radio" name="ic_'+esc(x.id)+'" value="keep" checked> Manter atual</label> <label><input type="radio" name="ic_'+esc(x.id)+'" value="import"> Usar importado</label></div>').join('');
  return '<div class="msa-feedback msa-feedback-warning"><b>⚠️ '+(plan.records.length+plan.profile.length)+' conflito(s) / possível(is) duplicata(s)</b><br>Revise cada item antes de salvar.</div>'+
    (rec?'<h3 style="margin-top:14px">Registros</h3><div class="list">'+rec+'</div>':'')+
@@ -482,9 +486,11 @@ window.confirmarImportacaoPendente=function(){
  }
  const chosen=JSON.parse(JSON.stringify(revisado));
  (plan?.records||[]).forEach(x=>{
-  const el=document.querySelector('input[name="ic_'+x.id+'"]:checked'),choice=el?.value||'skip';
-  if(choice==='skip'&&Array.isArray(chosen[x.prop]))chosen[x.prop]=chosen[x.prop].filter((_,i)=>i!==x.index);
+  const el=document.querySelector('input[name="ic_'+x.id+'"]:checked'),choice=el?.value||x.choice||'skip';
+  if(choice==='add'&&Array.isArray(chosen[x.prop])&&chosen[x.prop][x.index])chosen[x.prop][x.index]._novoV706=true;
+  if(choice==='skip'&&Array.isArray(chosen[x.prop]))chosen[x.prop][x.index]=null;
  });
+ Object.keys(chosen||{}).forEach(k=>{if(Array.isArray(chosen[k]))chosen[k]=chosen[k].filter(v=>v!==null)});
  // Revalida depois das escolhas de conflito para garantir que nada incompleto entre.
  if(typeof window.validarResultadoImportacao==='function'){
   try{

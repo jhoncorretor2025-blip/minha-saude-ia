@@ -1,3 +1,11 @@
+## V7.06 — Prompt pede só o que está vazio ou incompleto
+- 🧠 Além de pular os campos já preenchidos (nome, nascimento, sexo, sangue, altura, peso, alergias…), o prompt agora lista o que está INCOMPLETO no app — remédio sem dose/frequência, consulta sem especialidade/motivo, exame sem resultado — e pede para a IA completar só isso (ChatGPT/Gemini e NotebookLM).
+- 📓 NotebookLM: remédios, consultas e exames voltam a ser perguntados quando há itens incompletos (antes, com 1 remédio cadastrado, a pergunta sumia).
+- 📋 Formato das listas indicado no prompt (Nome - dose - frequência; DD/MM/AAAA - Especialidade - Motivo - Orientação; Nome (data): resultado).
+- 🔄 Importação completa o registro existente em vez de duplicar: na revisão aparece “✅ Completar o registro existente” já marcado quando a IA trouxe o que faltava.
+- 🐞 Leitura da resposta: remédio separa nome, dose e frequência; consulta separa especialidade, motivo e orientação; exame não usa mais o próprio nome como resultado.
+- 🔄 Versão e cache atualizados para V7.06.
+
 ## V7.05 — Prompt do NotebookLM otimizado
 - 📓 NotebookLM: prompt novo, enxuto (a base de dados é o próprio notebook): com todos os campos que faltam ficou com cerca de 1.700 caracteres (antes ~3.800 e, em perfis grandes, campos eram cortados).
 - ✂️ Se passar do limite, o app divide em partes (Parte 1, 2, 3…) agrupadas por assunto, sem perder nem repetir nenhum campo; botões “Copiar parte” com ✅ e instruções para colar todas as respostas juntas na importação.
