@@ -28,7 +28,7 @@ function openTour(start){
  var title=wrap.querySelector('#msa714Title'),txt=wrap.querySelector('#msa714Text'),count=wrap.querySelector('#msa714Count'),bar=wrap.querySelector('.msa714-progress span'),next=wrap.querySelector('.msa714-next'),later=wrap.querySelector('.msa714-later'),help=wrap.querySelector('.msa714-help');
  function finish(done){if(done)write(TOUR_KEY,'done');remove();if(done)showProfileCard()}
  function render(){var s=STEPS[idx];title.textContent=s.title;txt.textContent=s.text;count.textContent=(idx+1)+' de '+STEPS.length;bar.style.width=((idx+1)/STEPS.length*100)+'%';next.textContent=idx===STEPS.length-1?'Concluir':'Próximo';help.style.display=idx===1?'block':'none';}
- next.addEventListener('click',function(){if(idx===1){goProfile();write(TOUR_KEY,'done');remove();return}if(idx===STEPS.length-1){finish(true);return}idx++;render()});
+ next.addEventListener('click',function(){if(idx===STEPS.length-1){finish(true);return}idx++;render()});
  later.addEventListener('click',function(){write(TOUR_KEY,'later');remove()});
  wrap.querySelector('.msa714-close').addEventListener('click',function(){write(TOUR_KEY,'later');remove()});
  help.addEventListener('click',function(){goProfile();write(TOUR_KEY,'done');remove()});
