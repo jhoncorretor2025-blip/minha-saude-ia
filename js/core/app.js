@@ -1,4 +1,4 @@
-/* Minha Saúde IA — aplicação principal V7.03 */
+/* Minha Saúde IA — aplicação principal V7.08 */
 
 const K=window.MSA_K||window.K;
 const get=k=>window.MSAStorage.get(k);
@@ -1125,7 +1125,27 @@ function loadProfile(){let p=get(K.p)[0]||{};[['Nome','nome'],['Nasc','nasc'],['
 $('pSexo').addEventListener('input',atualizarSaudeReprodutiva);
 $('pAnticoncepcionalMetodo')?.addEventListener('change',atualizarCamposMetodoAnticoncepcional);
 function processarFotoPerfil(ev){const file=ev.target.files&&ev.target.files[0];if(!file)return;if(!file.type.startsWith('image/')){alert('Selecione uma imagem.');return;}const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{const max=700,scale=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);c.getContext('2d').drawImage(img,0,0,c.width,c.height);const data=c.toDataURL('image/jpeg',.82);let p=get(K.p)[0]||{};p.foto=data;set(K.p,[p]);loadProfile();renderCarteirinha();};img.src=reader.result};reader.readAsDataURL(file)}
-function renderCarteirinha(){const p=get(K.p)[0]||{},m=get(K.m),foto=p.foto||'';const img=foto?'<img src="'+esc(foto)+'" alt="Foto do perfil">':'<span>👤</span>';if($('profilePhotoPreview'))$('profilePhotoPreview').innerHTML=img;if($('cardPhoto'))$('cardPhoto').innerHTML=img;if($('cardName'))$('cardName').textContent=p.nome||'Seu nome';if($('cardBasic')){let bits=[];if(p.nasc)bits.push('Nascimento: '+formatDateBR(p.nasc));if(p.idade)bits.push('Idade: '+p.idade);if(p.sexo)bits.push('Sexo: '+p.sexo);$('cardBasic').textContent=bits.join(' • ')||'Preencha seu perfil para montar a carteirinha.'}if($('cardBlood'))$('cardBlood').textContent=p.sangue||'Não informado';if($('cardBirth'))$('cardBirth').textContent=p.nasc?formatDateBR(p.nasc):'Não informado';if($('cardHeight'))$('cardHeight').textContent=p.altura?formatarAltura(p.altura):'Não informado';if($('cardWeight'))$('cardWeight').textContent=p.peso?(p.peso+' kg'):'Não informado';if($('cardAllergy'))$('cardAllergy').textContent=p.alerg||'Não informado';if($('cardConditions'))$('cardConditions').textContent=p.cond||'Não informado';if($('cardMeds'))$('cardMeds').textContent=m.length?m.slice(-4).map(x=>x.nome+(x.dose?' — '+x.dose:'')).join(' • '):'Nenhum registrado';if($('cardEmergency'))$('cardEmergency').textContent=p.emerg?(p.emerg+(p.tel?' — '+p.tel:'')):'Não informado';if($('cardUpdated'))$('cardUpdated').textContent=new Date().toLocaleDateString('pt-BR')}
+function renderCarteirinhaCondicoes(value){
+ const box=$('cardConditions'),count=$('cardConditionCount');
+ if(!box)return;
+ const raw=String(value||'').trim();
+ const items=raw&&!/^(não informado|nao informado|nenhum|nenhuma)$/i.test(raw)
+  ?raw.split(/;|\n|•/).map(x=>x.trim().replace(/^[-•\s]+/, '')).filter(Boolean)
+  :[];
+ const unique=[],seen=new Set();
+ items.forEach(item=>{
+  const key=item.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  if(!key||seen.has(key))return;seen.add(key);unique.push(item);
+ });
+ if(count)count.textContent=unique.length?unique.length+' '+(unique.length===1?'condição':'condições'):'A preencher';
+ if(!unique.length){
+  box.innerHTML='<span class="health-condition-empty">Nenhuma condição cadastrada</span>';
+  return;
+ }
+ box.innerHTML=unique.map((item,i)=>'<span class="health-condition-tag"><span class="health-condition-dot" aria-hidden="true"></span><span>'+esc(item)+'</span></span>').join('');
+}
+
+function renderCarteirinha(){const p=get(K.p)[0]||{},m=get(K.m),foto=p.foto||'';const img=foto?'<img src="'+esc(foto)+'" alt="Foto do perfil">':'<span>👤</span>';if($('profilePhotoPreview'))$('profilePhotoPreview').innerHTML=img;if($('cardPhoto'))$('cardPhoto').innerHTML=img;if($('cardName'))$('cardName').textContent=p.nome||'Seu nome';if($('cardBasic')){let bits=[];if(p.nasc)bits.push('Nascimento: '+formatDateBR(p.nasc));if(p.idade)bits.push('Idade: '+p.idade);if(p.sexo)bits.push('Sexo: '+p.sexo);$('cardBasic').textContent=bits.join(' • ')||'Preencha seu perfil para montar a carteirinha.'}if($('cardBlood'))$('cardBlood').textContent=p.sangue||'Não informado';if($('cardBirth'))$('cardBirth').textContent=p.nasc?formatDateBR(p.nasc):'Não informado';if($('cardHeight'))$('cardHeight').textContent=p.altura?formatarAltura(p.altura):'Não informado';if($('cardWeight'))$('cardWeight').textContent=p.peso?(p.peso+' kg'):'Não informado';if($('cardAllergy'))$('cardAllergy').textContent=p.alerg||'Não informado';renderCarteirinhaCondicoes(p.cond);if($('cardMeds'))$('cardMeds').textContent=m.length?m.slice(-4).map(x=>x.nome+(x.dose?' — '+x.dose:'')).join(' • '):'Nenhum registrado';if($('cardEmergency'))$('cardEmergency').textContent=p.emerg?(p.emerg+(p.tel?' — '+p.tel:'')):'Não informado';if($('cardUpdated'))$('cardUpdated').textContent=new Date().toLocaleDateString('pt-BR')}
 function gerarCarteirinhaPDF(){renderCarteirinha();const oldTitle=document.title;document.title='Carteirinha de Saúde - '+((get(K.p)[0]||{}).nome||'Minha Saúde IA');setTimeout(()=>{window.print();setTimeout(()=>{document.title=oldTitle},500)},120)}
 $('pFoto')?.addEventListener('change',processarFotoPerfil);
 function ask(){let q=$('iaInput').value.trim();if(!q)return;let chat=$('chat');chat.innerHTML+=`<div class="bubble user">${esc(q)}</div>`;let l=q.toLowerCase(),ans;
