@@ -1,3 +1,13 @@
+## V7.07 — Página de importação mais fácil
+- 🔢 Passo a passo (Preparar → Conversar → Colar → Revisar → Salvar) no topo da importação, avançando sozinho e marcando em verde as etapas feitas.
+- 📋 Botão “Colar resposta da IA” (puxa da área de transferência) e “Limpar caixa”.
+- 🧹 Limpeza automática da resposta: tira saudação (“Claro! Aqui está…”), asteriscos, blocos de código, marcadores e despedidas.
+- 👀 Prévia instantânea ao colar: “✅ Encontrei: 👤 dados pessoais · 💊 remédios · 🩺 consultas · 🧪 exames…” ou aviso se nada foi reconhecido.
+- 💾 Rascunho: a recuperação que já existia passa a guardar a resposta limpa e é apagada depois de salvar.
+- 🕐 Histórico das últimas importações (data, modo e o que entrou/foi completado), separado por perfil.
+- 🎨 Página mais limpa: a importação vem primeiro; as perguntas rápidas ficam num bloco recolhido no fim.
+- 🔄 Versão e cache atualizados para V7.07.
+
 ## V7.06 — Prompt pede só o que está vazio ou incompleto
 - 🧠 Além de pular os campos já preenchidos (nome, nascimento, sexo, sangue, altura, peso, alergias…), o prompt agora lista o que está INCOMPLETO no app — remédio sem dose/frequência, consulta sem especialidade/motivo, exame sem resultado — e pede para a IA completar só isso (ChatGPT/Gemini e NotebookLM).
 - 📓 NotebookLM: remédios, consultas e exames voltam a ser perguntados quando há itens incompletos (antes, com 1 remédio cadastrado, a pergunta sumia).
