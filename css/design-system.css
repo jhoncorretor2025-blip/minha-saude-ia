@@ -684,3 +684,70 @@ body.msa-dark .msa-next-step-copy p{color:#cbd5e1}
  display:block;flex:0 0 7px;width:7px;height:7px;min-width:7px;
  opacity:1;margin:5px 0 0;background:#ea580c;
 }
+
+
+/* V7.09 — fundo e contraste reforçados para doenças na carteirinha.
+   Seletor específico + !important evita conflito com estilos globais e caches antigos. */
+#healthCard .health-card-grid>.health-card-conditions{
+ grid-column:1/-1!important;
+ background:linear-gradient(135deg,rgba(20,32,78,.92),rgba(45,31,99,.90))!important;
+ border:1px solid rgba(255,255,255,.34)!important;
+ border-left:5px solid #fbbf24!important;
+ border-radius:17px!important;
+ padding:14px 15px 16px!important;
+ color:#fff!important;
+ box-shadow:0 9px 22px rgba(9,16,49,.24)!important;
+}
+#healthCard .health-card-grid>.health-card-conditions .health-card-conditions-head{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;
+ color:#fff!important;opacity:1!important;font-size:13px!important;font-weight:950!important;
+ margin:0 0 11px!important;line-height:1.4!important;
+}
+#healthCard .health-card-grid>.health-card-conditions .health-card-conditions-head>span{
+ display:inline!important;color:#fff!important;opacity:1!important;font-size:13px!important;
+ font-weight:950!important;margin:0!important;line-height:1.4!important;
+}
+#healthCard .health-card-grid>.health-card-conditions .health-condition-count{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ border-radius:999px!important;padding:5px 10px!important;
+ background:#fde68a!important;color:#713f12!important;
+ border:1px solid #fbbf24!important;font-size:11px!important;font-weight:950!important;
+ opacity:1!important;white-space:nowrap!important;
+}
+#healthCard .health-card-grid>.health-card-conditions .health-condition-list{
+ display:flex!important;flex-wrap:wrap!important;align-items:stretch!important;gap:8px!important;margin:0!important;
+}
+#healthCard .health-card-grid>.health-card-conditions .health-condition-tag{
+ display:inline-flex!important;align-items:flex-start!important;gap:8px!important;
+ max-width:100%!important;min-width:0!important;box-sizing:border-box!important;
+ padding:9px 11px!important;background:#f4f7ff!important;
+ border:1px solid #c7d2fe!important;border-radius:12px!important;
+ color:#1e2b55!important;font-size:12px!important;font-weight:900!important;
+ line-height:1.45!important;box-shadow:0 2px 6px rgba(9,16,49,.16)!important;
+ overflow-wrap:anywhere!important;white-space:normal!important;opacity:1!important;
+}
+#healthCard .health-card-grid>.health-card-conditions .health-condition-tag>span:last-child{
+ display:inline!important;color:#1e2b55!important;opacity:1!important;
+ font-size:12px!important;font-weight:900!important;line-height:1.45!important;margin:0!important;
+}
+#healthCard .health-card-grid>.health-card-conditions .health-condition-tag>.health-condition-dot{
+ display:block!important;flex:0 0 7px!important;width:7px!important;height:7px!important;min-width:7px!important;
+ border-radius:50%!important;background:#ea580c!important;opacity:1!important;margin:5px 0 0!important;
+}
+#healthCard .health-card-grid>.health-card-conditions .health-condition-empty{
+ color:#fff!important;background:rgba(255,255,255,.1)!important;
+ border:1px dashed rgba(255,255,255,.4)!important;border-radius:10px!important;padding:10px 12px!important;
+ display:inline-block!important;font-weight:800!important;opacity:1!important;
+}
+@media(max-width:700px){
+ #healthCard .health-card-grid>.health-card-conditions{padding:12px!important}
+ #healthCard .health-card-grid>.health-card-conditions .health-card-conditions-head{align-items:flex-start!important;flex-direction:row!important;flex-wrap:wrap!important}
+ #healthCard .health-card-grid>.health-card-conditions .health-condition-tag{width:100%!important;font-size:12px!important;padding:9px 10px!important}
+ #healthCard .health-card-grid>.health-card-conditions .health-condition-tag>span:last-child{font-size:12px!important}
+}
+@media print{
+ #healthCard .health-card-grid>.health-card-conditions,
+ #healthCard .health-card-grid>.health-card-conditions .health-condition-tag{
+  print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important;
+ }
+}
