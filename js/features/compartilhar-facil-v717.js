@@ -1,4 +1,4 @@
-/* V7.17 — atalho claro para compartilhar perfil com parceiro(a) */
+/* V7.18 — correção: atalho visível na tela inicial */
 (function(){
 'use strict';
 function openShare(){
@@ -12,11 +12,11 @@ function openShare(){
 function addHome(){
  var home=document.getElementById('home');
  if(!home||document.getElementById('msaShareEasyV717'))return;
- var c=document.createElement('section');c.id='msaShareEasyV717';
+ var c=document.createElement('div');c.id='msaShareEasyV717';
  c.style.cssText='margin:14px 0;padding:17px;border:2px solid #93c5fd;border-radius:18px;background:#eff6ff;color:#172033';
  c.innerHTML='<div style="font-size:11px;font-weight:900;color:#1d4ed8;letter-spacing:.05em">💑 COMPARTILHAR COM QUEM VOCÊ AMA</div><h3 style="margin:7px 0;font-size:19px">Enviar meus dados para minha namorada ou cônjuge</h3><p style="margin:0 0 12px;line-height:1.5;color:#475569">Exporte somente nome, idade, tipo sanguíneo, peso, altura e medidas. Depois envie o arquivo pelo WhatsApp para a outra pessoa importar.</p><button type="button" id="msaShareEasyBtn" style="width:100%;min-height:48px;background:#2563eb;color:#fff;border:0;border-radius:12px;font-weight:800;font-size:15px">📤 Começar a compartilhar</button><p style="font-size:12px;color:#64748b;margin:9px 0 0">Você escolhe quando compartilhar. O histórico médico completo não será incluído.</p>';
- var intro=document.getElementById('msaPurposeIntro');
- if(intro&&intro.parentNode)intro.parentNode.insertBefore(c,intro.nextSibling);else home.prepend(c);
+ var hero=document.getElementById('homeProfileHero');
+ if(hero&&hero.parentNode)hero.insertAdjacentElement('afterend',c);else home.prepend(c);
  c.querySelector('button').addEventListener('click',openShare);
 }
 function addExport(){
