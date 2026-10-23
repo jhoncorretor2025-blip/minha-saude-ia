@@ -1,3 +1,10 @@
+## V7.13 — Botão “Prompt: pedir só o que falta” no Início
+- 🧩 O botão ao lado de “Me ajude a escolher” abre a janela no próprio Início com o prompt do app: pede só os campos vazios e os itens incompletos (o que já está preenchido não é perguntado de novo).
+- 🤖📓 Escolha ChatGPT/Gemini ou NotebookLM na janela (o NotebookLM usa o prompt enxuto; se precisar de partes, avisa e leva para a página com todas).
+- 🔗 Botões para abrir ChatGPT, Gemini e NotebookLM e link para “Preencher com a IA” para colar a resposta.
+- 🐞 Havia duas versões do botão (uma genérica que pedia para a IA descobrir o que faltava e outra que saía do Início): agora é uma só.
+- 🔄 Versão sincronizada em V7.13 (a constante e o cache estavam em V7.11 enquanto o site mostrava V7.12).
+
 ## V7.11 — Atalho na Home para gerar prompt só com pendências
 - 🧩 Adicionado ao card “✨ Comece por aqui”, ao lado de “🤖 Me ajude a escolher”, o botão “Prompt: pedir só o que falta”.
 - 📋 O botão usa o perfil ativo e gera o prompt com os campos pendentes já detectados pelo gerador, sem solicitar novamente o que está preenchido.

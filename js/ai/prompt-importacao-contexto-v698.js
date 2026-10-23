@@ -600,4 +600,41 @@ const _jaNoAppV706=jaNoAppV705;
 jaNoAppV705=function(ctx,grupo){const base=_jaNoAppV706(ctx,grupo);const g=GRUPOS_V705[grupo];const b=g?blocoCompletarV706(g[2]):'';const lst=g&&g[2].some(k=>['MEDICAMENTOS','CONSULTAS','EXAMES'].indexOf(k)>=0)?FORMATO_LISTAS_V706:'';return [base,lst,b].filter(Boolean).join('\n')};
 window.msaIncompletosPrompt=incompletosV706;
 
+
+/* ===== V7.13 — botão “🧩 Prompt: pedir só o que falta” do Início =====
+   Junta as duas versões que existiam (uma genérica no index e outra que levava para a página de importação):
+   agora abre a janela no próprio Início com o prompt do app, que pede só os campos vazios e os itens incompletos. */
+function modoHomeV713(){return localStorage.getItem('msaHomePromptModo')==='notebook'?'notebook':'chatgpt'}
+function promptHomeV713(){
+ if(modoHomeV713()==='notebook'){const r=gerarPartesNotebookV705();return {texto:r.partes.length?r.partes[0].texto:'',partes:r.partes.length,campos:r.partes.reduce((a,p)=>a+p.campos.length,0)}}
+ const ctx=collectContext();let t='';try{t=generate()}catch(e){t=''}
+ return {texto:t,partes:1,campos:(ctx.pendingFields||[]).length};
+}
+window.abrirPromptCamposPendentesHome=function(){
+ const modal=$('msaMissingPromptModal'),campo=$('msaMissingPromptText');
+ if(!modal||!campo){if(typeof window.go==='function')window.go('importar');return}
+ const r=promptHomeV713(),inc=incompletosV706(),nInc=inc.meds.length+inc.consultas.length+inc.exames.length,nb=modoHomeV713()==='notebook';
+ campo.value=r.texto||'Seu perfil já está completo: não há campos vazios nem incompletos para pedir à IA. 🎉';
+ const p=modal.querySelector('p.muted');
+ if(p)p.innerHTML='<span class="msa-hp-modos"><button type="button" data-hp-modo="chatgpt" class="'+(nb?'':'on')+'">🤖 ChatGPT / Gemini</button><button type="button" data-hp-modo="notebook" class="'+(nb?'on':'')+'">📓 NotebookLM</button></span>'+
+  '<b>Pede só o que falta:</b> '+r.campos+' campo(s) vazio(s)'+(nInc?' e '+nInc+' item(ns) incompleto(s)':'')+'. O que você já preencheu não é perguntado de novo.'+
+  (nb&&r.partes>1?'<br>⚠️ Para o NotebookLM este prompt precisa de <b>'+r.partes+' partes</b>: esta é a parte 1. <a href="#" data-hp-ir="importar">Ver todas as partes</a>.':'')+
+  '<br><small>'+r.texto.length.toLocaleString('pt-BR')+' caracteres. Depois de a IA responder, cole a resposta em <a href="#" data-hp-ir="importar">📥 Preencher com a IA</a>.</small>';
+ const acoes=modal.querySelector('.msa-missing-prompt-actions');
+ if(acoes&&!acoes.querySelector('.msa-hp-abrir')){acoes.insertAdjacentHTML('beforeend','<a class="btn secondary msa-hp-abrir" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">🟢 ChatGPT</a><a class="btn secondary msa-hp-abrir" href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer">🔵 Gemini</a><a class="btn secondary msa-hp-abrir" href="https://notebooklm.google.com/" target="_blank" rel="noopener noreferrer">📓 NotebookLM</a>')}
+ const fb=$('msaMissingPromptFeedback');if(fb)fb.textContent='';
+ modal.style.display='flex';document.body.style.overflow='hidden';
+};
+window.copiarPromptCamposPendentesHome=function(){
+ const campo=$('msaMissingPromptText'),fb=$('msaMissingPromptFeedback');if(!campo)return;
+ const ok=()=>{if(fb)fb.textContent='✅ Prompt copiado! Cole na IA, depois traga a resposta para “Preencher com a IA”.'};
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(campo.value).then(ok,()=>{campo.select();try{document.execCommand('copy');ok()}catch(e){}});else{campo.select();try{document.execCommand('copy');ok()}catch(e){}}
+};
+window.fecharPromptCamposPendentesHome=function(){const m=$('msaMissingPromptModal');if(m)m.style.display='none';document.body.style.overflow=''};
+document.addEventListener('click',function(e){
+ const m=e.target.closest('[data-hp-modo]');if(m){localStorage.setItem('msaHomePromptModo',m.getAttribute('data-hp-modo'));window.abrirPromptCamposPendentesHome();return}
+ const g=e.target.closest('[data-hp-ir]');if(g){e.preventDefault();window.fecharPromptCamposPendentesHome();if(typeof window.go==='function')window.go(g.getAttribute('data-hp-ir'))}
+});
+(function(){const st=document.createElement('style');st.id='msaHomePromptV713';st.textContent='.msa-hp-modos{display:flex;gap:6px;margin:0 0 10px}.msa-hp-modos button{flex:1;min-height:42px;border-radius:12px;border:1px solid #c7d2fe;background:#fff;color:#3730a3;font:inherit;font-weight:800;cursor:pointer}.msa-hp-modos button.on{background:#4f46e5;border-color:#4f46e5;color:#fff}.msa-missing-prompt-actions{flex-wrap:wrap}.msa-hp-abrir{text-decoration:none;display:inline-flex;align-items:center}body.msa-dark .msa-hp-modos button{background:#0f172a;color:#c7d2fe;border-color:#3730a3}body.msa-dark .msa-hp-modos button.on{background:#4f46e5;color:#fff}';document.head.appendChild(st)})();
+
 })();
