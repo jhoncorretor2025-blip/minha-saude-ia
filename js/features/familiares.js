@@ -150,7 +150,34 @@ window.focarEdicaoFamiliar=function(id){
    __msaFamPendingEdit='';
   },100);
 };
+function instalarAtalhoBuscarFamiliarIA(){
+ const host=document.getElementById('familiaCadastroCard'),form=document.getElementById('familiarForm');
+ if(!host||!form||document.getElementById('msaFamPromptImportCard'))return;
+ const card=document.createElement('div');
+ card.id='msaFamPromptImportCard';
+ card.setAttribute('role','region');
+ card.setAttribute('aria-labelledby','msaFamPromptImportTitle');
+ card.style.cssText='border:1px solid #c7d8ff;background:linear-gradient(135deg,#eff6ff,#fff);border-radius:16px;padding:14px;margin:12px 0 16px';
+ card.innerHTML='<div style="font-weight:900;color:#1d4ed8">🤖 BUSCAR DADOS COM IA</div>'+
+  '<h4 id="msaFamPromptImportTitle" style="margin:5px 0 6px;font-size:16px">Quer puxar os dados de um familiar sem preencher tudo manualmente?</h4>'+
+  '<p style="margin:0 0 10px;color:#475569;font-size:13px;line-height:1.5">Gere um prompt pronto para a IA procurar informações familiares que ela realmente consegue acessar e devolver os dados em JSON. Depois, importe a resposta para cadastrar ou atualizar os familiares.</p>'+
+  '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px">'+
+   '<button type="button" id="msaFamPromptImportGenerate" class="btn green">🤖 Gerar prompt para buscar familiares</button>'+
+   '<button type="button" id="msaFamPromptImportOpen" class="btn secondary">📥 Já tenho a resposta — importar</button>'+
+  '</div>'+
+  '<p style="margin:9px 0 0;color:#64748b;font-size:12px;line-height:1.45">Como funciona: 1. Gere e revise o prompt. 2. Copie para o ChatGPT, Gemini ou Claude. 3. Peça o JSON. 4. Volte e clique em “Já tenho a resposta — importar”. A IA pode não ter acesso a conversas antigas; confira tudo antes de salvar.</p>';
+ host.insertBefore(card,form);
+ card.querySelector('#msaFamPromptImportGenerate').addEventListener('click',function(){
+  if(typeof window.abrirPromptFamiliaIA==='function')window.abrirPromptFamiliaIA('buscar-familiares');
+  else alert('O módulo de prompt familiar ainda não carregou. Atualize com Ctrl+F5 e tente novamente.');
+ });
+ card.querySelector('#msaFamPromptImportOpen').addEventListener('click',function(){
+  if(typeof window.abrirImportadorRespostaFamilia==='function')window.abrirImportadorRespostaFamilia();
+  else alert('O importador familiar ainda não carregou. Atualize com Ctrl+F5 e tente novamente.');
+ });
+}
 function renderFamiliares(){
+ instalarAtalhoBuscarFamiliarIA();
  renderParceirosSaude();
  instalarEstilosLadoFamiliaCards();
  instalarEstilosFamiliaInteligente();
@@ -470,8 +497,11 @@ function copiarTextoFamiliaIA(txt,okMsg){
  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackIAFamiliar(txt));
  else fallbackIAFamiliar(txt);
 }
-function abrirPromptFamiliaIA(){
- const pergunta='Faça uma análise geral do histórico familiar, destacando padrões, informações relevantes e perguntas úteis para levar ao médico.';
+function abrirPromptFamiliaIA(modo){
+ const buscarFamiliares=modo==='buscar-familiares';
+ const pergunta=buscarFamiliares
+  ? 'Use as memórias, conversas anteriores e o contexto familiar que você realmente consegue acessar sobre o usuário. Localize os familiares que ele já mencionou, inclusive os que ainda não aparecem na lista local abaixo. Extraia nome, parentesco, lado da família, condições e cirurgias relatadas, medicamentos, consultas, crises e observações. Preserve somente fatos efetivamente disponíveis; não invente nem estime informações. Não misture pessoas diferentes. Diferencie parentes consanguíneos de parentes por afinidade. Para dados ausentes, use campo vazio ou lista vazia. Devolva imediatamente SOMENTE JSON válido compatível com o importador do Minha Saúde IA, no formato {"familiares":[],"historico_familiar":[]}. Não faça perguntas nem acrescente texto fora do JSON. Se não tiver acesso a memórias ou conversas anteriores, use apenas o contexto realmente disponível.'
+  : 'Faça uma análise geral do histórico familiar, destacando padrões, informações relevantes e perguntas úteis para levar ao médico.';
  const d=dadosFamiliaParaIA(),familiaCount=d.familiares.length,histCount=d.historico.length,medCount=d.familiares.reduce((n,p)=>n+(Array.isArray(p.medicamentos)?p.medicamentos.length:0),0),consCount=d.familiares.reduce((n,p)=>n+(Array.isArray(p.consultas)?p.consultas.length:0),0),criseCount=d.familiares.reduce((n,p)=>n+(Array.isArray(p.crises)?p.crises.length:0),0);
  let old=document.getElementById('msaFamiliaIAPromptModal');if(old)old.remove();
  const modal=document.createElement('div');modal.id='msaFamiliaIAPromptModal';modal.className='msa-ava-overlay';
