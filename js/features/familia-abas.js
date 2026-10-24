@@ -10,8 +10,8 @@ function $(id){return document.getElementById(id)}
 var ABAS=[
  ['pessoas','👥','Pessoas','Veja e edite quem você cuida'],
  ['adicionar','➕','Adicionar','Cadastrar uma pessoa nova'],
- ['historico','🧬','Saúde da família','Doenças na família e padrões'],
- ['conjuge','💑','Cônjuge','Compartilhar e cuidar a dois']
+ ['historico','🧬','Padrões familiares','Doenças e antecedentes registrados'],
+ ['conjuge','💑','Importar cônjuge','Compartilhar e revisar dados']
 ];
 /* qual aba mostra cada bloco (por id; os sem id são achados pelo texto) */
 var MAPA={msaFamiliaFiltro:'pessoas',familiaPessoasCard:'pessoas',familiarDetalhe:'pessoas',familiaCadastroCard:'adicionar',familiaInteligencia:'historico',msaBasicShareCard:'conjuge',msaCoupleCareV716:'conjuge'};
