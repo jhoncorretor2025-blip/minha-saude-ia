@@ -176,6 +176,34 @@ function instalarAtalhoBuscarFamiliarIA(){
   else alert('O importador familiar ainda não carregou. Atualize com Ctrl+F5 e tente novamente.');
  });
 }
+function instalarEstilosPainelGeralFamilia(){
+ if(document.getElementById('msaFamilyDashboardStyles'))return;
+ const s=document.createElement('style');s.id='msaFamilyDashboardStyles';
+ s.textContent='.msa-family-dashboard{margin:10px 0 14px;padding:15px;border:1px solid #dbe5f4;border-radius:18px;background:linear-gradient(135deg,#f8fbff,#f5f7ff)}.msa-family-dashboard-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.msa-family-dashboard-head h4{margin:4px 0;font-size:17px;color:#172554}.msa-family-dashboard-head p{margin:0;color:#64748b;font-size:12px;line-height:1.45}.msa-family-dashboard-live{font-size:10px;white-space:nowrap;font-weight:800;color:#166534;background:#dcfce7;padding:5px 8px;border-radius:99px}.msa-family-dashboard-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px}.msa-family-kpi{min-width:0;padding:10px;border:1px solid #e2e8f0;border-radius:13px;background:rgba(255,255,255,.92)}.msa-family-kpi span,.msa-family-kpi small{display:block;color:#64748b;font-size:10px;line-height:1.35}.msa-family-kpi b{display:block;color:#172554;font-size:23px;line-height:1.3;margin:3px 0}.msa-family-kpi.needs-review{border-color:#fcd34d;background:#fffbeb}.msa-family-kpi.needs-review b{color:#92400e}.msa-family-kpi.complete{border-color:#bbf7d0}.msa-family-dashboard-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.msa-family-dashboard-actions .btn{min-height:40px}.msa-family-dashboard-ok{align-self:center;color:#166534;font-size:12px;font-weight:800}@media(max-width:760px){.msa-family-dashboard{padding:12px}.msa-family-dashboard-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.msa-family-dashboard-head{flex-direction:column}.msa-family-dashboard-live{white-space:normal}.msa-family-kpi:last-child{grid-column:1/-1}}@media(max-width:380px){.msa-family-dashboard-grid{grid-template-columns:1fr}.msa-family-kpi:last-child{grid-column:auto}.msa-family-dashboard-actions{display:grid}.msa-family-dashboard-actions .btn{width:100%}}body.msa-dark .msa-family-dashboard{background:#111827;border-color:#263244}body.msa-dark .msa-family-dashboard-head h4,body.msa-dark .msa-family-kpi b{color:#e5edff}body.msa-dark .msa-family-kpi{background:#0f172a;border-color:#263244}';
+ document.head.appendChild(s);
+}
+function renderPainelGeralFamilia(list){
+ const host=document.getElementById('familiaPessoasCard');if(!host)return;
+ let panel=document.getElementById('msaFamilyDashboard');
+ if(!panel){panel=document.createElement('div');panel.id='msaFamilyDashboard';const title=host.querySelector('h3');if(title)title.insertAdjacentElement('afterend',panel);else host.prepend(panel)}
+ const pessoas=Array.isArray(list)?list:[],hoje=new Date();hoje.setHours(0,0,0,0);
+ const comCondicao=pessoas.filter(function(p){return !!String(p.condicao||'').trim()||!!String(p.alergias||'').trim()}).length;
+ const medicamentos=pessoas.reduce(function(n,p){return n+(Array.isArray(p.medicamentos)?p.medicamentos.length:0)},0);
+ const hojeStr=hoje.toISOString().slice(0,10);
+ const retornos=pessoas.reduce(function(n,p){return n+(Array.isArray(p.consultas)?p.consultas.filter(function(c){const data=String(c&&((c.retorno&&c.retorno>=hojeStr)?c.retorno:c.data)||'').slice(0,10);if(!data)return false;const d=new Date(data+'T00:00:00');return !Number.isNaN(d.getTime())&&d>=hoje}).length:0)},0);
+ const faltam=function(p){return !String(p.parentesco||'').trim()||(!String(p.idade||'').trim()&&!String(p.nasc||'').trim())||!String(p.ladoFamilia||'').trim()};
+ const incompletos=pessoas.filter(faltam).length,primeiro=pessoas.find(faltam);
+ panel.className='msa-family-dashboard';
+ panel.innerHTML='<div class="msa-family-dashboard-head"><div><div class="msa-fam-kicker">📊 VISÃO GERAL</div><h4>Resumo da sua família</h4><p>Veja como estão os cadastros e quais precisam de revisão. Os dados ficam separados do seu perfil pessoal.</p></div><span class="msa-family-dashboard-live">Atualizado agora</span></div>'+
+ '<div class="msa-family-dashboard-grid"><div class="msa-family-kpi"><span>👥 Pessoas</span><b>'+pessoas.length+'</b><small>perfis cadastrados</small></div>'+
+ '<div class="msa-family-kpi"><span>🩺 Saúde registrada</span><b>'+comCondicao+'</b><small>com condição ou alergia</small></div>'+
+ '<div class="msa-family-kpi"><span>💊 Medicamentos</span><b>'+medicamentos+'</b><small>registros nos perfis</small></div>'+
+ '<div class="msa-family-kpi"><span>🗓️ Consultas / retornos</span><b>'+retornos+'</b><small>hoje ou em data futura</small></div>'+
+ '<div class="msa-family-kpi '+(incompletos?'needs-review':'complete')+'"><span>🧩 Para revisar</span><b>'+incompletos+'</b><small>com dados básicos faltantes</small></div></div>'+
+ '<div class="msa-family-dashboard-actions"><button type="button" class="btn green" data-fam-ir="adicionar">➕ Adicionar pessoa</button>'+
+ (primeiro?'<button type="button" class="btn secondary" onclick="selecionarFamiliar(\''+esc(primeiro.id)+'\');document.getElementById(\'familiarDetalhe\')?.scrollIntoView({behavior:\'smooth\',block:\'start\'})">🧩 Revisar primeiro cadastro incompleto</button>':'<span class="msa-family-dashboard-ok">✅ Os campos básicos estão preenchidos.</span>')+'</div>';
+}
+
 function renderFamiliares(){
  instalarAtalhoBuscarFamiliarIA();
  renderParceirosSaude();
@@ -187,7 +215,7 @@ function renderFamiliares(){
  instalarCamposPerfilSaudePessoa();
  renderAlertasHistoricoFamiliar();
  const box=document.getElementById('familiares');if(!box||!box.classList.contains('active'))return;
- const list=getList();renderFamiliaInteligencia();const pending=__msaFamPendingEdit?findMember(__msaFamPendingEdit):null;let sel=pending||findMember(selectedId());if(!sel&&list.length){sel=list[0];setSelected(sel.id)}if(sel){setSelected(sel.id);ensure(sel)}
+ const list=getList();renderFamiliaInteligencia();instalarEstilosPainelGeralFamilia();renderPainelGeralFamilia(list);const pending=__msaFamPendingEdit?findMember(__msaFamPendingEdit):null;let sel=pending||findMember(selectedId());if(!sel&&list.length){sel=list[0];setSelected(sel.id)}if(sel){setSelected(sel.id);ensure(sel)}
  const cadastroCard=document.getElementById('familiaCadastroCard');if(cadastroCard)cadastroCard.dataset.famArea='cadastro';
  const pessoasCard=document.getElementById('familiaPessoasCard');if(pessoasCard)pessoasCard.dataset.famArea='cadastro';
  const cards=document.getElementById('familiaresList');
