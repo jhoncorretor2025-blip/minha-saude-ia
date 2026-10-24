@@ -942,52 +942,55 @@ function salvarImportacaoFamilia(dados,somentePrevia){
  };
 }
 
+function instalarEstilosPreviaImportacaoFamilia(){
+ if(document.getElementById('msaFamImportPreviewStyles'))return;
+ const s=document.createElement('style');s.id='msaFamImportPreviewStyles';
+ s.textContent='.msa-fam-import-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.msa-fam-import-actions .btn{min-width:0;white-space:normal}.msa-fam-import-preview{margin-top:12px;padding:13px;border:1px solid #bfdbfe;background:#f8fbff;border-radius:14px;color:#172554}.msa-fam-import-preview-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:11px;font-weight:900;letter-spacing:.04em}.msa-fam-import-preview-head b{background:#fef3c7;color:#92400e;border-radius:99px;padding:5px 8px;letter-spacing:0}.msa-fam-import-preview-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:12px 0}.msa-fam-import-preview-grid>div{padding:9px;border:1px solid #dbeafe;background:#fff;border-radius:10px;min-width:0}.msa-fam-import-preview-grid b{display:block;font-size:22px}.msa-fam-import-preview-grid span{display:block;font-size:10px;line-height:1.35;color:#475569}.msa-fam-import-conflicts{margin-top:10px;padding:10px;border:1px solid #fcd34d;border-radius:12px;background:#fffbeb;color:#92400e;font-size:12px}.msa-fam-import-conflicts ul{padding-left:18px;margin:7px 0}.msa-fam-import-conflicts li{margin:5px 0;line-height:1.4}.msa-fam-import-conflicts p,.msa-fam-import-preview p{font-size:12px;line-height:1.45}.msa-fam-import-no-conflicts{color:#166534}.msa-fam-import-caution{border-top:1px solid #dbeafe;padding-top:9px;color:#475569}@media(max-width:600px){.msa-fam-import-actions{grid-template-columns:1fr}.msa-fam-import-preview-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.msa-fam-import-preview-head{align-items:flex-start;flex-direction:column}}body.msa-dark .msa-fam-import-preview{background:#111827;border-color:#263244;color:#e5edff}body.msa-dark .msa-fam-import-preview-grid>div{background:#0f172a;border-color:#263244}';
+ document.head.appendChild(s);
+}
 function abrirImportadorRespostaFamilia(){
+ instalarEstilosPreviaImportacaoFamilia();
  let old=document.getElementById('msaFamiliaIAImportModal');if(old)old.remove();
  const modal=document.createElement('div');modal.id='msaFamiliaIAImportModal';modal.className='msa-ava-overlay';
  modal.innerHTML='<div class="msa-ava-dialog" role="dialog" aria-modal="true" aria-labelledby="msaFamiliaIAImportTitle">'+
- '<div class="msa-ava-top"><div><div class="msa-fam-kicker">📥 IA · FAMÍLIA</div><h2 id="msaFamiliaIAImportTitle">Importar dados para o perfil</h2><p>Volte à conversa onde você respondeu às perguntas. Se a IA ainda não gerou o JSON, envie: <b>“Gere agora o JSON de importação do Minha Saúde IA usando todas as informações que já respondi.”</b> Depois copie a resposta JSON completa e cole aqui. Um resumo em texto comum não basta.</p></div><button type="button" class="msa-ava-close" id="msaFamiliaIAImportClose">✕</button></div>'+
- '<textarea id="msaFamiliaIAImportText" style="margin-top:14px;width:100%;min-height:330px;padding:13px;border:1px solid #d6deea;border-radius:14px;font-size:13px;line-height:1.45" placeholder="Cole aqui o JSON completo gerado pela IA..."></textarea>'+
- '<div class="msa-ava-actions" style="display:grid;grid-template-columns:1fr 1fr"><button type="button" class="btn secondary" id="msaFamiliaIAImportPaste">📋 Colar da área de transferência</button><button type="button" class="btn green" id="msaFamiliaIAImportSave">✅ Importar e salvar</button><button type="button" class="btn secondary" id="msaFamiliaIAImportGo">👤 Ver perfil importado</button><button type="button" class="btn secondary" id="msaFamiliaIAImportCancel">↩️ Voltar</button></div>'+
- '<div id="msaFamiliaIAImportStatus" class="alert safe" style="margin-top:12px">Passo 1: cole o JSON completo. Passo 2: clique em “Importar e salvar”. Passo 3: depois da confirmação, clique em “Ver perfil importado”.</div></div>';
+ '<div class="msa-ava-top"><div><div class="msa-fam-kicker">📥 IA · FAMÍLIA</div><h2 id="msaFamiliaIAImportTitle">Revisar importação antes de salvar</h2><p>Cole o JSON completo gerado pela IA. Primeiro veja a prévia; nada será gravado até você confirmar. Dados existentes são preservados e possíveis conflitos ficam destacados.</p></div><button type="button" class="msa-ava-close" id="msaFamiliaIAImportClose">✕</button></div>'+
+ '<textarea id="msaFamiliaIAImportText" style="margin-top:14px;width:100%;min-height:260px;box-sizing:border-box;padding:13px;border:1px solid #d6deea;border-radius:14px;font-size:13px;line-height:1.45" placeholder="Cole aqui o JSON completo gerado pela IA..."></textarea>'+
+ '<div id="msaFamiliaIAImportPreview" class="msa-fam-import-preview" hidden></div>'+
+ '<div class="msa-ava-actions msa-fam-import-actions"><button type="button" class="btn secondary" id="msaFamiliaIAImportPaste">📋 Colar da área de transferência</button><button type="button" class="btn" id="msaFamiliaIAImportPreviewBtn">🔎 Pré-visualizar</button><button type="button" class="btn green" id="msaFamiliaIAImportSave" disabled>✅ Confirmar e salvar</button><button type="button" class="btn secondary" id="msaFamiliaIAImportGo" disabled>👤 Ver perfil importado</button><button type="button" class="btn secondary" id="msaFamiliaIAImportCancel">↩️ Cancelar</button></div>'+
+ '<div id="msaFamiliaIAImportStatus" class="alert safe" role="status" aria-live="polite" style="margin-top:12px">Passo 1: cole a resposta. Passo 2: pré-visualize. Passo 3: revise os números e só então confirme para salvar.</div></div>';
  document.body.appendChild(modal);
- const input=modal.querySelector('#msaFamiliaIAImportText'),status=modal.querySelector('#msaFamiliaIAImportStatus'),fechar=function(){modal.remove()};
+ const input=modal.querySelector('#msaFamiliaIAImportText'),status=modal.querySelector('#msaFamiliaIAImportStatus'),preview=modal.querySelector('#msaFamiliaIAImportPreview');
+ const previewBtn=modal.querySelector('#msaFamiliaIAImportPreviewBtn'),saveBtn=modal.querySelector('#msaFamiliaIAImportSave'),goBtn=modal.querySelector('#msaFamiliaIAImportGo'),pasteBtn=modal.querySelector('#msaFamiliaIAImportPaste');
+ let previaRaw='',ultimaPrevia=null,importado=false;
+ const fechar=function(){modal.remove()};
+ const limparPrevia=function(){previaRaw='';ultimaPrevia=null;importado=false;saveBtn.disabled=true;goBtn.disabled=true;preview.hidden=true;preview.innerHTML='';previewBtn.disabled=false;saveBtn.textContent='✅ Confirmar e salvar';status.className='alert safe';status.textContent='Conteúdo alterado. Gere uma nova prévia antes de confirmar.'};
  modal.querySelector('#msaFamiliaIAImportClose').onclick=fechar;modal.querySelector('#msaFamiliaIAImportCancel').onclick=fechar;
  modal.addEventListener('click',function(e){if(e.target===modal)fechar()});
- modal.querySelector('#msaFamiliaIAImportPaste').onclick=async function(){
-  try{
-   const t=await navigator.clipboard.readText();
-   if(t){input.value=t;status.textContent='✅ Resposta colada da área de transferência. Confira antes de importar.'}
-   else status.textContent='A área de transferência está vazia.';
-  }catch(e){input.focus();status.textContent='Toque no campo e use Ctrl+V (ou Colar) para inserir a resposta.'}
- };
- modal.querySelector('#msaFamiliaIAImportSave').onclick=function(){
+ input.addEventListener('input',limparPrevia);
+ pasteBtn.onclick=async function(){try{const t=await navigator.clipboard.readText();if(t){input.value=t;input.dispatchEvent(new Event('input'));status.textContent='✅ Resposta colada. Agora clique em “Pré-visualizar”.'}else status.textContent='A área de transferência está vazia.'}catch(e){input.focus();status.textContent='Toque no campo e use Ctrl+V (ou Colar) para inserir a resposta.'}};
+ previewBtn.onclick=function(){
   try{
    const raw=input.value.trim();if(!raw)throw new Error('Cole primeiro a resposta da IA.');
-   const dados=extrairJSONFamilia(raw),res=salvarImportacaoFamilia(dados);
-   window.__msaUltimoPerfilImportado=res.perfilId||'';
-   if(res.perfilId)setSelected(res.perfilId);
-   status.className='alert safe';
-   const nomes=(res.nomes||[]).join(', ');
-   status.innerHTML='<b>✅ Importação concluída com filtro de repetidos!</b><br>Perfis no arquivo: '+res.totalFamiliares+' · Novos: '+res.novos+' · Atualizados com dados novos: '+res.atualizados+' · Repetidos identificados: '+res.duplicadosIgnorados+'<p>🩺 Registros clínicos novos: '+res.registrosNovos+' · Antecedentes novos: '+res.antecedentesNovos+'</p>'+(res.camposNovosCompletados?'<p>🧩 Dados que faltavam completados em registros existentes: '+res.camposNovosCompletados+'</p>':'')+(nomes?'<p><b>Pessoa(s):</b> '+esc(nomes)+'</p>':'')+'<p><b>Próximo passo:</b> clique em “Ver perfil importado” para abrir os dados no sistema.</p>';
-   modal.querySelector('#msaFamiliaIAImportSave').disabled=true;
-   modal.querySelector('#msaFamiliaIAImportSave').textContent='✅ Dados importados';
-   modal.querySelector('#msaFamiliaIAImportPaste').disabled=true;
-   modal.querySelector('#msaFamiliaIAImportGo').textContent='👤 Ver perfil importado';
-  }catch(e){status.className='alert danger';status.textContent='❌ '+(e.message||'Não foi possível importar a resposta.')}
+   const dados=extrairJSONFamilia(raw),res=salvarImportacaoFamilia(dados,true);
+   previaRaw=raw;ultimaPrevia={dados:dados,res:res};importado=false;
+   const conflitos=(res.conflitosLista||[]).map(function(x){return '<li><b>'+esc(x.nome)+'</b>: '+esc(x.campos.join(', '))+' — o valor já salvo será preservado; revise depois se necessário.</li>'}).join('');
+   preview.innerHTML='<div class="msa-fam-import-preview-head"><span>🔎 PRÉVIA DA IMPORTAÇÃO</span><b>⚠️ Ainda não foi salvo</b></div>'+
+    '<div class="msa-fam-import-preview-grid"><div><b>'+res.totalFamiliares+'</b><span>perfis no arquivo</span></div><div><b>'+res.novos+'</b><span>perfis novos</span></div><div><b>'+res.atualizados+'</b><span>perfis com novos dados</span></div><div><b>'+res.duplicadosIgnorados+'</b><span>itens repetidos identificados</span></div><div><b>'+res.registrosNovos+'</b><span>medicamentos, consultas ou crises novos</span></div><div><b>'+res.antecedentesNovos+'</b><span>antecedentes familiares novos</span></div></div>'+
+    (res.camposNovosCompletados?'<p>🧩 <b>'+res.camposNovosCompletados+'</b> campos vazios serão completados com dados recebidos.</p>':'')+
+    (res.conflitos?'<div class="msa-fam-import-conflicts"><b>⚠️ '+res.conflitos+' perfil(is) com possíveis conflitos</b><ul>'+conflitos+'</ul><p>Os valores existentes não serão sobrescritos automaticamente. Confira se a informação recebida se refere à mesma pessoa.</p></div>':'<p class="msa-fam-import-no-conflicts">✅ Nenhum conflito de campo básico foi identificado.</p>')+
+    '<p class="msa-fam-import-caution">A prévia é uma simulação. Confira os números e possíveis conflitos antes de confirmar. A importação adiciona apenas informações novas e preserva os dados já registrados.</p>';
+   preview.hidden=false;saveBtn.disabled=false;goBtn.disabled=true;previewBtn.disabled=false;status.className='alert safe';status.textContent='Prévia pronta. Nada foi salvo. Se estiver tudo certo, clique em “Confirmar e salvar”.';
+  }catch(e){preview.hidden=true;preview.innerHTML='';saveBtn.disabled=true;goBtn.disabled=true;status.className='alert danger';status.textContent='❌ '+(e.message||'Não foi possível analisar a resposta.')}
  };
- modal.querySelector('#msaFamiliaIAImportGo').onclick=function(){
-  const alvo=window.__msaUltimoPerfilImportado||'';
-  fechar();
-  if(alvo)setSelected(alvo);
-  if(typeof go==='function')go('familiares');
-  setTimeout(function(){
-   if(alvo)setSelected(alvo);
-   renderFamiliares();
-   const detail=document.getElementById('familiarDetalhe');
-   if(detail)detail.scrollIntoView({behavior:'smooth',block:'start'});
-  },350);
+ saveBtn.onclick=function(){
+  try{
+   const raw=input.value.trim();if(!ultimaPrevia||!previaRaw||raw!==previaRaw)throw new Error('O texto mudou desde a prévia. Gere uma nova prévia antes de salvar.');
+   const res=salvarImportacaoFamilia(ultimaPrevia.dados,false);window.__msaUltimoPerfilImportado=res.perfilId||'';importado=true;
+   saveBtn.disabled=true;previewBtn.disabled=true;pasteBtn.disabled=true;input.disabled=true;goBtn.disabled=!res.perfilId;saveBtn.textContent='✅ Importação concluída';
+   status.className='alert safe';status.innerHTML='<b>✅ Dados salvos com sucesso.</b><br>Perfis novos: '+res.novos+' · Perfis complementados: '+res.atualizados+' · Repetidos ignorados: '+res.duplicadosIgnorados+'<p>🩺 Registros clínicos novos: '+res.registrosNovos+' · Antecedentes novos: '+res.antecedentesNovos+'</p>'+(res.camposNovosCompletados?'<p>🧩 Campos completados: '+res.camposNovosCompletados+'</p>':'')+(res.conflitos?'<p>⚠️ '+res.conflitos+' perfil(is) tinham diferenças nos campos básicos. Os dados previamente salvos foram preservados.</p>':'')+'<p>Os registros só foram gravados após sua confirmação.</p>';
+  }catch(e){status.className='alert danger';status.textContent='❌ '+(e.message||'Não foi possível salvar os dados.')}
  };
+ goBtn.onclick=function(){if(!importado)return;const alvo=window.__msaUltimoPerfilImportado||'';fechar();if(alvo)setSelected(alvo);if(typeof go==='function')go('familiares');setTimeout(function(){if(alvo)setSelected(alvo);renderFamiliares();const detail=document.getElementById('familiarDetalhe');if(detail)detail.scrollIntoView({behavior:'smooth',block:'start'})},350)};
  input.focus();
 }
 window.abrirImportadorRespostaFamilia=abrirImportadorRespostaFamilia;
