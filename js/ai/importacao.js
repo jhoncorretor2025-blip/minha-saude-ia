@@ -544,17 +544,21 @@ function importarNormalizado(n){
    var ea=chave(a.nome),eb=chave(b.nome),eda=dataChave(a.data),edb=dataChave(b.data);
    return !!ea&&ea===eb&&(!eda||!edb||eda===edb);
   }
-  var keys={
-   dores:['data','local','tipo','int'],
-   vitais:['data','tipo','nome','valor','pressao','peso'],
-   vacinas:['data','nome','vacina'],
-   familia:['parentesco','familiar','relacao','doenca','condicao','nome'],
-   lembretes:['data','titulo','texto','nome'],
-   documentos:['data','nome','tipo','arquivo']
-  }[tipo]||['id'];
-  var comuns=keys.filter(function(k){return !vazio(a[k])&&!vazio(b[k])});
-  if(!comuns.length)return false;
-  return comuns.every(function(k){return chave(a[k])===chave(b[k])});
+  var regras={
+   dores:{identidade:['local'],detalhes:['tipo','int'],data:true},
+   vitais:{identidade:['tipo','nome','pressao'],detalhes:['valor','peso'],data:true},
+   vacinas:{identidade:['nome','vacina'],detalhes:[],data:true},
+   familia:{identidade:['parentesco','familiar','relacao'],detalhes:['doenca','condicao','nome'],data:false},
+   lembretes:{identidade:['titulo','texto','nome'],detalhes:[],data:true},
+   documentos:{identidade:['nome','tipo','arquivo'],detalhes:[],data:true}
+  }[tipo];
+  if(!regras)return false;
+  var identidade=regras.identidade.some(function(k){return !vazio(a[k])&&!vazio(b[k])&&chave(a[k])===chave(b[k])});
+  if(!identidade)return false;
+  var detalhes=regras.detalhes.filter(function(k){return !vazio(a[k])&&!vazio(b[k])});
+  if(detalhes.some(function(k){return chave(a[k])!==chave(b[k])}))return false;
+  if(regras.data&&!vazio(a.data)&&!vazio(b.data)&&dataChave(a.data)!==dataChave(b.data))return false;
+  return true;
  }
  function importarGrupo(tipo,chaveStorage,novosRegistros){
   var atuais=get(chaveStorage);if(!Array.isArray(atuais))atuais=[];
