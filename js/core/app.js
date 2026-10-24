@@ -38,7 +38,7 @@ function mostrarPaginaDaURL(){
  const alvo=document.getElementById(id);
  if(!alvo){atualizarURLPagina('home','replace');return}
  document.querySelectorAll('nav button[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
- document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===id));
+ document.querySelectorAll('#main-content > section').forEach(s=>s.classList.toggle('active',s.id===id));
  fecharMenus();
  try{render()}catch(e){console.error('[Minha Saúde IA] render da URL',e)}
  setTimeout(function(){
@@ -47,7 +47,7 @@ function mostrarPaginaDaURL(){
 }
 function go(id){
  document.querySelectorAll('nav button[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
- document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===id));
+ document.querySelectorAll('#main-content > section').forEach(s=>s.classList.toggle('active',s.id===id));
  atualizarURLPagina(id,'push');
  fecharMenus();
  try{render()}catch(e){console.error('[Minha Saúde IA] render ao navegar',e)}
@@ -1037,7 +1037,7 @@ renderNovosModulos();
 atualizarPainelAnticoncepcional();
 
 function exigirSexoObrigatorio(){const p=get(K.p)[0]||{};if(!Object.keys(p).length||p.sexo)return;goSemBloqueio('perfil');const sel=$('pSexo');if(sel){sel.focus();sel.scrollIntoView({behavior:'smooth',block:'center'});}alert('👤 Antes de continuar, informe o sexo no seu perfil. Essa informação é necessária para organizar corretamente os módulos de saúde específicos.');}
-function goSemBloqueio(id){document.querySelectorAll('nav button[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===id));fecharMenus?.();loadProfile?.();renderCarteirinha?.();renderNovosModulos?.();}
+function goSemBloqueio(id){document.querySelectorAll('nav button[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));document.querySelectorAll('#main-content > section').forEach(s=>s.classList.toggle('active',s.id===id));fecharMenus?.();loadProfile?.();renderCarteirinha?.();renderNovosModulos?.();}
 function atualizarSaudeReprodutiva(){
  const s=String($('pSexo')?.value||'').trim().toLowerCase();
  const feminino=/femin|mulher|female/.test(s);
