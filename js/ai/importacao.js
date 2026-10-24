@@ -504,27 +504,93 @@ window.lerPDFParaImportacao=lerPDFParaImportacao;
    Restaurada do histórico. Campos já preenchidos são preservados (só sexo, alergias e contato de emergência são atualizados quando mudam). */
 if(typeof window.importarNormalizado!=='function'){
 function importarNormalizado(n){
- var pk=['nome','nasc','idade','sexo','sangue','altura','peso','objetivoCorporal','academia','academiaFreq','atividadeFisica','trabalhoTipo','horasSentado','horasPe','aguaDia','urinaDia','evacuacaoDia','calorSuor','alimentacao','cond','alerg','circ','supl','info','emerg','tel','menstruacao','ciclo','duracaoMenstr','regularidade','sexoFreq','sexoFreqMin','sexoFreqMax','masturbacaoDia','camisinha','engravidou','mae','gestacoes','reproObs','usaAnticoncepcional','anticoncepcionalMetodo','anticoncepcionalNome','anticoncepcionalHora','anticoncepcionalInicio','anticoncepcionalRegime','minipilulaTipo','prevColo','mamografia','ist','hpv','prevProx','prevObs','dorcelaxFreq','paracetamolFreq','outrosDor','catapora','cataporaQuando'],has=function(k){var v=String((n.p||{})[k]||'').trim();return v&&v.toLowerCase()!=='não informado'};
- if((n.dores||[]).length)set(K.d,get(K.d).concat(n.dores||[]));
- /* V7.06: se o item já existe (mesmo remédio, mesma consulta ou mesmo exame), completa os campos vazios em vez de duplicar */
- function vazioV706(v){return importarVazio(v)}
- function chaveV706(t){return String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim()}
- function juntarV706(chave,novos,achar){var atuais=get(chave),add=0,comp=0;(novos||[]).forEach(function(x){var novo=!!x._novoV706;delete x._novoV706;var i=novo?-1:achar(atuais,x);if(i>=0){var a=atuais[i],mudou=false;Object.keys(x).forEach(function(k){if(k==='id'||k==='criadoEm')return;if(vazioV706(a[k])&&!vazioV706(x[k])&&x[k]!=='Importado da IA'){a[k]=x[k];mudou=true}});if(mudou)comp++}else{atuais.push(x);add++}});set(chave,atuais);return {add:add,comp:comp}}
- var resumoV706=[];
- if((n.meds||[]).length){var rm=juntarV706(K.m,n.meds,function(lista,x){var c=chaveV706(x.nome).split(' ')[0];return c?lista.findIndex(function(a){return chaveV706(a.nome).split(' ')[0]===c}):-1});if(rm.comp)resumoV706.push(rm.comp+' remédio(s) completado(s)')}
- if((n.consultas||[]).length){var rc=juntarV706(K.c,n.consultas,function(lista,x){var d=String(x.data||'').slice(0,10);if(!d)return -1;return lista.findIndex(function(a){return String(a.data||'').slice(0,10)===d&&(vazioV706(a.esp)||vazioV706(x.esp)||chaveV706(a.esp)===chaveV706(x.esp))})});if(rc.comp)resumoV706.push(rc.comp+' consulta(s) completada(s)')}
- if((n.exames||[]).length){var re=juntarV706(K.e,n.exames,function(lista,x){var c=chaveV706(x.nome),d=String(x.data||'').slice(0,10);if(!c)return -1;return lista.findIndex(function(a){return chaveV706(a.nome)===c&&(!d||!a.data||String(a.data).slice(0,10)===d)})});if(re.comp)resumoV706.push(re.comp+' exame(s) completado(s)')}
- window.__msaImportCompletados=resumoV706;
- if((n.vitais||[]).length)set(K.v,get(K.v).concat(n.vitais||[]));
- if((n.vacinas||[]).length)set(K.vax,get(K.vax).concat(n.vacinas||[]));
- if((n.familia||[]).length)set(K.fam,get(K.fam).concat(n.familia||[]));
- if((n.lembretes||[]).length)set(K.r,get(K.r).concat(n.lembretes||[]));
- if((n.documentos||[]).length)set(K.doc,get(K.doc).concat(n.documentos||[]));
- if(pk.some(has)){var old=get(K.p)[0]||{},merged=Object.assign({},old),novos=0,ignorados=0;pk.forEach(function(k){if(has(k)){var atual=String(merged[k]||'').trim().toLowerCase(),novo=String(n.p[k]||'').trim();var provisoria=!atual||atual==='valor'||atual==='value'||atual==='não informado';if(provisoria||k==='sexo'||k==='alerg'||k==='emerg'||k==='tel'){if(atual!==novo.toLowerCase()){merged[k]=n.p[k];novos++}else ignorados++;}else ignorados++;}});set(K.p,[merged]);window._importPerfilNovos=novos;window._importPerfilIgnorados=ignorados}
+ var pk=['nome','nasc','idade','sexo','sangue','altura','peso','objetivoCorporal','academia','academiaFreq','atividadeFisica','trabalhoTipo','horasSentado','horasPe','aguaDia','urinaDia','evacuacaoDia','calorSuor','alimentacao','cond','alerg','circ','supl','info','emerg','tel','menstruacao','ciclo','duracaoMenstr','regularidade','sexoFreq','sexoFreqMin','sexoFreqMax','masturbacaoDia','camisinha','engravidou','mae','gestacoes','reproObs','usaAnticoncepcional','anticoncepcionalMetodo','anticoncepcionalNome','anticoncepcionalHora','anticoncepcionalInicio','anticoncepcionalRegime','minipilulaTipo','prevColo','mamografia','ist','hpv','prevProx','prevObs','dorcelaxFreq','paracetamolFreq','outrosDor','catapora','cataporaQuando'],has=function(k){var v=String((n.p||{})[k]||'').trim();return v&&v.toLowerCase()!=='não informado'&&v.toLowerCase()!=='nao informado'};
+ function vazio(v){return importarVazio(v)}
+ function chave(v){return String(v==null?'':v).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim()}
+ function dataChave(v){var s=String(v||'').trim();var m=s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);return m?m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0'):s.slice(0,10)}
+ /* Perfil cadastral: nunca substituir silenciosamente identificadores já preenchidos. */
+ var estaveis=['nome','nasc','sexo','sangue'];
+ /* Valores que podem mudar: aceitar o dado mais recente da importação, sem apagar se vier vazio. */
+ var variaveis=['peso','altura','objetivoCorporal','academia','academiaFreq','atividadeFisica','trabalhoTipo','horasSentado','horasPe','aguaDia','urinaDia','evacuacaoDia','calorSuor','alimentacao','cond','alerg','circ','supl','info','emerg','tel','menstruacao','ciclo','duracaoMenstr','regularidade','sexoFreq','sexoFreqMin','sexoFreqMax','masturbacaoDia','camisinha','engravidou','mae','gestacoes','reproObs','usaAnticoncepcional','anticoncepcionalMetodo','anticoncepcionalNome','anticoncepcionalHora','anticoncepcionalInicio','anticoncepcionalRegime','minipilulaTipo','prevColo','mamografia','ist','hpv','prevProx','prevObs','dorcelaxFreq','paracetamolFreq','outrosDor','catapora','cataporaQuando'];
+ var antigosPerfil=get(K.p),oldPerfil=Array.isArray(antigosPerfil)?(antigosPerfil[0]||{}):{},merged=Object.assign({},oldPerfil),novos=0,ignorados=0,atualizados=0,divergencias=[];
+ pk.forEach(function(k){
+  if(!has(k))return;
+  var novo=n.p[k],atual=merged[k],temAtual=!vazio(atual),mudou=temAtual&&chave(atual)!==chave(novo);
+  if(!temAtual){merged[k]=novo;novos++;return}
+  if(estaveis.indexOf(k)>=0){
+   if(mudou)divergencias.push(k);
+   ignorados++;
+   return;
+  }
+  if(variaveis.indexOf(k)>=0&&mudou){merged[k]=novo;atualizados++;return}
+  ignorados++;
+ });
+ if(pk.some(has))set(K.p,[merged]);
+ window._importPerfilNovos=novos;window._importPerfilIgnorados=ignorados;window._importPerfilAtualizados=atualizados;window._importPerfilDivergencias=divergencias;
+ /* Deduplicação por tipo: reimportar o mesmo arquivo/resposta não deve criar o mesmo evento outra vez. */
+ function mesmRegistro(tipo,a,b){
+  a=a||{};b=b||{};
+  if(tipo==='meds'){
+   var na=chave(a.nome),nb=chave(b.nome);
+   return !!na&&na===nb&&(!chave(a.dose)||!chave(b.dose)||chave(a.dose)===chave(b.dose));
+  }
+  if(tipo==='consultas'){
+   var da=dataChave(a.data),db=dataChave(b.data);
+   var sa=chave(a.esp||a.especialidade),sb=chave(b.esp||b.especialidade);
+   var ma=chave(a.mot||a.motivo),mb=chave(b.mot||b.motivo);
+   return !!da&&da===db&&((sa&&sb&&sa===sb)||(!sa||!sb)&&ma&&mb&&ma===mb);
+  }
+  if(tipo==='exames'){
+   var ea=chave(a.nome),eb=chave(b.nome),eda=dataChave(a.data),edb=dataChave(b.data);
+   return !!ea&&ea===eb&&(!eda||!edb||eda===edb);
+  }
+  var keys={
+   dores:['data','local','tipo','int'],
+   vitais:['data','tipo','nome','valor','pressao','peso'],
+   vacinas:['data','nome','vacina'],
+   familia:['parentesco','familiar','relacao','doenca','condicao','nome'],
+   lembretes:['data','titulo','texto','nome'],
+   documentos:['data','nome','tipo','arquivo']
+  }[tipo]||['id'];
+  var comuns=keys.filter(function(k){return !vazio(a[k])&&!vazio(b[k])});
+  if(!comuns.length)return false;
+  return comuns.every(function(k){return chave(a[k])===chave(b[k])});
+ }
+ function importarGrupo(tipo,chaveStorage,novosRegistros){
+  var atuais=get(chaveStorage);if(!Array.isArray(atuais))atuais=[];
+  var adicionados=0,ignoradosReg=0,completados=0;
+  (novosRegistros||[]).forEach(function(orig){
+   if(!orig||typeof orig!=='object')return;
+   var x=Object.assign({},orig),idx=atuais.findIndex(function(a){return mesmRegistro(tipo,a,x)});
+   if(idx<0){atuais.push(x);adicionados++;return}
+   var atual=atuais[idx],mudou=false;
+   Object.keys(x).forEach(function(k){
+    if(k==='id'||k==='criadoEm'||vazio(x[k])||x[k]==='Importado da IA')return;
+    if(vazio(atual[k])){atual[k]=x[k];mudou=true}
+   });
+   if(mudou)completados++;else ignoradosReg++;
+  });
+  set(chaveStorage,atuais);
+  return {adicionados:adicionados,ignorados:ignoradosReg,completados:completados};
+ }
+ var grupos=[
+  ['dores',K.d,n.dores],['consultas',K.c,n.consultas],['meds',K.m,n.meds],['exames',K.e,n.exames],
+  ['vitais',K.v,n.vitais],['vacinas',K.vax,n.vacinas],['familia',K.fam,n.familia],
+  ['lembretes',K.r,n.lembretes],['documentos',K.doc,n.documentos]
+ ];
+ var resumo=[],totalAdicionados=0,totalDuplicados=0,totalCompletados=0;
+ grupos.forEach(function(g){
+  var r=importarGrupo(g[0],g[1],g[2]);
+  totalAdicionados+=r.adicionados;totalDuplicados+=r.ignorados;totalCompletados+=r.completados;
+  if(r.adicionados||r.ignorados||r.completados)resumo.push(g[0]+': '+r.adicionados+' novo(s), '+r.ignorados+' repetido(s), '+r.completados+' completado(s)');
+ });
+ window.__msaImportResumoGrupos=resumo;
  try{render();if(typeof loadProfile==='function')loadProfile();if(typeof renderCarteirinha==='function')renderCarteirinha();if(typeof renderNovosModulos==='function')renderNovosModulos()}catch(renderError){console.error('[Minha Saúde IA] render após importação',renderError);window._importRenderWarning=String(renderError&&renderError.message||renderError)}
- var falhas=verificarGravacaoImportacao(n),ns=Number(window._importPerfilNovos||0),ig=Number(window._importPerfilIgnorados||0),hist=(n.dores||[]).length+(n.consultas||[]).length+(n.meds||[]).length+(n.exames||[]).length+(n.vitais||[]).length+(n.vacinas||[]).length+(n.familia||[]).length+(n.lembretes||[]).length+(n.documentos||[]).length;
+ var falhas=verificarGravacaoImportacao(n),ns=Number(window._importPerfilNovos||0),ig=Number(window._importPerfilIgnorados||0),pa=Number(window._importPerfilAtualizados||0),hist=totalAdicionados;
  var aviso=falhas.length?'⚠️ Alguns registros não puderam ser confirmados após o salvamento. Recarregue a página e confira os dados. ':window._importRenderWarning?'⚠️ Os dados foram salvos, mas houve um aviso ao atualizar a tela. Recarregue a página para conferir. ':'';
- if($('resultadoImport'))$('resultadoImport').innerHTML='<div class="alert safe">✅ <b>Importação concluída!</b> '+ns+' campo(s) novo(s) do perfil e '+hist+' registro(s) novo(s) foram salvos. '+(ig?ig+' campo(s) já preenchido(s) foram preservados. ':'')+aviso+'</div>';
+ var diverg=divergencias.length?' Divergência em dado(s) cadastral(is) preservado(s): '+divergencias.join(', ')+'. Confira manualmente se necessário. ':'';
+ if($('resultadoImport'))$('resultadoImport').innerHTML='<div class="alert safe">✅ <b>Importação concluída!</b> '+ns+' campo(s) de perfil preenchido(s), '+pa+' campo(s) variável(is) atualizado(s) e '+hist+' registro(s) novo(s) salvos. '+(ig?ig+' campo(s) do perfil preservado(s). ':'')+(totalDuplicados?totalDuplicados+' registro(s) repetido(s) ignorado(s). ':'')+(totalCompletados?totalCompletados+' registro(s) existente(s) completado(s). ':'')+diverg+aviso+'</div>';
 }
+
 window.importarNormalizado=importarNormalizado;
 }
