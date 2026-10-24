@@ -12,7 +12,7 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){retur
 function lista(k){try{return (typeof get==='function'&&typeof K!=='undefined')?(get(K[k])||[]):[]}catch(e){return[]}}
 function hoje(){try{return typeof hojeLocal==='function'?hojeLocal():new Date().toISOString().slice(0,10)}catch(e){return new Date().toISOString().slice(0,10)}}
 function amanha(){var d=new Date();d.setDate(d.getDate()+1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function atual(){var s=document.querySelector('main section.active, section.active');return s?s.id:'home'}
+function atual(){var s=document.querySelector('#main-content > section.active');return s?s.id:'home'}
 function ir(id){if(typeof window.go==='function')window.go(id);window.scrollTo({top:0,behavior:'smooth'})}
 function ui(k,v){try{if(v===undefined)return localStorage.getItem('msaFacil_'+k);localStorage.setItem('msaFacil_'+k,v)}catch(e){return null}}
 
