@@ -819,7 +819,7 @@ function salvarImportacaoFamilia(dados){
  const historico=[];
  historicoAntes.forEach(function(reg){
   const item=Object.assign({},reg||{}),idx=historico.findIndex(x=>mesmoHistoricoImportado(x,item));
-  if(idx>=0){if(mesclarHistoricoImportado(historico[idx],item))historicoMudou=true;stats.antecedentesDuplicadosIgnorados++}
+  if(idx>=0){mesclarHistoricoImportado(historico[idx],item);historicoMudou=true;stats.antecedentesDuplicadosIgnorados++}
   else historico.push(item);
  });
  antecedentes.forEach(function(x){
@@ -902,7 +902,7 @@ function abrirImportadorRespostaFamilia(){
    if(res.perfilId)setSelected(res.perfilId);
    status.className='alert safe';
    const nomes=(res.nomes||[]).join(', ');
-   status.innerHTML='<b>✅ Importação concluída!</b><br>Perfis no arquivo: '+res.totalFamiliares+' · Novos: '+res.novos+' · Atualizados: '+res.atualizados+' · Antecedentes familiares: '+res.totalHistorico+(nomes?'<p><b>Pessoa(s):</b> '+esc(nomes)+'</p>':'')+'<p><b>Próximo passo:</b> clique em “Ver perfil importado” para abrir os dados no sistema.</p>';
+   status.innerHTML='<b>✅ Importação concluída com filtro de repetidos!</b><br>Perfis no arquivo: '+res.totalFamiliares+' · Novos: '+res.novos+' · Atualizados com dados novos: '+res.atualizados+' · Repetidos identificados: '+res.duplicadosIgnorados+'<p>🩺 Registros clínicos novos: '+res.registrosNovos+' · Antecedentes novos: '+res.antecedentesNovos+'</p>'+(res.camposNovosCompletados?'<p>🧩 Dados que faltavam completados em registros existentes: '+res.camposNovosCompletados+'</p>':'')+(nomes?'<p><b>Pessoa(s):</b> '+esc(nomes)+'</p>':'')+'<p><b>Próximo passo:</b> clique em “Ver perfil importado” para abrir os dados no sistema.</p>';
    modal.querySelector('#msaFamiliaIAImportSave').disabled=true;
    modal.querySelector('#msaFamiliaIAImportSave').textContent='✅ Dados importados';
    modal.querySelector('#msaFamiliaIAImportPaste').disabled=true;
