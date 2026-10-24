@@ -52,14 +52,6 @@
    var b=ev.target.closest('[data-msa-area-target]');if(!b)return;
    ev.preventDefault();goTo(b.getAttribute('data-msa-area-target'));
   });
-  document.addEventListener('click',function(ev){
-   var b=ev.target.closest('[data-mobile-tab="historicoClinico"]');if(!b)return;
-   ev.preventDefault();goTo('historicoClinico');
-   var d=document.getElementById('msaMobileDrawer'),back=document.getElementById('msaMobileBackdrop');
-   if(d){d.setAttribute('aria-hidden','true');d.style.display='none';}
-   if(back){back.setAttribute('aria-hidden','true');back.style.display='none';}
-   document.body.classList.remove('msa-mobile-menu-open');
-  });
  }
  function init(){
   if(document.documentElement.dataset.msaAreasV738==='1')return;
