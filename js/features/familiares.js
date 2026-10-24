@@ -837,14 +837,20 @@ function localizarFamiliarImportado(lista,novo){
  }
  return -1;
 }
-function salvarImportacaoFamilia(dados){
+function detectarConflitosImportacaoFamilia(atual,novo){
+ const campos=[['parentesco','parentesco'],['sexo','sexo'],['nasc','nascimento'],['idade','idade'],['sangue','tipo sanguíneo'],['alergias','alergias'],['contato','contato'],['ladoFamilia','lado da família'],['grauParentesco','grau de parentesco']];
+ const conflitos=[];
+ campos.forEach(function(par){const a=String(atual&&atual[par[0]]||'').trim(),b=String(novo&&novo[par[0]]||'').trim();if(a&&b&&chaveDedupFamilia(a)!==chaveDedupFamilia(b))conflitos.push(par[1])});
+ return conflitos;
+}
+function salvarImportacaoFamilia(dados,somentePrevia){
  const raiz=dados&&typeof dados==='object'&&!Array.isArray(dados)?dados:{familiares:dados};
  const entrada=arrFam(raiz.familiares||raiz.FAMILIARES||raiz.family||raiz.members);
  const antecedentes=arrFam(raiz.historico_familiar||raiz.HISTORICO_FAMILIAR||raiz.antecedentes);
  const importados=entrada.map(normalizarFamiliarImportado).filter(Boolean);
  const atuais=getList();
  const stats={registrosNovos:0,registrosDuplicadosIgnorados:0,antecedentesNovos:0,antecedentesDuplicadosIgnorados:0,familiaresDuplicadosIgnorados:0,camposNovosCompletados:0};
- let novos=0,atualizados=0,primeiroId='',historicoMudou=false;
+ let novos=0,atualizados=0,primeiroId='',historicoMudou=false;const conflitosImportacao=[];
  if(importados.length===1){
   const pessoa=importados[0];
   ['medicamentos','consultas','crises'].forEach(function(chave){
@@ -856,6 +862,7 @@ function salvarImportacaoFamilia(dados){
   const idx=localizarFamiliarImportado(atuais,novo);
   if(idx>=0){
    const antigo=ensure(atuais[idx]);
+   const conflitos=detectarConflitosImportacaoFamilia(antigo,novo);if(conflitos.length)conflitosImportacao.push({nome:antigo.nome||novo.nome||'Familiar',campos:conflitos});
    const merge=mesclarFamiliarImportado(antigo,novo,stats);
    atuais[idx]=merge.familiar;
    if(!primeiroId)primeiroId=antigo.id;
@@ -914,14 +921,16 @@ function salvarImportacaoFamilia(dados){
   }
  });
  if(!importados.length&&!antecedentes.length)throw new Error('Nenhum dado familiar válido encontrado na resposta da IA.');
+ if(!somentePrevia){
  if(historicoMudou&&window.MSAStorage&&window.MSAStorage.set){
-  const ok=window.MSAStorage.set(K.fam,historico);
-  if(ok===false)throw new Error('Não foi possível gravar o histórico familiar neste navegador.');
+   const ok=window.MSAStorage.set(K.fam,historico);
+   if(ok===false)throw new Error('Não foi possível gravar o histórico familiar neste navegador.');
+  }
+  if(!saveList(atuais))throw new Error('Não foi possível gravar os familiares neste navegador.');
+  if(!primeiroId&&atuais.length)primeiroId=atuais[atuais.length-1].id;
+  if(primeiroId)setSelected(primeiroId);
+  renderFamiliares();
  }
- if(!saveList(atuais))throw new Error('Não foi possível gravar os familiares neste navegador.');
- if(!primeiroId&&atuais.length)primeiroId=atuais[atuais.length-1].id;
- if(primeiroId)setSelected(primeiroId);
- renderFamiliares();
  const repetidos=stats.familiaresDuplicadosIgnorados+stats.registrosDuplicadosIgnorados+stats.antecedentesDuplicadosIgnorados;
  return {
   novos:novos,atualizados:atualizados,duplicadosIgnorados:repetidos,
@@ -929,7 +938,7 @@ function salvarImportacaoFamilia(dados){
   antecedentesNovos:stats.antecedentesNovos,antecedentesDuplicadosIgnorados:stats.antecedentesDuplicadosIgnorados,
   camposNovosCompletados:stats.camposNovosCompletados,
   totalFamiliares:importados.length,totalHistorico:antecedentes.length,
-  nomes:importados.map(function(p){return p.nome}).filter(Boolean),perfilId:primeiroId
+  nomes:importados.map(function(p){return p.nome}).filter(Boolean),perfilId:primeiroId,conflitos:conflitosImportacao.length,conflitosLista:conflitosImportacao,previsao:!!somentePrevia
  };
 }
 
