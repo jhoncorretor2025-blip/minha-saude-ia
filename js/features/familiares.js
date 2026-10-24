@@ -415,7 +415,7 @@ function gerarPromptCompletoFamilia(pergunta){
   '{"familiares":[],"historico_familiar":[]}',
   '',
   'Cada familiar deve preservar:',
-  'nome, parentesco, grauParentesco, consanguinidade, statusFamiliar, causaFalecimento, sexo, data_nascimento, idade, ladoFamilia, condicao, alergias, tipo_sanguineo, contato, obs, idadeDiagnostico, certeza, medicamentos, consultas e crises.',
+  'nome, parentesco, grauParentesco, consanguinidade, vinculoFamilia, statusFamiliar, causaFalecimento, sexo, data_nascimento, idade, ladoFamilia, condicao, alergias, tipo_sanguineo, contato, obs, idadeDiagnostico, certeza, medicamentos, consultas e crises.',
   '',
   'Cada medicamento deve preservar:',
   'nome, dose, horario, frequencia, prescrito_por e obs.',
@@ -490,7 +490,7 @@ function gerarPromptCompletoFamilia(pergunta){
   'NÃO peça mais dados.',
   'Entregue somente o JSON válido pronto para copiar e colar no botão "Colar resposta da IA" do Minha Saúde IA.'
  );
- return lines.join('\\n');
+ return lines.join('\n');
 }
 function copiarTextoFamiliaIA(txt,okMsg){
  const done=()=>alert(okMsg||'📋 Prompt familiar copiado. Agora você pode colar na IA.');
@@ -618,7 +618,7 @@ function normalizarFamiliarImportado(src){
   idade:normalizarTextoIA(p.idade||p.IDADE),altura:normalizarTextoIA(p.altura||p.ALTURA),peso:normalizarTextoIA(p.peso||p.PESO),medidas:normalizarTextoIA(p.medidas||p.MEDIDAS),rotina:normalizarTextoIA(p.rotina||p.ROTINA),medicamentosRelato:normalizarTextoIA(p.medicamentosRelato||p.MEDICAMENTOS_RELATADOS),condicao:normalizarTextoIA(p.condicao||p.CONDICAO),
   alergias:normalizarTextoIA(p.alergias||p.ALERGIAS),sangue:normalizarTextoIA(p.sangue||p.SANGUE||p.tipo_sanguineo||p.TIPO_SANGUINEO),
   contato:normalizarTextoIA(p.contato||p.CONTATO),obs:obs.join(' '),
-  ladoFamilia:normalizarTextoIA(p.ladoFamilia||p.LADO_FAMILIA),idadeDiagnostico:normalizarTextoIA(p.idadeDiagnostico||p.IDADE_DIAGNOSTICO),certeza:normalizarTextoIA(p.certeza||p.CERTEZA),criadoEm:normalizarTextoIA(p.criadoEm)||new Date().toISOString(),
+  ladoFamilia:normalizarTextoIA(p.ladoFamilia||p.LADO_FAMILIA),vinculoFamilia:normalizarTextoIA(p.vinculoFamilia||p.VINCULO_FAMILIA),idadeDiagnostico:normalizarTextoIA(p.idadeDiagnostico||p.IDADE_DIAGNOSTICO),certeza:normalizarTextoIA(p.certeza||p.CERTEZA),criadoEm:normalizarTextoIA(p.criadoEm)||new Date().toISOString(),
   medicamentos:meds,consultas:cons,crises:crises,dadosImportadosIA:p
  };
 }
@@ -658,7 +658,7 @@ function salvarImportacaoFamilia(dados){
   }
   if(idx>=0){
    const antigo=ensure(atuais[idx]),merged=Object.assign({},antigo);
-   ['nome','parentesco','sexo','nasc','idade','altura','peso','medidas','rotina','medicamentosRelato','condicao','alergias','sangue','contato','obs','ladoFamilia','idadeDiagnostico','certeza','statusFamiliar','causaFalecimento'].forEach(function(k){
+   ['nome','parentesco','sexo','nasc','idade','altura','peso','medidas','rotina','medicamentosRelato','condicao','alergias','sangue','contato','obs','ladoFamilia','idadeDiagnostico','certeza','statusFamiliar','causaFalecimento','vinculoFamilia'].forEach(function(k){
     if(String(novo[k]||'').trim())merged[k]=novo[k];
    });
    merged.medicamentos=novo.medicamentos.length?novo.medicamentos:antigo.medicamentos;
