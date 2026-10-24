@@ -356,42 +356,72 @@ window.aplicarCorrecoesVinculosFamilia=function(){
  renderFamiliares();
  setTimeout(function(){const status=document.getElementById('msaFamLinkRepairStatus');if(status){status.style.display='block';status.textContent=window.__msaFamCorrecoesVinculosStatus}},80);
 };
+function familiaGeracao(p){
+ const rel=normalizarChaveVinculoFamilia(p&&p.parentesco||'');
+ if((p&&(p.vinculoFamilia==='Afinidade'||p.ladoFamilia==='Afinidade'))||parceirosRelacao(p))return 'afinidade';
+ if(/avo|ava/.test(rel))return 'avos';if(/pai|mae/.test(rel))return 'pais';if(/irma/.test(rel))return 'irmaos';if(/filh/.test(rel))return 'filhos';return 'outros';
+}
+function instalarEstilosMapaInterativo(){
+ if(document.getElementById('msaFamMapInteractiveStyles'))return;
+ const s=document.createElement('style');s.id='msaFamMapInteractiveStyles';
+ s.textContent='.msa-fam-map-controls{display:grid;gap:9px;margin:13px 0}.msa-fam-map-search{display:grid;gap:5px;font-size:12px;font-weight:800;color:#475569}.msa-fam-map-search input{width:100%;box-sizing:border-box;min-height:44px;border:1px solid #cbd5e1;border-radius:12px;padding:10px 12px;font:inherit;background:#fff;color:#0f172a}.msa-fam-map-modes{display:flex;flex-wrap:wrap;gap:7px}.msa-fam-map-mode{border:1px solid #dbe3ee;border-radius:999px;padding:8px 12px;background:#fff;color:#334155;font:inherit;font-size:12px;font-weight:900;cursor:pointer}.msa-fam-map-mode.active{background:#1d4ed8;border-color:#1d4ed8;color:#fff}.msa-fam-generation-tree,.msa-fam-side-tree{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:13px}.msa-fam-generation-group{min-width:0;border:1px solid #dbe5f4;background:#fff;border-radius:15px;padding:11px}.msa-fam-generation-group h4{margin:0 0 8px;font-size:13px;color:#1e3a8a}.msa-fam-generation-group p{font-size:10px;line-height:1.4;color:#64748b;margin:0 0 8px}.msa-fam-generation-group .msa-fam-map-list{display:grid;gap:7px}.msa-fam-map-person[hidden]{display:none!important}@media(max-width:760px){.msa-fam-generation-tree,.msa-fam-side-tree{grid-template-columns:1fr}.msa-fam-map-modes{display:grid;grid-template-columns:1fr 1fr}.msa-fam-map-mode{min-height:40px}}body.msa-dark .msa-fam-map-search{color:#cbd5e1}body.msa-dark .msa-fam-map-search input,body.msa-dark .msa-fam-map-mode,body.msa-dark .msa-fam-generation-group{background:#111827;color:#e5e7eb;border-color:#263244}body.msa-dark .msa-fam-map-mode.active{background:#1d4ed8}';
+ document.head.appendChild(s);
+}
+function pessoaMapaFamiliaHTML(p){
+ const c=familiaCondicaoTexto(p)||'Sem condição informada',med=(p.medicamentos||[]).length,con=(p.consultas||[]).length;
+ const rel=p.parentesco||'Parentesco não informado',lado=p.vinculoLadoPendente?'Lado a confirmar':(p.vinculoFamilia==='Afinidade'||p.ladoFamilia==='Afinidade'?'Afinidade':(familiaLado(p)||'Lado não informado'));
+ const alerta=p.vinculoLadoPendente?'<small style="display:block;color:#b45309;font-weight:800">⚠️ Confirmar lado paterno ou materno</small>':'';
+ const busca=normalizarChaveVinculoFamilia([p.nome,rel,c,lado].join(' '));
+ return '<button type="button" class="msa-fam-map-person" data-fam-map-person data-fam-map-search="'+esc(busca)+'" onclick="selecionarFamiliar(\''+esc(p.id)+'\')"><span class="msa-fam-avatar">'+(p.sexo==='Feminino'?'👩':'👤')+'</span><span><b>'+esc(p.nome||'Sem nome')+'</b><small>'+esc(rel)+'</small><em>'+esc(c)+'</em><small>🧭 '+esc(lado)+'</small>'+alerta+'<small>'+med+' 💊 · '+con+' 👨‍⚕️</small></span></button>';
+}
+function alternarVisualizacaoMapaFamilia(modo){
+ window.__msaFamMapView=modo==='lado'?'lado':'geracao';
+ const area=document.getElementById('msa-fam-map');if(!area)return;
+ const gen=area.querySelector('#msaFamGenerationTree'),lado=area.querySelector('#msaFamSideTree');
+ if(gen)gen.style.display=window.__msaFamMapView==='geracao'?'grid':'none';
+ if(lado)lado.style.display=window.__msaFamMapView==='lado'?'grid':'none';
+ area.querySelectorAll('[data-fam-map-view]').forEach(function(b){const on=b.getAttribute('data-fam-map-view')===window.__msaFamMapView;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false')});
+}
+function filtrarMapaFamiliaBusca(valor){
+ const area=document.getElementById('msa-fam-map');if(!area)return;
+ const q=normalizarChaveVinculoFamilia(valor||'');
+ area.querySelectorAll('[data-fam-map-person]').forEach(function(p){p.hidden=!!(q&&String(p.getAttribute('data-fam-map-search')||'').indexOf(q)<0)});
+ area.querySelectorAll('[data-fam-map-section]').forEach(function(g){const pessoas=g.querySelectorAll('[data-fam-map-person]');const ok=!q||Array.prototype.some.call(pessoas,function(p){return !p.hidden});g.style.display=ok?'':'none'});
+ area.querySelectorAll('[data-fam-map-empty]').forEach(function(empty){empty.style.display=q?'none':''});
+}
+function filtrarMapaFamiliaGrupo(chave){
+ const area=document.getElementById('msa-fam-map');if(!area)return;
+ window.__msaFamMapGroup=chave||'todos';
+ area.querySelectorAll('[data-fam-map-group-filter]').forEach(function(b){const on=b.getAttribute('data-fam-map-group-filter')===window.__msaFamMapGroup;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false')});
+ area.querySelectorAll('#msaFamSideTree [data-fam-map-section]').forEach(function(g){const ok=window.__msaFamMapGroup==='todos'||g.getAttribute('data-fam-map-key')===window.__msaFamMapGroup;g.style.display=ok?'':'none'});
+}
+window.alternarVisualizacaoMapaFamilia=alternarVisualizacaoMapaFamilia;window.filtrarMapaFamiliaBusca=filtrarMapaFamiliaBusca;window.filtrarMapaFamiliaGrupo=filtrarMapaFamiliaGrupo;
 function familiaMapaHTML(list){
+ instalarEstilosMapaInterativo();
  const groups={Materno:[],Paterno:[],'Núcleo próximo':[],'Parentes por afinidade':[],'Lado a confirmar':[],'Não informado':[]};
  list.forEach(function(p){
   if(p.vinculoFamilia==='Afinidade'||p.ladoFamilia==='Afinidade'){groups['Parentes por afinidade'].push(p);return}
   if(p.vinculoLadoPendente){groups['Lado a confirmar'].push(p);return}
-  const l=familiaLado(p);
-  if(l==='Ambos'||l==='Ambos / não sei'){groups.Materno.push(p);groups.Paterno.push(p);return}
-  if(l==='Materno'){groups.Materno.push(p);return}
-  if(l==='Paterno'){groups.Paterno.push(p);return}
-  if(l==='Núcleo próximo'){groups['Núcleo próximo'].push(p);return}
-  const rel=normalizarChaveVinculoFamilia(p.parentesco);
-  const nucleo=['pai','mae','filho','filha','irmao','irma','marido','esposa','conjuge','companheiro','companheira','parceiro','parceira'].includes(rel);
+  const l=familiaLado(p);if(l==='Ambos'||l==='Ambos / não sei'){groups.Materno.push(p);groups.Paterno.push(p);return}
+  if(l==='Materno'){groups.Materno.push(p);return}if(l==='Paterno'){groups.Paterno.push(p);return}if(l==='Núcleo próximo'){groups['Núcleo próximo'].push(p);return}
+  const rel=normalizarChaveVinculoFamilia(p.parentesco),nucleo=['pai','mae','filho','filha','irmao','irma','marido','esposa','conjuge','companheiro','companheira','parceiro','parceira'].includes(rel);
   groups[nucleo?'Núcleo próximo':'Não informado'].push(p);
  });
- const descriptions={
-  'Parentes por afinidade':'Pessoas ligadas à família por casamento ou relacionamento, como cunhados e cônjuges. Seus dados podem ser úteis para o cuidado, mas não entram nos padrões genéticos da família biológica.',
-  'Lado a confirmar':'O parentesco é conhecido, mas falta confirmar se a pessoa pertence ao lado do pai ou da mãe. Confirme antes de classificar como paterno ou materno.',
-  'Lado não informado':'Ainda não há informação suficiente para definir o lado ou o grupo familiar dessa pessoa. Isso não quer dizer que ela não seja parente; apenas que o vínculo precisa ser esclarecido.',
-  'Não informado':'Ainda não há informação suficiente para definir o lado ou o grupo familiar dessa pessoa. Isso não quer dizer que ela não seja parente; apenas que o vínculo precisa ser esclarecido.',
-  'Lado materno':'Familiares ligados à sua mãe e à linhagem materna.',
-  'Lado paterno':'Familiares ligados ao seu pai e à linhagem paterna.',
-  'Núcleo próximo':'Pessoas próximas, como pai, mãe, irmãos, filhos ou cônjuge. A categoria organiza os vínculos próximos; não substitui a identificação do lado materno ou paterno.'
- };
- const group=function(title,icon,arr){
-  const explicacao=descriptions[title]||'Familiares organizados por vínculo. Confira o parentesco e os dados registrados.';
-  return '<div class="msa-fam-map-group"><div class="msa-fam-map-title">'+icon+' '+title+' <span>'+arr.length+'</span></div><p class="msa-fam-map-explain">'+esc(explicacao)+'</p>'+
-   (arr.length?'<div class="msa-fam-map-list">'+arr.map(function(p){
-    const c=familiaCondicaoTexto(p)||'Sem condição informada',med=(p.medicamentos||[]).length,con=(p.consultas||[]).length;
-    const alerta=p.vinculoLadoPendente?'<small style="display:block;color:#b45309;font-weight:800">⚠️ Confirmar lado paterno ou materno</small>':'';
-    return '<button type="button" class="msa-fam-map-person" onclick="selecionarFamiliar(\''+esc(p.id)+'\')"><span class="msa-fam-avatar">'+(p.sexo==='Feminino'?'👩':'👤')+'</span><span><b>'+esc(p.nome||'Sem nome')+'</b><small>'+esc(p.parentesco||'Parentesco não informado')+'</small><em>'+esc(c)+'</em>'+alerta+'<small>'+med+' 💊 · '+con+' 👨‍⚕️</small></span></button>';
-   }).join('')+'</div>':'<div class="msa-fam-empty">Nenhum familiar neste grupo.</div>')+'</div>';
- };
+ const desc={'Parentes por afinidade':'Pessoas ligadas por casamento ou relacionamento. Não entram nos padrões genéticos biológicos.','Lado a confirmar':'O parentesco é conhecido, mas falta confirmar se pertence ao lado paterno ou materno.','Não informado':'Ainda não há dados para definir o grupo ou lado dessa pessoa.','Lado materno':'Familiares ligados à sua mãe e à linhagem materna.','Lado paterno':'Familiares ligados ao seu pai e à linhagem paterna.','Núcleo próximo':'Pais, irmãos, filhos ou outras pessoas próximas; confirme o vínculo biológico quando relevante.'};
+ const group=function(title,icon,arr,key){return '<div class="msa-fam-map-group" data-fam-map-section data-fam-map-key="'+key+'"><div class="msa-fam-map-title">'+icon+' '+title+' <span>'+arr.length+'</span></div><p class="msa-fam-map-explain">'+esc(desc[title]||desc['Não informado'])+'</p>'+(arr.length?'<div class="msa-fam-map-list">'+arr.map(pessoaMapaFamiliaHTML).join('')+'</div>':'<div class="msa-fam-empty" data-fam-map-empty>Nenhum familiar neste grupo.</div>')+'</div>'};
+ const gs=[{key:'avos',title:'👵 Avós',desc:'Geração dos avós, conforme o parentesco cadastrado.'},{key:'pais',title:'👨‍👩 Pais',desc:'Pai e mãe.'},{key:'irmaos',title:'🧑 Você e irmãos',desc:'Irmãos e irmãs registrados.'},{key:'filhos',title:'🧒 Filhos',desc:'Filhos e filhas registrados.'},{key:'afinidade',title:'🤝 Cônjuge e afinidade',desc:'Vínculos afetivos ou por casamento, separados de padrões genéticos.'},{key:'outros',title:'🌿 Tios e outros parentes',desc:'Tios, primos, sobrinhos e parentes sem geração definida.'}];
+ const ger={avos:[],pais:[],irmaos:[],filhos:[],afinidade:[],outros:[]};list.forEach(function(p){ger[familiaGeracao(p)].push(p)});
  const total=list.length,withCond=list.filter(function(p){return familiaCondicaoTexto(p)}).length,withData=list.filter(function(p){return familiaCondicaoTexto(p)||p.alergias||p.sangue||p.obs}).length;
- return '<div class="msa-fam-map-card"><div class="msa-fam-map-head"><div><div class="msa-fam-kicker">MAPA DE SAÚDE DA FAMÍLIA</div><h3>🧬 Quem está no seu histórico?</h3><p>Uma visão rápida dos familiares registrados e das informações de saúde já conhecidas.</p></div><button type="button" class="btn secondary small" onclick="iniciarEntrevistaAvaFamilia()">🤖 Falar com a Ava</button></div><div class="msa-fam-map-stats"><div><b>'+total+'</b><span>familiares</span></div><div><b>'+withCond+'</b><span>com condição</span></div><div><b>'+Math.max(0,total-withData)+'</b><span>com poucos dados</span></div></div><div class="msa-fam-map-tree"><div class="msa-fam-you">👤 <b>Você</b><small>perfil principal</small></div>'+
-  group('Lado materno','🌷',groups.Materno)+group('Lado paterno','🧭',groups.Paterno)+group('Núcleo próximo','🏠',groups['Núcleo próximo'])+group('Parentes por afinidade','🤝',groups['Parentes por afinidade'])+group('Lado a confirmar','❔',groups['Lado a confirmar'])+group('Lado não informado','⚪',groups['Não informado'])+'</div></div>';
+ const modo=window.__msaFamMapView==='lado'?'lado':'geracao',filtro=window.__msaFamMapGroup||'todos';
+ return '<div class="msa-fam-map-card"><div class="msa-fam-map-head"><div><div class="msa-fam-kicker">MAPA DE SAÚDE DA FAMÍLIA</div><h3>🌳 Árvore familiar interativa</h3><p>Busque por nome, parentesco ou condição e alterne entre gerações e lado da família. A geração é estimada pelo parentesco informado.</p></div><button type="button" class="btn secondary small" onclick="iniciarEntrevistaAvaFamilia()">🤖 Falar com a Ava</button></div>'+
+ '<div class="msa-fam-map-stats"><div><b>'+total+'</b><span>familiares</span></div><div><b>'+withCond+'</b><span>com condição registrada</span></div><div><b>'+Math.max(0,total-withData)+'</b><span>com poucos dados</span></div></div>'+
+ '<div class="msa-fam-map-controls"><label class="msa-fam-map-search">🔎 Buscar na árvore<input type="search" placeholder="Nome, parentesco ou condição..." oninput="filtrarMapaFamiliaBusca(this.value)" aria-label="Buscar familiar por nome, parentesco ou condição"></label>'+
+ '<div class="msa-fam-map-modes" role="group" aria-label="Modo de visualizar a árvore"><button type="button" class="msa-fam-map-mode '+(modo==='geracao'?'active':'')+'" data-fam-map-view="geracao" aria-pressed="'+(modo==='geracao'?'true':'false')+'" onclick="alternarVisualizacaoMapaFamilia(\'geracao\')">🌳 Por geração</button><button type="button" class="msa-fam-map-mode '+(modo==='lado'?'active':'')+'" data-fam-map-view="lado" aria-pressed="'+(modo==='lado'?'true':'false')+'" onclick="alternarVisualizacaoMapaFamilia(\'lado\')">🧬 Por lado da família</button></div>'+
+ '<div class="msa-fam-map-modes" role="group" aria-label="Filtrar grupos do lado da família">'+['Todos','Materno','Paterno','Núcleo próximo','Afinidade','A confirmar','Não informado'].map(function(t){const k={'Todos':'todos','Materno':'materno','Paterno':'paterno','Núcleo próximo':'nucleo','Afinidade':'afinidade','A confirmar':'confirmar','Não informado':'nao-informado'}[t];return '<button type="button" class="msa-fam-map-mode '+(filtro===k?'active':'')+'" data-fam-map-group-filter="'+k+'" aria-pressed="'+(filtro===k?'true':'false')+'" onclick="filtrarMapaFamiliaGrupo(\''+k+'\')">'+t+'</button>'}).join('')+'</div></div>'+
+ '<div class="msa-fam-generation-tree" id="msaFamGenerationTree" style="display:'+(modo==='geracao'?'grid':'none')+'">'+gs.map(function(g){const arr=ger[g.key];return '<div class="msa-fam-generation-group" data-fam-map-section><h4>'+g.title+' <span style="float:right;color:#2563eb">'+arr.length+'</span></h4><p>'+g.desc+'</p>'+(arr.length?'<div class="msa-fam-map-list">'+arr.map(pessoaMapaFamiliaHTML).join('')+'</div>':'<div class="msa-fam-empty" data-fam-map-empty>Nenhum cadastro nesta geração.</div>')+'</div>'}).join('')+'</div>'+
+ '<div class="msa-fam-side-tree" id="msaFamSideTree" style="display:'+(modo==='lado'?'grid':'none')+'">'+group('Lado materno','🌷',groups.Materno,'materno')+group('Lado paterno','🧭',groups.Paterno,'paterno')+group('Núcleo próximo','🏠',groups['Núcleo próximo'],'nucleo')+group('Parentes por afinidade','🤝',groups['Parentes por afinidade'],'afinidade')+group('Lado a confirmar','❔',groups['Lado a confirmar'],'confirmar')+group('Não informado','⚪',groups['Não informado'],'nao-informado')+'</div></div>';
 }
+
 function familiaAnaliseHTML(list){const patterns=familiaPatterns(list),relevant=patterns.filter(x=>x.count>=2),missing=list.filter(p=>!familiaCondicaoTexto(p)||!p.sangue||!familiaIdade(p)).length;let body='';if(patterns.length){body='<div class="msa-fam-patterns">'+patterns.slice(0,8).map(x=>'<div class="msa-fam-pattern"><div><b>'+esc(x.nome)+'</b><small>'+x.count+' familiar'+(x.count===1?'':'es')+'</small></div><div class="msa-fam-members">'+x.members.map(p=>'<button type="button" onclick="selecionarFamiliar(\''+esc(p.id)+'\')">'+esc(p.nome||'Sem nome')+'</button>').join('')+'</div></div>').join('')+'</div>'}else body='<div class="msa-fam-empty">Ainda não há condições suficientes registradas para encontrar padrões.</div>';return '<div class="msa-fam-analysis-card"><div class="msa-fam-kicker">ANÁLISE DO HISTÓRICO</div><h3>📊 Padrões familiares registrados</h3><p>O sistema agrupa informações que você registrou. Isso não significa que você terá a mesma condição.</p><div class="msa-fam-analysis-kpis"><div><b>'+relevant.length+'</b><span>padrões repetidos</span></div><div><b>'+patterns.length+'</b><span>categorias encontradas</span></div><div><b>'+missing+'</b><span>fichas com dados faltantes</span></div></div>'+body+'<div class="alert warn" style="margin-top:10px">⚠️ Esta análise é apenas organizacional. Histórico familiar não é diagnóstico nem previsão individual de risco.</div></div>'}
 
 function dadosFamiliaParaIA(){
