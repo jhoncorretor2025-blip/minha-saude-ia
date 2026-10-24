@@ -65,6 +65,7 @@ var css=document.createElement('style');css.id='msa-familia-abas';
 css.textContent=
  '#familiares[data-aba] > .card > [data-fam-aba]{display:none!important}'+
  '#familiares[data-aba="pessoas"] > .card > [data-fam-aba="pessoas"],#familiares[data-aba="adicionar"] > .card > [data-fam-aba="adicionar"],#familiares[data-aba="historico"] > .card > [data-fam-aba="historico"],#familiares[data-aba="conjuge"] > .card > [data-fam-aba="conjuge"]{display:block!important}'+
+ '#familiares[data-aba]:not([data-aba="pessoas"]) #msaFamiliaFiltro{display:none!important}'+
  '#familiares[data-aba="pessoas"] #msaFamiliaFiltro{display:flex!important}'+
  '.msa-fam-abas{position:sticky;top:64px;z-index:30;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 14px;padding:6px;border-radius:16px;background:var(--card,#fff);border:1px solid var(--line,#e2e8f0);box-shadow:0 6px 18px rgba(15,23,42,.06)}'+
  '.msa-fam-abas button{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:64px;padding:8px 4px;border-radius:12px;border:1px solid transparent;background:transparent;color:inherit;font:inherit;text-align:center;cursor:pointer}'+
