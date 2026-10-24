@@ -246,13 +246,13 @@ function familiaArray(){const a=getList();return Array.isArray(a)?a.map(ensure):
 function familiaCondicaoTexto(p){return String(p.condicao||'').trim()}
 function familiaLado(p){if(p.ladoFamilia)return p.ladoFamilia;const s=(String(p.parentesco||'')+' '+String(p.obs||'')).toLowerCase();if(/materna|materno/.test(s))return 'Materno';if(/paterna|paterno/.test(s))return 'Paterno';return 'Não informado'}
 function familiaIdade(p){if(p.idade!==undefined&&p.idade!==null&&String(p.idade).trim()!=='')return String(p.idade);if(p.nasc){const n=new Date(String(p.nasc).slice(0,10)+'T12:00:00'),h=new Date();if(!isNaN(n.getTime())){let a=h.getFullYear()-n.getFullYear();if((h.getMonth()+1)*100+h.getDate()<(n.getMonth()+1)*100+n.getDate())a--;return String(Math.max(0,a))}}return ''}
-function familiaPatterns(list){const defs=[['Diabetes',/\bdiabet(?:e|es|ica|ico|icos|icas)\b/i],['Hipertensão',/\bhipertens(?:ão|ao|ivo|iva|ivos|ivas)\b/i],['Doenças cardíacas',/\b(infarto|cardíac|coronar|insufici[eê]ncia card|angina)\b/i],['AVC',/\b(avc|acidente vascular cerebral|derrame)\b/i],['Câncer',/\b(câncer|cancer|tumor|neoplas)\b/i],['Colesterol',/\b(colesterol|dislipidem)\b/i],['Tireoide',/\b(tireoide|hipotireoid|hipertireoid)\b/i],['Doença renal',/\b(renal|rim|insufici[eê]ncia renal)\b/i],['Doença hepática',/\b(fígado|figado|hepat|cirrose)\b/i],['Autoimune / reumatológica',/\b(autoimun|artrite|lúpus|lupus|psorías|psorias|espondil|reumat)\b/i],['Demência / Alzheimer',/\b(demência|demencia|alzheimer|parkinson)\b/i],['Saúde mental',/\b(depress[aã]o|ansiedade|bipolar|esquizofren|transtorno mental)\b/i]];return defs.map(d=>{const members=list.filter(p=>d[1].test(familiaCondicaoTexto(p)+' '+String(p.obs||'')));return {nome:d[0],count:members.length,members}}).filter(x=>x.count>0).sort((a,b)=>b.count-a.count||a.nome.localeCompare(b.nome))}
+function familiaPatterns(list){const defs=[['Diabetes',/\bdiabet(?:e|es|ica|ico|icos|icas)\b/i],['Hipertensão',/\bhipertens(?:ão|ao|ivo|iva|ivos|ivas)\b/i],['Doenças cardíacas',/\b(infarto|cardíac|coronar|insufici[eê]ncia card|angina)\b/i],['AVC',/\b(avc|acidente vascular cerebral|derrame)\b/i],['Câncer',/\b(câncer|cancer|tumor|neoplas)\b/i],['Colesterol',/\b(colesterol|dislipidem)\b/i],['Tireoide',/\b(tireoide|hipotireoid|hipertireoid)\b/i],['Doença renal',/\b(renal|rim|insufici[eê]ncia renal)\b/i],['Doença hepática',/\b(fígado|figado|hepat|cirrose)\b/i],['Autoimune / reumatológica',/\b(autoimun|artrite|lúpus|lupus|psorías|psorias|espondil|reumat)\b/i],['Demência / Alzheimer',/\b(demência|demencia|alzheimer|parkinson)\b/i],['Saúde mental',/\b(depress[aã]o|ansiedade|bipolar|esquizofren|transtorno mental)\b/i]];return defs.map(d=>{const members=list.filter(p=>p.vinculoFamilia!=='Afinidade'&&p.ladoFamilia!=='Afinidade'&&d[1].test(familiaCondicaoTexto(p)+' '+String(p.obs||'')));return {nome:d[0],count:members.length,members}}).filter(x=>x.count>0).sort((a,b)=>b.count-a.count||a.nome.localeCompare(b.nome))}
 function normalizarChaveVinculoFamilia(v){return String(v==null?'':v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'')}
 function acrescentarCondicaoSeFaltar(p,frase,padroes){const todos=normalizarChaveVinculoFamilia(JSON.stringify(p));if(padroes.some(re=>re.test(todos)))return false;const atual=String(p.condicao||'').trim().replace(/[;,\s]+$/,'');p.condicao=(atual?atual+'; ':'')+frase;return true}
 function atualizarCampoSeDiferente(p,chave,valor){if(p[chave]===valor)return false;p[chave]=valor;return true}
 window.aplicarCorrecoesVinculosFamilia=function(){
  const lista=getList();if(!Array.isArray(lista)||!lista.length){alert('Não há familiares cadastrados para atualizar.');return}
- if(!confirm('Aplicar as atualizações solicitadas a Rita, Paulo Mendes e Gordo?\\n\\n• Rita: núcleo próximo e consanguínea.\\n• Paulo Mendes: separar como parente por afinidade, fora dos padrões genéticos.\\n• Gordo: manter Mal de Parkinson e deixar o lado pendente até confirmar se é tio paterno ou materno.\\n\\nAs informações existentes serão preservadas; só serão acrescentados dados ausentes.'))return;
+ if(!confirm('Aplicar as atualizações solicitadas a Rita, Paulo Mendes e Gordo?\n\n• Rita: núcleo próximo e consanguínea.\n• Paulo Mendes: separar como parente por afinidade, fora dos padrões genéticos.\n• Gordo: manter Mal de Parkinson e deixar o lado pendente até confirmar se é tio paterno ou materno.\n\nAs informações existentes serão preservadas; só serão acrescentados dados ausentes.'))return;
  let alterados=0;const relatorio=[];
  function localizar(nome){const chave=normalizarChaveVinculoFamilia(nome);return lista.filter(p=>normalizarChaveVinculoFamilia(p.nome)===chave)}
  function executar(nome,acao){
@@ -286,18 +286,18 @@ window.aplicarCorrecoesVinculosFamilia=function(){
  });
  executar('Gordo',function(p,mark){
   if(!String(p.parentesco||'').trim()&&atualizarCampoSeDiferente(p,'parentesco','Tio'))mark();
-  if(!String(p.vinculoFamilia||'').trim()&&atualizarCampoSeDiferente(p,'vinculoFamilia','Consanguíneo'))mark();
-  if(!String(p.consanguinidade||'').trim()&&atualizarCampoSeDiferente(p,'consanguinidade','Sim'))mark();
+  if(atualizarCampoSeDiferente(p,'vinculoFamilia','Consanguíneo'))mark();
+  if(atualizarCampoSeDiferente(p,'consanguinidade','Sim'))mark();
   if(acrescentarCondicaoSeFaltar(p,'Mal de Parkinson',[/parkinson/]))mark();
   const lado=normalizarChaveVinculoFamilia(p.ladoFamilia),temLadoConhecido=['materno','paterno'].includes(lado);
   if(!temLadoConhecido){
    if(atualizarCampoSeDiferente(p,'ladoFamilia',''))mark();
    if(atualizarCampoSeDiferente(p,'vinculoLadoPendente',true))mark();
    if(atualizarCampoSeDiferente(p,'observacaoVinculoPendencia','Confirmar se Gordo é irmão do pai (lado paterno) ou da mãe (lado materno).'))mark();
-  }else if(p.vinculoLadoPendente&&atualizarCampoSeDiferente(p,'vinculoLadoPendente',false))mark();
+  }else {if(p.vinculoLadoPendente&&atualizarCampoSeDiferente(p,'vinculoLadoPendente',false))mark();if(p.observacaoVinculoPendencia&&atualizarCampoSeDiferente(p,'observacaoVinculoPendencia',''))mark();}
  });
  if(alterados&&!saveList(lista)){alert('Não foi possível salvar as alterações no armazenamento local.');return}
- window.__msaFamCorrecoesVinculosStatus=relatorio.join('\\n')+'\\n\\n'+(alterados?'Campos atualizados: '+alterados+'.':'Nenhum campo precisou mudar.');
+ window.__msaFamCorrecoesVinculosStatus=relatorio.join('\n')+'\n\n'+(alterados?'Campos atualizados: '+alterados+'.':'Nenhum campo precisou mudar.');
  renderFamiliares();
  setTimeout(function(){const status=document.getElementById('msaFamLinkRepairStatus');if(status){status.style.display='block';status.textContent=window.__msaFamCorrecoesVinculosStatus}},80);
 };
@@ -351,6 +351,7 @@ function gerarPromptCompletoFamilia(pergunta){
   'ATENÇÃO: responda tudo em uma única resposta.',
   '',
   'Use somente informações relacionadas à família.',
+  'Parentes por afinidade (vinculoFamilia="Afinidade" ou ladoFamilia="Afinidade") devem ficar registrados separadamente e NÃO contam para padrões genéticos ou herança biológica.',
   'Não misture informações do perfil pessoal do usuário nem de outros módulos, a menos que um dado esteja explicitamente identificado como pertencente a um familiar.',
   'Nunca invente dados.',
   'Quando uma informação não estiver disponível, use "" ou [] e siga em frente.',
