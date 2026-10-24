@@ -18,12 +18,25 @@ var MAPA={msaFamiliaFiltro:'pessoas',familiaPessoasCard:'pessoas',familiarDetalh
 function pessoasCount(){try{return ((typeof get==='function'&&typeof K!=='undefined')?get(K.familiares||'msa2_familiares'):[]).length}catch(e){return 0}}
 function marcar(){
  var sec=$('familiares');if(!sec)return;
- Object.keys(MAPA).forEach(function(id){var el=$(id);if(el&&el.dataset.famAba!==MAPA[id])el.dataset.famAba=MAPA[id]});
- /* textos soltos do cadastro (explicação e aviso de privacidade) vão junto com “Adicionar” */
- var cad=$('familiaCadastroCard');
- if(cad){var p=cad.previousElementSibling;var n=0;while(p&&n<3){if(!p.id&&(p.classList.contains('muted')||p.classList.contains('alert')))p.dataset.famAba='adicionar';p=p.previousElementSibling;n++}}
- /* o título “👨‍👩‍👧‍👦 Familiares” do meio da página fica com “Pessoas” */
- sec.querySelectorAll('h2').forEach(function(h){if(/Familiares/.test(h.textContent)&&!h.closest('[data-fam-aba]'))h.dataset.famAba='pessoas'});
+ /* Cada bloco de primeiro nível do cartão principal pertence a uma única aba.
+    Isso impede que conteúdo sem categoria continue aparecendo e alongue a página. */
+ var host=Array.prototype.slice.call(sec.children).filter(function(el){return el.classList&&el.classList.contains('card')})[0]||sec.querySelector('.card');
+ if(!host)return;
+ var porId={msaFamiliaFiltro:'pessoas',familiaPessoasCard:'pessoas',familiarDetalhe:'pessoas',familiaCadastroCard:'adicionar',familiaInteligencia:'historico',msaBasicShareCard:'conjuge',msaCoupleCareV716:'conjuge'};
+ Array.prototype.slice.call(host.children).forEach(function(el){
+  if(el.tagName==='H2'){el.removeAttribute('data-fam-aba');return}
+  var id=el.id||'',aba=porId[id]||'';
+  var area=el.getAttribute('data-fam-area')||'';
+  var txt=(el.innerText||el.textContent||'').trim();
+  if(!aba){
+   if(area==='cadastro'||/adicionar pessoa|cadastre uma pessoa|novo familiar/i.test(txt))aba='adicionar';
+   else if(area==='ia'||/padrões familiares|histórico familiar|inteligência familiar|doenças na família/i.test(txt))aba='historico';
+   else if(/compartilhar meus dados|importar arquivo|cuidado a dois|compartilhamento simples/i.test(txt))aba='conjuge';
+   else if(el.classList.contains('muted')||el.classList.contains('alert'))aba='adicionar';
+   else aba='pessoas';
+  }
+  el.dataset.famAba=aba;
+ });
 }
 function barra(){
  var sec=$('familiares');if(!sec)return null;var b=$('msaFamAbas');
@@ -50,8 +63,8 @@ document.addEventListener('click',function(e){if(e.target.closest('.msa-nav-shar
 function embrulhar(nome,aba){var f=window[nome];if(typeof f!=='function'||f.__abas)return;window[nome]=function(){var fz=window.__famForcar;if(!(fz&&Date.now()<fz.ate)){if(nome==='focarEdicaoFamiliar'){try{sessionStorage.setItem('msaFamSub','dados')}catch(e){}}abrir(aba)}var r=f.apply(this,arguments);if(nome==='focarEdicaoFamiliar')setTimeout(subAbas,60);return r};window[nome].__abas=true}
 var css=document.createElement('style');css.id='msa-familia-abas';
 css.textContent=
- '#familiares[data-aba] [data-fam-aba]{display:none!important}'+
- '#familiares[data-aba="pessoas"] [data-fam-aba="pessoas"],#familiares[data-aba="adicionar"] [data-fam-aba="adicionar"],#familiares[data-aba="historico"] [data-fam-aba="historico"],#familiares[data-aba="conjuge"] [data-fam-aba="conjuge"]{display:block!important}'+
+ '#familiares[data-aba] > .card > [data-fam-aba]{display:none!important}'+
+ '#familiares[data-aba="pessoas"] > .card > [data-fam-aba="pessoas"],#familiares[data-aba="adicionar"] > .card > [data-fam-aba="adicionar"],#familiares[data-aba="historico"] > .card > [data-fam-aba="historico"],#familiares[data-aba="conjuge"] > .card > [data-fam-aba="conjuge"]{display:block!important}'+
  '#familiares[data-aba="pessoas"] #msaFamiliaFiltro{display:flex!important}'+
  '.msa-fam-abas{position:sticky;top:64px;z-index:30;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 14px;padding:6px;border-radius:16px;background:var(--card,#fff);border:1px solid var(--line,#e2e8f0);box-shadow:0 6px 18px rgba(15,23,42,.06)}'+
  '.msa-fam-abas button{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:64px;padding:8px 4px;border-radius:12px;border:1px solid transparent;background:transparent;color:inherit;font:inherit;text-align:center;cursor:pointer}'+
