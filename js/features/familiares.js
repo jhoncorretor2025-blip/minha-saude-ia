@@ -164,7 +164,7 @@ function renderFamiliares(){
  const cadastroCard=document.getElementById('familiaCadastroCard');if(cadastroCard)cadastroCard.dataset.famArea='cadastro';
  const pessoasCard=document.getElementById('familiaPessoasCard');if(pessoasCard)pessoasCard.dataset.famArea='cadastro';
  const cards=document.getElementById('familiaresList');
- if(cards){cards.innerHTML=list.length?list.map(p=>'<div class="familiar-person-card '+(sel&&p.id===sel.id?'selected':'')+'"><button type="button" class="familiar-person-main" data-fam-open="'+esc(p.id)+'"><span class="familiar-person-icon">'+(p.sexo==='Feminino'?'👩':'👤')+'</span><span class="familiar-person-info"><b>'+esc(p.nome||'Sem nome')+'</b><small>'+esc(p.parentesco||'Parentesco não informado')+'</small><small>'+esc(p.condicao||'Condição não informada')+'</small></span><span class="familiar-person-count">'+(p.medicamentos||[]).length+' 💊<br>'+(p.consultas||[]).length+' 👨‍⚕️</span></button><label class="familiar-side-label">🧬 Lado da família<select data-fam-side="'+esc(p.id)+'" aria-label="Lado da família de '+esc(p.nome||'familiar')+'"><option value="" '+(!p.ladoFamilia?'selected':'')+'>Não informado</option><option value="Materno" '+(familiaLado(p)==='Materno'?'selected':'')+'>Materno</option><option value="Paterno" '+(familiaLado(p)==='Paterno'?'selected':'')+'>Paterno</option><option value="Outro" '+(p.ladoFamilia==='Outro'?'selected':'')+'>Outro</option><option value="Ambos" '+(['Ambos','Ambos / não sei'].includes(p.ladoFamilia)?'selected':'')+'>Ambos os lados (materno e paterno)</option><option value="Ambos / não sei" '+(p.ladoFamilia==='Ambos / não sei'?'selected':'')+'>Ambos / não sei (legado)</option></select></label></div>').join(''):'<div class="empty">Nenhum familiar cadastrado ainda.</div>';cards.querySelectorAll('[data-fam-open]').forEach(btn=>btn.addEventListener('click',()=>window.selecionarFamiliar(btn.dataset.famOpen)));cards.querySelectorAll('[data-fam-side]').forEach(select=>select.addEventListener('change',()=>window.atualizarLadoFamiliar(select.dataset.famSide,select.value)));}
+ if(cards){cards.innerHTML=list.length?list.map(p=>'<div class="familiar-person-card '+(sel&&p.id===sel.id?'selected':'')+'"><button type="button" class="familiar-person-main" data-fam-open="'+esc(p.id)+'"><span class="familiar-person-icon">'+(p.sexo==='Feminino'?'👩':'👤')+'</span><span class="familiar-person-info"><b>'+esc(p.nome||'Sem nome')+'</b><small>'+esc(p.parentesco||'Parentesco não informado')+'</small><small>'+esc(p.condicao||'Condição não informada')+'</small></span><span class="familiar-person-count">'+(p.medicamentos||[]).length+' 💊<br>'+(p.consultas||[]).length+' 👨‍⚕️</span></button><label class="familiar-side-label">🧬 Grupo / lado da família<select data-fam-side="'+esc(p.id)+'" aria-label="Grupo ou lado da família de '+esc(p.nome||'familiar')+'"><option value="" '+(!p.ladoFamilia?'selected':'')+'>Não informado</option><option value="Núcleo próximo" '+(p.ladoFamilia==='Núcleo próximo'?'selected':'')+'>Núcleo próximo</option><option value="Materno" '+(familiaLado(p)==='Materno'?'selected':'')+'>Materno</option><option value="Paterno" '+(familiaLado(p)==='Paterno'?'selected':'')+'>Paterno</option><option value="Afinidade" '+(p.vinculoFamilia==='Afinidade'||p.ladoFamilia==='Afinidade'?'selected':'')+'>Parente por afinidade</option><option value="Outro" '+(p.ladoFamilia==='Outro'?'selected':'')+'>Outro</option><option value="Ambos" '+(['Ambos','Ambos / não sei'].includes(p.ladoFamilia)?'selected':'')+'>Ambos os lados (materno e paterno)</option><option value="Ambos / não sei" '+(p.ladoFamilia==='Ambos / não sei'?'selected':'')+'>Ambos / não sei (legado)</option></select></label></div>').join(''):'<div class="empty">Nenhum familiar cadastrado ainda.</div>';cards.querySelectorAll('[data-fam-open]').forEach(btn=>btn.addEventListener('click',()=>window.selecionarFamiliar(btn.dataset.famOpen)));cards.querySelectorAll('[data-fam-side]').forEach(select=>select.addEventListener('change',()=>window.atualizarLadoFamiliar(select.dataset.famSide,select.value)));}
  const detail=document.getElementById('familiarDetalhe');if(!detail)return;
  if(!sel){detail.innerHTML='<div class="empty">👨‍👩‍👧‍👦 Selecione um familiar ou cadastre o primeiro acima.</div>';return}
  const meds=sel.medicamentos||[],cons=sel.consultas||[],crises=sel.crises||[];
@@ -208,7 +208,7 @@ function bindForms(id){
  const cr=document.getElementById('familiarCriseForm');if(cr)cr.onsubmit=e=>{e.preventDefault();addRecord(id,'crises',{data:val('fCriData'),hora:val('fCriHora'),tipo:val('fCriTipo'),intensidade:val('fCriInt'),descricao:val('fCriDesc'),gatilho:val('fCriGatilho'),conduta:val('fCriConduta')})};
 }
 function addRecord(memberId,type,data){const list=getList(),p=list.find(x=>x.id===memberId);if(!p)return;ensure(p);p[type].push(Object.assign({id:uid(type.slice(0,3)),criadoEm:new Date().toISOString()},data));if(!saveList(list)){alert('Não foi possível salvar.');return}setSelected(memberId);renderFamiliares()}
-window.atualizarLadoFamiliar=function(id,lado){const list=getList(),p=list.find(x=>x.id===id);if(!p)return;p.ladoFamilia=String(lado||'');if(!saveList(list)){alert('Não foi possível salvar o lado da família.');return}setSelected(selectedId()||id);renderFamiliares();};
+window.atualizarLadoFamiliar=function(id,lado){const list=getList(),p=list.find(x=>x.id===id);if(!p)return;p.ladoFamilia=String(lado||'');if(lado==='Afinidade'){p.vinculoFamilia='Afinidade';p.consanguinidade='Não';p.vinculoLadoPendente=false;}else if(['Materno','Paterno','Núcleo próximo','Ambos'].includes(lado)){p.vinculoFamilia='Consanguíneo';p.consanguinidade='Sim';p.vinculoLadoPendente=false;p.observacaoVinculoPendencia='';}if(!saveList(list)){alert('Não foi possível salvar o grupo/lado da família.');return}setSelected(selectedId()||id);renderFamiliares();};
 function atualizarAppAposSelecaoFamiliar(){
  // Recarrega os componentes que leem o perfil ativo, sem trocar a tela atual.
  try{if(typeof window.loadProfile==='function')window.loadProfile()}catch(e){console.warn('[Minha Saúde IA] Não foi possível atualizar o formulário do perfil:',e)}
@@ -247,7 +247,86 @@ function familiaCondicaoTexto(p){return String(p.condicao||'').trim()}
 function familiaLado(p){if(p.ladoFamilia)return p.ladoFamilia;const s=(String(p.parentesco||'')+' '+String(p.obs||'')).toLowerCase();if(/materna|materno/.test(s))return 'Materno';if(/paterna|paterno/.test(s))return 'Paterno';return 'Não informado'}
 function familiaIdade(p){if(p.idade!==undefined&&p.idade!==null&&String(p.idade).trim()!=='')return String(p.idade);if(p.nasc){const n=new Date(String(p.nasc).slice(0,10)+'T12:00:00'),h=new Date();if(!isNaN(n.getTime())){let a=h.getFullYear()-n.getFullYear();if((h.getMonth()+1)*100+h.getDate()<(n.getMonth()+1)*100+n.getDate())a--;return String(Math.max(0,a))}}return ''}
 function familiaPatterns(list){const defs=[['Diabetes',/\bdiabet(?:e|es|ica|ico|icos|icas)\b/i],['Hipertensão',/\bhipertens(?:ão|ao|ivo|iva|ivos|ivas)\b/i],['Doenças cardíacas',/\b(infarto|cardíac|coronar|insufici[eê]ncia card|angina)\b/i],['AVC',/\b(avc|acidente vascular cerebral|derrame)\b/i],['Câncer',/\b(câncer|cancer|tumor|neoplas)\b/i],['Colesterol',/\b(colesterol|dislipidem)\b/i],['Tireoide',/\b(tireoide|hipotireoid|hipertireoid)\b/i],['Doença renal',/\b(renal|rim|insufici[eê]ncia renal)\b/i],['Doença hepática',/\b(fígado|figado|hepat|cirrose)\b/i],['Autoimune / reumatológica',/\b(autoimun|artrite|lúpus|lupus|psorías|psorias|espondil|reumat)\b/i],['Demência / Alzheimer',/\b(demência|demencia|alzheimer|parkinson)\b/i],['Saúde mental',/\b(depress[aã]o|ansiedade|bipolar|esquizofren|transtorno mental)\b/i]];return defs.map(d=>{const members=list.filter(p=>d[1].test(familiaCondicaoTexto(p)+' '+String(p.obs||'')));return {nome:d[0],count:members.length,members}}).filter(x=>x.count>0).sort((a,b)=>b.count-a.count||a.nome.localeCompare(b.nome))}
-function familiaMapaHTML(list){const groups={Materno:[],Paterno:[],'Núcleo próximo':[],'Não informado':[]};list.forEach(p=>{const l=familiaLado(p);if(l==='Ambos'||l==='Ambos / não sei'){groups.Materno.push(p);groups.Paterno.push(p);return}groups[l==='Materno'?'Materno':l==='Paterno'?'Paterno':(['Pai','Mãe','Filho(a)','Filho/filha','Irmão/irmã','Marido','Esposa','Companheiro(a)'].includes(p.parentesco)?'Núcleo próximo':'Não informado')].push(p)});const group=(title,icon,arr)=>'<div class="msa-fam-map-group"><div class="msa-fam-map-title">'+icon+' '+title+' <span>'+arr.length+'</span></div>'+(arr.length?'<div class="msa-fam-map-list">'+arr.map(p=>{const c=familiaCondicaoTexto(p)||'Sem condição informada',med=(p.medicamentos||[]).length,con=(p.consultas||[]).length;return '<button type="button" class="msa-fam-map-person" onclick="selecionarFamiliar(\''+esc(p.id)+'\')"><span class="msa-fam-avatar">'+(p.sexo==='Feminino'?'👩':'👤')+'</span><span><b>'+esc(p.nome||'Sem nome')+'</b><small>'+esc(p.parentesco||'Parentesco não informado')+'</small><em>'+esc(c)+'</em><small>'+med+' 💊 · '+con+' 👨‍⚕️</small></span></button>'}).join('')+'</div>':'<div class="msa-fam-empty">Nenhum familiar neste grupo.</div>')+'</div>';const total=list.length,withCond=list.filter(p=>familiaCondicaoTexto(p)).length,withData=list.filter(p=>familiaCondicaoTexto(p)||p.alergias||p.sangue||p.obs).length;return '<div class="msa-fam-map-card"><div class="msa-fam-map-head"><div><div class="msa-fam-kicker">MAPA DE SAÚDE DA FAMÍLIA</div><h3>🧬 Quem está no seu histórico?</h3><p>Uma visão rápida dos familiares registrados e das informações de saúde já conhecidas.</p></div><button type="button" class="btn secondary small" onclick="iniciarEntrevistaAvaFamilia()">🤖 Falar com a Ava</button></div><div class="msa-fam-map-stats"><div><b>'+total+'</b><span>familiares</span></div><div><b>'+withCond+'</b><span>com condição</span></div><div><b>'+Math.max(0,total-withData)+'</b><span>com poucos dados</span></div></div><div class="msa-fam-map-tree"><div class="msa-fam-you">👤 <b>Você</b><small>perfil principal</small></div>'+group('Lado materno','🌷',groups.Materno)+group('Lado paterno','🧭',groups.Paterno)+group('Núcleo próximo','🏠',groups['Núcleo próximo'])+group('Lado não informado','❔',groups['Não informado'])+'</div></div>'}
+function normalizarChaveVinculoFamilia(v){return String(v==null?'':v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'')}
+function acrescentarCondicaoSeFaltar(p,frase,padroes){const todos=normalizarChaveVinculoFamilia(JSON.stringify(p));if(padroes.some(re=>re.test(todos)))return false;const atual=String(p.condicao||'').trim().replace(/[;,\s]+$/,'');p.condicao=(atual?atual+'; ':'')+frase;return true}
+function atualizarCampoSeDiferente(p,chave,valor){if(p[chave]===valor)return false;p[chave]=valor;return true}
+window.aplicarCorrecoesVinculosFamilia=function(){
+ const lista=getList();if(!Array.isArray(lista)||!lista.length){alert('Não há familiares cadastrados para atualizar.');return}
+ if(!confirm('Aplicar as atualizações solicitadas a Rita, Paulo Mendes e Gordo?\\n\\n• Rita: núcleo próximo e consanguínea.\\n• Paulo Mendes: separar como parente por afinidade, fora dos padrões genéticos.\\n• Gordo: manter Mal de Parkinson e deixar o lado pendente até confirmar se é tio paterno ou materno.\\n\\nAs informações existentes serão preservadas; só serão acrescentados dados ausentes.'))return;
+ let alterados=0;const relatorio=[];
+ function localizar(nome){const chave=normalizarChaveVinculoFamilia(nome);return lista.filter(p=>normalizarChaveVinculoFamilia(p.nome)===chave)}
+ function executar(nome,acao){
+  const achados=localizar(nome);
+  if(achados.length===0){relatorio.push('⚠️ '+nome+': não encontrado pelo nome exato; nenhum cadastro foi criado.');return}
+  if(achados.length!==1){relatorio.push('⚠️ '+nome+': há '+achados.length+' cadastros com esse nome; não alterei para evitar escolher a pessoa errada.');return}
+  const p=achados[0];let n=0;acao(p,()=>{n++});alterados+=n;
+  relatorio.push((n?'✅ ':'ℹ️ ')+nome+': '+(n?'atualizado':'já estava conforme')+'.');
+ }
+ executar('Rita',function(p,mark){
+  if(atualizarCampoSeDiferente(p,'parentesco','Irmã'))mark();
+  if(atualizarCampoSeDiferente(p,'ladoFamilia','Núcleo próximo'))mark();
+  if(atualizarCampoSeDiferente(p,'vinculoFamilia','Consanguíneo'))mark();
+  if(atualizarCampoSeDiferente(p,'vinculoDetalhe','Irmã consanguínea'))mark();
+  if(atualizarCampoSeDiferente(p,'consanguinidade','Sim'))mark();
+  if(atualizarCampoSeDiferente(p,'vinculoLadoPendente',false))mark();
+  if(acrescentarCondicaoSeFaltar(p,'Constipação crônica severa',[/constipacaocronicasevera/]))mark();
+  if(acrescentarCondicaoSeFaltar(p,'Histórico de pedra nos rins (cirurgia prévia)',[/pedranosrins|calculorenal|nefrolitiase/]))mark();
+  if(acrescentarCondicaoSeFaltar(p,'Cirurgia prévia para hiperidrose palmar',[/hiperidrose.{0,20}palmar|palmar.{0,20}hiperidrose/]))mark();
+  if(acrescentarCondicaoSeFaltar(p,'Cirurgia bariátrica prévia',[/cirurgiabariatricaprevia|bariatricaprevia/]))mark();
+ });
+ executar('Paulo Mendes',function(p,mark){
+  if(atualizarCampoSeDiferente(p,'vinculoFamilia','Afinidade'))mark();
+  if(atualizarCampoSeDiferente(p,'ladoFamilia','Afinidade'))mark();
+  if(atualizarCampoSeDiferente(p,'vinculoDetalhe','Marido da Rita; parente por afinidade'))mark();
+  if(atualizarCampoSeDiferente(p,'consanguinidade','Não'))mark();
+  if(atualizarCampoSeDiferente(p,'vinculoLadoPendente',false))mark();
+  if(acrescentarCondicaoSeFaltar(p,'Amputação traumática da mão direita (acidente de trabalho aos 19 anos)',[/amputacaotraumaticadamaodireita|amputacaodamaodireita/]))mark();
+  if(acrescentarCondicaoSeFaltar(p,'Cirurgia bariátrica',[/cirurgiabariatrica|bariatrica/]))mark();
+  if(acrescentarCondicaoSeFaltar(p,'Lesão discreta semelhante à psoríase no couro cabeludo',[/lesaotipopsoriasediscretanocourocabeludo|psoriase.{0,30}courocabeludo|courocabeludo.{0,30}psoriase/]))mark();
+ });
+ executar('Gordo',function(p,mark){
+  if(!String(p.parentesco||'').trim()&&atualizarCampoSeDiferente(p,'parentesco','Tio'))mark();
+  if(!String(p.vinculoFamilia||'').trim()&&atualizarCampoSeDiferente(p,'vinculoFamilia','Consanguíneo'))mark();
+  if(!String(p.consanguinidade||'').trim()&&atualizarCampoSeDiferente(p,'consanguinidade','Sim'))mark();
+  if(acrescentarCondicaoSeFaltar(p,'Mal de Parkinson',[/parkinson/]))mark();
+  const lado=normalizarChaveVinculoFamilia(p.ladoFamilia),temLadoConhecido=['materno','paterno'].includes(lado);
+  if(!temLadoConhecido){
+   if(atualizarCampoSeDiferente(p,'ladoFamilia',''))mark();
+   if(atualizarCampoSeDiferente(p,'vinculoLadoPendente',true))mark();
+   if(atualizarCampoSeDiferente(p,'observacaoVinculoPendencia','Confirmar se Gordo é irmão do pai (lado paterno) ou da mãe (lado materno).'))mark();
+  }else if(p.vinculoLadoPendente&&atualizarCampoSeDiferente(p,'vinculoLadoPendente',false))mark();
+ });
+ if(alterados&&!saveList(lista)){alert('Não foi possível salvar as alterações no armazenamento local.');return}
+ window.__msaFamCorrecoesVinculosStatus=relatorio.join('\\n')+'\\n\\n'+(alterados?'Campos atualizados: '+alterados+'.':'Nenhum campo precisou mudar.');
+ renderFamiliares();
+ setTimeout(function(){const status=document.getElementById('msaFamLinkRepairStatus');if(status){status.style.display='block';status.textContent=window.__msaFamCorrecoesVinculosStatus}},80);
+};
+function familiaMapaHTML(list){
+ const groups={Materno:[],Paterno:[],'Núcleo próximo':[],'Parentes por afinidade':[],'Lado a confirmar':[],'Não informado':[]};
+ list.forEach(function(p){
+  if(p.vinculoFamilia==='Afinidade'||p.ladoFamilia==='Afinidade'){groups['Parentes por afinidade'].push(p);return}
+  if(p.vinculoLadoPendente){groups['Lado a confirmar'].push(p);return}
+  const l=familiaLado(p);
+  if(l==='Ambos'||l==='Ambos / não sei'){groups.Materno.push(p);groups.Paterno.push(p);return}
+  if(l==='Materno'){groups.Materno.push(p);return}
+  if(l==='Paterno'){groups.Paterno.push(p);return}
+  if(l==='Núcleo próximo'){groups['Núcleo próximo'].push(p);return}
+  const rel=normalizarChaveVinculoFamilia(p.parentesco);
+  const nucleo=['pai','mae','filho','filha','irmao','irma','marido','esposa','conjuge','companheiro','companheira','parceiro','parceira'].includes(rel);
+  groups[nucleo?'Núcleo próximo':'Não informado'].push(p);
+ });
+ const group=function(title,icon,arr){
+  return '<div class="msa-fam-map-group"><div class="msa-fam-map-title">'+icon+' '+title+' <span>'+arr.length+'</span></div>'+
+   (arr.length?'<div class="msa-fam-map-list">'+arr.map(function(p){
+    const c=familiaCondicaoTexto(p)||'Sem condição informada',med=(p.medicamentos||[]).length,con=(p.consultas||[]).length;
+    const alerta=p.vinculoLadoPendente?'<small style="display:block;color:#b45309;font-weight:800">⚠️ Confirmar lado paterno ou materno</small>':'';
+    return '<button type="button" class="msa-fam-map-person" onclick="selecionarFamiliar(\\''+esc(p.id)+'\\')"><span class="msa-fam-avatar">'+(p.sexo==='Feminino'?'👩':'👤')+'</span><span><b>'+esc(p.nome||'Sem nome')+'</b><small>'+esc(p.parentesco||'Parentesco não informado')+'</small><em>'+esc(c)+'</em>'+alerta+'<small>'+med+' 💊 · '+con+' 👨‍⚕️</small></span></button>';
+   }).join('')+'</div>':'<div class="msa-fam-empty">Nenhum familiar neste grupo.</div>')+'</div>';
+ };
+ const total=list.length,withCond=list.filter(function(p){return familiaCondicaoTexto(p)}).length,withData=list.filter(function(p){return familiaCondicaoTexto(p)||p.alergias||p.sangue||p.obs}).length;
+ return '<div class="msa-fam-map-card"><div class="msa-fam-map-head"><div><div class="msa-fam-kicker">MAPA DE SAÚDE DA FAMÍLIA</div><h3>🧬 Quem está no seu histórico?</h3><p>Uma visão rápida dos familiares registrados e das informações de saúde já conhecidas.</p></div><button type="button" class="btn secondary small" onclick="iniciarEntrevistaAvaFamilia()">🤖 Falar com a Ava</button></div><div class="msa-fam-map-stats"><div><b>'+total+'</b><span>familiares</span></div><div><b>'+withCond+'</b><span>com condição</span></div><div><b>'+Math.max(0,total-withData)+'</b><span>com poucos dados</span></div></div><div class="msa-fam-map-tree"><div class="msa-fam-you">👤 <b>Você</b><small>perfil principal</small></div>'+
+  group('Lado materno','🌷',groups.Materno)+group('Lado paterno','🧭',groups.Paterno)+group('Núcleo próximo','🏠',groups['Núcleo próximo'])+group('Parentes por afinidade','🤝',groups['Parentes por afinidade'])+group('Lado a confirmar','❔',groups['Lado a confirmar'])+group('Lado não informado','⚪',groups['Não informado'])+'</div></div>';
+}
 function familiaAnaliseHTML(list){const patterns=familiaPatterns(list),relevant=patterns.filter(x=>x.count>=2),missing=list.filter(p=>!familiaCondicaoTexto(p)||!p.sangue||!familiaIdade(p)).length;let body='';if(patterns.length){body='<div class="msa-fam-patterns">'+patterns.slice(0,8).map(x=>'<div class="msa-fam-pattern"><div><b>'+esc(x.nome)+'</b><small>'+x.count+' familiar'+(x.count===1?'':'es')+'</small></div><div class="msa-fam-members">'+x.members.map(p=>'<button type="button" onclick="selecionarFamiliar(\''+esc(p.id)+'\')">'+esc(p.nome||'Sem nome')+'</button>').join('')+'</div></div>').join('')+'</div>'}else body='<div class="msa-fam-empty">Ainda não há condições suficientes registradas para encontrar padrões.</div>';return '<div class="msa-fam-analysis-card"><div class="msa-fam-kicker">ANÁLISE DO HISTÓRICO</div><h3>📊 Padrões familiares registrados</h3><p>O sistema agrupa informações que você registrou. Isso não significa que você terá a mesma condição.</p><div class="msa-fam-analysis-kpis"><div><b>'+relevant.length+'</b><span>padrões repetidos</span></div><div><b>'+patterns.length+'</b><span>categorias encontradas</span></div><div><b>'+missing+'</b><span>fichas com dados faltantes</span></div></div>'+body+'<div class="alert warn" style="margin-top:10px">⚠️ Esta análise é apenas organizacional. Histórico familiar não é diagnóstico nem previsão individual de risco.</div></div>'}
 
 function dadosFamiliaParaIA(){
@@ -701,6 +780,14 @@ function renderFamiliaInteligencia(){
    '<button type="button" class="msa-fam-action" onclick="document.getElementById(\'msa-fam-map\')?.scrollIntoView({behavior:\'smooth\',block:\'start\'})"><strong>🧬</strong><span>Ver mapa da família</span><small>Materno, paterno e núcleo próximo.</small></button>'+
    '<button type="button" class="msa-fam-action" onclick="document.getElementById(\'msa-fam-analysis\')?.scrollIntoView({behavior:\'smooth\',block:\'start\'})"><strong>📊</strong><span>Ver padrões</span><small>Condições que aparecem mais de uma vez.</small></button>'+
   '</div>'+
+  '<div id="msaFamLinkRepairCard" class="card" style="border:1px solid #bfdbfe;background:linear-gradient(135deg,#eff6ff,#fff);border-radius:18px;padding:16px;margin:6px 0">'+
+  '<div class="msa-fam-kicker">🧬 REVISÃO DE VÍNCULOS</div><h3 style="margin:6px 0">Corrigir vínculos e preservar os registros</h3><p style="color:#475569;line-height:1.5;margin:0 0 12px">Confira estas alterações solicitadas. Ao aplicar, o sistema atualiza somente familiares encontrados por nome exato e mantém as informações existentes. O lado de Gordo continuará pendente até você confirmar se é irmão do seu pai ou da sua mãe.</p>'+
+  '<div style="display:grid;gap:9px">'+
+   '<div style="background:#fff;border:1px solid #dbeafe;border-radius:12px;padding:11px"><b>👩 Rita — irmã consanguínea</b><p style="margin:5px 0 0;color:#475569;font-size:13px">Núcleo próximo. Preservar constipação crônica severa, pedra nos rins com cirurgia prévia, cirurgia para hiperidrose palmar e bariátrica prévia.</p></div>'+
+   '<div style="background:#fff;border:1px solid #dbeafe;border-radius:12px;padding:11px"><b>🤝 Paulo Mendes — marido da Rita / cunhado</b><p style="margin:5px 0 0;color:#475569;font-size:13px">Parente por afinidade, separado dos padrões genéticos. Preservar amputação traumática da mão direita aos 19 anos em acidente de trabalho, cirurgia bariátrica e lesão discreta tipo psoríase no couro cabeludo.</p></div>'+
+   '<div style="background:#fff;border:1px solid #fde68a;border-radius:12px;padding:11px"><b>❔ Gordo — tio</b><p style="margin:5px 0 0;color:#92400e;font-size:13px">Manter Mal de Parkinson e sinalizar o lado como pendente: confirmar se é irmão do pai (paterno) ou da mãe (materno).</p></div>'+
+  '</div><button type="button" class="btn green" style="width:100%;margin-top:12px" onclick="aplicarCorrecoesVinculosFamilia()">✅ Aplicar atualizações aos familiares existentes</button>'+
+  '<div id="msaFamLinkRepairStatus" role="status" style="display:'+(window.__msaFamCorrecoesVinculosStatus?'block':'none')+';white-space:pre-line;margin-top:10px;padding:10px;border-radius:10px;background:#f8fafc;color:#334155;font-size:13px">'+esc(window.__msaFamCorrecoesVinculosStatus||'')+'</div></div>'+
   '<div id="msa-fam-map" class="msa-fam-anchor">'+familiaMapaHTML(list)+'</div>'+
   '<div id="msa-fam-analysis" class="msa-fam-anchor">'+familiaAnaliseHTML(list)+'</div>';
 }
