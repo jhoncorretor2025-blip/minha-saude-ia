@@ -1,3 +1,7 @@
+## V7.25 — “Baixar meus dados” sempre do titular
+- 🐞 Com um familiar selecionado (ex.: o pai), “Compartilhar meus dados básicos” baixava os dados do familiar. Agora usa sempre o perfil e as medidas do titular, mesmo com outra pessoa aberta.
+- 🔄 Versão e cache atualizados para V7.25.
+
 ## V7.24 — Fim da tela preta
 - 🐞 Tela preta ao compartilhar: a janela “Compartilhar meus dados básicos” e o tour “Primeiros passos” eram criados como <section>, e o app esconde toda seção que não é a página aberta — só o fundo escuro aparecia. Agora só as páginas (filhas diretas do conteúdo) ficam escondidas; blocos internos e janelas aparecem normalmente.
 - 🐞 Com a mesma correção voltam a aparecer: “Cuidado a dois” na página Família e o lembrete de completar o perfil do tour.
