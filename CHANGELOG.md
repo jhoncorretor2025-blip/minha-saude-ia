@@ -1,3 +1,10 @@
+## V7.27 — Família em abas
+- 🗂️ A página Família (que tinha ~7.000 px de rolagem) foi separada em 4 abas fixas no topo: 👥 Pessoas · ➕ Adicionar · 🧬 Saúde da família (histórico e padrões familiares, família com IA) · 💑 Cônjuge (compartilhar e cuidado a dois).
+- 📋 A ficha da pessoa também ganhou sub-abas: Dados · Saúde · Remédios · Consultas · Ocorrências · Histórico.
+- 🔗 Atalhos levam à parte certa: “💑 Compartilhar” abre a aba Cônjuge e “✏️ Editar perfil” abre Pessoas → Dados. A última aba usada fica lembrada.
+- 📏 Resultado no celular: de ~6.900 px para ~1.800–2.800 px por aba.
+- 🔄 Versão e cache atualizados para V7.27.
+
 ## V7.26 — Compartilhar “Tudo o que eu preenchi”
 - 🩺 Na janela de compartilhar, escolha “📋 Só o básico” ou “🩺 Tudo o que preenchi”: entram também álcool, fumo, sono, academia, água, trabalho, alergias, doenças, cirurgias, suplementos, contato de emergência, saúde íntima/prevenção (se preenchidos) e os remédios em uso. Consultas, exames e sintomas continuam de fora.
 - 📥 Quem recebe o arquivo importa tudo isso na Família (doenças, alergias, contato, remédios e observações), sem duplicar remédios ao atualizar.
