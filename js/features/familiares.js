@@ -320,7 +320,7 @@ function familiaMapaHTML(list){
    (arr.length?'<div class="msa-fam-map-list">'+arr.map(function(p){
     const c=familiaCondicaoTexto(p)||'Sem condição informada',med=(p.medicamentos||[]).length,con=(p.consultas||[]).length;
     const alerta=p.vinculoLadoPendente?'<small style="display:block;color:#b45309;font-weight:800">⚠️ Confirmar lado paterno ou materno</small>':'';
-    return '<button type="button" class="msa-fam-map-person" onclick="selecionarFamiliar(\\''+esc(p.id)+'\\')"><span class="msa-fam-avatar">'+(p.sexo==='Feminino'?'👩':'👤')+'</span><span><b>'+esc(p.nome||'Sem nome')+'</b><small>'+esc(p.parentesco||'Parentesco não informado')+'</small><em>'+esc(c)+'</em>'+alerta+'<small>'+med+' 💊 · '+con+' 👨‍⚕️</small></span></button>';
+    return '<button type="button" class="msa-fam-map-person" onclick="selecionarFamiliar(\''+esc(p.id)+'\')"><span class="msa-fam-avatar">'+(p.sexo==='Feminino'?'👩':'👤')+'</span><span><b>'+esc(p.nome||'Sem nome')+'</b><small>'+esc(p.parentesco||'Parentesco não informado')+'</small><em>'+esc(c)+'</em>'+alerta+'<small>'+med+' 💊 · '+con+' 👨‍⚕️</small></span></button>';
    }).join('')+'</div>':'<div class="msa-fam-empty">Nenhum familiar neste grupo.</div>')+'</div>';
  };
  const total=list.length,withCond=list.filter(function(p){return familiaCondicaoTexto(p)}).length,withData=list.filter(function(p){return familiaCondicaoTexto(p)||p.alergias||p.sangue||p.obs}).length;
