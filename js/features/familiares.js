@@ -165,7 +165,7 @@ function instalarAtalhoBuscarFamiliarIA(){
    '<button type="button" id="msaFamPromptImportGenerate" class="btn green">🤖 Gerar prompt para buscar familiares</button>'+
    '<button type="button" id="msaFamPromptImportOpen" class="btn secondary">📥 Já tenho a resposta — importar</button>'+
   '</div>'+
-  '<p style="margin:9px 0 0;color:#64748b;font-size:12px;line-height:1.45">Como funciona: 1. Gere e revise o prompt. 2. Copie para o ChatGPT, Gemini ou Claude. 3. Peça o JSON. 4. Volte e clique em “Já tenho a resposta — importar”. A IA pode não ter acesso a conversas antigas; confira tudo antes de salvar.</p>';
+  '<p style="margin:9px 0 0;color:#64748b;font-size:12px;line-height:1.45">Como funciona: 1. Gere e revise o prompt. 2. Copie para o NotebookLM, ChatGPT, Gemini ou Claude. 3. Peça o JSON. 4. Volte e clique em “Já tenho a resposta — importar”. A IA pode não ter acesso a conversas antigas; confira tudo antes de salvar.</p>';
  host.insertBefore(card,form);
  card.querySelector('#msaFamPromptImportGenerate').addEventListener('click',function(){
   if(typeof window.abrirPromptFamiliaIA==='function')window.abrirPromptFamiliaIA('buscar-familiares');
@@ -497,28 +497,51 @@ function copiarTextoFamiliaIA(txt,okMsg){
  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackIAFamiliar(txt));
  else fallbackIAFamiliar(txt);
 }
+function gerarPromptNotebookLM(pedido){
+ const objetivo=String(pedido||'').trim().slice(0,350)||'Localize os familiares citados nas fontes e gere o JSON para importar no Minha Saúde IA.';
+ const linhas=[
+  'TAREFA: organizar o histórico familiar a partir das fontes deste NotebookLM.',
+  'Use APENAS as fontes anexadas e o conteúdo disponível neste notebook. Não presuma acesso a conversas antigas, memórias externas ou outros aplicativos.',
+  'Localize os familiares mencionados nas fontes. Consolide menções da mesma pessoa sem misturar pessoas com nomes parecidos.',
+  'Extraia apenas fatos documentados: nome, parentesco, lado materno/paterno, vínculo consanguíneo/afinidade, condições, cirurgias, alergias, medicamentos, consultas, crises e observações.',
+  'Parentes por afinidade, como cunhados e cônjuges, devem usar vinculoFamilia="Afinidade" e não contam para padrões genéticos.',
+  'Se o lado de um tio não estiver explícito, use ladoFamilia="" e explique a dúvida em obs. Não deduza o lado.',
+  'Não invente dados, não faça diagnósticos e não transforme suspeitas em fatos. Dados ausentes: "" ou [].',
+  'Responda SOMENTE com JSON válido, sem markdown, introdução ou comentários.',
+  'Use esta estrutura: {"familiares":[{"nome":"","parentesco":"","grauParentesco":"","consanguinidade":"","vinculoFamilia":"","sexo":"","data_nascimento":"","idade":"","ladoFamilia":"","condicao":"","alergias":"","tipo_sanguineo":"","contato":"","obs":"","idadeDiagnostico":"","certeza":"","medicamentos":[{"nome":"","dose":"","horario":"","frequencia":"","prescrito_por":"","obs":""}],"consultas":[{"data":"","especialidade":"","medico":"","retorno":"","motivo":"","obs":""}],"crises":[{"data":"","hora":"","tipo":"","intensidade":"","descricao":"","gatilho":"","conduta":""}]}],"historico_familiar":[{"parente":"","condicao":"","idade":"","obs":"","ladoFamilia":"","certeza":""}]}',
+  'Não omita familiares comprovados nas fontes nem inclua pessoas sem evidência de parentesco. Se não houver dados, use {"familiares":[],"historico_familiar":[]}.',
+  'PEDIDO ESPECÍFICO: '+objetivo
+ ];
+ return linhas.join('\n');
+}
 function abrirPromptFamiliaIA(modo){
  const buscarFamiliares=modo==='buscar-familiares';
  const pergunta=buscarFamiliares
-  ? 'Use as memórias, conversas anteriores e o contexto familiar que você realmente consegue acessar sobre o usuário. Localize os familiares que ele já mencionou, inclusive os que ainda não aparecem na lista local abaixo. Extraia nome, parentesco, lado da família, condições e cirurgias relatadas, medicamentos, consultas, crises e observações. Preserve somente fatos efetivamente disponíveis; não invente nem estime informações. Não misture pessoas diferentes. Diferencie parentes consanguíneos de parentes por afinidade. Para dados ausentes, use campo vazio ou lista vazia. Devolva imediatamente SOMENTE JSON válido compatível com o importador do Minha Saúde IA, no formato {"familiares":[],"historico_familiar":[]}. Não faça perguntas nem acrescente texto fora do JSON. Se não tiver acesso a memórias ou conversas anteriores, use apenas o contexto realmente disponível.'
+  ? 'Localize os familiares citados nas fontes deste NotebookLM e gere o JSON para importar no Minha Saúde IA.'
   : 'Faça uma análise geral do histórico familiar, destacando padrões, informações relevantes e perguntas úteis para levar ao médico.';
  const d=dadosFamiliaParaIA(),familiaCount=d.familiares.length,histCount=d.historico.length,medCount=d.familiares.reduce((n,p)=>n+(Array.isArray(p.medicamentos)?p.medicamentos.length:0),0),consCount=d.familiares.reduce((n,p)=>n+(Array.isArray(p.consultas)?p.consultas.length:0),0),criseCount=d.familiares.reduce((n,p)=>n+(Array.isArray(p.crises)?p.crises.length:0),0);
  let old=document.getElementById('msaFamiliaIAPromptModal');if(old)old.remove();
  const modal=document.createElement('div');modal.id='msaFamiliaIAPromptModal';modal.className='msa-ava-overlay';
  modal.innerHTML='<div class="msa-ava-dialog" role="dialog" aria-modal="true" aria-labelledby="msaFamiliaIATitle">'+
   '<div class="msa-ava-top"><div><div class="msa-fam-kicker">🤖 IA · FAMÍLIA</div><h2 id="msaFamiliaIATitle">Preparar prompt de IA sobre a família</h2><p>Antes de abrir um serviço externo, confira exatamente o conteúdo e confirme o compartilhamento.</p></div><button type="button" class="msa-ava-close" id="msaFamiliaIAClose">✕</button></div>'+
-  '<div class="alert warn" style="margin-top:12px"><b>🔐 Prévia de privacidade</b><br>Este prompt pode conter nomes, parentesco e informações de saúde de familiares. O aplicativo não envia nada automaticamente.</div>'+
-  '<div class="grid2" style="margin-top:10px"><div class="card stat"><span>👥 Familiares</span><b>'+familiaCount+'</b></div><div class="card stat"><span>🧬 Histórico</span><b>'+histCount+'</b></div><div class="card stat"><span>💊 Medicamentos</span><b>'+medCount+'</b></div><div class="card stat"><span>👨‍⚕️ Consultas · 🚨 Crises</span><b>'+consCount+' · '+criseCount+'</b></div></div>'+
-  '<label class="msa-ava-field">❓ O que você quer perguntar?<textarea id="msaFamiliaIAPergunta" style="margin-top:7px;min-height:90px" placeholder="Ex.: Existe algum padrão de doenças que aparece em mais de uma geração?">'+esc(pergunta)+'</textarea></label>'+
-  '<label class="msa-ava-field">📋 Prévia completa do que será copiado/compartilhado<textarea id="msaFamiliaIATexto" readonly style="margin-top:7px;min-height:260px;font-size:12px;line-height:1.4"></textarea></label>'+
+  (buscarFamiliares?'<div class="alert safe" style="margin-top:12px"><b>📚 Prompt para NotebookLM</b><br>O prompt consulta somente as fontes disponíveis no seu notebook. Não anexa o histórico salvo localmente e fica limitado a 3.800 caracteres.</div>':'<div class="alert warn" style="margin-top:12px"><b>🔐 Prévia de privacidade</b><br>Este prompt pode conter nomes, parentesco e informações de saúde de familiares. O aplicativo não envia nada automaticamente.</div>')+
+  (buscarFamiliares?'<div class="alert safe" style="margin-top:10px">O NotebookLM precisa ter as fontes familiares adicionadas ao caderno. Este prompt não consegue recuperar fontes que não estejam disponíveis nele.</div>':'<div class="grid2" style="margin-top:10px"><div class="card stat"><span>👥 Familiares</span><b>'+familiaCount+'</b></div><div class="card stat"><span>🧬 Histórico</span><b>'+histCount+'</b></div><div class="card stat"><span>💊 Medicamentos</span><b>'+medCount+'</b></div><div class="card stat"><span>👨‍⚕️ Consultas · 🚨 Crises</span><b>'+consCount+' · '+criseCount+'</b></div></div>')+
+  '<label class="msa-ava-field">'+(buscarFamiliares?'❓ Pedido ao NotebookLM':'❓ O que você quer perguntar?')+'<textarea id="msaFamiliaIAPergunta" style="margin-top:7px;min-height:90px" placeholder="Ex.: Existe algum padrão de doenças que aparece em mais de uma geração?">'+esc(pergunta)+'</textarea></label>'+
+  '<label class="msa-ava-field">'+(buscarFamiliares?'📚 Prompt do NotebookLM · limite de 3.800 caracteres':'📋 Prévia completa do que será copiado/compartilhado')+'<textarea id="msaFamiliaIATexto" readonly style="margin-top:7px;min-height:260px;font-size:12px;line-height:1.4"></textarea></label>'+(buscarFamiliares?'<div id="msaFamiliaIACharCount" role="status" style="margin-top:6px;font-size:12px;font-weight:800;color:#1d4ed8">0/3800 caracteres</div>':'')+
   '<label style="display:flex;gap:9px;align-items:flex-start;margin-top:12px;padding:12px;border:1px solid #fed7aa;background:#fffaf5;border-radius:14px;font-size:13px;line-height:1.4"><input id="msaFamiliaIAConfirmacao" type="checkbox" style="margin-top:3px;flex:0 0 auto"><span><b>Confirmo que revisei a prévia e autorizo o compartilhamento desses dados familiares com um serviço externo de IA.</b></span></label>'+
-  '<div class="msa-ava-actions" style="display:grid;grid-template-columns:1fr 1fr"><button type="button" class="btn green" id="msaFamiliaIACopiar">📋 Copiar prompt</button><button type="button" class="btn" id="msaFamiliaIAChatGPT" disabled>🟢 Confirmar e abrir ChatGPT</button><button type="button" class="btn secondary" id="msaFamiliaIAClaude" disabled>🟣 Confirmar e abrir Claude</button><button type="button" class="btn secondary" id="msaFamiliaIAGemini" disabled>🔵 Confirmar e abrir Gemini</button><button type="button" class="btn secondary" id="msaFamiliaIAImportar">📥 Colar resposta da IA</button><button type="button" class="btn secondary" id="msaFamiliaIAFechar">↩️ Voltar</button></div>'+
+  '<div class="msa-ava-actions" style="display:grid;grid-template-columns:1fr 1fr"><button type="button" class="btn green" id="msaFamiliaIACopiar">📋 Copiar prompt</button><button type="button" class="btn" id="msaFamiliaIAChatGPT" disabled>🟢 Confirmar e abrir ChatGPT</button><button type="button" class="btn secondary" id="msaFamiliaIAClaude" disabled>🟣 Confirmar e abrir Claude</button><button type="button" class="btn secondary" id="msaFamiliaIAGemini" disabled>🔵 Confirmar e abrir Gemini</button>'+(buscarFamiliares?'<button type="button" class="btn secondary" id="msaFamiliaIANotebookLM" disabled>📚 Confirmar e abrir NotebookLM</button>':'')+'<button type="button" class="btn secondary" id="msaFamiliaIAImportar">📥 Colar resposta da IA</button><button type="button" class="btn secondary" id="msaFamiliaIAFechar">↩️ Voltar</button></div>'+
   '<div class="alert safe" style="margin-top:12px">🔒 Copiar o prompt apenas copia para a área de transferência. Abrir um serviço externo só fica disponível depois da confirmação acima.</div>'+
   '</div>';
  document.body.appendChild(modal);
  const textarea=modal.querySelector('#msaFamiliaIAPergunta'),out=modal.querySelector('#msaFamiliaIATexto'),check=modal.querySelector('#msaFamiliaIAConfirmacao');
- const atualizar=()=>{out.value=gerarPromptCompletoFamilia(textarea.value)};
- const atualizarBotoes=()=>['#msaFamiliaIAChatGPT','#msaFamiliaIAClaude','#msaFamiliaIAGemini'].forEach(sel=>{const b=modal.querySelector(sel);if(b)b.disabled=!check.checked});
+ const atualizar=()=>{
+  out.value=buscarFamiliares?gerarPromptNotebookLM(textarea.value):gerarPromptCompletoFamilia(textarea.value);
+  const contador=modal.querySelector('#msaFamiliaIACharCount');
+  if(contador)contador.textContent=out.value.length+'/3800 caracteres'+(out.value.length>3800?' — excedeu o limite':'');
+  const copiar=modal.querySelector('#msaFamiliaIACopiar');
+  if(copiar)copiar.disabled=buscarFamiliares&&out.value.length>3800;
+ };
+ const atualizarBotoes=()=>['#msaFamiliaIAChatGPT','#msaFamiliaIAClaude','#msaFamiliaIAGemini','#msaFamiliaIANotebookLM'].forEach(sel=>{const b=modal.querySelector(sel);if(b)b.disabled=!check.checked||(buscarFamiliares&&out.value.length>3800)});
  atualizar();
  textarea.addEventListener('input',atualizar);
  check.addEventListener('change',atualizarBotoes);
@@ -538,6 +561,8 @@ function abrirPromptFamiliaIA(modo){
  modal.querySelector('#msaFamiliaIAChatGPT').onclick=()=>abrirExterno('https://chatgpt.com/','ChatGPT');
  modal.querySelector('#msaFamiliaIAClaude').onclick=()=>abrirExterno('https://claude.ai/new','Claude');
  modal.querySelector('#msaFamiliaIAGemini').onclick=()=>abrirExterno('https://gemini.google.com/app','Gemini');
+ const notebookBtn=modal.querySelector('#msaFamiliaIANotebookLM');
+ if(notebookBtn)notebookBtn.onclick=()=>abrirExterno('https://notebooklm.google.com/','NotebookLM');
  textarea.focus();
 }
 window.abrirPromptFamiliaIA=abrirPromptFamiliaIA;
