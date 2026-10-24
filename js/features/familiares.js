@@ -647,136 +647,234 @@ function normalizarFamiliarImportado(src){
   medicamentos:meds,consultas:cons,crises:crises,dadosImportadosIA:p
  };
 }
+function chaveDedupFamilia(v){
+ return String(v==null?'':v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+}
+function campoImportacaoPreenchido(v){
+ return v!==undefined&&v!==null&&String(v).trim()!=='';
+}
+function mesclarTextoSemRepetir(atual,novo){
+ const base=String(atual||'').trim();
+ const incoming=String(novo||'').trim();
+ if(!incoming)return base;
+ if(!base)return incoming;
+ const partesBase=base.split(/[;\n|]+/).map(x=>x.trim()).filter(Boolean);
+ const partesNovas=incoming.split(/[;\n|]+/).map(x=>x.trim()).filter(Boolean);
+ let partes=partesBase.slice(),alterou=false;
+ partesNovas.forEach(function(parte){
+  const chave=chaveDedupFamilia(parte);if(!chave)return;
+  const todas=chaveDedupFamilia(partes.join(' '));
+  if(todas.includes(chave))return;
+  partes.push(parte);alterou=true;
+ });
+ return alterou?partes.join('; '):base;
+}
+function identidadeRegistroImportado(a,b,tipo){
+ const norm=v=>chaveDedupFamilia(v);
+ const get=(p,k)=>norm(p&&p[k]);
+ if(tipo==='medicamentos'){
+  if(!get(a,'nome')||get(a,'nome')!==get(b,'nome'))return false;
+  const da=get(a,'dose'),db=get(b,'dose');
+  return !(da&&db&&da!==db);
+ }
+ const campos=tipo==='consultas'?['data','especialidade','medico','motivo']:['data','hora','tipo','descricao','gatilho'];
+ let iguais=0,temData=false;
+ for(const k of campos){
+  const va=get(a,k),vb=get(b,k);
+  if(va&&vb&&va!==vb)return false;
+  if(va&&vb&&va===vb){iguais++;if(k==='data')temData=true}
+ }
+ return tipo==='consultas'?(iguais>=2||temData):(iguais>=2||(temData&&get(a,'tipo')&&get(a,'tipo')===get(b,'tipo')));
+}
+function mesclarRegistroImportado(atual,novo,stats){
+ let mudou=false;
+ Object.keys(novo||{}).forEach(function(k){
+  if(k==='id'||k==='criadoEm')return;
+  const velho=atual[k],v=novo[k];
+  if(!campoImportacaoPreenchido(velho)&&campoImportacaoPreenchido(v)){atual[k]=v;mudou=true;return}
+  if(k==='obs'&&campoImportacaoPreenchido(velho)&&campoImportacaoPreenchido(v)){
+   const combinado=mesclarTextoSemRepetir(velho,v);
+   if(combinado!==velho){atual[k]=combinado;mudou=true}
+  }
+ });
+ return mudou;
+}
+function mesclarListaRegistrosImportados(existentes,entrantes,tipo,stats){
+ const lista=[];
+ function inserir(registro,veioDaImportacao){
+  const item=Object.assign({},registro||{});
+  const idx=lista.findIndex(function(x){return identidadeRegistroImportado(x,item,tipo)});
+  if(idx>=0){
+   const mudou=mesclarRegistroImportado(lista[idx],item,stats);
+   stats.registrosDuplicadosIgnorados++;
+   if(mudou)stats.camposNovosCompletados++;
+   return mudou;
+  }
+  if(!item.id)item.id=uid(tipo.slice(0,-1));
+  lista.push(item);
+  if(veioDaImportacao)stats.registrosNovos++;
+  return true;
+ }
+ (Array.isArray(existentes)?existentes:[]).forEach(x=>inserir(x,false));
+ (Array.isArray(entrantes)?entrantes:[]).forEach(x=>inserir(x,true));
+ return {lista:lista,mudou:JSON.stringify(lista)!==JSON.stringify(Array.isArray(existentes)?existentes:[])};
+}
+function mesclarFamiliarImportado(atual,novo,stats){
+ const merged=Object.assign({},atual||{});let mudou=false;
+ const textos=['condicao','obs','medicamentosRelato','medidas','rotina'];
+ textos.forEach(function(k){
+  if(!campoImportacaoPreenchido(novo[k]))return;
+  const valor=mesclarTextoSemRepetir(merged[k],novo[k]);
+  if(valor!==String(merged[k]||'')){merged[k]=valor;mudou=true;stats.camposNovosCompletados++}
+ });
+ const simples=['nome','parentesco','sexo','nasc','idade','altura','peso','alergias','sangue','contato','ladoFamilia','idadeDiagnostico','certeza','statusFamiliar','causaFalecimento','grauParentesco','consanguinidade','vinculoFamilia','statusFamiliar','causaFalecimento'];
+ simples.forEach(function(k){
+  if(!campoImportacaoPreenchido(merged[k])&&campoImportacaoPreenchido(novo[k])){merged[k]=novo[k];mudou=true;stats.camposNovosCompletados++}
+ });
+ ['medicamentos','consultas','crises'].forEach(function(tipo){
+  const res=mesclarListaRegistrosImportados(merged[tipo],novo[tipo],tipo,stats);
+  if(res.mudou){merged[tipo]=res.lista;mudou=true}
+ });
+ if(novo.dadosImportadosIA&&typeof novo.dadosImportadosIA==='object'){
+  const anterior=merged.dadosImportadosIA&&typeof merged.dadosImportadosIA==='object'?merged.dadosImportadosIA:{};
+  const combinado=Object.assign({},anterior);
+  Object.keys(novo.dadosImportadosIA).forEach(k=>{if(!campoImportacaoPreenchido(combinado[k])&&campoImportacaoPreenchido(novo.dadosImportadosIA[k]))combinado[k]=novo.dadosImportadosIA[k]});
+  merged.dadosImportadosIA=combinado;
+ }
+ return {familiar:ensure(merged),mudou:mudou};
+}
+function mesmoHistoricoImportado(a,b){
+ const parA=chaveDedupFamilia(a.parente||a.parentesco),parB=chaveDedupFamilia(b.parente||b.parentesco);
+ if(!parA||parA!==parB)return false;
+ const condA=String(a.cond||a.info||a.condicao||''),condB=String(b.cond||b.info||b.condicao||'');
+ const ca=chaveDedupFamilia(condA),cb=chaveDedupFamilia(condB);
+ if(ca&&cb)return ca===cb||ca.includes(cb)||cb.includes(ca);
+ if(ca||cb)return false;
+ const idadeA=chaveDedupFamilia(a.idade||a.idadeDiagnostico),idadeB=chaveDedupFamilia(b.idade||b.idadeDiagnostico);
+ const obsA=chaveDedupFamilia(a.obs||a.observacao),obsB=chaveDedupFamilia(b.obs||b.observacao);
+ return (idadeA&&idadeA===idadeB)||(obsA&&obsA===obsB);
+}
+function mesclarHistoricoImportado(atual,novo){
+ let mudou=false;
+ const cond=mesclarTextoSemRepetir(atual.cond||atual.info,novo.cond||novo.info||novo.condicao);
+ if(cond!==String(atual.cond||atual.info||'')){atual.cond=cond;atual.info=cond;mudou=true}
+ [['idade','idade'],['ladoFamilia','ladoFamilia'],['certeza','certeza']].forEach(function(par){
+  if(!campoImportacaoPreenchido(atual[par[0]])&&campoImportacaoPreenchido(novo[par[1]])){atual[par[0]]=novo[par[1]];mudou=true}
+ });
+ const obs=mesclarTextoSemRepetir(atual.obs||atual.observacao,novo.obs||novo.observacao);
+ if(obs!==String(atual.obs||atual.observacao||'')){atual.obs=obs;atual.observacao=obs;mudou=true}
+ if(!campoImportacaoPreenchido(atual.idadeDiagnostico)&&campoImportacaoPreenchido(novo.idadeDiagnostico)){atual.idadeDiagnostico=novo.idadeDiagnostico;mudou=true}
+ return mudou;
+}
+function localizarFamiliarImportado(lista,novo){
+ const nome=chaveDedupFamilia(novo.nome),rel=chaveDedupFamilia(novo.parentesco);
+ if(!nome)return -1;
+ const exato=lista.findIndex(x=>chaveDedupFamilia(x.nome)===nome&&chaveDedupFamilia(x.parentesco)===rel);
+ if(exato>=0)return exato;
+ const candidatos=[];
+ lista.forEach(function(x,i){if(chaveDedupFamilia(x.nome)===nome)candidatos.push(i)});
+ if(candidatos.length===1){
+  const p=lista[candidatos[0]],relAtual=chaveDedupFamilia(p.parentesco);
+  if(!rel||!relAtual||rel==='outro'||relAtual==='outro')return candidatos[0];
+ }
+ return -1;
+}
 function salvarImportacaoFamilia(dados){
  const raiz=dados&&typeof dados==='object'&&!Array.isArray(dados)?dados:{familiares:dados};
  const entrada=arrFam(raiz.familiares||raiz.FAMILIARES||raiz.family||raiz.members);
  const antecedentes=arrFam(raiz.historico_familiar||raiz.HISTORICO_FAMILIAR||raiz.antecedentes);
  const importados=entrada.map(normalizarFamiliarImportado).filter(Boolean);
  const atuais=getList();
- let novos=0,atualizados=0,primeiroId='';
-
- // 1) Compatibilidade com JSONs que colocam listas no nível principal.
- // Quando há apenas uma pessoa, associa medicamentos/consultas/crises à pessoa importada.
+ const stats={registrosNovos:0,registrosDuplicadosIgnorados:0,antecedentesNovos:0,antecedentesDuplicadosIgnorados:0,familiaresDuplicadosIgnorados:0,camposNovosCompletados:0};
+ let novos=0,atualizados=0,primeiroId='',historicoMudou=false;
  if(importados.length===1){
   const pessoa=importados[0];
   ['medicamentos','consultas','crises'].forEach(function(chave){
    const raizLista=arrFam(raiz[chave]||raiz[chave.toUpperCase()]);
-   if(!pessoa[chave].length&&raizLista.length){
-    pessoa[chave]=raizLista.map(function(x){
-     const item=Object.assign({},x||{});
-     if(!item.id)item.id=uid(chave.slice(0,-1));
-     return item;
-    });
-   }
+   if(!pessoa[chave].length&&raizLista.length)pessoa[chave]=raizLista.map(x=>Object.assign({},x||{}));
   });
  }
- // 1) Importa/atualiza os familiares completos enviados pela IA.
  importados.forEach(function(novo){
-  const chave=(String(novo.nome)+'|'+String(novo.parentesco)).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  let idx=atuais.findIndex(function(x){
-   const k=(String(x.nome||'')+'|'+String(x.parentesco||'')).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-   return k===chave;
-  });
-  // Se não houver nome igual, tenta pelo parentesco quando a IA mandou "Pai", "Mãe" etc.
-  if(idx<0 && /^(pai|mãe|mae|irmão|irmao|irmã|irma|filho|filha|avô|avo|avó|tia|tio|marido|esposa|companheiro|companheira)$/i.test(novo.nome||'')){
-   idx=atuais.findIndex(function(x){return String(x.parentesco||'').toLowerCase()===String(novo.parentesco||'').toLowerCase()});
-  }
+  const idx=localizarFamiliarImportado(atuais,novo);
   if(idx>=0){
-   const antigo=ensure(atuais[idx]),merged=Object.assign({},antigo);
-   ['nome','parentesco','sexo','nasc','idade','altura','peso','medidas','rotina','medicamentosRelato','condicao','alergias','sangue','contato','obs','ladoFamilia','idadeDiagnostico','certeza','statusFamiliar','causaFalecimento','vinculoFamilia'].forEach(function(k){
-    if(String(novo[k]||'').trim())merged[k]=novo[k];
-   });
-   merged.medicamentos=novo.medicamentos.length?novo.medicamentos:antigo.medicamentos;
-   merged.consultas=novo.consultas.length?novo.consultas:antigo.consultas;
-   merged.crises=novo.crises.length?novo.crises:antigo.crises;
-   merged.dadosImportadosIA=Object.assign({},antigo.dadosImportadosIA||{},novo.dadosImportadosIA||{});
-   atuais[idx]=ensure(merged);
+   const antigo=ensure(atuais[idx]);
+   const merge=mesclarFamiliarImportado(antigo,novo,stats);
+   atuais[idx]=merge.familiar;
    if(!primeiroId)primeiroId=antigo.id;
-   atualizados++;
+   if(merge.mudou)atualizados++;
+   else stats.familiaresDuplicadosIgnorados++;
   }else{
-   atuais.push(ensure(novo));
-   if(!primeiroId)primeiroId=novo.id;
+   const novoPerfil=ensure(novo);
+   ['medicamentos','consultas','crises'].forEach(function(tipo){
+    const dedup=mesclarListaRegistrosImportados([],novoPerfil[tipo],tipo,stats);
+    novoPerfil[tipo]=dedup.lista;
+   });
+   atuais.push(novoPerfil);
+   if(!primeiroId)primeiroId=novoPerfil.id;
    novos++;
   }
  });
-
- // 2) Importa SEMPRE o histórico familiar, mesmo quando "familiares" vier vazio.
- if(antecedentes.length){
-  antecedentes.forEach(function(x){
-   const a=x&&typeof x==='object'?x:{};
-   const par=normalizarTextoIA(a.parente||a.parentesco||a.PARENTE||a.PARENTESCO)||'';
-   const cond=normalizarTextoIA(a.cond||a.condicao||a.CONDICAO||a.info||a.INFORMACAO)||'';
-   const idade=normalizarTextoIA(a.idade||a.idadeDiagnostico||a.IDADE||a.IDADE_DIAGNOSTICO);
-   const obs=normalizarTextoIA(a.obs||a.observacao||a.observação||a.OBS||a.OBSERVACAO);
-   const lado=normalizarTextoIA(a.ladoFamilia||a.LADO_FAMILIA);
-   const certeza=normalizarTextoIA(a.certeza||a.CERTEZA);
-   if(!par && !cond && !idade && !obs)return;
-
-   // Guarda o registro bruto na seção de histórico familiar.
-   const histAtual=window.MSAStorage&&window.MSAStorage.get?window.MSAStorage.get(K.fam):[];
-   const h=Array.isArray(histAtual)?histAtual:[];
-   const dup=h.some(function(z){
-    return String(z.parente||'').toLowerCase()===par.toLowerCase() &&
-           String(z.info||z.cond||'').toLowerCase()===cond.toLowerCase() &&
-           String(z.idade||z.idadeDiagnostico||'')===idade &&
-           String(z.obs||z.observacao||'').toLowerCase()===obs.toLowerCase();
-   });
-   if(!dup){
-    h.push({parente:par||'Não informado',cond:cond,info:cond,idade:idade,idadeDiagnostico:idade,obs:obs,observacao:obs,ladoFamilia:lado,certeza:certeza});
-    if(window.MSAStorage&&window.MSAStorage.set)window.MSAStorage.set(K.fam,h);
-   }
-
-   // Se a IA identificar o parente (Pai/Mãe/etc.), cria/atualiza também uma ficha visível em "Familiares".
-   const rel=/^(pai|mãe|mae|irmão|irmao|irmã|irma|filho|filha|avô|avo|avó|tia|tio|marido|esposa|companheiro|companheira)$/i.test(par);
-   if(rel){
-    const nome=par;
-    let idxFam=atuais.findIndex(function(z){
-     return String(z.nome||'').toLowerCase()===nome.toLowerCase() ||
-            String(z.parentesco||'').toLowerCase()===nome.toLowerCase();
-    });
-    const novoFam=normalizarFamiliarImportado({
-      nome:nome,parentesco:par,condicao:cond,idadeDiagnostico:idade,ladoFamilia:lado,certeza:certeza,
-      obs:obs,medicamentos:[],consultas:[],crises:[]
-    });
-    if(novoFam){
-     if(idxFam>=0){
-      const antigo=ensure(atuais[idxFam]),merged=Object.assign({},antigo,novoFam);
-      merged.id=antigo.id;
-      merged.medicamentos=antigo.medicamentos;
-      merged.consultas=antigo.consultas;
-      merged.crises=antigo.crises;
-      atuais[idxFam]=ensure(merged);
-      if(!primeiroId)primeiroId=antigo.id;
-      atualizados++;
-     }else{
-      atuais.push(ensure(novoFam));
-      if(!primeiroId)primeiroId=novoFam.id;
-      novos++;
-     }
+ const rawHistorico=window.MSAStorage&&window.MSAStorage.get?window.MSAStorage.get(K.fam):[];
+ const historicoAntes=Array.isArray(rawHistorico)?rawHistorico:[];
+ const historico=[];
+ historicoAntes.forEach(function(reg){
+  const item=Object.assign({},reg||{}),idx=historico.findIndex(x=>mesmoHistoricoImportado(x,item));
+  if(idx>=0){if(mesclarHistoricoImportado(historico[idx],item))historicoMudou=true;stats.antecedentesDuplicadosIgnorados++}
+  else historico.push(item);
+ });
+ antecedentes.forEach(function(x){
+  const a=x&&typeof x==='object'?x:{};
+  const par=normalizarTextoIA(a.parente||a.parentesco||a.PARENTE||a.PARENTESCO);
+  const cond=normalizarTextoIA(a.cond||a.condicao||a.CONDICAO||a.info||a.INFORMACAO);
+  const idade=normalizarTextoIA(a.idade||a.idadeDiagnostico||a.IDADE||a.IDADE_DIAGNOSTICO);
+  const obs=normalizarTextoIA(a.obs||a.observacao||a.observação||a.OBS||a.OBSERVACAO);
+  const lado=normalizarTextoIA(a.ladoFamilia||a.LADO_FAMILIA);
+  const certeza=normalizarTextoIA(a.certeza||a.CERTEZA);
+  if(!par&&!cond&&!idade&&!obs)return;
+  const novoHist={parente:par||'Não informado',cond:cond,info:cond,idade:idade,idadeDiagnostico:idade,obs:obs,observacao:obs,ladoFamilia:lado,certeza:certeza};
+  const idx=historico.findIndex(z=>mesmoHistoricoImportado(z,novoHist));
+  if(idx>=0){
+   if(mesclarHistoricoImportado(historico[idx],novoHist))historicoMudou=true;
+   stats.antecedentesDuplicadosIgnorados++;
+  }else{
+   historico.push(novoHist);historicoMudou=true;stats.antecedentesNovos++;
+  }
+  const rel=/^(pai|mãe|mae|irmão|irmao|irmã|irma|filho|filha|avô|avo|avó|tia|tio|marido|esposa|companheiro|companheira)$/i.test(par);
+  if(rel){
+   const nome=par,novoFam=normalizarFamiliarImportado({nome:nome,parentesco:par,condicao:cond,idadeDiagnostico:idade,ladoFamilia:lado,certeza:certeza,obs:obs,medicamentos:[],consultas:[],crises:[]});
+   if(novoFam){
+    const idxFam=localizarFamiliarImportado(atuais,novoFam);
+    if(idxFam>=0){
+     const antigo=ensure(atuais[idxFam]),merge=mesclarFamiliarImportado(antigo,novoFam,stats);
+     atuais[idxFam]=merge.familiar;
+     if(!primeiroId)primeiroId=antigo.id;
+     if(merge.mudou)atualizados++;else stats.familiaresDuplicadosIgnorados++;
+    }else{
+     atuais.push(ensure(novoFam));if(!primeiroId)primeiroId=novoFam.id;novos++;
     }
    }
-  });
- }
-
- // 3) Só falha se a resposta não tiver absolutamente nenhum dado familiar utilizável.
- if(!importados.length && !antecedentes.length){
-  throw new Error('Nenhum dado familiar válido encontrado na resposta da IA.');
+  }
+ });
+ if(!importados.length&&!antecedentes.length)throw new Error('Nenhum dado familiar válido encontrado na resposta da IA.');
+ if(historicoMudou&&window.MSAStorage&&window.MSAStorage.set){
+  const ok=window.MSAStorage.set(K.fam,historico);
+  if(ok===false)throw new Error('Não foi possível gravar o histórico familiar neste navegador.');
  }
  if(!saveList(atuais))throw new Error('Não foi possível gravar os familiares neste navegador.');
-
- if(!primeiroId && atuais.length)primeiroId=atuais[atuais.length-1].id;
+ if(!primeiroId&&atuais.length)primeiroId=atuais[atuais.length-1].id;
  if(primeiroId)setSelected(primeiroId);
  renderFamiliares();
-
+ const repetidos=stats.familiaresDuplicadosIgnorados+stats.registrosDuplicadosIgnorados+stats.antecedentesDuplicadosIgnorados;
  return {
-  novos:novos,
-  atualizados:atualizados,
-  totalFamiliares:importados.length,
-  totalHistorico:antecedentes.length,
-  nomes:importados.map(function(p){return p.nome}).filter(Boolean),
-  perfilId:primeiroId
+  novos:novos,atualizados:atualizados,duplicadosIgnorados:repetidos,
+  registrosNovos:stats.registrosNovos,registrosDuplicadosIgnorados:stats.registrosDuplicadosIgnorados,
+  antecedentesNovos:stats.antecedentesNovos,antecedentesDuplicadosIgnorados:stats.antecedentesDuplicadosIgnorados,
+  camposNovosCompletados:stats.camposNovosCompletados,
+  totalFamiliares:importados.length,totalHistorico:antecedentes.length,
+  nomes:importados.map(function(p){return p.nome}).filter(Boolean),perfilId:primeiroId
  };
 }
+
 function abrirImportadorRespostaFamilia(){
  let old=document.getElementById('msaFamiliaIAImportModal');if(old)old.remove();
  const modal=document.createElement('div');modal.id='msaFamiliaIAImportModal';modal.className='msa-ava-overlay';
