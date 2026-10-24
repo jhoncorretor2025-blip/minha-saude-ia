@@ -191,7 +191,7 @@ function renderPainelGeralFamilia(list){
  const medicamentos=pessoas.reduce(function(n,p){return n+(Array.isArray(p.medicamentos)?p.medicamentos.length:0)},0);
  const hojeStr=hoje.toISOString().slice(0,10);
  const retornos=pessoas.reduce(function(n,p){return n+(Array.isArray(p.consultas)?p.consultas.filter(function(c){const data=String(c&&((c.retorno&&c.retorno>=hojeStr)?c.retorno:c.data)||'').slice(0,10);if(!data)return false;const d=new Date(data+'T00:00:00');return !Number.isNaN(d.getTime())&&d>=hoje}).length:0)},0);
- const faltam=function(p){return !String(p.parentesco||'').trim()||(!String(p.idade||'').trim()&&!String(p.nasc||'').trim())||!String(p.ladoFamilia||'').trim()};
+ const faltam=function(p){const afinidade=p.vinculoFamilia==='Afinidade'||p.ladoFamilia==='Afinidade'||parceirosRelacao(p);return !String(p.parentesco||'').trim()||(!String(p.idade||'').trim()&&!String(p.nasc||'').trim())||(!afinidade&&!String(p.ladoFamilia||'').trim())};
  const incompletos=pessoas.filter(faltam).length,primeiro=pessoas.find(faltam);
  panel.className='msa-family-dashboard';
  panel.innerHTML='<div class="msa-family-dashboard-head"><div><div class="msa-fam-kicker">📊 VISÃO GERAL</div><h4>Resumo da sua família</h4><p>Veja como estão os cadastros e quais precisam de revisão. Os dados ficam separados do seu perfil pessoal.</p></div><span class="msa-family-dashboard-live">Atualizado agora</span></div>'+
@@ -1013,7 +1013,7 @@ function renderFamiliaInteligencia(){
    '<div class="msa-fam-ai-head"><div><div class="msa-fam-kicker">🤖 FAMÍLIA COM IA</div><h3>Organize a família em 2 passos</h3><p>Copie o prompt, converse com a IA e depois cole a resposta para salvar tudo aqui.</p></div></div>'+
    '<div class="msa-fam-ai-steps">'+
     '<button type="button" class="msa-fam-ai-step" onclick="abrirPromptFamiliaIA()"><strong>1️⃣</strong><span>Copiar e abrir a IA</span><small>ChatGPT, Claude ou Gemini · gera tudo de uma vez, sem fazer perguntas.</small></button>'+
-    '<button type="button" class="msa-fam-ai-step" onclick="abrirImportadorRespostaFamilia()"><strong>2️⃣</strong><span>Colar resposta e salvar tudo</span><small>Importa familiares, doenças, remédios, consultas e crises.</small></button>'+
+    '<button type="button" class="msa-fam-ai-step" onclick="abrirImportadorRespostaFamilia()"><strong>2️⃣</strong><span>Colar resposta, revisar e salvar</span><small>Mostra novos dados, repetidos e possíveis conflitos antes de gravar.</small></button>'+
    '</div>'+
   '</div>'+
   '<div class="msa-fam-actions">'+
