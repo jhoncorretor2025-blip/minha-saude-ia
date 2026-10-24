@@ -1,3 +1,11 @@
+## V7.24 — Fim da tela preta
+- 🐞 Tela preta ao compartilhar: a janela “Compartilhar meus dados básicos” e o tour “Primeiros passos” eram criados como <section>, e o app esconde toda seção que não é a página aberta — só o fundo escuro aparecia. Agora só as páginas (filhas diretas do conteúdo) ficam escondidas; blocos internos e janelas aparecem normalmente.
+- 🐞 Com a mesma correção voltam a aparecer: “Cuidado a dois” na página Família e o lembrete de completar o perfil do tour.
+- 🐞 Primeiros passos: uma chave apagada na V7.14 travava o arquivo inteiro (erro de código ao abrir o app).
+- 🐞 Cuidado a dois: expressão com “n/a” sem escape travava o arquivo inteiro.
+- 🧪 Verificado: as 43 páginas abrem uma de cada vez, o tour passa pelos 4 passos, compartilhar baixa o arquivo, “Começar a compartilhar” e emergência funcionam, sem erros de código.
+- 🔄 Versão sincronizada em V7.24 (a constante e o version.json estavam em V7.13 enquanto o site mostrava V7.23).
+
 ## V7.13 — Botão “Prompt: pedir só o que falta” no Início
 - 🧩 O botão ao lado de “Me ajude a escolher” abre a janela no próprio Início com o prompt do app: pede só os campos vazios e os itens incompletos (o que já está preenchido não é perguntado de novo).
 - 🤖📓 Escolha ChatGPT/Gemini ou NotebookLM na janela (o NotebookLM usa o prompt enxuto; se precisar de partes, avisa e leva para a página com todas).

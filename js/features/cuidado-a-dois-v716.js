@@ -4,7 +4,7 @@
 const K=window.MSA_K||window.K||{},S=window.MSAStorage;
 const get=k=>{try{const x=S&&S.get?S.get(k):[];return Array.isArray(x)?x:[]}catch(e){return[]}};
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const filled=x=>String(x||'').trim()&& !/^(não informado|não sei|nenhum|nenhuma|n/a)$/i.test(String(x).trim());
+const filled=x=>String(x||'').trim()&& !/^(não informado|não sei|nenhum|nenhuma|n\/a)$/i.test(String(x).trim());
 function install(){
  const sec=document.getElementById('familiares');if(!sec||document.getElementById('msaCoupleCareV716'))return;
  const own=get(K.p)[0]||{},fam=get(K.familiares||'msa2_familiares');
