@@ -318,6 +318,7 @@ function familiaMapaHTML(list){
  const descriptions={
   'Parentes por afinidade':'Pessoas ligadas à família por casamento ou relacionamento, como cunhados e cônjuges. Seus dados podem ser úteis para o cuidado, mas não entram nos padrões genéticos da família biológica.',
   'Lado a confirmar':'O parentesco é conhecido, mas falta confirmar se a pessoa pertence ao lado do pai ou da mãe. Confirme antes de classificar como paterno ou materno.',
+  'Lado não informado':'Ainda não há informação suficiente para definir o lado ou o grupo familiar dessa pessoa. Isso não quer dizer que ela não seja parente; apenas que o vínculo precisa ser esclarecido.',
   'Não informado':'Ainda não há informação suficiente para definir o lado ou o grupo familiar dessa pessoa. Isso não quer dizer que ela não seja parente; apenas que o vínculo precisa ser esclarecido.',
   'Lado materno':'Familiares ligados à sua mãe e à linhagem materna.',
   'Lado paterno':'Familiares ligados ao seu pai e à linhagem paterna.',
