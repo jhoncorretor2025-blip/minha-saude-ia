@@ -37,7 +37,7 @@
  }
  function addNavLinks(){
   var nav=document.getElementById('nav');if(nav&&!nav.querySelector('[data-tab="historicoClinico"]')){
-   var group=nav.querySelector('[data-menu="health"]')?.parentElement;
+   var group=(nav.querySelector('[data-menu="health"]')||nav.querySelector('[data-menu="register"]')||nav.querySelector('.nav-toggle'))?.parentElement;
    var menu=group&&group.querySelector('.nav-menu');
    if(menu){var b=document.createElement('button');b.type='button';b.dataset.tab='historicoClinico';b.textContent='🩺 Histórico clínico';menu.appendChild(b);}
   }
