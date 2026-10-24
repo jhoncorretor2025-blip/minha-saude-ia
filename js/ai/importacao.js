@@ -196,7 +196,7 @@ function normalizarFichaIA(raw){
  function pipeParts(text){return String(text||'').split(/\s*\|\s*/).map(function(x){return x.trim()})}
  function parseVital(x){var p=pipeParts(x),o={data:'',peso:'',pressao:'',fc:'',temp:'',glic:'',sat:'',obs:''};p.forEach(function(part,i){var m=part.match(/^([^:]+):\s*(.*)$/);if(i===0&&!m){o.data=date(part);return}if(!m)return;var k=keyNorm(m[1]),v=m[2].trim();if(/PESO/.test(k))o.peso=v.replace(/\s*KG\b/i,'').trim();else if(/PRESS/.test(k))o.pressao=v;else if(/FC|BATIMENTO/.test(k))o.fc=v;else if(/TEMP/.test(k))o.temp=v;else if(/GLIC/.test(k))o.glic=v;else if(/SATUR|SAT/.test(k))o.sat=v;else if(/OBSERV/.test(k))o.obs=v});if(!o.data)o.data='';return o}
  function parseVaccine(x){var p=pipeParts(x),o={nome:'',data:'',obs:''};p.forEach(function(part,i){var m=part.match(/^([^:]+):\s*(.*)$/);if(m){var k=keyNorm(m[1]),v=m[2].trim();if(/VACINA|NOME/.test(k))o.nome=v;else if(/DATA/.test(k))o.data=date(v);else if(/DOSE|OBSERV/.test(k))o.obs=v}else if(i===0)o.nome=part;else if(/^\d{1,2}[\/-]\d{1,2}[\/-]\d{4}$/.test(part))o.data=date(part);else o.obs+=(o.obs?' — ':'')+part});return o}
- function parseFamily(x){var p=pipeParts(x),o={parente:'',info:''};p.forEach(function(part,i){var m=part.match(/^([^:]+):\s*(.*)$/);if(m){var k=keyNorm(m[1]),v=m[2].trim();if(/PARENTE|FAMILIAR/.test(k))o.parente=v;else if(/CONDICAO|INFORMACAO/.test(k))o.info=v}else if(i===0)o.parente=part;else o.info+=(o.info?' — ':'')+part});return o}
+ function parseFamily(x){var p=pipeParts(x),o={parente:'',info:'',ladoFamilia:'',grauParentesco:'',vinculoFamilia:'',consanguinidade:'',statusFamiliar:'',vinculoLadoPendente:false};p.forEach(function(part,i){var m=part.match(/^([^:]+):\s*(.*)$/);if(m){var k=keyNorm(m[1]),v=m[2].trim();if(/^(PARENTE|PARENTESCO|FAMILIAR|NOME FAMILIAR)$/.test(k))o.parente=v;else if(/CONDICAO|INFORMACAO|DOENCA/.test(k))o.info=v;else if(/GRAU/.test(k))o.grauParentesco=v;else if(/CONSANGUINIDADE/.test(k))o.consanguinidade=v;else if(/STATUS/.test(k))o.statusFamiliar=v;else if(/PENDENTE|CONFIRMAR LADO/.test(k))o.vinculoLadoPendente=/^(sim|s|true|1|pendente|a confirmar)$/i.test(v);else if(/LADO|LINHAGEM/.test(k))o.ladoFamilia=v;else if(/VINCULO|RELACAO/.test(k))o.vinculoFamilia=v}else if(i===0)o.parente=part;else o.info+=(o.info?' — ':'')+part});return o}
  function parseReminder(x){var p=pipeParts(x),o={id:String(Date.now())+Math.random(),nome:'',data:'',tipo:'Outro'};p.forEach(function(part,i){var m=part.match(/^([^:]+):\s*(.*)$/);if(m){var k=keyNorm(m[1]),v=m[2].trim();if(/LEMBRAR|NOME/.test(k))o.nome=v;else if(/DATA|HORA/.test(k))o.data=v;else if(/TIPO/.test(k))o.tipo=v}else if(i===0)o.nome=part;else if(!o.data)o.data=part;else o.tipo=part});return o}
  function parseDocument(x){var p=pipeParts(x),o={id:String(Date.now())+Math.random(),nome:'Documento informado',tipo:'',tamanho:'',data:''};p.forEach(function(part,i){var m=part.match(/^([^:]+):\s*(.*)$/);if(m){var k=keyNorm(m[1]),v=m[2].trim();if(/NOME|DOCUMENTO/.test(k))o.nome=v;else if(/TIPO/.test(k))o.tipo=v;else if(/DATA/.test(k))o.data=date(v)}else if(i===0)o.nome=part});return o}
  var p={nome:field('NOME'),nasc:date(field('DATA_NASCIMENTO')),idade:num(field('IDADE')),sexo:field('SEXO'),sangue:field('TIPO_SANGUINEO'),altura:height(field('ALTURA')),peso:num(field('PESO')),objetivoCorporal:field('OBJETIVO_CORPORAL'),academia:field('ACADEMIA'),academiaFreq:field('FREQUENCIA_ACADEMIA'),atividadeFisica:field('ATIVIDADE_FISICA'),trabalhoTipo:field('TRABALHO_TIPO'),horasSentado:field('HORAS_SENTADO'),horasPe:field('HORAS_EM_PE'),aguaDia:field('AGUA_POR_DIA'),urinaDia:field('FREQUENCIA_URINARIA'),evacuacaoDia:field('FREQUENCIA_EVACUACAO'),calorSuor:field('EXPOSICAO_CALOR_SUOR'),alimentacao:field('ALIMENTACAO'),cond:field('DOENCAS'),alerg:field('ALERGIAS'),circ:field('CIRURGIAS_INTERNACOES'),supl:field('SUPLEMENTOS'),info:field('INFORMACOES_IMPORTANTES'),emerg:field('CONTATO_EMERGENCIA'),tel:field('TELEFONE_EMERGENCIA'),menstruacao:date(field('ULTIMA_MENSTRUACAO')),ciclo:field('CICLO_MENSTRUAL'),duracaoMenstr:field('DURACAO_MENSTRUACAO'),regularidade:field('REGULARIDADE_CICLO'),sexoFreqMin:field('FREQUENCIA_SEXUAL_MIN')||field('FREQUENCIA_SEXUAL'),sexoFreqMax:field('FREQUENCIA_SEXUAL_MAX'),masturbacaoDia:field('MASTURBACAO_POR_DIA'),camisinha:field('USO_PRESERVATIVO'),engravidou:field('JA_ENGRAVIDOU'),mae:field('JA_FOI_MAE'),gestacoes:field('NUMERO_GESTACOES'),reproObs:field('HISTORICO_REPRODUTIVO'),usaAnticoncepcional:field('USA_ANTICONCEPCIONAL'),anticoncepcionalMetodo:field('METODO_ANTICONCEPCIONAL'),anticoncepcionalNome:field('NOME_ANTICONCEPCIONAL'),anticoncepcionalHora:field('HORARIO_ANTICONCEPCIONAL'),anticoncepcionalInicio:date(field('INICIO_ANTICONCEPCIONAL')),anticoncepcionalRegime:field('REGIME_ANTICONCEPCIONAL'),minipilulaTipo:field('TIPO_MINIPILULA'),prevColo:date(field('ULTIMO_PREVENTIVO_COLO')),mamografia:date(field('ULTIMA_MAMOGRAFIA')),ist:date(field('ULTIMO_TESTE_IST')),hpv:date(field('VACINA_HPV')),prevProx:date(field('PROXIMO_PREVENTIVO')),prevObs:field('OBSERVACOES_PREVENCAO'),dorcelaxFreq:field('FREQUENCIA_DORCELAX'),paracetamolFreq:field('FREQUENCIA_PARACETAMOL'),outrosDor:field('OUTROS_REMEDIOS_DOR'),catapora:field('JA_TEVE_CATAPORA'),cataporaQuando:field('QUANDO_CATAPORA')};
@@ -324,12 +324,46 @@ function resumirImportacao(n){
   '<div id="importReviewValidation" class="alert" style="margin-top:10px">Revise os dados e clique em “Revalidar dados”.</div>'+
   '<h3 style="margin-top:16px">👤 Principais campos encontrados</h3><div class="list">'+(detalhes||'<div class="empty">Nenhum campo de perfil reconhecido.</div>')+'</div>';
 }
+/* V7.39 — deduplicação conservadora: só ignora registros com chave identificadora suficiente. */
+function chaveImportacaoDuplicada(tipo,x){
+ if(!x||typeof x!=='object')return '';
+ function norm(v){return String(v==null?'':v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ')}
+ function val(){for(var i=0;i<arguments.length;i++){var v=x[arguments[i]];if(v!==undefined&&v!==null&&String(v).trim())return norm(v)}return ''}
+ var parts=[];
+ if(tipo==='dores')parts=[val('data','inicio'),val('local','onde'),val('tipo'),val('sint','sintomas')];
+ else if(tipo==='consultas')parts=[val('data'),val('esp','especialidade'),val('mot','motivo'),val('med','medico')];
+ else if(tipo==='meds')parts=[val('nome','medicamento','remedio'),val('dose'),val('freq','frequencia')];
+ else if(tipo==='exames')parts=[val('nome','exame'),val('data'),val('res','resultado')];
+ else if(tipo==='vitais')parts=[val('data'),val('peso'),val('pressao'),val('fc'),val('temp'),val('glic'),val('sat')];
+ else if(tipo==='vacinas')parts=[val('nome','vacina'),val('data'),val('obs')];
+ else if(tipo==='familia')parts=[val('parente','familiar'),val('info','cond','condicao')];
+ else if(tipo==='lembretes')parts=[val('nome','descricao'),val('data'),val('tipo')];
+ else if(tipo==='documentos')parts=[val('nome','documento'),val('tipo'),val('data')];
+ if(!parts.length||!parts[0])return '';
+ var preenchidos=parts.filter(Boolean).length;
+ if(tipo==='dores'||tipo==='consultas'||tipo==='exames'||tipo==='vitais'||tipo==='vacinas'||tipo==='familia'||tipo==='documentos'){if(preenchidos<2)return ''}
+ return tipo+'|'+parts.join('|');
+}
+function removerDuplicadosImportacao(n){
+ var mapas=[['dores',K.d],['consultas',K.c],['meds',K.m],['exames',K.e],['vitais',K.v],['vacinas',K.vax],['familia',K.fam],['lembretes',K.r],['documentos',K.doc]],copiado=Object.assign({},n),removidos=[],seen={};
+ mapas.forEach(function(par){
+  var tipo=par[0],chave=par[1],lista=Array.isArray(n[tipo])?n[tipo]:[],existentes=[];
+  try{existentes=get(chave)}catch(e){existentes=[]}
+  if(!Array.isArray(existentes))existentes=[];
+  seen[tipo]=Object.create(null);
+  existentes.forEach(function(item){var k=chaveImportacaoDuplicada(tipo,item);if(k)seen[tipo][k]=true});
+  copiado[tipo]=[];
+  lista.forEach(function(item,i){var k=chaveImportacaoDuplicada(tipo,item);if(k&&seen[tipo][k]){removidos.push({tipo:tipo,indice:i});return}if(k)seen[tipo][k]=true;copiado[tipo].push(item)});
+ });
+ return {n:copiado,removidos:removidos};
+}
 function msaLerImportacaoRevisada(){
  var area=$('importReviewJSON');if(!area)throw new Error('Área de revisão não encontrada.');
  var raw=String(area.value||'').trim();if(!raw)throw new Error('Os dados revisados estão vazios.');
  var obj;try{obj=JSON.parse(raw)}catch(e){throw new Error('O JSON revisado contém um erro de sintaxe. Corrija aspas, vírgulas e chaves antes de salvar.')}
  var n;try{n=normalizarImport(obj)}catch(e){throw new Error('Não foi possível reorganizar os dados revisados: '+(e.message||e))}
- return {n:n,q:analisarQualidadeImportacao(n)};
+ var dedup=removerDuplicadosImportacao(n);n=dedup.n;window.__msaImportDuplicados=dedup.removidos.length;
+ return {n:n,q:analisarQualidadeImportacao(n),duplicados:dedup.removidos.length};
 }
 window.msaLerImportacaoRevisada=msaLerImportacaoRevisada;
 window.msaRevalidarImportacao=function(){
@@ -337,7 +371,8 @@ window.msaRevalidarImportacao=function(){
   var r=msaLerImportacaoRevisada(),q=r.q,box=$('importReviewValidation');
   if(box){
    box.className='alert '+(q.invalidos?'warn':'safe');
-   box.innerHTML=q.invalidos?'<b>⚠️ '+q.invalidos+' registro(s) ainda precisam de correção.</b><br>'+q.problemas.map(function(x){return esc(x.label+' '+(x.indice+1)+': '+x.issues.join(', '))}).join('<br>'):'✅ Nenhum problema obrigatório encontrado. Você pode salvar a importação revisada.';
+   var avisoDuplicados=r.duplicados?'<br>🧹 '+r.duplicados+' registro(s) repetido(s) foram ignorados; os registros originais foram preservados.':'';
+   box.innerHTML=(q.invalidos?'<b>⚠️ '+q.invalidos+' registro(s) ainda precisam de correção.</b><br>'+q.problemas.map(function(x){return esc(x.label+' '+(x.indice+1)+': '+x.issues.join(', '))}).join('<br>'):'✅ Nenhum problema obrigatório encontrado. Você pode salvar a importação revisada.')+avisoDuplicados;
   }
   window._importPendente=r.n;return r;
  }catch(e){
@@ -345,7 +380,9 @@ window.msaRevalidarImportacao=function(){
  }
 };
 window.msaRenderRevisaoImportacao=function(n){
- window._importPendente=n;var box=$('importReviewContent');if(box)box.innerHTML=resumirImportacao(n);var modal=$('importReviewOverlay');if(modal)modal.style.display='flex';
+ var dedup=removerDuplicadosImportacao(n);n=dedup.n;window.__msaImportDuplicados=dedup.removidos.length;window._importPendente=n;
+ var box=$('importReviewContent');if(box){box.innerHTML=resumirImportacao(n);if(dedup.removidos.length){var aviso=document.createElement('div');aviso.className='alert warn';aviso.innerHTML='🧹 <b>'+dedup.removidos.length+' registro(s) repetido(s) identificados.</b><br>Os itens já cadastrados e os dados únicos serão preservados; confira a revisão antes de confirmar.';box.insertBefore(aviso,box.firstChild)}}
+ var modal=$('importReviewOverlay');if(modal)modal.style.display='flex';
 };
 window.cancelarImportacaoPendente=function(){window._importPendente=null;var modal=$('importReviewOverlay');if(modal)modal.style.display='none';if($('resultadoImport'))$('resultadoImport').innerHTML='<div class="alert">↩️ Importação cancelada. Nada foi salvo.</div>';};
 window.confirmarImportacaoPendenteCore=function(){
@@ -406,6 +443,13 @@ function executarDiagnosticoImportacao(opcoes){
   var l=window.msaStorage.getItem(chave),igual=l===JSON.stringify(valor);
   try{window.msaStorage.removeItem(chave)}catch(e){}
   return ok&&igual&&window.msaStorage.getItem(chave)===null;
+ });
+ teste('Deduplicação conservadora de importação',function(){
+  var antigo=get;try{get=function(){return []};var r=removerDuplicadosImportacao({p:{},dores:[],consultas:[],meds:[{nome:'Remédio A',dose:'10 mg',freq:'1x ao dia'},{nome:'Remedio A',dose:'10 mg',freq:'1x ao dia'},{nome:'Remédio A',dose:'20 mg',freq:'1x ao dia'}],exames:[],vitais:[],vacinas:[],familia:[],lembretes:[],documentos:[]});return r.n.meds.length===2&&r.removidos.length===1}finally{get=antigo}
+ });
+ teste('Parser mantém categorias do histórico familiar',function(){
+  var f=parseFamily('Parentesco: Tio | Condição: Parkinson | Lado: Paterno | Grau: 2º grau | Vínculo: Consanguíneo | Consanguinidade: Sim');
+  return f.parente==='Tio'&&f.info==='Parkinson'&&f.ladoFamilia==='Paterno'&&f.grauParentesco==='2º grau'&&f.vinculoFamilia==='Consanguíneo'&&f.consanguinidade==='Sim';
  });
  var falhas=resultado.filter(function(x){return !x.ok}),total=resultado.length,tempo=Date.now()-inicio;
  var resumo={versao:(window.MSA_VERSION||''),total:total,aprovados:total-falhas.length,falhas:falhas.length,duracaoMs:tempo,resultados:resultado};
