@@ -64,7 +64,7 @@
  function init(){
   if(document.documentElement.dataset.msaAreasV738==='1')return;
   document.documentElement.dataset.msaAreasV738='1';
-  addStyles();ensureHistoryPage();addHomeAreas();addNavLinks();bind();
+  addStyles();ensureHistoryPage();addHomeAreas();addNavLinks();bind();setTimeout(addNavLinks,0);setTimeout(addNavLinks,250);
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
