@@ -1,3 +1,9 @@
+## V7.26 — Compartilhar “Tudo o que eu preenchi”
+- 🩺 Na janela de compartilhar, escolha “📋 Só o básico” ou “🩺 Tudo o que preenchi”: entram também álcool, fumo, sono, academia, água, trabalho, alergias, doenças, cirurgias, suplementos, contato de emergência, saúde íntima/prevenção (se preenchidos) e os remédios em uso. Consultas, exames e sintomas continuam de fora.
+- 📥 Quem recebe o arquivo importa tudo isso na Família (doenças, alergias, contato, remédios e observações), sem duplicar remédios ao atualizar.
+- 🔒 Aviso de privacidade no modo completo; a escolha fica lembrada.
+- 🔄 Versão e cache atualizados para V7.26.
+
 ## V7.25 — “Baixar meus dados” sempre do titular
 - 🐞 Com um familiar selecionado (ex.: o pai), “Compartilhar meus dados básicos” baixava os dados do familiar. Agora usa sempre o perfil e as medidas do titular, mesmo com outra pessoa aberta.
 - 🔄 Versão e cache atualizados para V7.25.
