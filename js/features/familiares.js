@@ -376,26 +376,34 @@ function pessoaMapaFamiliaHTML(p){
 }
 function alternarVisualizacaoMapaFamilia(modo){
  window.__msaFamMapView=modo==='lado'?'lado':'geracao';
+ if(window.__msaFamMapView==='geracao')window.__msaFamMapGroup='todos';
  const area=document.getElementById('msa-fam-map');if(!area)return;
  const gen=area.querySelector('#msaFamGenerationTree'),lado=area.querySelector('#msaFamSideTree');
  if(gen)gen.style.display=window.__msaFamMapView==='geracao'?'grid':'none';
  if(lado)lado.style.display=window.__msaFamMapView==='lado'?'grid':'none';
  area.querySelectorAll('[data-fam-map-view]').forEach(function(b){const on=b.getAttribute('data-fam-map-view')===window.__msaFamMapView;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false')});
+ area.querySelectorAll('[data-fam-map-group-filter]').forEach(function(b){const on=b.getAttribute('data-fam-map-group-filter')===(window.__msaFamMapGroup||'todos');b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false')});
+ area.querySelectorAll('#msaFamSideTree [data-fam-map-section]').forEach(function(g){const ok=window.__msaFamMapGroup==='todos'||g.getAttribute('data-fam-map-key')===window.__msaFamMapGroup;g.style.display=ok?'':'none'});
 }
 function filtrarMapaFamiliaBusca(valor){
  const area=document.getElementById('msa-fam-map');if(!area)return;
  const q=normalizarChaveVinculoFamilia(valor||'');
  area.querySelectorAll('[data-fam-map-person]').forEach(function(p){p.hidden=!!(q&&String(p.getAttribute('data-fam-map-search')||'').indexOf(q)<0)});
- area.querySelectorAll('[data-fam-map-section]').forEach(function(g){const pessoas=g.querySelectorAll('[data-fam-map-person]');const ok=!q||Array.prototype.some.call(pessoas,function(p){return !p.hidden});g.style.display=ok?'':'none'});
+ area.querySelectorAll('[data-fam-map-section]').forEach(function(g){
+  const pessoas=g.querySelectorAll('[data-fam-map-person]'),lado=!!g.closest('#msaFamSideTree');
+  const permitido=!lado||window.__msaFamMapGroup==='todos'||g.getAttribute('data-fam-map-key')===window.__msaFamMapGroup;
+  const ok=permitido&&(!q||Array.prototype.some.call(pessoas,function(p){return !p.hidden}));
+  g.style.display=ok?'':'none';
+ });
  area.querySelectorAll('[data-fam-map-empty]').forEach(function(empty){empty.style.display=q?'none':''});
 }
 function filtrarMapaFamiliaGrupo(chave){
  const area=document.getElementById('msa-fam-map');if(!area)return;
  window.__msaFamMapGroup=chave||'todos';
+ if(window.__msaFamMapGroup!=='todos'&&window.__msaFamMapView!=='lado')alternarVisualizacaoMapaFamilia('lado');
  area.querySelectorAll('[data-fam-map-group-filter]').forEach(function(b){const on=b.getAttribute('data-fam-map-group-filter')===window.__msaFamMapGroup;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false')});
  area.querySelectorAll('#msaFamSideTree [data-fam-map-section]').forEach(function(g){const ok=window.__msaFamMapGroup==='todos'||g.getAttribute('data-fam-map-key')===window.__msaFamMapGroup;g.style.display=ok?'':'none'});
 }
-window.alternarVisualizacaoMapaFamilia=alternarVisualizacaoMapaFamilia;window.filtrarMapaFamiliaBusca=filtrarMapaFamiliaBusca;window.filtrarMapaFamiliaGrupo=filtrarMapaFamiliaGrupo;
 function familiaMapaHTML(list){
  instalarEstilosMapaInterativo();
  const groups={Materno:[],Paterno:[],'Núcleo próximo':[],'Parentes por afinidade':[],'Lado a confirmar':[],'Não informado':[]};
