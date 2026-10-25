@@ -1,3 +1,10 @@
+## V7.46 — Melhorias rápidas na área Família
+- 🔎 Busca por nome e parentesco e filtro por relação.
+- 🎂 Painel com os próximos três aniversários cadastrados.
+- ✅ Indicador de dados básicos pendentes no cartão de cada familiar.
+- ⚠️ Confirmação antes de cadastrar/renomear alguém com nome igual ao de outro familiar.
+- 🔄 Parâmetros de cache do frontend e service worker atualizados para V7.46.
+
 ## V7.45 — Não presumir sexo em parentescos genéricos
 - 🧬 Rótulos ambíguos como “Irmão/irmã”, “Filho(a)” e “Namorado(a)” não são usados para deduzir sexo quando o campo Sexo está vazio.
 - ✅ Sexo cadastrado continua tendo prioridade; parentescos explícitos como “Irmã” ou “Tia” podem orientar a filtragem quando o sexo está vazio.
