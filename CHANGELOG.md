@@ -1,3 +1,12 @@
+## V7.51 — Família: vivo/falecido, filiação e cônjuge corrigidos
+- 🕊️ **Vivo / Falecido** agora aparece na lista de pessoas, na ficha (cabeçalho e quadro de dados) e em “Editar dados pessoais”, com data de falecimento obrigatória para quem está como Falecido.
+- 🧹 Removidos os campos de Situação e Data de falecimento que apareciam duplicados (com o mesmo ID) no formulário de adicionar; agora há um só conjunto, perto do topo.
+- 📅 A data máxima do falecimento deixou de ser uma data fixa: passa a ser sempre o dia de hoje. A data não pode ser futura nem anterior ao nascimento.
+- 👪 Pai e mãe (filiação) também podem ser ligados ao **adicionar** uma pessoa, e a ficha mostra “Pai / Mãe”, “Cônjuge” e “Filhos(as)”. Avisos “pai e mãe ainda não vinculados” na lista.
+- 💍 **Cônjuge / pessoa vinculada**: o filtro por parentesco foi removido (ele impedia Pai↔Mãe e Irmã↔marido dela). Agora só ficam de fora a própria pessoa, parentes diretos já ligados por pai/mãe e quem já tem outro cônjuge. A lista mostra “Sugeridos” e a opção “Mostrar todas as pessoas”.
+- 🔄 Corrigido o recarregamento automático e o aviso falso de “nova versão”: a constante de versão do aplicativo estava em V7.27 e o rodapé em V7.37 enquanto o resto estava em V7.50.
+- 🔢 Versão visível, rodapé, constante, `version.json` (versão e mínima) e cache sincronizados em V7.51.
+
 ## V7.50 — Campos de vida e falecimento visíveis no cadastro
 - ❤️ Os campos Situação do familiar e Data de falecimento agora ficam diretamente no formulário de cadastro, sem depender da inserção dinâmica de campos.
 - 📅 A data fica habilitada ao escolher Falecido e é obrigatória ao salvar; ao escolher Vivo, data e causa são limpas.

@@ -766,3 +766,12 @@ body.msa-dark .msa-next-step-copy p{color:#cbd5e1}
 .home-missing-prompt-btn:focus-visible{outline:3px solid #60a5fa;outline-offset:2px}
 body.msa-dark .home-missing-prompt-btn{background:linear-gradient(135deg,#172554,#312e81)!important;border-color:#4f6bb9!important;color:#dbeafe!important}
 @media(max-width:760px){.home-secondary-actions{align-items:stretch}.home-secondary-actions .home-more-btn,.home-secondary-actions .home-guide-btn,.home-secondary-actions .home-missing-prompt-btn{flex:1 1 100%;min-height:44px;text-align:center}}
+
+/* V7.51 — Familiares: vínculos (pai, mãe, cônjuge) e situação (vivo/falecido) */
+.fam-vinc-box{border:1px solid #dbe5ff;background:#f7faff;border-radius:14px;padding:12px;margin:10px 0}
+.fam-vinc-box>b{display:block;margin-bottom:2px}
+.fam-vinc-box small{display:block;color:#64748b;margin:2px 0 8px}
+.fam-chk{display:flex!important;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#475569;margin:2px 0 8px}
+.fam-chk input{width:auto!important;margin:0}
+body.msa-dark .fam-vinc-box{background:#111827;border-color:#334155}
+body.msa-dark .fam-vinc-box small,body.msa-dark .fam-chk{color:#cbd5e1}
