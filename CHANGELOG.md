@@ -1,3 +1,8 @@
+## V7.45 — Não presumir sexo em parentescos genéricos
+- 🧬 Rótulos ambíguos como “Irmão/irmã”, “Filho(a)” e “Namorado(a)” não são usados para deduzir sexo quando o campo Sexo está vazio.
+- ✅ Sexo cadastrado continua tendo prioridade; parentescos explícitos como “Irmã” ou “Tia” podem orientar a filtragem quando o sexo está vazio.
+- 🔄 Parâmetros locais de cache e cache do service worker renovados para V7.45.
+
 ## V7.44 — Correção das expressões regulares de parentesco
 - 🛠️ Corrigidas barras invertidas duplicadas que impediam a normalização e a inferência de sexo/parentesco na lista de pessoa vinculada.
 - 🧪 Testes lógicos: irmã e tia são aceitas para perfil masculino; pai, mãe, irmão e o próprio perfil são rejeitados como candidatos.
