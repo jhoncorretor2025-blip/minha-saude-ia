@@ -205,6 +205,40 @@ function renderPainelGeralFamilia(list){
  (primeiro?'<button type="button" class="btn secondary" onclick="selecionarFamiliar(\''+esc(primeiro.id)+'\');document.getElementById(\'familiarDetalhe\')?.scrollIntoView({behavior:\'smooth\',block:\'start\'})">🧩 Revisar primeiro cadastro incompleto</button>':'<span class="msa-family-dashboard-ok">✅ Os campos básicos estão preenchidos.</span>')+'</div>';
 }
 
+
+function analisarVinculosFamilia(list){
+ const pessoas=Array.isArray(list)?list:[],issues=[],porId=new Map(pessoas.map(p=>[String(p.id),p]));
+ const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+ pessoas.forEach(p=>{
+  const id=String(p.id||''),nome=p.nome||'Pessoa sem nome',rel=String(p.parentesco||'').toLowerCase(),lado=String(p.ladoFamilia||'');
+  if(!String(p.parentesco||'').trim())issues.push({id,tipo:'Cadastro incompleto',msg:nome+': parentesco não informado.',nivel:'warn'});
+  if(!lado&&!/afinidade/.test(rel)&&p.vinculoFamilia!=='Afinidade')issues.push({id,tipo:'Lado da família',msg:nome+': lado materno/paterno ainda não informado.',nivel:'info'});
+  if(/tio por afinidade|tia por afinidade/.test(rel)&&!p.conjugeId)issues.push({id,tipo:'Afinidade sem cônjuge',msg:nome+': tio/tia por afinidade sem cônjuge vinculado.',nivel:'warn'});
+  if(p.conjugeId){
+   const cid=String(p.conjugeId),par=porId.get(cid);
+   if(cid===id)issues.push({id,tipo:'Vínculo inválido',msg:nome+': está vinculado como próprio cônjuge.',nivel:'error'});
+   else if(!par)issues.push({id,tipo:'Vínculo quebrado',msg:nome+': o cadastro do cônjuge vinculado não foi encontrado.',nivel:'error'});
+   else if(String(par.conjugeId||'')!==id)issues.push({id,tipo:'Vínculo não recíproco',msg:nome+' e '+(par.nome||'o cônjuge')+': o vínculo não está sincronizado nos dois cadastros.',nivel:'warn'});
+  }
+ });
+ const groups=new Map();
+ pessoas.forEach(p=>{const k=norm(p.nome);if(k){if(!groups.has(k))groups.set(k,[]);groups.get(k).push(p)}});
+ groups.forEach(group=>{if(group.length>1)group.forEach(p=>issues.push({id:String(p.id||''),tipo:'Possível duplicata',msg:'Há mais de um cadastro com o nome '+(p.nome||'Sem nome')+'. Confirme se são pessoas diferentes.',nivel:'info'}))});
+ return issues;
+}
+function renderVerificadorVinculosFamilia(list){
+ const host=document.getElementById('familiaPessoasCard');if(!host)return;
+ let panel=document.getElementById('msaFamilyRelationshipAudit');
+ if(!panel){panel=document.createElement('div');panel.id='msaFamilyRelationshipAudit';panel.style.cssText='margin:12px 0;padding:14px;border:1px solid #dbe5f4;border-radius:16px;background:#fff';const dash=host.querySelector('#msaFamilyDashboard');if(dash)dash.insertAdjacentElement('afterend',panel);else host.prepend(panel)}
+ const issues=analisarVinculosFamilia(list),count=issues.length;
+ const order={error:0,warn:1,info:2};issues.sort((a,b)=>(order[a.nivel]??3)-(order[b.nivel]??3)||a.msg.localeCompare(b.msg));
+ const resumo=count?count+' ponto(s) para conferir':'Nenhuma inconsistência identificada nos vínculos verificados.';
+ panel.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap"><div><div style="font-size:11px;font-weight:900;letter-spacing:.05em;color:#64748b">🧭 REVISÃO AUTOMÁTICA</div><h4 style="margin:4px 0 5px;font-size:17px">Verificador de vínculos familiares</h4><p style="margin:0;color:#64748b;font-size:12px;line-height:1.45">Confere cônjuges vinculados, parentescos ausentes, lado da família e possíveis cadastros duplicados. As sugestões não alteram dados automaticamente.</p></div><span style="font-size:11px;font-weight:900;padding:6px 9px;border-radius:99px;background:'+(count?'#fef3c7':'#dcfce7')+';color:'+(count?'#92400e':'#166534')+'">'+count+' pendência(s)</span></div>'+
+ '<div style="margin-top:10px;font-size:13px;font-weight:800;color:'+(count?'#92400e':'#166534')+'">'+esc(resumo)+'</div>'+
+ (count?'<div style="display:grid;gap:7px;margin-top:10px">'+issues.slice(0,30).map(it=>'<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border:1px solid '+(it.nivel==='error'?'#fecaca':it.nivel==='warn'?'#fde68a':'#e2e8f0')+';background:'+(it.nivel==='error'?'#fef2f2':it.nivel==='warn'?'#fffbeb':'#f8fafc')+';border-radius:11px;padding:10px"><div style="flex:1;min-width:180px"><b style="display:block;font-size:12px">'+esc(it.tipo)+'</b><span style="display:block;font-size:12px;line-height:1.4;margin-top:3px">'+esc(it.msg)+'</span></div>'+(it.id?'<button type="button" class="btn secondary small" data-fam-audit-open="'+esc(it.id)+'">Revisar cadastro</button>':'')+'</div>').join('')+(count>30?'<div class="muted">Exibindo as primeiras 30 pendências. Corrija os dados e atualize a página para revisar novamente.</div>':'')+'</div>':'<div style="margin-top:10px;padding:10px;border-radius:11px;background:#f0fdf4;color:#166534;font-size:12px">✅ Os vínculos e campos básicos verificados não apresentam alertas neste momento.</div>');
+ panel.querySelectorAll('[data-fam-audit-open]').forEach(btn=>btn.addEventListener('click',()=>{const id=btn.dataset.famAuditOpen;if(typeof window.selecionarFamiliar==='function')window.selecionarFamiliar(id);else{setSelected(id);renderFamiliares()} }));
+}
+
 function renderFamiliares(){
  instalarAtalhoBuscarFamiliarIA();
  renderParceirosSaude();
@@ -216,7 +250,7 @@ function renderFamiliares(){
  instalarCamposPerfilSaudePessoa();
  renderAlertasHistoricoFamiliar();
  const box=document.getElementById('familiares');if(!box||!box.classList.contains('active'))return;
- const list=getList();renderFamiliaInteligencia();instalarEstilosPainelGeralFamilia();renderPainelGeralFamilia(list);const pending=__msaFamPendingEdit?findMember(__msaFamPendingEdit):null;let sel=pending||findMember(selectedId());if(!sel&&list.length){sel=list[0];setSelected(sel.id)}if(sel){setSelected(sel.id);ensure(sel)}
+ const list=getList();renderFamiliaInteligencia();instalarEstilosPainelGeralFamilia();renderPainelGeralFamilia(list);renderVerificadorVinculosFamilia(list);const pending=__msaFamPendingEdit?findMember(__msaFamPendingEdit):null;let sel=pending||findMember(selectedId());if(!sel&&list.length){sel=list[0];setSelected(sel.id)}if(sel){setSelected(sel.id);ensure(sel)}
  const cadastroCard=document.getElementById('familiaCadastroCard');if(cadastroCard)cadastroCard.dataset.famArea='cadastro';
  const pessoasCard=document.getElementById('familiaPessoasCard');if(pessoasCard)pessoasCard.dataset.famArea='cadastro';
  const cards=document.getElementById('familiaresList');
