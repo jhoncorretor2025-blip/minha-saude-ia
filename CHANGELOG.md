@@ -1,3 +1,8 @@
+## V7.50 — Campos de vida e falecimento visíveis no cadastro
+- ❤️ Os campos Situação do familiar e Data de falecimento agora ficam diretamente no formulário de cadastro, sem depender da inserção dinâmica de campos.
+- 📅 A data fica habilitada ao escolher Falecido e é obrigatória ao salvar; ao escolher Vivo, data e causa são limpas.
+- 🔧 Mantida a validação no salvamento e nos campos de histórico familiar.
+
 ## V7.49 — Correção do seletor de cônjuge
 - 🔗 Evita sugerir pai, mãe, filhos, irmãos e outros parentes consanguíneos como cônjuge.
 - 🧭 Mantém o vínculo atual para que possa ser revisto ou removido, e orienta a selecionar parceiro(a)/cônjuge entre relações compatíveis.
