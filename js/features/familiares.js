@@ -73,13 +73,16 @@ function inferirSexoVinculo(p){
 function candidatoConjugePermitido(sel,candidato){
  if(!sel||!candidato||String(candidato.id||'')===String(sel.id||''))return false;
  const atual=String(candidato.id||'')===String(sel.conjugeId||'');
- const rel=normalizarSexoVinculo(candidato.parentesco);
- if(/^(pai|mae|father|mother)(?:\b|$)/.test(rel))return atual;
  if(atual)return true;
+ // Não sugerir familiares de sangue como cônjuge.
+ const rel=normalizarSexoVinculo(candidato.parentesco);
+ const familiarSanguineo=/^(pai|mae|father|mother|filho|filha|son|daughter|irmao|irma|brother|sister|avo|avô|avó|neto|neta|tio|tia|primo|prima|sobrinho|sobrinha)(?:\\b|$)/.test(rel);
+ if(familiarSanguineo)return false;
  const sexoSelecionado=inferirSexoVinculo(sel),sexoCandidato=inferirSexoVinculo(candidato);
+ if(sexoSelecionado&&sexoCandidato&&sexoSelecionado===sexoCandidato)return false;
  if(sexoSelecionado==='Masculino')return sexoCandidato==='Feminino';
  if(sexoSelecionado==='Feminino')return sexoCandidato==='Masculino';
- return sexoCandidato!=='';
+ return /conjuge|marido|esposa|companheir|parceir|namorad/.test(rel);
 }
 function familiaGrau(p){if(p.grauParentesco)return p.grauParentesco;const r=String(p.parentesco||'').toLowerCase();if(/pai|mãe|mae|irm[aã]o|filh/.test(r))return '1º grau';if(/av[oó]|tio|tia|sobrinh/.test(r))return '2º grau';return 'Não informado'}
 function familiaStatus(p){return p.statusFamiliar||'Não informado'}
