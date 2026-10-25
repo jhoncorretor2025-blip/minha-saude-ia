@@ -1,3 +1,8 @@
+## V7.44 — Correção das expressões regulares de parentesco
+- 🛠️ Corrigidas barras invertidas duplicadas que impediam a normalização e a inferência de sexo/parentesco na lista de pessoa vinculada.
+- 🧪 Testes lógicos: irmã e tia são aceitas para perfil masculino; pai, mãe, irmão e o próprio perfil são rejeitados como candidatos.
+- 🔄 Parâmetros de cache no HTML alinhados para V7.44 e cache do service worker renovado.
+
 ## V7.43 — Validação do vínculo e renovação integral de cache
 - 💍 O seletor usa o sexo cadastrado e, quando ausente, parentescos claramente específicos para identificar candidatos compatíveis.
 - 🚫 Pai e mãe não são candidatos normais; um vínculo já existente permanece disponível para revisão.
