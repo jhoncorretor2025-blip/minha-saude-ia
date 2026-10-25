@@ -1,3 +1,11 @@
+## V7.54 — Filtros avançados de familiares
+- 🔎 Adicionados filtros combináveis por situação de vida, lado/grupo familiar, parentesco e completude dos dados.
+- 💚 Permite listar vivos, falecidos ou pessoas com situação não informada.
+- 👩‍👧 Permite separar o lado materno, paterno, afinidade, núcleo próximo e outros grupos.
+- 📊 Mostra quantos familiares correspondem aos filtros ativos e inclui ação para limpar filtros.
+- 📱 Controles responsivos para facilitar o uso em celular; busca por nome continua integrada.
+- 🔄 Versão da interface, versão mínima e cache do service worker sincronizados em V7.54.
+
 ## V7.53 — Árvore genealógica automática
 - 🌳 Adicionada visão familiar organizada por gerações, com cartões clicáveis para abrir cada cadastro.
 - 👪 Pais e mães usam os vínculos de filiação existentes; filhos são derivados desses IDs e irmãos são sugeridos quando compartilham pai ou mãe cadastrados.
