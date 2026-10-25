@@ -1,3 +1,11 @@
+## V7.53 — Árvore genealógica automática
+- 🌳 Adicionada visão familiar organizada por gerações, com cartões clicáveis para abrir cada cadastro.
+- 👪 Pais e mães usam os vínculos de filiação existentes; filhos são derivados desses IDs e irmãos são sugeridos quando compartilham pai ou mãe cadastrados.
+- 💍 Exibe cônjuge, filhos, irmãos e filiação em cada cartão, além da situação de vida.
+- 🔎 Incluída busca na árvore e agrupamento visual por geração.
+- 🛡️ Relações inferidas são apenas visuais: não criam perfis duplicados nem alteram automaticamente os dados persistidos.
+- 🔄 Versão da interface, versão mínima e cache do service worker sincronizados em V7.53.
+
 ## V7.52 — Atualização em massa da situação dos familiares
 - ⚡ Adicionado painel com contagem de familiares vivos, falecidos e sem situação informada.
 - 💚 Botão “Definir todos como vivos”, com confirmação explícita antes de alterar os registros.
