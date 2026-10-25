@@ -1,3 +1,8 @@
+## V7.49 — Correção do seletor de cônjuge
+- 🔗 Evita sugerir pai, mãe, filhos, irmãos e outros parentes consanguíneos como cônjuge.
+- 🧭 Mantém o vínculo atual para que possa ser revisto ou removido, e orienta a selecionar parceiro(a)/cônjuge entre relações compatíveis.
+- ✅ Situação vivo/falecido, data de falecimento e campos de filiação pai/mãe permanecem incluídos desde versões anteriores.
+
 ## V7.48 — Filiação pai e mãe
 - 👨‍👩‍👧 Adicionados campos separados para vincular pai e mãe no cadastro de edição do familiar.
 - 🔒 Filiação é independente do vínculo de cônjuge e não modifica automaticamente os cadastros de pai/mãe.
