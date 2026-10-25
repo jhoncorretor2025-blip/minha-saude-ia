@@ -1,3 +1,10 @@
+## V7.52 — Atualização em massa da situação dos familiares
+- ⚡ Adicionado painel com contagem de familiares vivos, falecidos e sem situação informada.
+- 💚 Botão “Definir todos como vivos”, com confirmação explícita antes de alterar os registros.
+- 🛡️ Preserva nomes, parentescos, filiação, cônjuges, consultas, medicamentos e demais históricos.
+- ⚠️ A ação altera a situação de todos para Vivo e limpa datas/causas de falecimento; a confirmação explica isso antes de prosseguir.
+- 🔄 Interface, versão mínima e cache do aplicativo sincronizados em V7.52.
+
 ## V7.51 — Família: vivo/falecido, filiação e cônjuge corrigidos
 - 🕊️ **Vivo / Falecido** agora aparece na lista de pessoas, na ficha (cabeçalho e quadro de dados) e em “Editar dados pessoais”, com data de falecimento obrigatória para quem está como Falecido.
 - 🧹 Removidos os campos de Situação e Data de falecimento que apareciam duplicados (com o mesmo ID) no formulário de adicionar; agora há um só conjunto, perto do topo.
