@@ -65,6 +65,7 @@ function inferirSexoVinculo(p){
  if(/^(feminino|f|mulher|female)$/.test(sexo))return 'Feminino';
  if(/^(masculino|m|homem|male)$/.test(sexo))return 'Masculino';
  const rel=normalizarSexoVinculo(p&&p.parentesco);
+ if(/^(irmao\s*\/\s*irma|irma\s*\/\s*irmao|filho\(a\)|filha\(o\)|namorado\(a\)|namorada\(o\)|companheiro\(a\)|companheira\(o\)|parceiro\(a\)|parceira\(o\)|avo\s*\/\s*avo)$/.test(rel))return '';
  if(/^(mae|tia|avo (materna|paterna)|irma(?!o)(?:$|[\s-])|filha|prima|esposa|namorada|companheira|parceira|neta)(?:\b|$)/.test(rel))return 'Feminino';
  if(/^(pai|tio|avo (materno|paterno)|irmao|filho|primo|marido|namorado|companheiro|parceiro|neto)(?:\b|$)/.test(rel))return 'Masculino';
  return '';
