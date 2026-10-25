@@ -1,3 +1,8 @@
+## V7.40 — Filtro de cônjuge por sexo cadastrado
+- 💍 Ao editar um familiar, a lista de “Cônjuge / pessoa vinculada” prioriza pessoas do sexo oposto ao perfil atual: homens veem mulheres e mulheres veem homens.
+- 🧾 Se o sexo não estiver informado, a lista não é restringida. O vínculo já selecionado continua visível para permitir revisão sem perder o cadastro existente.
+- 🔄 Atualização de versão e cache para V7.40.
+
 ## V7.39 — Vínculos inteligentes e verificador familiar
 - 💍 Cadastro de cônjuge com vínculo recíproco nos dois perfis; se a pessoa escolhida já estiver vinculada a outro cadastro, o sistema pede confirmação antes de substituir a relação.
 - 🧭 Novo verificador de vínculos familiares: identifica parentesco ausente, lado da família não informado, tio/tia por afinidade sem cônjuge, vínculo quebrado ou não recíproco e possíveis nomes duplicados.
