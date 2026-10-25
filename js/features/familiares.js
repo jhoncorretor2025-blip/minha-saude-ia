@@ -420,6 +420,88 @@ function renderFamiliares(){
   '<p style="margin:8px 0 0;color:#64748b;font-size:11px;line-height:1.45">Pede confirmação. Preserva parentescos, filiação, vínculos e históricos, mas limpa data/causa de falecimento; esses dados poderão ser registrados novamente nas pessoas falecidas.</p>';
  toolbar.after(bulk);
  bulk.querySelector('#msaFamMarkAllAlive')?.addEventListener('click',()=>window.marcarTodosFamiliaresVivos());
+  // V7.53 — árvore familiar automática. Relações inferidas são visuais e não alteram os dados salvos.
+  document.getElementById('msaFamilyTreePanel')?.remove();
+  const treePanel=document.createElement('section');treePanel.id='msaFamilyTreePanel';treePanel.dataset.famArea='cadastro';
+  treePanel.style.cssText='margin:12px 0;border:1px solid #dbeafe;border-radius:18px;padding:14px;background:linear-gradient(160deg,#f8fbff,#fff)';
+  if(!document.getElementById('msaFamilyTreeStyles')){
+   const treeStyle=document.createElement('style');treeStyle.id='msaFamilyTreeStyles';
+   treeStyle.textContent=[
+    '#msaFamilyTreePanel .msa-tree-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}',
+    '#msaFamilyTreePanel .msa-tree-search{max-width:360px}',
+    '#msaFamilyTreePanel .msa-tree-generations{display:grid;gap:13px;margin-top:13px}',
+    '#msaFamilyTreePanel .msa-tree-generation{border:1px solid #e6edf8;border-radius:14px;padding:11px;background:rgba(255,255,255,.78)}',
+    '#msaFamilyTreePanel .msa-tree-generation-title{font-size:12px;font-weight:900;color:#1e40af;margin-bottom:9px;display:flex;align-items:center;gap:7px}',
+    '#msaFamilyTreePanel .msa-tree-nodes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,235px),1fr));gap:9px}',
+    '#msaFamilyTreePanel .msa-tree-node{min-width:0;border:1px solid #dce5f2;border-radius:13px;background:#fff;padding:10px;box-shadow:0 3px 10px rgba(15,23,42,.035)}',
+    '#msaFamilyTreePanel .msa-tree-person{border:0;padding:0;background:transparent;color:#1d4ed8;font:inherit;font-weight:900;font-size:14px;text-align:left;cursor:pointer;overflow-wrap:anywhere}',
+    '#msaFamilyTreePanel .msa-tree-person:hover{text-decoration:underline}',
+    '#msaFamilyTreePanel .msa-tree-rel{font-size:11px;line-height:1.5;color:#526174;margin-top:7px;overflow-wrap:anywhere}',
+    '#msaFamilyTreePanel .msa-tree-rel-label{font-weight:900;color:#475569}',
+    '#msaFamilyTreePanel .msa-tree-link{border:0;background:#eef4ff;color:#1d4ed8;border-radius:6px;padding:2px 5px;font:inherit;font-size:11px;font-weight:800;cursor:pointer;margin:2px 2px 0 0;max-width:100%;overflow-wrap:anywhere}',
+    '#msaFamilyTreePanel .msa-tree-status{font-size:11px;font-weight:800;margin-top:5px}',
+    '#msaFamilyTreePanel .msa-tree-legend{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}',
+    '#msaFamilyTreePanel .msa-tree-legend span{font-size:10px;font-weight:800;padding:5px 7px;background:#f1f5f9;border-radius:999px;color:#475569}',
+    '@media(max-width:520px){#msaFamilyTreePanel{padding:10px}#msaFamilyTreePanel .msa-tree-nodes{grid-template-columns:1fr}#msaFamilyTreePanel .msa-tree-generation{padding:8px}}'
+   ].join('');
+   document.head.appendChild(treeStyle);
+  }
+  const mapTree=new Map(list.map(p=>[String(p.id),p]));
+  const treeParents=p=>famIdsPais(p).filter(pid=>mapTree.has(pid)&&pid!==String(p.id));
+  const treeChildren=id=>list.filter(p=>treeParents(p).includes(String(id)));
+  const treeSiblings=p=>{
+   const ids=treeParents(p);if(!ids.length)return [];
+   return list.filter(x=>String(x.id)!==String(p.id)&&treeParents(x).some(id=>ids.includes(id)));
+  };
+  const treeDepthCache=new Map();
+  const treeDepth=(p,trail=new Set())=>{
+   const id=String(p.id);if(treeDepthCache.has(id))return treeDepthCache.get(id);
+   if(trail.has(id))return 0;
+   const parents=treeParents(p);if(!parents.length){treeDepthCache.set(id,0);return 0}
+   const next=new Set(trail);next.add(id);
+   const depth=Math.min(8,1+Math.max(...parents.map(pid=>treeDepth(mapTree.get(pid),next))));
+   treeDepthCache.set(id,depth);return depth;
+  };
+  const treeDepths=new Map(list.map(p=>[String(p.id),treeDepth(p)]));
+  for(let pass=0;pass<2;pass++)list.forEach(p=>{
+   const sp=mapTree.get(String(p.conjugeId||''));if(!sp)return;
+   const pp=treeParents(p),ps=treeParents(sp),dp=treeDepths.get(String(p.id))||0,ds=treeDepths.get(String(sp.id))||0;
+   if(!pp.length&&ps.length)treeDepths.set(String(p.id),ds);
+   else if(pp.length&&!ps.length)treeDepths.set(String(sp.id),dp);
+  });
+  const treeGroups=new Map();list.forEach(p=>{const d=treeDepths.get(String(p.id))||0;if(!treeGroups.has(d))treeGroups.set(d,[]);treeGroups.get(d).push(p)});
+  const treeLink=p=>'<button type="button" class="msa-tree-link" data-fam-tree-open="'+esc(p.id)+'">'+esc(p.nome||'Sem nome')+'</button>';
+  const treeRelation=(label,people)=>people.length?'<div class="msa-tree-rel"><span class="msa-tree-rel-label">'+label+':</span> '+people.map(treeLink).join(' ')+'</div>':'';
+  const treeNode=p=>{
+   const parents=treeParents(p).map(id=>mapTree.get(id)).filter(Boolean);
+   const siblings=treeSiblings(p);
+   const kids=treeChildren(p.id);
+   const spouse=mapTree.get(String(p.conjugeId||''));
+   const bits=treeRelation('Pais',parents)+treeRelation('Irmãos sugeridos',siblings)+treeRelation('Cônjuge',spouse?[spouse]:[])+treeRelation('Filhos',kids);
+   const search=[p.nome,p.parentesco,...parents.map(x=>x.nome),...siblings.map(x=>x.nome),...(spouse?[spouse.nome]:[]),...kids.map(x=>x.nome)].filter(Boolean).join(' ').toLocaleLowerCase('pt-BR');
+   const status=p.statusFamiliar==='Vivo'?'💚 Vivo(a)':p.statusFamiliar==='Falecido'?'🕊️ Falecido(a)'+(p.dataFalecimento?' · '+fmtDate(p.dataFalecimento):''):'❔ Situação não informada';
+   return '<article class="msa-tree-node" data-fam-tree-node="'+esc(p.id)+'" data-search="'+esc(search)+'">'+
+    '<button type="button" class="msa-tree-person" data-fam-tree-open="'+esc(p.id)+'">'+(p.sexo==='Feminino'?'👩':p.sexo==='Masculino'?'👨':'👤')+' '+esc(p.nome||'Sem nome')+'</button>'+
+    '<div class="msa-tree-rel">'+esc(p.parentesco||'Parentesco não informado')+'</div>'+
+    '<div class="msa-tree-status">'+esc(status)+'</div>'+
+    (bits||'<div class="msa-tree-rel">Sem vínculos de filiação ou cônjuge cadastrados.</div>')+'</article>';
+  };
+  treePanel.innerHTML='<div class="msa-tree-head"><div><div style="font-size:11px;font-weight:900;letter-spacing:.05em;color:#1d4ed8">🌳 ÁRVORE GENEALÓGICA</div><h3 style="margin:4px 0 5px">Família organizada por gerações</h3><p style="margin:0;color:#64748b;font-size:12px;line-height:1.5">Pais e mães vêm dos vínculos cadastrados. Irmãos e filhos são identificados automaticamente a partir desses vínculos, sem criar ou alterar cadastros.</p></div><label class="msa-tree-search" style="margin:0;flex:1 1 220px">🔎 Buscar na árvore<input id="msaFamilyTreeSearch" type="search" placeholder="Nome ou parentesco..." style="margin-top:5px"></label></div>'+
+   '<div class="msa-tree-legend"><span>👆 Toque em um nome para abrir a ficha</span><span>👫 Irmãos: compartilham pai/mãe cadastrado</span><span>🔒 Relações sugeridas não são gravadas automaticamente</span></div>'+
+   '<div class="msa-tree-generations">'+(list.length?[...treeGroups.entries()].sort((a,b)=>a[0]-b[0]).map(([depth,members])=>'<div class="msa-tree-generation" data-fam-tree-generation="'+depth+'"><div class="msa-tree-generation-title">🌱 Geração '+(depth+1)+' <span style="font-weight:500;color:#64748b">('+members.length+' pessoa(s))</span></div><div class="msa-tree-nodes">'+members.slice().sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR')).map(treeNode).join('')+'</div></div>').join(''):'<div class="empty">Cadastre familiares para montar a árvore automaticamente.</div>')+'</div>';
+  const treeSearch=treePanel.querySelector('#msaFamilyTreeSearch');
+  const applyTreeSearch=()=>{
+   const q=String(treeSearch?.value||'').trim().toLocaleLowerCase('pt-BR');
+   treePanel.querySelectorAll('[data-fam-tree-node]').forEach(node=>{node.hidden=!!q&&!String(node.dataset.search||'').includes(q)});
+   treePanel.querySelectorAll('[data-fam-tree-generation]').forEach(group=>{group.hidden=!group.querySelector('[data-fam-tree-node]:not([hidden])')});
+  };
+  treeSearch?.addEventListener('input',applyTreeSearch);
+  treePanel.querySelectorAll('[data-fam-tree-open]').forEach(btn=>btn.addEventListener('click',()=>{
+   const id=btn.dataset.famTreeOpen;if(typeof window.selecionarFamiliar==='function')window.selecionarFamiliar(id);
+   setTimeout(()=>document.getElementById('familiarDetalhe')?.scrollIntoView({behavior:'smooth',block:'start'}),120);
+  }));
+  bulk.after(treePanel);
+
 
  const familySearch=toolbar.querySelector('#msaFamilySearch'),relationFilter=toolbar.querySelector('#msaFamilyRelationFilter');
  function applyFamilyQuickFilter(){window.__msaFamSearch=familySearch.value;window.__msaFamRelationFilter=relationFilter.value;const query=String(window.__msaFamSearch||'').trim().toLocaleLowerCase('pt-BR');cards.querySelectorAll('[data-fam-open]').forEach(btn=>{const card=btn.closest('.familiar-person-card');if(!card)return;const person=list.find(p=>String(p.id)===String(btn.dataset.famOpen));const text=[person?.nome,person?.parentesco].filter(Boolean).join(' ').toLocaleLowerCase('pt-BR');card.hidden=!!((query&&!text.includes(query))||(window.__msaFamRelationFilter&&person?.parentesco!==window.__msaFamRelationFilter))})}
