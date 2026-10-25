@@ -399,6 +399,21 @@ function renderFamiliares(){
  const pessoasCard=document.getElementById('familiaPessoasCard');if(pessoasCard)pessoasCard.dataset.famArea='cadastro';
  const cards=document.getElementById('familiaresList');
  if(cards){
+ // V7.52 — atualização em massa da situação de vida dos familiares.
+ document.getElementById('msaFamilyBulkStatus')?.remove();
+ const vivos=list.filter(p=>String(p.statusFamiliar||'')==='Vivo').length;
+ const falecidos=list.filter(p=>String(p.statusFamiliar||'')==='Falecido').length;
+ const naoInformados=list.length-vivos-falecidos;
+ const bulk=document.createElement('div');bulk.id='msaFamilyBulkStatus';bulk.className='card';
+ bulk.style.cssText='margin:10px 0;padding:13px;border:1px solid #bbd0ff;background:linear-gradient(135deg,#eff6ff,#fff);border-radius:15px';
+ bulk.innerHTML='<div style="font-weight:900;color:#1d4ed8">⚡ Atualização em massa</div>'+
+  '<p style="margin:5px 0 10px;color:#475569;font-size:13px;line-height:1.5">Defina todos os familiares como vivos de uma vez e depois altere somente quem faleceu.</p>'+
+  '<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px"><span style="font-size:12px;font-weight:800;padding:6px 9px;border-radius:99px;background:#dcfce7;color:#166534">💚 Vivos: '+vivos+'</span><span style="font-size:12px;font-weight:800;padding:6px 9px;border-radius:99px;background:#f1f5f9;color:#475569">❔ Não informados: '+naoInformados+'</span><span style="font-size:12px;font-weight:800;padding:6px 9px;border-radius:99px;background:#f3e8ff;color:#6b21a8">🕊️ Falecidos: '+falecidos+'</span></div>'+
+  '<button type="button" class="btn green" id="msaFamMarkAllAlive" '+(list.length?'':'disabled')+'>💚 Definir todos como vivos</button>'+
+  '<p style="margin:8px 0 0;color:#64748b;font-size:11px;line-height:1.45">Pede confirmação. Preserva parentescos, filiação, vínculos e históricos, mas limpa data/causa de falecimento; esses dados poderão ser registrados novamente nas pessoas falecidas.</p>';
+ toolbar.after(bulk);
+ bulk.querySelector('#msaFamMarkAllAlive')?.addEventListener('click',()=>window.marcarTodosFamiliaresVivos());
+
  const toolbarId='msaFamilyQuickTools';
  document.getElementById(toolbarId)?.remove();
  const toolbar=document.createElement('div');toolbar.id=toolbarId;toolbar.className='card';toolbar.style.cssText='margin:10px 0;padding:12px;border:1px solid #dbeafe;border-radius:14px';
@@ -452,7 +467,19 @@ function bindForms(id){
  const c=document.getElementById('familiarConsultaForm');if(c)c.onsubmit=e=>{e.preventDefault();addRecord(id,'consultas',{data:val('fConData'),especialidade:val('fConEsp'),medico:val('fConMed'),retorno:val('fConRet'),motivo:val('fConMot'),obs:val('fConObs')})};
  const cr=document.getElementById('familiarCriseForm');if(cr)cr.onsubmit=e=>{e.preventDefault();addRecord(id,'crises',{data:val('fCriData'),hora:val('fCriHora'),tipo:val('fCriTipo'),intensidade:val('fCriInt'),descricao:val('fCriDesc'),gatilho:val('fCriGatilho'),conduta:val('fCriConduta')})};
 }
-function addRecord(memberId,type,data){const list=getList(),p=list.find(x=>x.id===memberId);if(!p)return;ensure(p);p[type].push(Object.assign({id:uid(type.slice(0,3)),criadoEm:new Date().toISOString()},data));if(!saveList(list)){alert('Não foi possível salvar.');return}setSelected(memberId);renderFamiliares()}
+window.marcarTodosFamiliaresVivos=function(){
+  const list=getList();if(!list.length){alert('Ainda não há familiares cadastrados.');return}
+  const outros=list.filter(p=>String(p.statusFamiliar||'')!=='Vivo').length;
+  const msg='Você vai definir '+list.length+' familiar(es) como Vivos.\n\n'+
+   'A situação atual de '+outros+' pessoa(s) será substituída, inclusive quem estiver marcado como Falecido, e as datas/causas de falecimento serão limpas.\n\n'+
+   'Nomes, parentescos, filiação, vínculos, consultas, medicamentos e demais históricos serão preservados.\n\nDeseja continuar?';
+  if(!confirm(msg))return;
+  const updated=list.map(p=>Object.assign({},p,{statusFamiliar:'Vivo',dataFalecimento:'',causaFalecimento:''}));
+  if(!saveList(updated)){alert('Não foi possível salvar a atualização em massa.');return}
+  renderFamiliares();
+  alert('✅ Atualização concluída: '+updated.length+' familiar(es) definidos como vivos. Agora altere somente os cadastros das pessoas falecidas.');
+ };
+ function addRecord(memberId,type,data){const list=getList(),p=list.find(x=>x.id===memberId);if(!p)return;ensure(p);p[type].push(Object.assign({id:uid(type.slice(0,3)),criadoEm:new Date().toISOString()},data));if(!saveList(list)){alert('Não foi possível salvar.');return}setSelected(memberId);renderFamiliares()}
 window.atualizarLadoFamiliar=function(id,lado){const list=getList(),p=list.find(x=>x.id===id);if(!p)return;p.ladoFamilia=String(lado||'');if(lado==='Afinidade'){p.vinculoFamilia='Afinidade';p.consanguinidade='Não';p.vinculoLadoPendente=false;}else if(['Materno','Paterno','Núcleo próximo','Ambos'].includes(lado)){p.vinculoFamilia='Consanguíneo';p.consanguinidade='Sim';p.vinculoLadoPendente=false;p.observacaoVinculoPendencia='';}if(!saveList(list)){alert('Não foi possível salvar o grupo/lado da família.');return}setSelected(selectedId()||id);renderFamiliares();};
 function atualizarAppAposSelecaoFamiliar(){
  // Recarrega os componentes que leem o perfil ativo, sem trocar a tela atual.
