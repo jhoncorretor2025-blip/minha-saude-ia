@@ -1,3 +1,9 @@
+## V7.43 — Validação do vínculo e renovação integral de cache
+- 💍 O seletor usa o sexo cadastrado e, quando ausente, parentescos claramente específicos para identificar candidatos compatíveis.
+- 🚫 Pai e mãe não são candidatos normais; um vínculo já existente permanece disponível para revisão.
+- 🛡️ O salvamento valida novamente o candidato para evitar vinculação incompatível.
+- 🔄 Todos os parâmetros locais de versão/cache no HTML foram alinhados para V7.43 e o cache do service worker foi renovado.
+
 ## V7.42 — Reconhecimento ampliado de parentescos no vínculo
 - 💍 O seletor de cônjuge agora reconhece parentescos femininos/masculinos mesmo quando o campo contém texto composto, como “Irmão/irmã”.
 - 🚫 Pai e mãe continuam excluídos como candidatos, salvo quando já são o vínculo salvo que precisa ser revisado.
