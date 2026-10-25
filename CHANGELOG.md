@@ -1,3 +1,12 @@
+## V7.55 — Navegação otimizada para celular
+- 📱 Menu principal em duas colunas no celular, com áreas de toque maiores e rótulos legíveis.
+- 🧭 Submenus abrem dentro do fluxo da página, evitando menus cortados fora da tela.
+- 👆 Melhorias de toque, foco, rolagem interna e navegação por teclado.
+- ⌨️ Campos de formulário com tamanho de fonte confortável no celular para reduzir zoom automático.
+- 📐 Ajustes de layout para telas estreitas, botões e tabelas com rolagem horizontal quando necessário.
+- ♿ Respeita a preferência do sistema por movimento reduzido.
+- 🔄 Versão da interface, versão mínima e cache do service worker sincronizados em V7.55.
+
 ## V7.54 — Filtros avançados de familiares
 - 🔎 Adicionados filtros combináveis por situação de vida, lado/grupo familiar, parentesco e completude dos dados.
 - 💚 Permite listar vivos, falecidos ou pessoas com situação não informada.
