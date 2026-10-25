@@ -399,6 +399,13 @@ function renderFamiliares(){
  const pessoasCard=document.getElementById('familiaPessoasCard');if(pessoasCard)pessoasCard.dataset.famArea='cadastro';
  const cards=document.getElementById('familiaresList');
  if(cards){
+
+ const toolbarId='msaFamilyQuickTools';
+ document.getElementById(toolbarId)?.remove();
+ const toolbar=document.createElement('div');toolbar.id=toolbarId;toolbar.className='card';toolbar.style.cssText='margin:10px 0;padding:12px;border:1px solid #dbeafe;border-radius:14px';
+ const birthdayList=list.filter(p=>p.nasc&&/^\\d{4}-\\d{2}-\\d{2}$/.test(String(p.nasc))).map(p=>{const now=new Date(),birth=new Date(String(p.nasc)+'T12:00:00');let next=new Date(now.getFullYear(),birth.getMonth(),birth.getDate());if(next<new Date(now.getFullYear(),now.getMonth(),now.getDate()))next.setFullYear(now.getFullYear()+1);return {p,days:Math.round((next-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/86400000)}}).sort((a,b)=>a.days-b.days).slice(0,3);
+ toolbar.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:9px"><label style="margin:0">🔎 Buscar familiar<input id="msaFamilySearch" type="search" placeholder="Nome ou parentesco..." value="'+esc(window.__msaFamSearch||'')+'"></label><label style="margin:0">🗂️ Filtrar parentesco<select id="msaFamilyRelationFilter"><option value="">Todos os parentescos</option>'+[...new Set(list.map(p=>String(p.parentesco||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR')).map(r=>'<option value="'+esc(r)+'" '+(window.__msaFamRelationFilter===r?'selected':'')+'>'+esc(r)+'</option>').join('')+'</select></label></div><div style="margin-top:9px;padding:9px;border-radius:10px;background:#fff7ed;color:#7c2d12;font-size:12px"><b>🎂 Próximos aniversários</b><div style="margin-top:4px">'+(birthdayList.length?birthdayList.map(x=>esc(x.p.nome||'Familiar')+' — '+fmtDate(x.p.nasc)+' ('+(x.days===0?'hoje':x.days===1?'amanhã':'em '+x.days+' dias')+')').join('<br>'):'Nenhuma data de nascimento cadastrada')+'</div></div>';
+ cards.parentElement.insertBefore(toolbar,cards);
  // V7.52 — atualização em massa da situação de vida dos familiares.
  document.getElementById('msaFamilyBulkStatus')?.remove();
  const vivos=list.filter(p=>String(p.statusFamiliar||'')==='Vivo').length;
@@ -414,12 +421,6 @@ function renderFamiliares(){
  toolbar.after(bulk);
  bulk.querySelector('#msaFamMarkAllAlive')?.addEventListener('click',()=>window.marcarTodosFamiliaresVivos());
 
- const toolbarId='msaFamilyQuickTools';
- document.getElementById(toolbarId)?.remove();
- const toolbar=document.createElement('div');toolbar.id=toolbarId;toolbar.className='card';toolbar.style.cssText='margin:10px 0;padding:12px;border:1px solid #dbeafe;border-radius:14px';
- const birthdayList=list.filter(p=>p.nasc&&/^\\d{4}-\\d{2}-\\d{2}$/.test(String(p.nasc))).map(p=>{const now=new Date(),birth=new Date(String(p.nasc)+'T12:00:00');let next=new Date(now.getFullYear(),birth.getMonth(),birth.getDate());if(next<new Date(now.getFullYear(),now.getMonth(),now.getDate()))next.setFullYear(now.getFullYear()+1);return {p,days:Math.round((next-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/86400000)}}).sort((a,b)=>a.days-b.days).slice(0,3);
- toolbar.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:9px"><label style="margin:0">🔎 Buscar familiar<input id="msaFamilySearch" type="search" placeholder="Nome ou parentesco..." value="'+esc(window.__msaFamSearch||'')+'"></label><label style="margin:0">🗂️ Filtrar parentesco<select id="msaFamilyRelationFilter"><option value="">Todos os parentescos</option>'+[...new Set(list.map(p=>String(p.parentesco||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR')).map(r=>'<option value="'+esc(r)+'" '+(window.__msaFamRelationFilter===r?'selected':'')+'>'+esc(r)+'</option>').join('')+'</select></label></div><div style="margin-top:9px;padding:9px;border-radius:10px;background:#fff7ed;color:#7c2d12;font-size:12px"><b>🎂 Próximos aniversários</b><div style="margin-top:4px">'+(birthdayList.length?birthdayList.map(x=>esc(x.p.nome||'Familiar')+' — '+fmtDate(x.p.nasc)+' ('+(x.days===0?'hoje':x.days===1?'amanhã':'em '+x.days+' dias')+')').join('<br>'):'Nenhuma data de nascimento cadastrada')+'</div></div>';
- cards.parentElement.insertBefore(toolbar,cards);
  const familySearch=toolbar.querySelector('#msaFamilySearch'),relationFilter=toolbar.querySelector('#msaFamilyRelationFilter');
  function applyFamilyQuickFilter(){window.__msaFamSearch=familySearch.value;window.__msaFamRelationFilter=relationFilter.value;const query=String(window.__msaFamSearch||'').trim().toLocaleLowerCase('pt-BR');cards.querySelectorAll('[data-fam-open]').forEach(btn=>{const card=btn.closest('.familiar-person-card');if(!card)return;const person=list.find(p=>String(p.id)===String(btn.dataset.famOpen));const text=[person?.nome,person?.parentesco].filter(Boolean).join(' ').toLocaleLowerCase('pt-BR');card.hidden=!!((query&&!text.includes(query))||(window.__msaFamRelationFilter&&person?.parentesco!==window.__msaFamRelationFilter))})}
  familySearch.addEventListener('input',applyFamilyQuickFilter);relationFilter.addEventListener('change',applyFamilyQuickFilter);
