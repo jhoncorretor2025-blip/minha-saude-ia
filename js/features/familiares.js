@@ -501,6 +501,7 @@ function renderFamiliares(){
    setTimeout(()=>document.getElementById('familiarDetalhe')?.scrollIntoView({behavior:'smooth',block:'start'}),120);
   }));
   bulk.after(treePanel);
+  treePanel.style.display=(__msaFamFiltro==='todos'||__msaFamFiltro==='cadastro')?'':'none';
 
 
  const familySearch=toolbar.querySelector('#msaFamilySearch'),relationFilter=toolbar.querySelector('#msaFamilyRelationFilter');
