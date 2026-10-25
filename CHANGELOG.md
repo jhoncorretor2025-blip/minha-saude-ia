@@ -1,3 +1,8 @@
+## V7.42 — Reconhecimento ampliado de parentescos no vínculo
+- 💍 O seletor de cônjuge agora reconhece parentescos femininos/masculinos mesmo quando o campo contém texto composto, como “Irmão/irmã”.
+- 🚫 Pai e mãe continuam excluídos como candidatos, salvo quando já são o vínculo salvo que precisa ser revisado.
+- 🔄 Atualização de versão e cache para V7.42.
+
 ## V7.41 — Correção dos candidatos a cônjuge
 - 💍 O seletor exclui Pai/Mãe como candidatos a cônjuge e reconhece parentescos femininos como Tia, Avó, Irmã, Prima, Esposa e Companheira para perfis masculinos (e equivalentes masculinos para perfis femininos).
 - 🔗 O vínculo já salvo continua disponível para revisão.
