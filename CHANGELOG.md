@@ -1,3 +1,9 @@
+## V7.48 — Filiação pai e mãe
+- 👨‍👩‍👧 Adicionados campos separados para vincular pai e mãe no cadastro de edição do familiar.
+- 🔒 Filiação é independente do vínculo de cônjuge e não modifica automaticamente os cadastros de pai/mãe.
+- 🧪 Impede selecionar a mesma pessoa como pai e mãe; exclui o próprio perfil das opções.
+- 🔄 Cache do frontend e service worker atualizados para V7.48.
+
 ## V7.47 — Situação de vida e data de falecimento
 - 🕊️ Cadastro e edição permitem registrar data de falecimento.
 - ✅ A data é obrigatória quando a situação é “Falecido”.
