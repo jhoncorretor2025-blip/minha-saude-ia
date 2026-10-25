@@ -1,3 +1,10 @@
+## V7.47 — Situação de vida e data de falecimento
+- 🕊️ Cadastro e edição permitem registrar data de falecimento.
+- ✅ A data é obrigatória quando a situação é “Falecido”.
+- 🔄 Ao mudar para “Vivo”, a data de falecimento é limpa para evitar inconsistências.
+- 🛡️ Validação impede salvar data de falecimento sem selecionar “Falecido”.
+- 🔄 Cache do frontend e service worker atualizados para V7.47.
+
 ## V7.46 — Melhorias rápidas na área Família
 - 🔎 Busca por nome e parentesco e filtro por relação.
 - 🎂 Painel com os próximos três aniversários cadastrados.
