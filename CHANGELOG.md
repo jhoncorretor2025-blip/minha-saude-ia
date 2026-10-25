@@ -1,3 +1,8 @@
+## V7.41 — Correção dos candidatos a cônjuge
+- 💍 O seletor exclui Pai/Mãe como candidatos a cônjuge e reconhece parentescos femininos como Tia, Avó, Irmã, Prima, Esposa e Companheira para perfis masculinos (e equivalentes masculinos para perfis femininos).
+- 🔗 O vínculo já salvo continua disponível para revisão.
+- 🔄 Atualização de versão e cache para V7.41.
+
 ## V7.40 — Filtro de cônjuge por sexo cadastrado
 - 💍 Ao editar um familiar, a lista de “Cônjuge / pessoa vinculada” prioriza pessoas do sexo oposto ao perfil atual: homens veem mulheres e mulheres veem homens.
 - 🧾 Se o sexo não estiver informado, a lista não é restringida. O vínculo já selecionado continua visível para permitir revisão sem perder o cadastro existente.
