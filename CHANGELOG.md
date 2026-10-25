@@ -1,3 +1,9 @@
+## V7.39 — Vínculos inteligentes e verificador familiar
+- 💍 Cadastro de cônjuge com vínculo recíproco nos dois perfis; se a pessoa escolhida já estiver vinculada a outro cadastro, o sistema pede confirmação antes de substituir a relação.
+- 🧭 Novo verificador de vínculos familiares: identifica parentesco ausente, lado da família não informado, tio/tia por afinidade sem cônjuge, vínculo quebrado ou não recíproco e possíveis nomes duplicados.
+- 🔎 Cada alerta oferece atalho para abrir o cadastro correspondente. A revisão não altera dados automaticamente.
+- 🔄 Atualização de versão e cache para V7.39.
+
 ## V7.27 — Família em abas
 - 🗂️ A página Família (que tinha ~7.000 px de rolagem) foi separada em 4 abas fixas no topo: 👥 Pessoas · ➕ Adicionar · 🧬 Saúde da família (histórico e padrões familiares, família com IA) · 💑 Cônjuge (compartilhar e cuidado a dois).
 - 📋 A ficha da pessoa também ganhou sub-abas: Dados · Saúde · Remédios · Consultas · Ocorrências · Histórico.
