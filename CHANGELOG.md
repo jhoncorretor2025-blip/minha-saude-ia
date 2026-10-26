@@ -1,3 +1,11 @@
+## V7.56 — Família sem rolar: sub-categorias dentro das abas
+- 👥 Pessoas: chips 👥 Lista · 👤 Ficha aberta (com o nome da pessoa) · 📊 Resumo · 🌳 Gerações · 🔗 Vínculos. Tocar numa pessoa abre direto a ficha dela.
+- 🧬 Padrões familiares: chips 🤖 Com IA · 🌳 Árvore · 📊 Padrões · 🔗 Corrigir vínculos.
+- ➕ Adicionar: o essencial aparece; vínculos, saúde e remédios ficam em “➕ Mais informações (opcional)” (o cadastro continua salvando tudo).
+- 🐞 A ficha abria com “Editar dados pessoais” já aberto (~2.000 px): agora abre fechada e só abre ao tocar em Editar.
+- 📏 Celular: Pessoas de ~6.300 px para ~1.000–1.650 px por parte; Padrões de ~4.100 px para ~900–2.000 px; Adicionar de ~4.000 px para ~2.200 px.
+- 🔄 Versão sincronizada em V7.56 (a constante estava em V7.51 enquanto o site mostrava V7.55).
+
 ## V7.55 — Navegação otimizada para celular
 - 📱 Menu principal em duas colunas no celular, com áreas de toque maiores e rótulos legíveis.
 - 🧭 Submenus abrem dentro do fluxo da página, evitando menus cortados fora da tela.

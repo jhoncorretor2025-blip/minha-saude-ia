@@ -56,11 +56,11 @@ function abrir(aba,rolar){
 document.addEventListener('click',function(e){
  var t=e.target.closest('[data-fam-ir]');if(t){abrir(t.getAttribute('data-fam-ir'),true);return}
  /* atalhos que levam a uma parte específica */
- if(e.target.closest('[data-fam-open], [data-fam-edit], [data-partner-open], [data-partner-edit]'))setTimeout(function(){abrir('pessoas')},30);
+ if(e.target.closest('[data-fam-open], [data-fam-edit], [data-partner-open], [data-partner-edit]')){try{sessionStorage.setItem('msaFamChip_pessoas','ficha')}catch(x){}setTimeout(function(){abrir('pessoas');aplicarChips();var d=$('familiarDetalhe');if(d)d.scrollIntoView({behavior:'smooth',block:'start'})},60)}
 });
 /* o botão “💑 Compartilhar” do menu para o clique no caminho; por isso escuta antes (captura) */
 document.addEventListener('click',function(e){if(e.target.closest('.msa-nav-share, #msaShareEasyBtn')){window.__famForcar={aba:'conjuge',ate:Date.now()+3000};[50,400,900].forEach(function(t){setTimeout(function(){abrir('conjuge')},t)})}},true);
-function embrulhar(nome,aba){var f=window[nome];if(typeof f!=='function'||f.__abas)return;window[nome]=function(){var fz=window.__famForcar;if(!(fz&&Date.now()<fz.ate)){if(nome==='focarEdicaoFamiliar'){try{sessionStorage.setItem('msaFamSub','dados')}catch(e){}}abrir(aba)}var r=f.apply(this,arguments);if(nome==='focarEdicaoFamiliar')setTimeout(subAbas,60);return r};window[nome].__abas=true}
+function embrulhar(nome,aba){var f=window[nome];if(typeof f!=='function'||f.__abas)return;window[nome]=function(){var fz=window.__famForcar;if(!(fz&&Date.now()<fz.ate)){if(nome!=='excluirFamiliar'){try{sessionStorage.setItem('msaFamChip_pessoas','ficha')}catch(e){}}if(nome==='focarEdicaoFamiliar'){window.__famEditando=Date.now()+4000;try{sessionStorage.setItem('msaFamSub','dados')}catch(e){}}abrir(aba)}var r=f.apply(this,arguments);if(nome==='focarEdicaoFamiliar')setTimeout(subAbas,60);return r};window[nome].__abas=true}
 var css=document.createElement('style');css.id='msa-familia-abas';
 css.textContent=
  '#familiares[data-aba] > .card > [data-fam-aba]{display:none!important}'+
@@ -78,8 +78,8 @@ function iniciar(){
  var sec=$('familiares');if(!sec)return;
  var ini='';try{ini=sessionStorage.getItem('msaFamAba')||''}catch(e){}
  abrir(ini||'pessoas');
- var agendado=false;new MutationObserver(function(){marcar();if(!agendado){agendado=true;setTimeout(function(){agendado=false;subAbas()},40)}}).observe(sec,{childList:true,subtree:true});
- subAbas();
+ var agendado=false;new MutationObserver(function(){marcar();if(!agendado){agendado=true;setTimeout(function(){agendado=false;subAbas();aplicarChips();formEnxuto()},40)}}).observe(sec,{childList:true,subtree:true});
+ subAbas();aplicarChips();formEnxuto();
  ['focarEdicaoFamiliar','selecionarFamiliar','excluirFamiliar'].forEach(function(n){embrulhar(n,'pessoas')});
  if(typeof window.go==='function'&&!window.go.__abas){var o=window.go;window.go=function(id){var r=o.apply(this,arguments);if(id==='familiares')setTimeout(function(){marcar();barra()},60);return r};window.go.__abas=true}
 }
@@ -89,7 +89,7 @@ var SUB=[['dados','📋','Dados',/editar dados|dados pessoais/i],['saude','🩺'
 function subAbas(){
  var d=$('familiarDetalhe');if(!d)return;var blocos=[].slice.call(d.querySelectorAll('.familiar-subcard'));if(blocos.length<2)return;
  var usados={};
- blocos.forEach(function(b){var h=b.querySelector('summary,h2,h3,h4');var t=h?h.textContent:'';var ach=SUB.filter(function(x){return x[3].test(t)})[0];var id=ach?ach[0]:'dados';b.dataset.famSub=id;usados[id]=1;if(b.tagName==='DETAILS')b.open=true});
+ blocos.forEach(function(b){var h=b.querySelector('summary,h2,h3,h4');var t=h?h.textContent:'';var ach=SUB.filter(function(x){return x[3].test(t)})[0];var id=ach?ach[0]:'dados';b.dataset.famSub=id;usados[id]=1;if(b.tagName==='DETAILS'){if(id!=='dados')b.open=true;else if(!b.dataset.v756){b.dataset.v756='1';b.open=!!(window.__famEditando&&Date.now()<window.__famEditando)}}});
  var atual='';try{atual=sessionStorage.getItem('msaFamSub')||''}catch(e){}if(!usados[atual])atual=Object.keys(usados)[0];
  d.setAttribute('data-sub',atual);
  var bar=d.querySelector('.msa-fam-sub');
@@ -101,6 +101,35 @@ document.addEventListener('click',function(e){var b=e.target.closest('[data-fam-
 /* “Editar perfil” sempre abre a parte Dados */
 document.addEventListener('click',function(e){if(e.target.closest('[onclick*="focarEdicaoFamiliar"], [data-partner-edit]')){try{sessionStorage.setItem('msaFamSub','dados')}catch(x){}setTimeout(subAbas,80)}},true);
 (function(){var st=document.createElement('style');st.textContent='#familiarDetalhe[data-sub] .familiar-subcard[data-fam-sub]{display:none!important}'+SUB.map(function(x){return '#familiarDetalhe[data-sub="'+x[0]+'"] .familiar-subcard[data-fam-sub="'+x[0]+'"]{display:block!important}'}).join('')+'#familiarDetalhe .familiar-grid{display:block!important}.msa-fam-sub{display:flex;gap:6px;overflow-x:auto;margin:10px 0 12px;padding:4px 2px;scrollbar-width:thin}.msa-fam-sub button{flex:0 0 auto;min-height:42px;padding:8px 14px;border-radius:999px;border:1px solid var(--line,#e2e8f0);background:var(--card,#fff);color:inherit;font:inherit;font-weight:800;font-size:14px;cursor:pointer;white-space:nowrap}.msa-fam-sub button.on{background:#2563eb;border-color:#2563eb;color:#fff}body.msa-dark .msa-fam-sub button{background:#111827;border-color:#263244}body.msa-dark .msa-fam-sub button.on{background:#2563eb}';document.head.appendChild(st)})();
+
+/* ===== V7.56 — sub-categorias (chips) dentro das abas, para não precisar rolar ===== */
+var CHIPS={
+ pessoas:{host:'familiaPessoasCard',itens:[['lista','👥 Lista',['familiaresList','msaFamilyQuickTools','msaFamilyAdvancedFilters']],['ficha','👤 Ficha aberta',['familiarDetalhe']],['resumo','📊 Resumo',['msaFamilyDashboard','msaFamilyBulkStatus']],['geracoes','🌳 Gerações',['msaFamilyTreePanel']],['vinculos','🔗 Vínculos',['msaFamilyRelationshipAudit']]]},
+ historico:{host:'familiaInteligencia',itens:[['ia','🤖 Com IA',['.msa-fam-ai-card','.msa-fam-actions']],['arvore','🌳 Árvore',['msa-fam-map']],['padroes','📊 Padrões',['msa-fam-analysis']],['vinculos','🔗 Corrigir vínculos',['msaFamLinkRepairCard']]]}
+};
+function chipAtual(aba){var c=CHIPS[aba];var v='';try{v=sessionStorage.getItem('msaFamChip_'+aba)||''}catch(e){}return c.itens.some(function(i){return i[0]===v})?v:c.itens[0][0]}
+function aplicarChips(){
+ Object.keys(CHIPS).forEach(function(aba){
+  var cfg=CHIPS[aba],host=$(cfg.host);if(!host)return;var atual=chipAtual(aba),existe={};
+  cfg.itens.forEach(function(it){it[2].forEach(function(sel){var els=sel.charAt(0)==='.'?[].slice.call(host.querySelectorAll(sel)):[$(sel)];els.forEach(function(el){if(!el)return;existe[it[0]]=1;el.classList.toggle('msa-chip-off',it[0]!==atual)})})});
+  var bar=host.querySelector(':scope > .msa-fam-chips');
+  if(!bar){bar=document.createElement('div');bar.className='msa-fam-chips';bar.setAttribute('role','tablist');var h=host.querySelector(':scope > h2, :scope > h3');if(h)h.insertAdjacentElement('afterend',bar);else host.insertBefore(bar,host.firstChild)}
+  var nomeFicha=(function(){var h=document.querySelector('#familiarDetalhe .familiar-detail-head h2, #familiarDetalhe h2');return h?h.textContent.replace(/^\s*\S+\s*/,'').trim().slice(0,18):''})();
+  var html=cfg.itens.filter(function(i){return existe[i[0]]}).map(function(i){var rot=i[0]==='ficha'&&nomeFicha?'👤 '+nomeFicha:i[1];return '<button type="button" role="tab" data-fam-chip="'+aba+':'+i[0]+'" aria-selected="'+(i[0]===atual)+'" class="'+(i[0]===atual?'on':'')+'">'+rot+'</button>'}).join('');
+  if(bar.innerHTML!==html)bar.innerHTML=html;
+ });
+}
+document.addEventListener('click',function(e){var b=e.target.closest('[data-fam-chip]');if(!b)return;var p=b.getAttribute('data-fam-chip').split(':');try{sessionStorage.setItem('msaFamChip_'+p[0],p[1])}catch(x){}aplicarChips()});
+/* formulário de cadastro: o essencial aparece; o resto fica em “Mais informações (opcional)” */
+function formEnxuto(){
+ var f=$('familiarForm');if(!f||f.dataset.v756)return;var mover=['fVinculosBox','msaFamilyClinicalFields','fPerfilSaudeCampos'].map($).filter(Boolean);if(!mover.length)return;f.dataset.v756='1';
+ var d=document.createElement('details');d.className='msa-fam-mais';d.innerHTML='<summary>➕ Mais informações (opcional): vínculos, saúde, remédios…</summary>';
+ mover[0].parentNode.insertBefore(d,mover[0]);
+ /* leva junto os campos soltos entre esses blocos (ex.: observações), mas nunca o botão de salvar */
+ var el=d.nextElementSibling;while(el&&!el.matches('button,[type=submit]')&&!el.querySelector('button[type=submit],button:not([type])')){var prox=el.nextElementSibling;d.appendChild(el);el=prox}
+}
+(function(){var st=document.createElement('style');st.textContent='.msa-chip-off,#familiares[data-aba][data-aba] .msa-chip-off{display:none!important}.msa-fam-chips{display:flex;gap:6px;overflow-x:auto;margin:8px 0 12px;padding:4px 2px;scrollbar-width:thin}.msa-fam-chips button{flex:0 0 auto;min-height:42px;padding:8px 14px;border-radius:999px;border:1px solid var(--line,#e2e8f0);background:var(--card,#fff);color:inherit;font:inherit;font-weight:800;font-size:14px;cursor:pointer;white-space:nowrap}.msa-fam-chips button.on{background:#0f766e;border-color:#0f766e;color:#fff}.msa-fam-mais{margin:10px 0;border:1px dashed #94a3b8;border-radius:14px;padding:4px 12px}.msa-fam-mais>summary{cursor:pointer;font-weight:800;padding:10px 0;min-height:24px}body.msa-dark .msa-fam-chips button{background:#111827;border-color:#263244}body.msa-dark .msa-fam-chips button.on{background:#0f766e}';document.head.appendChild(st)})();
+
 window.msaFamiliaAba=abrir;
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(iniciar,900)});else setTimeout(iniciar,900);
 })();
