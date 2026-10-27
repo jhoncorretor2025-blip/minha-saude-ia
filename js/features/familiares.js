@@ -491,12 +491,18 @@ function mesclarObjetoDuplicata(dest,orig,caminho,conflitos){
  });
  return dest;
 }
+function sexoCanonicoDuplicata(valor){
+ const raw=normalizarSexoVinculo(valor&&typeof valor==='object'?valor.sexo:valor);
+ if(/^(f|fem|feminino|feminina|mulher|female|woman|femea)$/.test(raw))return 'F';
+ if(/^(m|masc|masculino|masculina|homem|male|man)$/.test(raw))return 'M';
+ return '';
+}
 function validarCompatibilidadeDuplicata(pessoas,keeperId){
  const keeper=pessoas.find(function(p){return String(p.id)===String(keeperId)});
  if(!keeper)return 'O cadastro escolhido para manter não foi encontrado.';
  const campos=['nasc','dataNascimento','nascimento'];
  const nascimento=function(p){for(let i=0;i<campos.length;i++){if(p&&p[campos[i]])return String(p[campos[i]]).slice(0,10)}return ''};
- const sexo=function(p){return normalizarSexoVinculo(p&&p.sexo)};
+ const sexo=function(p){return sexoCanonicoDuplicata(p)};
  const refs=['paiId','maeId','conjugeId'];
  const ids=new Set(pessoas.map(function(p){return String(p.id)}));
  const canon=function(value){const v=String(value||'');return ids.has(v)?'@grupo':v};
@@ -520,10 +526,10 @@ function consolidarGrupoDuplicatasFamilia(chave,keeperId){
  const pessoas=grupo.pessoas,keeper=pessoas.find(function(p){return String(p.id)===String(keeperId)});
  if(!keeper){alert('Escolha qual cadastro você quer manter.');return}
  const bloqueio=validarCompatibilidadeDuplicata(pessoas,String(keeperId));
- if(bloqueio){alert('⚠️ Não consolidei os cadastros automaticamente.\\n\\n'+bloqueio+'\\n\\nNenhum dado foi alterado.');return}
+ if(bloqueio){alert('⚠️ Não consolidei os cadastros automaticamente.\n\n'+bloqueio+'\n\nNenhum dado foi alterado.');return}
  const remover=pessoas.filter(function(p){return String(p.id)!==String(keeperId)}),idsRemover=new Set(remover.map(function(p){return String(p.id)}));
- const detalhes=pessoas.map(function(p){return '• '+(p.nome||'Sem nome')+' — '+descreverCadastroDuplicata(p)}).join('\\n');
- const mensagem='Foram encontrados '+pessoas.length+' cadastros com o mesmo nome:\\n\\n'+detalhes+'\\n\\nSerá mantido: '+(keeper.nome||'Sem nome')+' — '+descreverCadastroDuplicata(keeper)+'.\\n\\nOs campos vazios serão completados com informações dos outros cadastros; listas de consultas, medicamentos, crises e demais registros serão reunidas. Valores que divergirem serão preservados no histórico de consolidação. Referências de pai, mãe e cônjuge serão atualizadas para o cadastro mantido.\\n\\nO nome igual não garante que seja a mesma pessoa. Confirme somente se todos os registros são realmente da mesma pessoa.\\n\\nDeseja consolidar e retirar os outros cadastros da lista principal?';
+ const detalhes=pessoas.map(function(p){return '• '+(p.nome||'Sem nome')+' — '+descreverCadastroDuplicata(p)}).join('\n');
+ const mensagem='Foram encontrados '+pessoas.length+' cadastros com o mesmo nome:\n\n'+detalhes+'\n\nSerá mantido: '+(keeper.nome||'Sem nome')+' — '+descreverCadastroDuplicata(keeper)+'.\n\nOs campos vazios serão completados com informações dos outros cadastros; listas de consultas, medicamentos, crises e demais registros serão reunidas. Valores que divergirem serão preservados no histórico de consolidação. Referências de pai, mãe e cônjuge serão atualizadas para o cadastro mantido.\n\nO nome igual não garante que seja a mesma pessoa. Confirme somente se todos os registros são realmente da mesma pessoa.\n\nDeseja consolidar e retirar os outros cadastros da lista principal?';
  if(!confirm(mensagem))return;
  const keeperOriginal=clonarDuplicata(keeper),sources=remover.map(clonarDuplicata),merged=clonarDuplicata(keeper),conflicts=[];
  sources.forEach(function(src){mesclarObjetoDuplicata(merged,src,'',conflicts)});
@@ -537,6 +543,9 @@ function consolidarGrupoDuplicatasFamilia(chave,keeperId){
   historicoExistente.push({data:new Date().toISOString(),idOriginal:String(src.id),nomeOriginal:String(src.nome||''),camposDivergentes:conflicts.slice(),registroOriginal:clonarDuplicata(src)});
  });
  merged.id=keeper.id;
+ const sexMerged=sexoCanonicoDuplicata(merged.sexo)||sources.map(function(p){return sexoCanonicoDuplicata(p)}).find(Boolean)||'';
+ if(sexMerged==='F')merged.sexo='Feminino';
+ else if(sexMerged==='M')merged.sexo='Masculino';
  merged.duplicatasConsolidadas=arquivoExistente.concat(arquivados);
  merged.historicoConsolidacaoDuplicatas=historicoExistente;
  const refFields=['paiId','maeId','conjugeId'];
@@ -557,7 +566,7 @@ function consolidarGrupoDuplicatasFamilia(chave,keeperId){
  setSelected(String(keeperId));
  window.dispatchEvent(new CustomEvent('msa:familiares-atualizados'));
  renderFamiliares();
- const extra=conflicts.length?'\\n\\nHá '+conflicts.length+' campo(s) com valores diferentes. O registro que você escolheu foi mantido nesses campos; a cópia completa dos registros originais permanece no histórico.':'';
+ const extra=conflicts.length?'\n\nHá '+conflicts.length+' campo(s) com valores diferentes. O registro que você escolheu foi mantido nesses campos; a cópia completa dos registros originais permanece no histórico.':'';
  alert('✅ Consolidação concluída. '+remover.length+' cadastro(s) repetido(s) foi/foram retirado(s) da lista principal e seus dados foram reunidos no cadastro mantido. Os registros originais foram preservados no histórico.'+extra);
 }
 function renderGestorDuplicatasFamiliares(list){
