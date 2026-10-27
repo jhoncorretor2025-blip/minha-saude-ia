@@ -109,8 +109,33 @@ function famConjugeSugerido(sel,cand){
  if(a==='P'&&b==='P'){const ga=famGeneroParental(sel),gb=famGeneroParental(cand);return !!ga&&!!gb&&ga!==gb}
  if((a==='V'&&b==='V')||(a==='T'&&b==='T')||(a==='O'&&b==='O'))return true;
  if(a==='O'&&['I','F','T','V'].includes(b))return true;
- if(b==='O'&&['I','F','T','V'].includes(a))return true;
+ if(b==='O'&&['I','F','V'].includes(a))return true;
  return false;
+}
+function famTipoGrupoConjuge(p){
+ const r=normalizarSexoVinculo(p&&p.parentesco);
+ if(/^(tio|tia)(?:\b|[-\s])/.test(r))return 'Tios e tias';
+ if(/^(primo|prima)(?:\b|[-\s])/.test(r))return 'Primos e primas';
+ if(/^sobrinh[oa](?:\b|[-\s])/.test(r))return 'Sobrinhos e sobrinhas';
+ if(/^(avo|bisavo)(?:\b|[-\s])/.test(r))return 'Avós e bisavós';
+ if(/^(neto|neta)(?:\b|[-\s])/.test(r))return 'Netos e netas';
+ if(/^(pai|mae|padrasto|madrasta)(?:\b|[-\s])/.test(r))return 'Pais e mães';
+ if(/^(irmao|irma)(?:\b|[-\s])/.test(r))return 'Irmãos e irmãs';
+ if(/^(filho|filha)(?:\b|[-\s])/.test(r))return 'Filhos e filhas';
+ if(/^(marido|esposa|conjuge|namorad|companheir|parceir|ficante)/.test(r))return 'Cônjuges e parceiros';
+ return 'Outros parentes';
+}
+function famLadoGrupoConjuge(p){
+ if(p&&(p.vinculoFamilia==='Afinidade'||p.ladoFamilia==='Afinidade'))return 'Por afinidade';
+ const lado=typeof familiaLado==='function'?familiaLado(p):String(p&&p.ladoFamilia||'');
+ const l=normalizarSexoVinculo(lado);
+ if(/materno|materna/.test(l))return 'Materno';
+ if(/paterno|paterna/.test(l))return 'Paterno';
+ if(/ambos/.test(l))return 'Materno e paterno';
+ if(/nucleo/.test(l))return 'Núcleo próximo';
+ if(p&&p.vinculoLadoPendente)return 'Lado a confirmar';
+ if(/outro/.test(l))return 'Outro';
+ return 'Lado não informado';
 }
 function famOpcoesConjuge(sel,list,todas){
  const arr=Array.isArray(list)?list:[],cur=String(sel&&sel.conjugeId||''),por={};arr.forEach(x=>{por[String(x.id)]=x});
@@ -119,18 +144,34 @@ function famOpcoesConjuge(sel,list,todas){
   if(!candidatoConjugePermitido(sel,x))return;
   const xid=String(x.id),outroId=x.conjugeId&&String(x.conjugeId)!==String(sel.id)?String(x.conjugeId):'',outro=outroId?por[outroId]:null;
   const atual=xid===cur,nat=famConjugeSugerido(sel,x),co=arr.some(c=>{const ps=famIdsPais(c);return ps.includes(String(sel.id))&&ps.includes(xid)});
-  if(atual||((nat||co)&&!outroId)){
-   const a=inferirSexoVinculo(sel),b=inferirSexoVinculo(x);
-   sug.push({x:x,atual:atual?1:0,co:co?1:0,generico:(cs==='O'||famClasseRelacao(x)==='O')?1:0,mesmoSexo:(a&&b&&a===b)?1:0});
-  }else resto.push({x:x,nota:outroId?' — já vinculado(a) a '+(outro?(outro.nome||'outra pessoa'):'outra pessoa'):''});
+  const entry={x:x,atual:atual?1:0,co:co?1:0,generico:(cs==='O'||famClasseRelacao(x)==='O')?1:0,mesmoSexo:((inferirSexoVinculo(sel)&&inferirSexoVinculo(x)&&inferirSexoVinculo(sel)===inferirSexoVinculo(x))?1:0),nota:outroId?' — já vinculado(a) a '+(outro?(outro.nome||'outra pessoa'):'outra pessoa'):''};
+  if(atual||((nat||co)&&!outroId))sug.push(entry);else resto.push(entry);
  });
  const nome=(p,q)=>String(p.x.nome||'').localeCompare(String(q.x.nome||''),'pt-BR');
  sug.sort((p,q)=>(q.atual-p.atual)||(q.co-p.co)||(p.generico-q.generico)||(p.mesmoSexo-q.mesmoSexo)||nome(p,q));
  resto.sort(nome);
+ const tipoOrdem=['Tios e tias','Primos e primas','Sobrinhos e sobrinhas','Avós e bisavós','Netos e netas','Pais e mães','Irmãos e irmãs','Filhos e filhas','Cônjuges e parceiros','Outros parentes'];
+ const ladoOrdem=['Materno','Paterno','Por afinidade','Materno e paterno','Núcleo próximo','Lado a confirmar','Lado não informado','Outro'];
  const opt=(x,nota)=>'<option value="'+esc(x.id)+'"'+(String(x.id)===cur?' selected':'')+'>'+esc(x.nome||'Sem nome')+' — '+esc(x.parentesco||'parentesco não informado')+(nota||'')+'</option>';
+ const agrupar=(itens,prefixo)=>{
+  const grupos=new Map();
+  itens.forEach(item=>{
+   const tipo=famTipoGrupoConjuge(item.x),lado=famLadoGrupoConjuge(item.x),chave=tipo+'||'+lado;
+   if(!grupos.has(chave))grupos.set(chave,{tipo:tipo,lado:lado,itens:[]});
+   grupos.get(chave).itens.push(item);
+  });
+  const ordenados=Array.from(grupos.values()).sort((a,b)=>{
+   const ta=tipoOrdem.indexOf(a.tipo),tb=tipoOrdem.indexOf(b.tipo);
+   if(ta!==tb)return (ta<0?99:ta)-(tb<0?99:tb);
+   const la=ladoOrdem.indexOf(a.lado),lb=ladoOrdem.indexOf(b.lado);
+   if(la!==lb)return (la<0?99:la)-(lb<0?99:lb);
+   return a.lado.localeCompare(b.lado,'pt-BR');
+  });
+  return ordenados.map(g=>'<optgroup label="'+esc(prefixo+' · '+g.tipo+' — '+g.lado)+'">'+g.itens.map(i=>opt(i.x,i.nota)).join('')+'</optgroup>').join('');
+ };
  let h='';
- if(sug.length)h+='<optgroup label="Sugeridos">'+sug.map(i=>opt(i.x,'')).join('')+'</optgroup>';
- if(todas&&resto.length)h+='<optgroup label="Outras pessoas">'+resto.map(i=>opt(i.x,i.nota)).join('')+'</optgroup>';
+ if(sug.length)h+=agrupar(sug,'Sugeridos');
+ if(todas&&resto.length)h+=agrupar(resto,'Todas as pessoas');
  return {html:h,sugeridos:sug.length,outras:resto.length};
 }
 function famOpcoesPais(sel,list,genero){
