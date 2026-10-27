@@ -24,10 +24,10 @@
       '</div></div>'+
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="followup">📊 Acompanhar ▾</button><div class="nav-menu">'+
         '<button type="button" data-tab="msa87Panel" data-experience="advanced">📊 Meu painel de saúde</button>'+
-        '<button type="button" data-tab="timeline">🕐 Linha do tempo</button>'+
+        '<button type="button" data-tab="timeline" data-experience="simple-hidden">🕐 Linha do tempo</button>'+
         '<button type="button" data-tab="sono" data-feature-nav="sonoBem" data-experience="simple-hidden">😴 Sono e bem-estar</button>'+
         '<button type="button" data-tab="avisos">🔔 Atenção e avisos</button>'+
-        '<button type="button" data-tab="calendario">📅 Calendário</button>'+
+        '<button type="button" data-tab="calendario" data-experience="simple-hidden">📅 Calendário</button>'+
         '<button type="button" data-tab="lembretes">⏰ Lembretes</button>'+
       '</div></div>'+
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="family">👨‍👩‍👧 Família ▾</button><div class="nav-menu">'+
