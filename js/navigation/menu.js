@@ -10,7 +10,7 @@
     nav.innerHTML=
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button><div class="nav-menu">'+
         '<button type="button" data-tab="home">🏠 Visão geral</button>'+
-        '<button type="button" data-tab="timeline">🕐 Linha do tempo</button><button type="button" data-tab="inteligencia">🧠 Central de Inteligência</button>'+
+        '<button type="button" data-tab="timeline" data-experience="simple-hidden">🕐 Linha do tempo</button><button type="button" data-tab="inteligencia" data-experience="advanced">🧠 Central de Inteligência</button>'+
         '<button type="button" data-tab="perfil">👤 Meu perfil</button>'+
       '</div></div>'+
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="register">➕ Registrar ▾</button><div class="nav-menu">'+
@@ -19,13 +19,13 @@
         '<button type="button" data-tab="consultas">👨‍⚕️ Consulta</button>'+
         '<button type="button" data-tab="exames">🧪 Exame</button>'+
         '<button type="button" data-tab="acompanhamento">❤️ Sinal vital</button>'+
-        '<button type="button" data-tab="acompanhamento" data-feature-nav="academia">📏 Medidas corporais</button>'+
-        '<button type="button" data-tab="nutricao" data-feature-nav="nutricao">🥗 Nutrição</button>'+
+        '<button type="button" data-tab="acompanhamento" data-feature-nav="academia" data-experience="simple-hidden">📏 Medidas corporais</button>'+
+        '<button type="button" data-tab="nutricao" data-feature-nav="nutricao" data-experience="simple-hidden">🥗 Nutrição</button>'+
       '</div></div>'+
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="followup">📊 Acompanhar ▾</button><div class="nav-menu">'+
-        '<button type="button" data-tab="msa87Panel">📊 Meu painel de saúde</button>'+
+        '<button type="button" data-tab="msa87Panel" data-experience="advanced">📊 Meu painel de saúde</button>'+
         '<button type="button" data-tab="timeline">🕐 Linha do tempo</button>'+
-        '<button type="button" data-tab="sono" data-feature-nav="sonoBem">😴 Sono e bem-estar</button>'+
+        '<button type="button" data-tab="sono" data-feature-nav="sonoBem" data-experience="simple-hidden">😴 Sono e bem-estar</button>'+
         '<button type="button" data-tab="avisos">🔔 Atenção e avisos</button>'+
         '<button type="button" data-tab="calendario">📅 Calendário</button>'+
         '<button type="button" data-tab="lembretes">⏰ Lembretes</button>'+
@@ -33,20 +33,20 @@
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="family">👨‍👩‍👧 Família ▾</button><div class="nav-menu">'+
         '<button type="button" data-tab="familia">🧬 Histórico Familiar e Genética</button>'+
         '<button type="button" data-tab="familiares">👨‍👩‍👧‍👦 Familiares</button>'+
-        '<button type="button" data-tab="parceiro">💑 Meu círculo de saúde</button>'+
+        '<button type="button" data-tab="parceiro" data-experience="simple-hidden">💑 Meu círculo de saúde</button>'+
       '</div></div>'+
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="organization">📁 Organizar ▾</button><div class="nav-menu">'+
-        '<button type="button" data-tab="documentos">📄 Documentos</button><button type="button" data-tab="leitor">📄 Leitor inteligente</button>'+
-        '<button type="button" data-tab="relatorios">📊 Relatórios</button>'+
-        '<button type="button" data-tab="carteirinha">🪪 Carteirinha</button>'+
+        '<button type="button" data-tab="documentos">📄 Documentos</button><button type="button" data-tab="leitor" data-experience="advanced">📄 Leitor inteligente</button>'+
+        '<button type="button" data-tab="relatorios" data-experience="simple-hidden">📊 Relatórios</button>'+
+        '<button type="button" data-tab="carteirinha" data-experience="advanced">🪪 Carteirinha</button>'+
       '</div></div>'+
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="ai">🤖 IA ▾</button><div class="nav-menu">'+
         '<button type="button" data-tab="ia">🤖 Assistente</button>'+
-        '<button type="button" data-tab="importar">⚡ Importar com IA</button>'+
+        '<button type="button" data-tab="importar" data-experience="advanced">⚡ Importar com IA</button>'+
         '<button type="button" data-tab="perguntas">❓ Preparar consulta</button>'+
       '</div></div>'+
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="security">🔐 Segurança ▾</button><div class="nav-menu">'+
-        '<button type="button" data-tab="exportar">📤 Exportar e compartilhar</button>'+
+        '<button type="button" data-tab="exportar" data-experience="simple-hidden">📤 Exportar e compartilhar</button>'+
         '<button type="button" data-tab="backup">💾 Backup e restauração</button>'+
         '<button type="button" data-tab="configuracoes">⚙️ Configurações</button>'+
       '</div></div>';
@@ -171,6 +171,7 @@
     try{if(typeof window.aplicarPreferencias==='function')window.aplicarPreferencias()}catch(e){}
     prepararAcessibilidade();
     criarNavegacaoMobile();
+    try{if(typeof window.aplicarExperiencia==='function')window.aplicarExperiencia()}catch(e){}
     var secaoInicial=document.querySelector('#main-content > section.active');
     sincronizarAtalhoMobile(secaoInicial?secaoInicial.id:'home');
     if(window.MutationObserver){
@@ -227,29 +228,29 @@
           '<button type="button" data-mobile-tab="consultas">👨‍⚕️<span>Consulta</span></button>'+
           '<button type="button" data-mobile-tab="exames">🧪<span>Exame</span></button>'+
           '<button type="button" data-mobile-tab="acompanhamento">❤️<span>Sinal vital</span></button>'+
-          '<button type="button" data-mobile-tab="acompanhamento" data-feature-nav="academia">📏<span>Medidas</span></button>'+
+          '<button type="button" data-mobile-tab="acompanhamento" data-feature-nav="academia" data-experience="simple-hidden">📏<span>Medidas</span></button>'+
         '</div>'+
-        mobileSection('Principal',[['home','🏠 Início'],['timeline','🕐 Linha do tempo'],['inteligencia','🧠 Inteligência'],['perfil','👤 Meu perfil']])+ 
+        mobileSection('Principal',[['home','🏠 Início'],['timeline','🕐 Linha do tempo',null,'simple-hidden'],['inteligencia','🧠 Inteligência',null,'advanced'],['perfil','👤 Meu perfil']])+ 
         mobileSection('Registrar',[
           ['dor','😣 Sintoma ou dor'],['meds','💊 Medicamentos'],['consultas','👨‍⚕️ Consultas'],
-          ['msa87Panel','📊 Meu painel de saúde'],['exames','🧪 Exames'],['acompanhamento','❤️ Sinais vitais'],['acompanhamento','📏 Medidas corporais','academia'],
-          ['nutricao','🥗 Nutrição','nutricao']
+          ['msa87Panel','📊 Meu painel de saúde',null,'advanced'],['exames','🧪 Exames'],['acompanhamento','❤️ Sinais vitais'],['acompanhamento','📏 Medidas corporais','academia','simple-hidden'],
+          ['nutricao','🥗 Nutrição','nutricao','simple-hidden']
         ])+
         mobileSection('Acompanhar',[
-          ['sono','😴 Sono e bem-estar','sonoBem'],['avisos','🔔 Atenção e avisos'],
-          ['calendario','📅 Calendário'],['lembretes','⏰ Lembretes']
+          ['sono','😴 Sono e bem-estar','sonoBem','simple-hidden'],['avisos','🔔 Atenção e avisos'],
+          ['calendario','📅 Calendário',null,'simple-hidden'],['lembretes','⏰ Lembretes']
         ])+
         mobileSection('Família',[
-          ['familia','🧬 Histórico Familiar e Genética'],['familiares','👨‍👩‍👧‍👦 Familiares'],['parceiro','💑 Meu círculo de saúde']
+          ['familia','🧬 Histórico Familiar e Genética'],['familiares','👨‍👩‍👧‍👦 Familiares'],['parceiro','💑 Meu círculo de saúde',null,'simple-hidden']
         ])+
         mobileSection('Organizar',[
-          ['documentos','📄 Documentos'],['leitor','📄 Leitor inteligente'],['relatorios','📊 Relatórios'],['carteirinha','🪪 Carteirinha']
+          ['documentos','📄 Documentos'],['leitor','📄 Leitor inteligente',null,'advanced'],['relatorios','📊 Relatórios',null,'simple-hidden'],['carteirinha','🪪 Carteirinha',null,'advanced']
         ])+
         mobileSection('IA',[
-          ['perguntas-saude','💬 Perguntar sobre minha saúde'],['ia','🤖 Assistente'],['importar','⚡ Importar com IA'],['perguntas','❓ Preparar consulta']
+          ['perguntas-saude','💬 Perguntar sobre minha saúde'],['ia','🤖 Assistente'],['importar','⚡ Importar com IA',null,'advanced'],['perguntas','❓ Preparar consulta']
         ])+
         mobileSection('Dados e segurança',[
-          ['exportar','📤 Enviar minha ficha para a família'],['backup','💾 Backup e restauração'],['configuracoes','⚙️ Configurações']
+          ['exportar','📤 Enviar minha ficha para a família',null,'simple-hidden'],['backup','💾 Backup e restauração'],['configuracoes','⚙️ Configurações']
         ])+
         '<div class="msa-mobile-section"><div class="msa-mobile-section-title">Ação especial</div>'+ 
           '<div class="msa-mobile-links"><button type="button" class="danger" data-mobile-emergency="1">🚨 Modo emergência</button>'+ 
@@ -274,7 +275,7 @@
       return '<div class="msa-mobile-section"><div class="msa-mobile-section-title">'+title+'</div><div class="msa-mobile-links">'+
         items.map(function(x){
           var f=x[2]||((x[0]==='nutricao')?'nutricao':(x[0]==='sono')?'sonoBem':null);
-          return '<button type="button" data-mobile-tab="'+x[0]+'"'+(f?' data-feature-nav="'+f+'"':'')+'>'+x[1]+'</button>';
+          return '<button type="button" data-mobile-tab="'+x[0]+'"'+(f?' data-feature-nav="'+f+'"':'')+(x[3]?' data-experience="'+x[3]+'"':'')+'>'+x[1]+'</button>';
         }).join('')+'</div></div>';
     }
 
