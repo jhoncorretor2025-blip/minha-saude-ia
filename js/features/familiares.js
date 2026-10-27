@@ -1,4 +1,4 @@
-/* Minha Saúde IA — módulo Familiares V6.29 */
+/* Minha Saúde IA — módulo Familiares V6.29 | Importação familiar reforçada V7.78 */
 (function(){
 'use strict';
 const K=window.MSA_K||window.K||{};
@@ -1371,38 +1371,61 @@ function tentarParseJSON(txt){
  return null;
 }
 function extrairJSONFamilia(raw){
- const txt=normalizarTextoIA(raw).replace(/^\uFEFF/,'');
+ const txt=String(raw||'').replace(/^\uFEFF/,'').trim();
+ if(!txt)throw new Error('Cole primeiro a resposta da IA.');
  const candidatos=[];
- const blocos=[...txt.matchAll(/\`\`\`(?:json)?\s*([\s\S]*?)\`\`\`/gi)];
- blocos.forEach(m=>candidatos.push(m[1]));
+ const blocos=[...txt.matchAll(/\x60{3}(?:json|javascript|js|text|texto)?\s*([\s\S]*?)\x60{3}/gi)];
+ blocos.forEach(m=>candidatos.push(String(m[1]||'').trim()));
  candidatos.push(txt);
- // Procura o objeto principal mesmo quando existe texto explicativo antes/depois.
- const inicioFamilia=txt.search(/\{\s*["']?familiares["']?\s*:/i);
- if(inicioFamilia>=0)candidatos.push(txt.slice(inicioFamilia));
- const inicioHistorico=txt.search(/\{\s*["']?historico_familiar["']?\s*:/i);
- if(inicioHistorico>=0)candidatos.push(txt.slice(inicioHistorico));
- for(const candidato of candidatos){
-  const parsed=tentarParseJSON(candidato.replace(/^\s*json\s*/i,'').trim());
-  if(parsed && (Array.isArray(parsed)||typeof parsed==='object'))return parsed;
-  const clean=String(candidato).trim().replace(/^\`\`\`(?:json)?/i,'').replace(/\`\`\`$/,'').trim();
-  const objStart=clean.search(/\{\s*["']?familiares["']?\s*:/i);
-  if(objStart>=0){
-   for(let end=clean.length;end>objStart+10;end--){
-    if(clean[end-1]!=='}')continue;
-    const parsed2=tentarParseJSON(clean.slice(objStart,end));
-    if(parsed2&&typeof parsed2==='object'&&!Array.isArray(parsed2)&&parsed2.familiares)return parsed2;
-   }
-  }
-  const arrStart=clean.indexOf('[');
-  if(arrStart>=0){
-   for(let end=clean.length;end>arrStart+2;end--){
-    if(clean[end-1]!==']')continue;
-    const parsed3=tentarParseJSON(clean.slice(arrStart,end));
-    if(Array.isArray(parsed3)&&parsed3.some(x=>x&&typeof x==='object'&&x.nome))return {familiares:parsed3};
-   }
-  }
+ function temEstruturaFamiliar(obj){
+  if(Array.isArray(obj))return obj.some(x=>x&&typeof x==='object'&&!Array.isArray(x)&&(x.nome||x.NOME));
+  if(!obj||typeof obj!=='object')return false;
+  const chaves=Object.keys(obj).map(k=>k.toLowerCase());
+  if(chaves.some(k=>['familiares','historico_familiar','antecedentes','family','members'].includes(k)))return true;
+  if(obj.dados&&temEstruturaFamiliar(obj.dados))return true;
+  if(obj.data&&temEstruturaFamiliar(obj.data))return true;
+  if(obj.resultado&&temEstruturaFamiliar(obj.resultado))return true;
+  if(obj.output&&temEstruturaFamiliar(obj.output))return true;
+  return false;
  }
- throw new Error('A resposta não contém o JSON de importação. Volte à conversa da IA e envie: Gere agora o JSON de importação do Minha Saúde IA usando todas as informações que já respondi. Depois copie o JSON completo e cole aqui. Um resumo em texto, sozinho, não cria o cadastro.');
+ function desembrulhar(obj){
+  if(Array.isArray(obj))return obj.some(x=>x&&typeof x==='object'&&(x.nome||x.NOME))?{familiares:obj}:null;
+  if(!obj||typeof obj!=='object')return null;
+  if(temEstruturaFamiliar(obj)){
+   if(obj.familiares||obj.FAMILIARES||obj.historico_familiar||obj.HISTORICO_FAMILIAR||obj.antecedentes||obj.family||obj.members)return obj;
+   for(const k of ['dados','data','resultado','output','response','resposta','json'])if(obj[k]){const nested=desembrulhar(obj[k]);if(nested)return nested}
+  }
+  if(obj.nome||obj.NOME)return {familiares:[obj]};
+  return null;
+ }
+ function parseCandidato(s){
+  const clean=String(s||'').trim().replace(/^json\s*/i,'');
+  if(!clean)return null;
+  try{const direct=JSON.parse(clean);const normalized=desembrulhar(direct);if(normalized)return normalized}catch(e){}
+  // Procura objetos/arrays JSON completos mesmo com texto antes e depois.
+  for(let i=0;i<clean.length;i++){
+   const first=clean[i];if(first!=='{'&&first!=='[')continue;
+   const stack=[];let quoted=false,escape=false;
+   for(let j=i;j<clean.length;j++){
+    const ch=clean[j];
+    if(quoted){if(escape)escape=false;else if(ch==='\\')escape=true;else if(ch==='"')quoted=false;continue}
+    if(ch==='"'){quoted=true;continue}
+    if(ch==='{'||ch==='[')stack.push(ch);
+    else if(ch==='}'||ch===']'){
+     const top=stack[stack.length-1];
+     if((ch==='}'&&top!=='{')||(ch===']'&&top!=='['))break;
+     stack.pop();
+     if(!stack.length){
+      try{const parsed=JSON.parse(clean.slice(i,j+1));const normalized=desembrulhar(parsed);if(normalized)return normalized}catch(e){}
+      break;
+     }
+    }
+   }
+  }
+  return null;
+ }
+ for(const candidato of candidatos){const parsed=parseCandidato(candidato);if(parsed)return parsed}
+ throw new Error('Não consegui identificar um JSON familiar válido nesta resposta. Cole a resposta completa da IA, incluindo as chaves e colchetes do JSON. Se a IA enviou apenas um resumo, peça: “Gere agora o JSON de importação do Minha Saúde IA usando todas as informações que já respondi.”');
 }
 function arrFam(v){return Array.isArray(v)?v:[]}
 function normalizarFamiliarImportado(src){
@@ -1592,6 +1615,7 @@ function salvarImportacaoFamilia(dados,somentePrevia){
  const antecedentes=arrFam(raiz.historico_familiar||raiz.HISTORICO_FAMILIAR||raiz.antecedentes);
  const importados=entrada.map(normalizarFamiliarImportado).filter(Boolean);
  const atuais=getList();
+ const totalExistentesComparados=atuais.length;
  const stats={registrosNovos:0,registrosDuplicadosIgnorados:0,antecedentesNovos:0,antecedentesDuplicadosIgnorados:0,familiaresDuplicadosIgnorados:0,camposNovosCompletados:0};
  let novos=0,atualizados=0,primeiroId='',historicoMudou=false;const conflitosImportacao=[];
  if(importados.length===1){
@@ -1680,7 +1704,7 @@ function salvarImportacaoFamilia(dados,somentePrevia){
   registrosNovos:stats.registrosNovos,registrosDuplicadosIgnorados:stats.registrosDuplicadosIgnorados,
   antecedentesNovos:stats.antecedentesNovos,antecedentesDuplicadosIgnorados:stats.antecedentesDuplicadosIgnorados,
   camposNovosCompletados:stats.camposNovosCompletados,
-  totalFamiliares:importados.length,totalHistorico:antecedentes.length,
+  totalFamiliares:importados.length,totalHistorico:antecedentes.length,totalExistentesComparados:totalExistentesComparados,
   nomes:importados.map(function(p){return p.nome}).filter(Boolean),perfilId:primeiroId,conflitos:conflitosImportacao.length,conflitosLista:conflitosImportacao,previsao:!!somentePrevia
  };
 }
@@ -1689,6 +1713,7 @@ function instalarEstilosPreviaImportacaoFamilia(){
  if(document.getElementById('msaFamImportPreviewStyles'))return;
  const s=document.createElement('style');s.id='msaFamImportPreviewStyles';
  s.textContent='.msa-fam-import-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.msa-fam-import-actions .btn{min-width:0;white-space:normal}.msa-fam-import-preview{margin-top:12px;padding:13px;border:1px solid #bfdbfe;background:#f8fbff;border-radius:14px;color:#172554}.msa-fam-import-preview-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:11px;font-weight:900;letter-spacing:.04em}.msa-fam-import-preview-head b{background:#fef3c7;color:#92400e;border-radius:99px;padding:5px 8px;letter-spacing:0}.msa-fam-import-preview-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:12px 0}.msa-fam-import-preview-grid>div{padding:9px;border:1px solid #dbeafe;background:#fff;border-radius:10px;min-width:0}.msa-fam-import-preview-grid b{display:block;font-size:22px}.msa-fam-import-preview-grid span{display:block;font-size:10px;line-height:1.35;color:#475569}.msa-fam-import-conflicts{margin-top:10px;padding:10px;border:1px solid #fcd34d;border-radius:12px;background:#fffbeb;color:#92400e;font-size:12px}.msa-fam-import-conflicts ul{padding-left:18px;margin:7px 0}.msa-fam-import-conflicts li{margin:5px 0;line-height:1.4}.msa-fam-import-conflicts p,.msa-fam-import-preview p{font-size:12px;line-height:1.45}.msa-fam-import-no-conflicts{color:#166534}.msa-fam-import-caution{border-top:1px solid #dbeafe;padding-top:9px;color:#475569}@media(max-width:600px){.msa-fam-import-actions{grid-template-columns:1fr}.msa-fam-import-preview-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.msa-fam-import-preview-head{align-items:flex-start;flex-direction:column}}body.msa-dark .msa-fam-import-preview{background:#111827;border-color:#263244;color:#e5edff}body.msa-dark .msa-fam-import-preview-grid>div{background:#0f172a;border-color:#263244}';
+ s.textContent += '.msa-fam-import-counter{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:7px 1px 12px;padding:8px 10px;border:1px solid #dbe5f4;border-radius:10px;background:#f8fafc;color:#475569;font-size:12px}.msa-fam-import-counter #msaFamiliaIAImportCount{font-weight:800;font-variant-numeric:tabular-nums}.msa-fam-import-counter #msaFamiliaIAImportJsonStatus{font-weight:800;color:#64748b}.msa-fam-import-counter #msaFamiliaIAImportJsonStatus.ok{color:#166534}.msa-fam-import-counter #msaFamiliaIAImportJsonStatus.warn{color:#92400e}body.msa-dark .msa-fam-import-counter{background:#0f172a;border-color:#263244;color:#cbd5e1}';
  document.head.appendChild(s);
 }
 function abrirImportadorRespostaFamilia(){
@@ -1697,19 +1722,37 @@ function abrirImportadorRespostaFamilia(){
  const modal=document.createElement('div');modal.id='msaFamiliaIAImportModal';modal.className='msa-ava-overlay';
  modal.innerHTML='<div class="msa-ava-dialog" role="dialog" aria-modal="true" aria-labelledby="msaFamiliaIAImportTitle">'+
  '<div class="msa-ava-top"><div><div class="msa-fam-kicker">📥 IA · FAMÍLIA</div><h2 id="msaFamiliaIAImportTitle">Revisar importação antes de salvar</h2><p>Cole o JSON completo gerado pela IA. Primeiro veja a prévia; nada será gravado até você confirmar. Dados existentes são preservados e possíveis conflitos ficam destacados.</p></div><button type="button" class="msa-ava-close" id="msaFamiliaIAImportClose">✕</button></div>'+
- '<textarea id="msaFamiliaIAImportText" style="margin-top:14px;width:100%;min-height:260px;box-sizing:border-box;padding:13px;border:1px solid #d6deea;border-radius:14px;font-size:13px;line-height:1.45" placeholder="Cole aqui o JSON completo gerado pela IA..."></textarea>'+
+ '<textarea id="msaFamiliaIAImportText" style="margin-top:14px;width:100%;min-height:260px;box-sizing:border-box;padding:13px;border:1px solid #d6deea;border-radius:14px;font-size:13px;line-height:1.45" placeholder="Cole aqui a resposta completa da IA; o sistema procurará o JSON automaticamente..."></textarea>'+
+ '<div id="msaFamiliaIAImportCounter" class="msa-fam-import-counter" aria-live="polite"><span id="msaFamiliaIAImportCount">0 caracteres · 0 linhas · 0 KB</span><span id="msaFamiliaIAImportJsonStatus">Aguardando resposta</span></div>'+
  '<div id="msaFamiliaIAImportPreview" class="msa-fam-import-preview" hidden></div>'+
  '<div class="msa-ava-actions msa-fam-import-actions"><button type="button" class="btn secondary" id="msaFamiliaIAImportPaste">📋 Colar da área de transferência</button><button type="button" class="btn" id="msaFamiliaIAImportPreviewBtn">🔎 Pré-visualizar</button><button type="button" class="btn green" id="msaFamiliaIAImportSave" disabled>✅ Confirmar e salvar</button><button type="button" class="btn secondary" id="msaFamiliaIAImportGo" disabled>👤 Ver perfil importado</button><button type="button" class="btn secondary" id="msaFamiliaIAImportCancel">↩️ Cancelar</button></div>'+
  '<div id="msaFamiliaIAImportStatus" class="alert safe" role="status" aria-live="polite" style="margin-top:12px">Passo 1: cole a resposta. Passo 2: pré-visualize. Passo 3: revise os números e só então confirme para salvar.</div></div>';
  document.body.appendChild(modal);
  const input=modal.querySelector('#msaFamiliaIAImportText'),status=modal.querySelector('#msaFamiliaIAImportStatus'),preview=modal.querySelector('#msaFamiliaIAImportPreview');
  const previewBtn=modal.querySelector('#msaFamiliaIAImportPreviewBtn'),saveBtn=modal.querySelector('#msaFamiliaIAImportSave'),goBtn=modal.querySelector('#msaFamiliaIAImportGo'),pasteBtn=modal.querySelector('#msaFamiliaIAImportPaste');
- let previaRaw='',ultimaPrevia=null,importado=false;
- const fechar=function(){modal.remove()};
+ let previaRaw='',ultimaPrevia=null,importado=false,detectarTimer=null;
+ const countLabel=modal.querySelector('#msaFamiliaIAImportCount'),jsonLabel=modal.querySelector('#msaFamiliaIAImportJsonStatus');
+ const atualizarContador=function(){
+  const valor=input.value||'',caracteres=Array.from(valor).length,linhas=valor?valor.split(/\r\n|\r|\n/).length:0;
+  let bytes=0;try{bytes=new Blob([valor]).size}catch(e){bytes=valor.length}
+  if(countLabel)countLabel.textContent=caracteres.toLocaleString('pt-BR')+' caractere(s) · '+linhas.toLocaleString('pt-BR')+' linha(s) · '+(bytes/1024).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' KB';
+ };
+ const programarDeteccaoJSON=function(){
+  if(detectarTimer)clearTimeout(detectarTimer);
+  if(!jsonLabel)return;
+  const valor=input.value||'';
+  if(!valor.trim()){jsonLabel.className='';jsonLabel.textContent='Aguardando resposta';return}
+  jsonLabel.className='';jsonLabel.textContent='Procurando JSON…';
+  detectarTimer=setTimeout(function(){
+   try{extrairJSONFamilia(valor);jsonLabel.className='ok';jsonLabel.textContent='✓ JSON familiar detectado automaticamente'}
+   catch(e){jsonLabel.className='warn';jsonLabel.textContent='JSON ainda não identificado — confira se a resposta está completa'}
+  },250);
+ };
+ const fechar=function(){if(detectarTimer)clearTimeout(detectarTimer);modal.remove()};
  const limparPrevia=function(){previaRaw='';ultimaPrevia=null;importado=false;saveBtn.disabled=true;goBtn.disabled=true;preview.hidden=true;preview.innerHTML='';previewBtn.disabled=false;saveBtn.textContent='✅ Confirmar e salvar';status.className='alert safe';status.textContent='Conteúdo alterado. Gere uma nova prévia antes de confirmar.'};
  modal.querySelector('#msaFamiliaIAImportClose').onclick=fechar;modal.querySelector('#msaFamiliaIAImportCancel').onclick=fechar;
  modal.addEventListener('click',function(e){if(e.target===modal)fechar()});
- input.addEventListener('input',limparPrevia);
+ input.addEventListener('input',function(){limparPrevia();atualizarContador();programarDeteccaoJSON()});
  pasteBtn.onclick=async function(){try{const t=await navigator.clipboard.readText();if(t){input.value=t;input.dispatchEvent(new Event('input'));status.textContent='✅ Resposta colada. Agora clique em “Pré-visualizar”.'}else status.textContent='A área de transferência está vazia.'}catch(e){input.focus();status.textContent='Toque no campo e use Ctrl+V (ou Colar) para inserir a resposta.'}};
  previewBtn.onclick=function(){
   try{
@@ -1718,7 +1761,7 @@ function abrirImportadorRespostaFamilia(){
    previaRaw=raw;ultimaPrevia={dados:dados,res:res};importado=false;
    const conflitos=(res.conflitosLista||[]).map(function(x){return '<li><b>'+esc(x.nome)+'</b>: '+esc(x.campos.join(', '))+' — o valor já salvo será preservado; revise depois se necessário.</li>'}).join('');
    preview.innerHTML='<div class="msa-fam-import-preview-head"><span>🔎 PRÉVIA DA IMPORTAÇÃO</span><b>⚠️ Ainda não foi salvo</b></div>'+
-    '<div class="msa-fam-import-preview-grid"><div><b>'+res.totalFamiliares+'</b><span>perfis no arquivo</span></div><div><b>'+res.novos+'</b><span>perfis novos</span></div><div><b>'+res.atualizados+'</b><span>perfis com novos dados</span></div><div><b>'+res.duplicadosIgnorados+'</b><span>itens repetidos identificados</span></div><div><b>'+res.registrosNovos+'</b><span>medicamentos, consultas ou crises novos</span></div><div><b>'+res.antecedentesNovos+'</b><span>antecedentes familiares novos</span></div></div>'+
+    '<div class="msa-fam-import-preview-grid"><div><b>'+res.totalFamiliares+'</b><span>perfis no arquivo</span></div><div><b>'+res.totalExistentesComparados+'</b><span>cadastros existentes comparados</span></div><div><b>'+res.novos+'</b><span>perfis novos</span></div><div><b>'+res.atualizados+'</b><span>perfis com novos dados</span></div><div><b>'+res.duplicadosIgnorados+'</b><span>itens repetidos identificados</span></div><div><b>'+res.registrosNovos+'</b><span>medicamentos, consultas ou crises novos</span></div><div><b>'+res.antecedentesNovos+'</b><span>antecedentes familiares novos</span></div></div>'+
     (res.camposNovosCompletados?'<p>🧩 <b>'+res.camposNovosCompletados+'</b> campos vazios serão completados com dados recebidos.</p>':'')+
     (res.conflitos?'<div class="msa-fam-import-conflicts"><b>⚠️ '+res.conflitos+' perfil(is) com possíveis conflitos</b><ul>'+conflitos+'</ul><p>Os valores existentes não serão sobrescritos automaticamente. Confira se a informação recebida se refere à mesma pessoa.</p></div>':'<p class="msa-fam-import-no-conflicts">✅ Nenhum conflito de campo básico foi identificado.</p>')+
     '<p class="msa-fam-import-caution">A prévia é uma simulação. Confira os números e possíveis conflitos antes de confirmar. A importação adiciona apenas informações novas e preserva os dados já registrados.</p>';
@@ -1734,7 +1777,7 @@ function abrirImportadorRespostaFamilia(){
   }catch(e){status.className='alert danger';status.textContent='❌ '+(e.message||'Não foi possível salvar os dados.')}
  };
  goBtn.onclick=function(){if(!importado)return;const alvo=window.__msaUltimoPerfilImportado||'';fechar();if(alvo)setSelected(alvo);if(typeof go==='function')go('familiares');setTimeout(function(){if(alvo)setSelected(alvo);renderFamiliares();const detail=document.getElementById('familiarDetalhe');if(detail)detail.scrollIntoView({behavior:'smooth',block:'start'})},350)};
- input.focus();
+ atualizarContador();programarDeteccaoJSON();input.focus();
 }
 window.abrirImportadorRespostaFamilia=abrirImportadorRespostaFamilia;
 function renderFamiliaInteligencia(){
