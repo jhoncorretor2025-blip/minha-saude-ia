@@ -410,16 +410,17 @@ function renderFamiliares(){
  document.getElementById('msaFamilyBulkStatus')?.remove();
  const vivos=list.filter(p=>String(p.statusFamiliar||'')==='Vivo').length;
  const falecidos=list.filter(p=>String(p.statusFamiliar||'')==='Falecido').length;
- const naoInformados=list.length-vivos-falecidos;
+ const naoInformados=list.filter(p=>!['Vivo','Falecido'].includes(String(p.statusFamiliar||'').trim())).length;
+ const desconhecidosComDataMorte=list.filter(p=>!['Vivo','Falecido'].includes(String(p.statusFamiliar||'').trim())&&(p.dataFalecimento||p.causaFalecimento)).length;
  const bulk=document.createElement('div');bulk.id='msaFamilyBulkStatus';bulk.className='card';
  bulk.style.cssText='margin:10px 0;padding:13px;border:1px solid #bbd0ff;background:linear-gradient(135deg,#eff6ff,#fff);border-radius:15px';
  bulk.innerHTML='<div style="font-weight:900;color:#1d4ed8">⚡ Atualização em massa</div>'+
-  '<p style="margin:5px 0 10px;color:#475569;font-size:13px;line-height:1.5">Defina todos os familiares como vivos de uma vez e depois altere somente quem faleceu.</p>'+
+  '<p style="margin:5px 0 10px;color:#475569;font-size:13px;line-height:1.5">Marque somente os familiares cuja situação está como “Não informado” como vivos. Quem já está marcado como falecido será preservado.</p>'+ 
   '<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px"><span style="font-size:12px;font-weight:800;padding:6px 9px;border-radius:99px;background:#dcfce7;color:#166534">💚 Vivos: '+vivos+'</span><span style="font-size:12px;font-weight:800;padding:6px 9px;border-radius:99px;background:#f1f5f9;color:#475569">❔ Não informados: '+naoInformados+'</span><span style="font-size:12px;font-weight:800;padding:6px 9px;border-radius:99px;background:#f3e8ff;color:#6b21a8">🕊️ Falecidos: '+falecidos+'</span></div>'+
-  '<button type="button" class="btn green" id="msaFamMarkAllAlive" '+(list.length?'':'disabled')+'>💚 Definir todos como vivos</button>'+
-  '<p style="margin:8px 0 0;color:#64748b;font-size:11px;line-height:1.45">Pede confirmação. Preserva parentescos, filiação, vínculos e históricos, mas limpa data/causa de falecimento; esses dados poderão ser registrados novamente nas pessoas falecidas.</p>';
+  '<button type="button" class="btn green" id="msaFamMarkUnknownAlive" '+(naoInformados?'':'disabled')+'>💚 Marcar '+naoInformados+' não informado(s) como vivos</button>'+ 
+  '<p style="margin:8px 0 0;color:#64748b;font-size:11px;line-height:1.45">Pede confirmação e altera apenas quem ainda não tem situação definida. Registros já marcados como vivos ou falecidos permanecem intactos.'+(desconhecidosComDataMorte?'<br><b>⚠️ '+desconhecidosComDataMorte+' cadastro(s) não informado(s) têm data ou causa de falecimento e serão mantidos para revisão.</b>':'')+'</p>';
  toolbar.after(bulk);
- bulk.querySelector('#msaFamMarkAllAlive')?.addEventListener('click',()=>window.marcarTodosFamiliaresVivos());
+ bulk.querySelector('#msaFamMarkUnknownAlive')?.addEventListener('click',()=>window.marcarFamiliaresNaoInformadosVivos());
   // V7.53 — árvore familiar automática. Relações inferidas são visuais e não alteram os dados salvos.
   document.getElementById('msaFamilyTreePanel')?.remove();
   const treePanel=document.createElement('section');treePanel.id='msaFamilyTreePanel';treePanel.dataset.famArea='cadastro';
@@ -586,17 +587,22 @@ function bindForms(id){
  const c=document.getElementById('familiarConsultaForm');if(c)c.onsubmit=e=>{e.preventDefault();addRecord(id,'consultas',{data:val('fConData'),especialidade:val('fConEsp'),medico:val('fConMed'),retorno:val('fConRet'),motivo:val('fConMot'),obs:val('fConObs')})};
  const cr=document.getElementById('familiarCriseForm');if(cr)cr.onsubmit=e=>{e.preventDefault();addRecord(id,'crises',{data:val('fCriData'),hora:val('fCriHora'),tipo:val('fCriTipo'),intensidade:val('fCriInt'),descricao:val('fCriDesc'),gatilho:val('fCriGatilho'),conduta:val('fCriConduta')})};
 }
-window.marcarTodosFamiliaresVivos=function(){
+window.marcarFamiliaresNaoInformadosVivos=function(){
   const list=getList();if(!list.length){alert('Ainda não há familiares cadastrados.');return}
-  const outros=list.filter(p=>String(p.statusFamiliar||'')!=='Vivo').length;
-  const msg='Você vai definir '+list.length+' familiar(es) como Vivos.\n\n'+
-   'A situação atual de '+outros+' pessoa(s) será substituída, inclusive quem estiver marcado como Falecido, e as datas/causas de falecimento serão limpas.\n\n'+
-   'Nomes, parentescos, filiação, vínculos, consultas, medicamentos e demais históricos serão preservados.\n\nDeseja continuar?';
+  const unknown=p=>!['Vivo','Falecido'].includes(String(p.statusFamiliar||'').trim());
+  const candidatos=list.filter(p=>unknown(p)&&!p.dataFalecimento&&!p.causaFalecimento);
+  const revisar=list.filter(p=>unknown(p)&&(p.dataFalecimento||p.causaFalecimento));
+  if(!candidatos.length){alert(revisar.length?'Nenhum cadastro foi alterado. '+revisar.length+' familiar(es) têm data ou causa de falecimento registrada e precisam ser revisados manualmente.':'Todos os familiares já estão marcados como vivos ou falecidos.');return}
+  const msg='Você vai marcar '+candidatos.length+' familiar(es) com situação “Não informado” como Vivos.\n\n'+
+   'Quem já está marcado como Vivo ou Falecido NÃO será alterado. Nomes, vínculos, medicamentos, consultas e demais históricos serão preservados.\n\n'+
+   (revisar.length?revisar.length+' cadastro(s) com data/causa de falecimento serão ignorados para evitar conflito.\n\n':'')+
+   'Deseja continuar?';
   if(!confirm(msg))return;
-  const updated=list.map(p=>Object.assign({},p,{statusFamiliar:'Vivo',dataFalecimento:'',causaFalecimento:''}));
+  const ids=new Set(candidatos.map(p=>String(p.id)));
+  const updated=list.map(p=>ids.has(String(p.id))?Object.assign({},p,{statusFamiliar:'Vivo'}):p);
   if(!saveList(updated)){alert('Não foi possível salvar a atualização em massa.');return}
   renderFamiliares();
-  alert('✅ Atualização concluída: '+updated.length+' familiar(es) definidos como vivos. Agora altere somente os cadastros das pessoas falecidas.');
+  alert('✅ '+candidatos.length+' familiar(es) marcados como vivos. Os falecidos existentes foram preservados.'+(revisar.length?' '+revisar.length+' cadastro(s) com dados de falecimento ficaram para revisão.':''));
  };
  function addRecord(memberId,type,data){const list=getList(),p=list.find(x=>x.id===memberId);if(!p)return;ensure(p);p[type].push(Object.assign({id:uid(type.slice(0,3)),criadoEm:new Date().toISOString()},data));if(!saveList(list)){alert('Não foi possível salvar.');return}setSelected(memberId);renderFamiliares()}
 window.atualizarLadoFamiliar=function(id,lado){const list=getList(),p=list.find(x=>x.id===id);if(!p)return;p.ladoFamilia=String(lado||'');if(lado==='Afinidade'){p.vinculoFamilia='Afinidade';p.consanguinidade='Não';p.vinculoLadoPendente=false;}else if(['Materno','Paterno','Núcleo próximo','Ambos'].includes(lado)){p.vinculoFamilia='Consanguíneo';p.consanguinidade='Sim';p.vinculoLadoPendente=false;p.observacaoVinculoPendencia='';}if(!saveList(list)){alert('Não foi possível salvar o grupo/lado da família.');return}setSelected(selectedId()||id);renderFamiliares();};
@@ -1042,6 +1048,10 @@ function normalizarFamiliarImportado(src){
  const baseObs=normalizarTextoIA(p.obs||p.OBS);if(baseObs)obs.push(baseObs);
  const idadeDiag=normalizarTextoIA(p.idadeDiagnostico||p.IDADE_DIAGNOSTICO);if(idadeDiag)obs.push('Idade aproximada ao diagnóstico: '+idadeDiag+' anos');
  const certeza=normalizarTextoIA(p.certeza||p.CERTEZA);if(certeza)obs.push('Nível de confiança: '+certeza);
+ const statusImportado=normalizarTextoIA(p.statusFamiliar||p.STATUS_FAMILIAR||p.status||p.STATUS);
+ const dataFalecimentoImportada=normalizarTextoIA(p.dataFalecimento||p.DATA_FALECIMENTO||p.falecimento||p.data_falecimento);
+ const causaFalecimentoImportada=normalizarTextoIA(p.causaFalecimento||p.CAUSA_FALECIMENTO||p.causa_morte||p.causaFalecimento);
+ const statusFamiliarImportado=/^falecid[oa]$/i.test(statusImportado)?'Falecido':/^vivo\(?a?\)?$/i.test(statusImportado)?'Vivo':(dataFalecimentoImportada||causaFalecimentoImportada?'Falecido':'Vivo');
  return {
   id:normalizarTextoIA(p.id)||uid('fam'),nome:nome,
   parentesco:normalizarTextoIA(p.parentesco||p.PARENTESCO)||'Outro',
@@ -1049,6 +1059,7 @@ function normalizarFamiliarImportado(src){
   idade:normalizarTextoIA(p.idade||p.IDADE),altura:normalizarTextoIA(p.altura||p.ALTURA),peso:normalizarTextoIA(p.peso||p.PESO),medidas:normalizarTextoIA(p.medidas||p.MEDIDAS),rotina:normalizarTextoIA(p.rotina||p.ROTINA),medicamentosRelato:normalizarTextoIA(p.medicamentosRelato||p.MEDICAMENTOS_RELATADOS),condicao:normalizarTextoIA(p.condicao||p.CONDICAO),
   alergias:normalizarTextoIA(p.alergias||p.ALERGIAS),sangue:normalizarTextoIA(p.sangue||p.SANGUE||p.tipo_sanguineo||p.TIPO_SANGUINEO),
   contato:normalizarTextoIA(p.contato||p.CONTATO),obs:obs.join(' '),
+  statusFamiliar:statusFamiliarImportado,dataFalecimento:dataFalecimentoImportada,causaFalecimento:causaFalecimentoImportada,
   ladoFamilia:normalizarTextoIA(p.ladoFamilia||p.LADO_FAMILIA),vinculoFamilia:normalizarTextoIA(p.vinculoFamilia||p.VINCULO_FAMILIA),idadeDiagnostico:normalizarTextoIA(p.idadeDiagnostico||p.IDADE_DIAGNOSTICO),certeza:normalizarTextoIA(p.certeza||p.CERTEZA),criadoEm:normalizarTextoIA(p.criadoEm)||new Date().toISOString(),
   medicamentos:meds,consultas:cons,crises:crises,dadosImportadosIA:p
  };
@@ -1427,7 +1438,7 @@ function aplicarVisibilidadeFamiliares(){
  const sec=document.getElementById('familiares');if(sec)sec.classList.toggle('msa-feature-off',off);
 }
 function init(){instalarControleFamiliares();aplicarVisibilidadeFamiliares();
- const form=document.getElementById('familiarForm');if(form)form.onsubmit=e=>{e.preventDefault();const p={id:uid('fam'),nome:val('fNome'),parentesco:val('fParentesco'),sexo:val('fSexo'),nasc:val('fNasc'),idade:val('fIdade'),altura:val('fAltura'),peso:val('fPeso'),medidas:val('fMedidas'),rotina:val('fRotina'),medicamentosRelato:val('fMedicamentosRelato'),condicao:val('fCondicao'),alergias:val('fAlergias'),sangue:val('fSangue'),contato:val('fContato'),obs:val('fObs'),ladoFamilia:val('fLadoFamilia'),grauParentesco:val('fGrauParentesco'),consanguinidade:val('fConsanguinidade'),idadeDiagnostico:val('fIdadeDiagnostico'),statusFamiliar:val('fStatusFamiliar'),dataFalecimento:val('fDataFalecimento'),causaFalecimento:val('fCausaFalecimento'),paiId:val('fPai'),maeId:val('fMae'),conjugeId:val('fConjuge'),criadoEm:new Date().toISOString(),medicamentos:[],consultas:[],crises:[]};if(!p.nome){alert('Informe o nome.');return}if(p.statusFamiliar==='Falecido'&&!p.dataFalecimento){alert('Informe a data de falecimento para cadastrar este familiar como falecido.');return}if(p.dataFalecimento&&p.statusFamiliar!=='Falecido'){alert('Para informar uma data de falecimento, selecione “Falecido”.');return}if(p.dataFalecimento&&p.dataFalecimento>famHoje()){alert('A data de falecimento não pode ser no futuro.');return}if(p.dataFalecimento&&p.nasc&&p.dataFalecimento<p.nasc){alert('A data de falecimento não pode ser anterior ao nascimento.');return}if(p.paiId&&p.paiId===p.maeId){alert('Selecione pessoas diferentes para pai e mãe.');return}const list=getList();const duplicate=list.find(x=>String(x.nome||'').trim().toLocaleLowerCase('pt-BR')===String(p.nome).trim().toLocaleLowerCase('pt-BR'));if(duplicate&&!confirm('Já existe um familiar chamado “'+duplicate.nome+'”. Deseja cadastrar outra pessoa com o mesmo nome?'))return;if(p.conjugeId){const sp=list.find(x=>String(x.id)===String(p.conjugeId));if(!sp){p.conjugeId=''}else{if(!candidatoConjugePermitido(Object.assign({},p,{conjugeId:''}),sp)){alert('Essa pessoa é parente direta pelos vínculos de pai/mãe e não pode ser cônjuge.');return}if(sp.conjugeId&&String(sp.conjugeId)!==String(p.id)){const prev=list.find(x=>String(x.id)===String(sp.conjugeId));if(!confirm((sp.nome||'A pessoa selecionada')+' já está vinculada a '+(prev?(prev.nome||'outra pessoa'):'outro cadastro')+'. Deseja substituir esse vínculo?'))return;if(prev&&String(prev.conjugeId||'')===String(sp.id))delete prev.conjugeId}sp.conjugeId=String(p.id)}}list.push(p);if(!saveList(list)){alert('Não foi possível salvar.');return}setSelected(p.id);form.reset();renderFamiliares()};
+ const form=document.getElementById('familiarForm');if(form)form.onsubmit=e=>{e.preventDefault();const p={id:uid('fam'),nome:val('fNome'),parentesco:val('fParentesco'),sexo:val('fSexo'),nasc:val('fNasc'),idade:val('fIdade'),altura:val('fAltura'),peso:val('fPeso'),medidas:val('fMedidas'),rotina:val('fRotina'),medicamentosRelato:val('fMedicamentosRelato'),condicao:val('fCondicao'),alergias:val('fAlergias'),sangue:val('fSangue'),contato:val('fContato'),obs:val('fObs'),ladoFamilia:val('fLadoFamilia'),grauParentesco:val('fGrauParentesco'),consanguinidade:val('fConsanguinidade'),idadeDiagnostico:val('fIdadeDiagnostico'),statusFamiliar:val('fStatusFamiliar')||'Vivo',dataFalecimento:val('fDataFalecimento'),causaFalecimento:val('fCausaFalecimento'),paiId:val('fPai'),maeId:val('fMae'),conjugeId:val('fConjuge'),criadoEm:new Date().toISOString(),medicamentos:[],consultas:[],crises:[]};if(!p.nome){alert('Informe o nome.');return}if(p.statusFamiliar==='Falecido'&&!p.dataFalecimento){alert('Informe a data de falecimento para cadastrar este familiar como falecido.');return}if(p.dataFalecimento&&p.statusFamiliar!=='Falecido'){alert('Para informar uma data de falecimento, selecione “Falecido”.');return}if(p.dataFalecimento&&p.dataFalecimento>famHoje()){alert('A data de falecimento não pode ser no futuro.');return}if(p.dataFalecimento&&p.nasc&&p.dataFalecimento<p.nasc){alert('A data de falecimento não pode ser anterior ao nascimento.');return}if(p.paiId&&p.paiId===p.maeId){alert('Selecione pessoas diferentes para pai e mãe.');return}const list=getList();const duplicate=list.find(x=>String(x.nome||'').trim().toLocaleLowerCase('pt-BR')===String(p.nome).trim().toLocaleLowerCase('pt-BR'));if(duplicate&&!confirm('Já existe um familiar chamado “'+duplicate.nome+'”. Deseja cadastrar outra pessoa com o mesmo nome?'))return;if(p.conjugeId){const sp=list.find(x=>String(x.id)===String(p.conjugeId));if(!sp){p.conjugeId=''}else{if(!candidatoConjugePermitido(Object.assign({},p,{conjugeId:''}),sp)){alert('Essa pessoa é parente direta pelos vínculos de pai/mãe e não pode ser cônjuge.');return}if(sp.conjugeId&&String(sp.conjugeId)!==String(p.id)){const prev=list.find(x=>String(x.id)===String(sp.conjugeId));if(!confirm((sp.nome||'A pessoa selecionada')+' já está vinculada a '+(prev?(prev.nome||'outra pessoa'):'outro cadastro')+'. Deseja substituir esse vínculo?'))return;if(prev&&String(prev.conjugeId||'')===String(sp.id))delete prev.conjugeId}sp.conjugeId=String(p.id)}}list.push(p);if(!saveList(list)){alert('Não foi possível salvar.');return}setSelected(p.id);form.reset();renderFamiliares()};
  renderFamiliares();
  const settings=document.getElementById('settingsPreferences');if(settings){const mo=new MutationObserver(()=>{if(!document.getElementById('prefFamiliares'))instalarControleFamiliares();aplicarVisibilidadeFamiliares()});mo.observe(settings,{childList:true});}
  const obs=new MutationObserver(()=>renderFamiliares());const section=document.getElementById('familiares');if(section)obs.observe(section,{attributes:true,attributeFilter:['class']});
