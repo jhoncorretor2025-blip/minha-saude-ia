@@ -424,6 +424,171 @@ function renderVerificadorVinculosFamilia(list){
  panel.querySelectorAll('[data-fam-audit-open]').forEach(btn=>btn.addEventListener('click',()=>{const id=btn.dataset.famAuditOpen;if(typeof window.selecionarFamiliar==='function')window.selecionarFamiliar(id);else{setSelected(id);renderFamiliares()} }));
 }
 
+
+/* V7.72 — revisão e consolidação segura de cadastros familiares repetidos */
+function detectarGruposDuplicadosFamiliares(list){
+ const grupos=new Map();
+ (Array.isArray(list)?list:[]).forEach(function(p){
+  const nome=String(p&&p.nome||'').trim();
+  const chave=normalizarChaveVinculoFamilia(nome);
+  if(!p||!p.id||chave.length<3)return;
+  if(!grupos.has(chave))grupos.set(chave,[]);
+  grupos.get(chave).push(p);
+ });
+ return Array.from(grupos.entries()).filter(function(entry){return entry[1].length>1}).map(function(entry){
+  return {chave:entry[0],pessoas:entry[1].slice().sort(function(a,b){return pontuarCadastroDuplicata(b)-pontuarCadastroDuplicata(a)})};
+ }).sort(function(a,b){return String(a.pessoas[0].nome||'').localeCompare(String(b.pessoas[0].nome||''),'pt-BR')});
+}
+function pontuarCadastroDuplicata(p){
+ if(!p)return 0;
+ const campos=['parentesco','sexo','ladoFamilia','vinculoFamilia','statusFamiliar','nasc','dataNascimento','nascimento','idade','dataFalecimento','causaFalecimento','condicao','obs','sangue','alergias','contato','paiId','maeId','conjugeId','consanguinidade'];
+ let score=campos.reduce(function(n,k){return n+(p[k]!==undefined&&p[k]!==null&&String(p[k]).trim()!==''?1:0)},0);
+ ['medicamentos','consultas','crises','exames','vacinas','documentos','antecedentes','historicoFamiliar'].forEach(function(k){if(Array.isArray(p[k]))score+=p[k].length*3});
+ return score;
+}
+function descreverCadastroDuplicata(p){
+ const rel=String(p&&p.parentesco||'Parentesco não informado');
+ const lado=(p&&(p.vinculoFamilia==='Afinidade'||p.ladoFamilia==='Afinidade'))?'Por afinidade':(p&&p.vinculoLadoPendente?'Lado a confirmar':(p?familiaLado(p):'Não informado'));
+ const partes=[rel,lado||'Lado não informado'];
+ if(p&&(p.nasc||p.dataNascimento||p.nascimento))partes.push('Nascimento: '+fmtDate(p.nasc||p.dataNascimento||p.nascimento));
+ if(p&&p.idade!==undefined&&String(p.idade).trim())partes.push('Idade: '+String(p.idade).replace(/\s*anos?\s*$/i,'')+' anos');
+ if(p&&p.statusFamiliar)partes.push(String(p.statusFamiliar));
+ const registros=['medicamentos','consultas','crises','exames','vacinas','documentos'].reduce(function(n,k){return n+(Array.isArray(p&&p[k])?p[k].length:0)},0);
+ if(registros)partes.push(registros+' registro(s) clínico(s)');
+ return partes.join(' · ');
+}
+function valorDuplicataVazio(v){
+ return v===undefined||v===null||(typeof v==='string'&&!v.trim())||(Array.isArray(v)&&v.length===0)||(typeof v==='object'&&!Array.isArray(v)&&!Object.keys(v).length);
+}
+function clonarDuplicata(v){if(v===undefined)return undefined;try{return JSON.parse(JSON.stringify(v))}catch(e){return v}}
+function juntarArrayDuplicata(base,extra,caminho,conflitos){
+ const out=Array.isArray(base)?clonarDuplicata(base):[];
+ (Array.isArray(extra)?extra:[]).forEach(function(item){
+  const id=item&&typeof item==='object'&&item.id!==undefined&&item.id!==null?String(item.id):'';
+  const existente=id?out.find(function(x){return x&&typeof x==='object'&&String(x.id)===id}):null;
+  if(existente&&item&&typeof item==='object'&&!Array.isArray(item)){
+   mesclarObjetoDuplicata(existente,item,caminho+'[]',conflitos);
+   return;
+  }
+  let assinatura='';
+  try{assinatura=JSON.stringify(item)}catch(e){assinatura=String(item)}
+  const jaExiste=out.some(function(x){try{return JSON.stringify(x)===assinatura}catch(e){return x===item}});
+  if(!jaExiste)out.push(clonarDuplicata(item));
+ });
+ return out;
+}
+function mesclarObjetoDuplicata(dest,orig,caminho,conflitos){
+ if(!dest||typeof dest!=='object'||Array.isArray(dest)||!orig||typeof orig!=='object'||Array.isArray(orig))return dest;
+ Object.keys(orig).forEach(function(k){
+  if(k==='id'||k==='duplicatasConsolidadas'||k==='historicoConsolidacaoDuplicatas')return;
+  const atual=dest[k],novo=orig[k],campo=caminho?caminho+'.'+k:k;
+  if(valorDuplicataVazio(atual)){if(!valorDuplicataVazio(novo))dest[k]=clonarDuplicata(novo);return}
+  if(Array.isArray(atual)&&Array.isArray(novo)){dest[k]=juntarArrayDuplicata(atual,novo,campo,conflitos);return}
+  if(atual&&novo&&typeof atual==='object'&&typeof novo==='object'&&!Array.isArray(atual)&&!Array.isArray(novo)){mesclarObjetoDuplicata(atual,novo,campo,conflitos);return}
+  if(atual!==undefined&&novo!==undefined&&atual!==null&&novo!==null&&typeof atual!=='object'&&typeof novo!=='object'&&String(atual).trim()!==String(novo).trim()&&k!=='nome'){
+   if(conflitos.indexOf(campo)<0)conflitos.push(campo);
+  }
+ });
+ return dest;
+}
+function validarCompatibilidadeDuplicata(pessoas,keeperId){
+ const keeper=pessoas.find(function(p){return String(p.id)===String(keeperId)});
+ if(!keeper)return 'O cadastro escolhido para manter não foi encontrado.';
+ const campos=['nasc','dataNascimento','nascimento'];
+ const nascimento=function(p){for(let i=0;i<campos.length;i++){if(p&&p[campos[i]])return String(p[campos[i]]).slice(0,10)}return ''};
+ const sexo=function(p){return normalizarSexoVinculo(p&&p.sexo)};
+ const refs=['paiId','maeId','conjugeId'];
+ const ids=new Set(pessoas.map(function(p){return String(p.id)}));
+ const canon=function(value){const v=String(value||'');return ids.has(v)?'@grupo':v};
+ for(const p of pessoas){
+  if(String(p.id)===String(keeper.id))continue;
+  const na=nascimento(keeper),nb=nascimento(p);
+  if(na&&nb&&na!==nb)return 'Os cadastros de '+(keeper.nome||'esta pessoa')+' têm datas de nascimento diferentes. Para evitar unir pessoas distintas, revise-os manualmente.';
+  const sa=sexo(keeper),sb=sexo(p);
+  if(sa&&sb&&sa!==sb)return 'Os cadastros têm sexo informado de formas diferentes. Revise-os manualmente antes de consolidar.';
+  for(const ref of refs){
+   const a=canon(keeper[ref]),b=canon(p[ref]);
+   if(a&&b&&a!==b)return 'Os cadastros têm vínculos diferentes em '+ref+'. Revise pai, mãe ou cônjuge antes de consolidar.';
+  }
+ }
+ return '';
+}
+function consolidarGrupoDuplicatasFamilia(chave,keeperId){
+ const atual=getList();
+ const grupo=detectarGruposDuplicadosFamiliares(atual).find(function(g){return g.chave===String(chave)});
+ if(!grupo||grupo.pessoas.length<2){alert('Este grupo não tem mais cadastros repetidos para consolidar.');renderFamiliares();return}
+ const pessoas=grupo.pessoas,keeper=pessoas.find(function(p){return String(p.id)===String(keeperId)});
+ if(!keeper){alert('Escolha qual cadastro você quer manter.');return}
+ const bloqueio=validarCompatibilidadeDuplicata(pessoas,String(keeperId));
+ if(bloqueio){alert('⚠️ Não consolidei os cadastros automaticamente.\\n\\n'+bloqueio+'\\n\\nNenhum dado foi alterado.');return}
+ const remover=pessoas.filter(function(p){return String(p.id)!==String(keeperId)}),idsRemover=new Set(remover.map(function(p){return String(p.id)}));
+ const detalhes=pessoas.map(function(p){return '• '+(p.nome||'Sem nome')+' — '+descreverCadastroDuplicata(p)}).join('\\n');
+ const mensagem='Foram encontrados '+pessoas.length+' cadastros com o mesmo nome:\\n\\n'+detalhes+'\\n\\nSerá mantido: '+(keeper.nome||'Sem nome')+' — '+descreverCadastroDuplicata(keeper)+'.\\n\\nOs campos vazios serão completados com informações dos outros cadastros; listas de consultas, medicamentos, crises e demais registros serão reunidas. Valores que divergirem serão preservados no histórico de consolidação. Referências de pai, mãe e cônjuge serão atualizadas para o cadastro mantido.\\n\\nO nome igual não garante que seja a mesma pessoa. Confirme somente se todos os registros são realmente da mesma pessoa.\\n\\nDeseja consolidar e retirar os outros cadastros da lista principal?';
+ if(!confirm(mensagem))return;
+ const keeperOriginal=clonarDuplicata(keeper),sources=remover.map(clonarDuplicata),merged=clonarDuplicata(keeper),conflicts=[];
+ sources.forEach(function(src){mesclarObjetoDuplicata(merged,src,'',conflicts)});
+ const arquivoExistente=Array.isArray(keeper.duplicatasConsolidadas)?clonarDuplicata(keeper.duplicatasConsolidadas):[];
+ const historicoExistente=Array.isArray(keeper.historicoConsolidacaoDuplicatas)?clonarDuplicata(keeper.historicoConsolidacaoDuplicatas):[];
+ const arquivados=[];
+ sources.forEach(function(src){
+  arquivados.push(src);
+  if(Array.isArray(src.duplicatasConsolidadas))src.duplicatasConsolidadas.forEach(function(old){arquivados.push(clonarDuplicata(old))});
+  if(Array.isArray(src.historicoConsolidacaoDuplicatas))src.historicoConsolidacaoDuplicatas.forEach(function(old){historicoExistente.push(clonarDuplicata(old))});
+  historicoExistente.push({data:new Date().toISOString(),idOriginal:String(src.id),nomeOriginal:String(src.nome||''),camposDivergentes:conflicts.slice(),registroOriginal:clonarDuplicata(src)});
+ });
+ merged.id=keeper.id;
+ merged.duplicatasConsolidadas=arquivoExistente.concat(arquivados);
+ merged.historicoConsolidacaoDuplicatas=historicoExistente;
+ const refFields=['paiId','maeId','conjugeId'];
+ const novoList=[];
+ atual.forEach(function(p){
+  const id=String(p.id||'');
+  if(idsRemover.has(id))return;
+  const copy=id===String(keeperId)?merged:clonarDuplicata(p);
+  refFields.forEach(function(ref){
+   const v=String(copy[ref]||'');
+   if(idsRemover.has(v))copy[ref]=String(keeperId);
+  });
+  refFields.forEach(function(ref){if(String(copy[ref]||'')===String(copy.id))copy[ref]=''});
+  novoList.push(copy);
+ });
+ const ok=saveList(novoList);
+ if(!ok){alert('Não foi possível salvar a consolidação. Nenhum sucesso foi confirmado; confira a lista antes de tentar novamente.');return}
+ setSelected(String(keeperId));
+ window.dispatchEvent(new CustomEvent('msa:familiares-atualizados'));
+ renderFamiliares();
+ const extra=conflicts.length?'\\n\\nHá '+conflicts.length+' campo(s) com valores diferentes. O registro que você escolheu foi mantido nesses campos; a cópia completa dos registros originais permanece no histórico.':'';
+ alert('✅ Consolidação concluída. '+remover.length+' cadastro(s) repetido(s) foi/foram retirado(s) da lista principal e seus dados foram reunidos no cadastro mantido. Os registros originais foram preservados no histórico.'+extra);
+}
+function renderGestorDuplicatasFamiliares(list){
+ const host=document.getElementById('familiaPessoasCard');if(!host)return;
+ let panel=document.getElementById('msaFamilyDuplicateManager');
+ if(!panel){
+  panel=document.createElement('div');panel.id='msaFamilyDuplicateManager';
+  panel.style.cssText='margin:12px 0;padding:14px;border:1px solid #c7d2fe;border-radius:16px;background:linear-gradient(135deg,#f5f7ff,#fff)';
+ }
+ const grupos=detectarGruposDuplicadosFamiliares(list);
+ const resumo=grupos.length?'Encontramos '+grupos.length+' grupo(s) de nomes iguais. Confira os dados antes de consolidar.':'Nenhum nome exatamente repetido foi encontrado na lista atual.';
+ panel.innerHTML='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><div style="font-size:11px;font-weight:900;letter-spacing:.06em;color:#4f46e5">🧹 ORGANIZAÇÃO FAMILIAR</div><h4 style="margin:4px 0 5px;font-size:17px">Encontrar e corrigir cadastros repetidos</h4><p style="margin:0;color:#475569;font-size:12px;line-height:1.45">Detecta nomes iguais. Escolha qual cadastro manter; os outros serão consolidados nele. A data de nascimento, sexo e vínculos importantes são conferidos para evitar misturar pessoas diferentes.</p></div><span style="font-size:11px;font-weight:900;padding:6px 9px;border-radius:99px;background:'+(grupos.length?'#e0e7ff':'#dcfce7')+';color:'+(grupos.length?'#3730a3':'#166534')+'">'+grupos.length+' grupo(s)</span></div>'+
+ '<div style="margin-top:10px;padding:10px;border-radius:11px;background:'+(grupos.length?'#eef2ff':'#f0fdf4')+';color:'+(grupos.length?'#3730a3':'#166534')+';font-size:12px">'+esc(resumo)+'</div>'+
+ (grupos.length?'<div style="display:grid;gap:10px;margin-top:10px">'+grupos.map(function(g){
+  const opts=g.pessoas.map(function(p){const dados=descreverCadastroDuplicata(p);return '<option value="'+esc(p.id)+'"'+(String(p.id)===String(g.pessoas[0].id)?' selected':'')+'>'+esc(p.nome||'Sem nome')+' — '+esc(dados)+'</option>'}).join('');
+  const pessoasHtml=g.pessoas.map(function(p){const qtd=['medicamentos','consultas','crises','exames','vacinas','documentos'].reduce(function(n,k){return n+(Array.isArray(p[k])?p[k].length:0)},0);return '<div style="padding:9px;border:1px solid #dbeafe;border-radius:10px;background:#fff"><b>'+esc(p.nome||'Sem nome')+'</b><div style="font-size:12px;color:#475569;margin-top:3px">'+esc(descreverCadastroDuplicata(p))+'</div><div style="font-size:11px;color:#64748b;margin-top:3px">ID: '+esc(p.id)+' · '+pontuarCadastroDuplicata(p)+' campo(s) preenchido(s)'+(qtd?' · '+qtd+' registro(s) clínico(s)':'')+'</div></div>'}).join('');
+  return '<details style="padding:10px;border:1px solid #c7d2fe;border-radius:12px;background:#fff"><summary style="cursor:pointer;font-weight:800">'+esc(g.pessoas[0].nome||'Sem nome')+' — '+g.pessoas.length+' cadastros</summary><div style="display:grid;gap:7px;margin-top:10px">'+pessoasHtml+'</div><label style="display:block;font-size:12px;font-weight:800;margin-top:10px">Qual cadastro você quer manter?<select data-fam-duplicate-keep="'+esc(g.chave)+'" style="display:block;width:100%;margin-top:5px;padding:10px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#0f172a">'+opts+'</select></label><button type="button" class="btn primary" data-fam-duplicate-merge="'+esc(g.chave)+'" style="margin-top:9px;min-height:42px">🧹 Consolidar esses cadastros</button></details>';
+ }).join('')+'</div>':'')+
+ '<div style="font-size:11px;color:#64748b;line-height:1.45;margin-top:10px">A consolidação exige sua confirmação. Os registros originais são arquivados no cadastro mantido; quando há divergências importantes, a ação é bloqueada para revisão manual.</div>';
+ const audit=document.getElementById('msaFamilyRelationshipAudit');
+ if(audit&&audit!==panel)audit.insertAdjacentElement('afterend',panel);
+ else{const dash=host.querySelector('#msaFamilyDashboard');if(dash&&panel.previousElementSibling!==dash)dash.insertAdjacentElement('afterend',panel);else if(!panel.parentElement)host.prepend(panel)}
+ panel.querySelectorAll('[data-fam-duplicate-merge]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+   const key=btn.getAttribute('data-fam-duplicate-merge'),select=panel.querySelector('[data-fam-duplicate-keep="'+key+'"]');
+   if(!select){alert('Escolha qual cadastro você quer manter.');return}
+   consolidarGrupoDuplicatasFamilia(key,select.value);
+  });
+ });
+}
+
 function renderFamiliares(){
  instalarAtalhoBuscarFamiliarIA();
  renderParceirosSaude();
@@ -435,7 +600,7 @@ function renderFamiliares(){
  instalarCamposPerfilSaudePessoa();
  renderAlertasHistoricoFamiliar();
  const box=document.getElementById('familiares');if(!box||!box.classList.contains('active'))return;
- const list=getList();renderFamiliaInteligencia();instalarEstilosPainelGeralFamilia();renderPainelGeralFamilia(list);renderVerificadorVinculosFamilia(list);const pending=__msaFamPendingEdit?findMember(__msaFamPendingEdit):null;let sel=pending||findMember(selectedId());if(!sel&&list.length){sel=list[0];setSelected(sel.id)}if(sel){setSelected(sel.id);ensure(sel)}
+ const list=getList();renderFamiliaInteligencia();instalarEstilosPainelGeralFamilia();renderPainelGeralFamilia(list);renderVerificadorVinculosFamilia(list);renderGestorDuplicatasFamiliares(list);const pending=__msaFamPendingEdit?findMember(__msaFamPendingEdit):null;let sel=pending||findMember(selectedId());if(!sel&&list.length){sel=list[0];setSelected(sel.id)}if(sel){setSelected(sel.id);ensure(sel)}
  const cadastroCard=document.getElementById('familiaCadastroCard');if(cadastroCard)cadastroCard.dataset.famArea='cadastro';
  const pessoasCard=document.getElementById('familiaPessoasCard');if(pessoasCard)pessoasCard.dataset.famArea='cadastro';
  const cards=document.getElementById('familiaresList');
