@@ -110,6 +110,39 @@ function famClasseRelacao(p){
 }
 function famGeneroParental(p){const r=normalizarSexoVinculo(p&&p.parentesco);if(/^(pai|padrasto)\b/.test(r))return 'M';if(/^(mae|madrasta)\b/.test(r))return 'F';return ''}
 function famIdsPais(x){return [x&&x.paiId,x&&x.maeId].map(v=>String(v||'')).filter(Boolean)}
+function famEhAfinidade(p){
+ if(!p)return false;
+ if(p.vinculoFamilia==='Afinidade'||p.ladoFamilia==='Afinidade')return true;
+ const r=normalizarSexoVinculo(p.parentesco);
+ return /\bpor afinidade\b/.test(r)||/^(cunhado|cunhada|genro|nora|sogro|sogra)\b/.test(r);
+}
+/* Pais e ancestrais ligados somente a pessoas por afinidade ficam separados da linhagem principal. */
+function famContextoAfinidade(list){
+ const arr=Array.isArray(list)?list:[],por=new Map(arr.map(p=>[String(p&&p.id||''),p]));
+ const seeds=new Set(arr.filter(famEhAfinidade).map(p=>String(p.id||'')));
+ const ancestors=new Set(),walking=new Set();
+ function collectAncestors(id){
+  const p=por.get(String(id));if(!p)return;
+  famIdsPais(p).forEach(pid=>{
+   if(!por.has(pid)||pid===String(id))return;
+   if(!seeds.has(pid))ancestors.add(pid);
+   if(walking.has(pid))return;
+   walking.add(pid);collectAncestors(pid);walking.delete(pid);
+  });
+ }
+ seeds.forEach(id=>{walking.add(id);collectAncestors(id);walking.delete(id)});
+ const coreParents=new Set();
+ function collectCoreParents(p,trail){
+  famIdsPais(p).forEach(pid=>{
+   if(!por.has(pid)||trail.has(pid))return;
+   coreParents.add(pid);
+   const next=new Set(trail);next.add(pid);collectCoreParents(por.get(pid),next);
+  });
+ }
+ arr.forEach(p=>{const id=String(p&&p.id||'');if(!seeds.has(id)&&!ancestors.has(id))collectCoreParents(p,new Set([id]))});
+ const excluded=new Set(Array.from(ancestors).filter(id=>!seeds.has(id)&&!coreParents.has(id)));
+ return {seedIds:seeds,ancestorIds:ancestors,excludedAncestorIds:excluded,contextIds:new Set([...seeds,...excluded])};
+}
 function famIdsSangueDireto(sel,list){
  const id=String(sel&&sel.id||''),arr=Array.isArray(list)?list:[],por={};arr.forEach(x=>{por[String(x.id)]=x});
  const meus=famIdsPais(sel),out=new Set();
@@ -224,13 +257,22 @@ function famSituacaoHtml(p){const s=String(p&&p.statusFamiliar||'');
 function famFiliacaoTexto(p,list){const pai=famNomePorId(p&&p.paiId,list),mae=famNomePorId(p&&p.maeId,list);if(!pai&&!mae)return 'Não vinculada';return [pai?'Pai: '+pai:'',mae?'Mãe: '+mae:''].filter(Boolean).join(' · ')}
 function famFiliacaoHtml(p,list){
  const t=famFiliacaoTexto(p,list);
+ if(famEhAfinidade(p)){
+  if(t!=='Não vinculada')return '<small>🤝 Pais da pessoa (família de origem, fora da sua linhagem): '+esc(t.replace(/ · /g,'; '))+'</small>';
+  return '<small style="color:#64748b;font-weight:700">🤝 Parente por afinidade: vínculo dos pais é opcional</small>';
+ }
  if(t!=='Não vinculada')return '<small>👪 '+esc(t)+'</small>';
  const c=famClasseRelacao(p);if(c==='P'||c==='V')return '';
- return '<small style="color:#b45309;font-weight:700">👪 Pai e mãe ainda não vinculados</small>'}
+ return '<small style="color:#b45309;font-weight:700">👪 Pai e mãe ainda não vinculados</small>';
+}
 function famFilhosNomes(p,list){return (list||[]).filter(x=>famIdsPais(x).includes(String(p&&p.id||''))).map(x=>x.nome||'Sem nome')}
 function famLinhasFicha(p,list){
  const sv=String(p.statusFamiliar||'');let h='<br>'+(sv==='Vivo'?'💚 ':sv==='Falecido'?'🕊️ ':'❔ ')+esc(sv==='Vivo'||sv==='Falecido'?famSituacaoTexto(p):'Situação não informada (vivo ou falecido)');
- const t=famFiliacaoTexto(p,list);if(t!=='Não vinculada')h+='<br>👪 '+esc(t);
+ const t=famFiliacaoTexto(p,list);
+ if(famEhAfinidade(p)){
+  h+='<br>🤝 Parente por afinidade — os vínculos dos pais são opcionais e não alteram sua linhagem genealógica.';
+  if(t!=='Não vinculada')h+='<br>👪 Família de origem: '+esc(t);
+ }else if(t!=='Não vinculada')h+='<br>👪 '+esc(t);
  const c=familiaConjugeNome(p,list);if(c)h+='<br>💍 Cônjuge: '+esc(c);
  const fl=famFilhosNomes(p,list);if(fl.length)h+='<br>👶 Filhos(as): '+esc(fl.join(', '));
  return h;
@@ -722,12 +764,18 @@ function renderFamiliares(){
    ].join('');
    document.head.appendChild(treeStyle);
   }
-  const mapTree=new Map(list.map(p=>[String(p.id),p]));
-  const treeParents=p=>famIdsPais(p).filter(pid=>mapTree.has(pid)&&pid!==String(p.id));
-  const treeChildren=id=>list.filter(p=>treeParents(p).includes(String(id)));
+  const affinityContext=famContextoAfinidade(list);
+  const affinityOnlyIds=affinityContext.excludedAncestorIds;
+  const affinityFamilyPeople=list.filter(p=>affinityOnlyIds.has(String(p.id)));
+  const treePeople=list.filter(p=>!affinityOnlyIds.has(String(p.id)));
+  const allMapTree=new Map(list.map(p=>[String(p.id),p]));
+  const mapTree=new Map(treePeople.map(p=>[String(p.id),p]));
+  /* A pessoa por afinidade aparece como cônjuge, mas seus pais não são ancestrais do usuário. */
+  const treeParents=p=>famEhAfinidade(p)?[]:famIdsPais(p).filter(pid=>mapTree.has(pid)&&pid!==String(p.id));
+  const treeChildren=id=>treePeople.filter(p=>treeParents(p).includes(String(id)));
   const treeSiblings=p=>{
    const ids=treeParents(p);if(!ids.length)return [];
-   return list.filter(x=>String(x.id)!==String(p.id)&&treeParents(x).some(id=>ids.includes(id)));
+   return treePeople.filter(x=>String(x.id)!==String(p.id)&&treeParents(x).some(id=>ids.includes(id)));
   };
   const treeDepthCache=new Map();
   const treeDepth=(p,trail=new Set())=>{
@@ -738,23 +786,27 @@ function renderFamiliares(){
    const depth=Math.min(8,1+Math.max(...parents.map(pid=>treeDepth(mapTree.get(pid),next))));
    treeDepthCache.set(id,depth);return depth;
   };
-  const treeDepths=new Map(list.map(p=>[String(p.id),treeDepth(p)]));
-  for(let pass=0;pass<2;pass++)list.forEach(p=>{
+  const treeDepths=new Map(treePeople.map(p=>[String(p.id),treeDepth(p)]));
+  for(let pass=0;pass<2;pass++)treePeople.forEach(p=>{
    const sp=mapTree.get(String(p.conjugeId||''));if(!sp)return;
    const pp=treeParents(p),ps=treeParents(sp),dp=treeDepths.get(String(p.id))||0,ds=treeDepths.get(String(sp.id))||0;
    if(!pp.length&&ps.length)treeDepths.set(String(p.id),ds);
    else if(pp.length&&!ps.length)treeDepths.set(String(sp.id),dp);
   });
-  const treeGroups=new Map();list.forEach(p=>{const d=treeDepths.get(String(p.id))||0;if(!treeGroups.has(d))treeGroups.set(d,[]);treeGroups.get(d).push(p)});
+  const treeGroups=new Map();treePeople.forEach(p=>{const d=treeDepths.get(String(p.id))||0;if(!treeGroups.has(d))treeGroups.set(d,[]);treeGroups.get(d).push(p)});
   const treeLink=p=>'<button type="button" class="msa-tree-link" data-fam-tree-open="'+esc(p.id)+'">'+esc(p.nome||'Sem nome')+'</button>';
   const treeRelation=(label,people)=>people.length?'<div class="msa-tree-rel"><span class="msa-tree-rel-label">'+label+':</span> '+people.map(treeLink).join(' ')+'</div>':'';
   const treeNode=p=>{
+   const affinity=famEhAfinidade(p);
    const parents=treeParents(p).map(id=>mapTree.get(id)).filter(Boolean);
-   const siblings=treeSiblings(p);
-   const kids=treeChildren(p.id);
+   const originParents=affinity?famIdsPais(p).map(id=>allMapTree.get(id)).filter(Boolean):[];
+   const siblings=treeSiblings(p),kids=treeChildren(p.id);
    const spouse=mapTree.get(String(p.conjugeId||''));
-   const bits=treeRelation('Pais',parents)+treeRelation('Irmãos sugeridos',siblings)+treeRelation('Cônjuge',spouse?[spouse]:[])+treeRelation('Filhos',kids);
-   const search=[p.nome,p.parentesco,...parents.map(x=>x.nome),...siblings.map(x=>x.nome),...(spouse?[spouse.nome]:[]),...kids.map(x=>x.nome)].filter(Boolean).join(' ').toLocaleLowerCase('pt-BR');
+   const parentLine=affinity
+    ?(originParents.length?treeRelation('Pais (família de origem, fora da linhagem)',originParents):'<div class="msa-tree-rel">🤝 Por afinidade: os vínculos dos pais são opcionais e não alteram sua árvore genealógica.</div>')
+    :treeRelation('Pais',parents);
+   const bits=parentLine+treeRelation('Irmãos sugeridos',siblings)+treeRelation('Cônjuge',spouse?[spouse]:[])+treeRelation('Filhos',kids);
+   const search=[p.nome,p.parentesco,...parents.map(x=>x.nome),...originParents.map(x=>x.nome),...siblings.map(x=>x.nome),...(spouse?[spouse.nome]:[]),...kids.map(x=>x.nome)].filter(Boolean).join(' ').toLocaleLowerCase('pt-BR');
    const status=p.statusFamiliar==='Vivo'?'💚 Vivo(a)':p.statusFamiliar==='Falecido'?'🕊️ Falecido(a)'+(p.dataFalecimento?' · '+fmtDate(p.dataFalecimento):''):'❔ Situação não informada';
    return '<article class="msa-tree-node" data-fam-tree-node="'+esc(p.id)+'" data-search="'+esc(search)+'">'+
     '<button type="button" class="msa-tree-person" data-fam-tree-open="'+esc(p.id)+'">'+(p.sexo==='Feminino'?'👩':p.sexo==='Masculino'?'👨':'👤')+' '+esc(p.nome||'Sem nome')+'</button>'+
@@ -762,9 +814,18 @@ function renderFamiliares(){
     '<div class="msa-tree-status">'+esc(status)+'</div>'+
     (bits||'<div class="msa-tree-rel">Sem vínculos de filiação ou cônjuge cadastrados.</div>')+'</article>';
   };
-  treePanel.innerHTML='<div class="msa-tree-head"><div><div style="font-size:11px;font-weight:900;letter-spacing:.05em;color:#1d4ed8">🌳 ÁRVORE GENEALÓGICA</div><h3 style="margin:4px 0 5px">Família organizada por gerações</h3><p style="margin:0;color:#64748b;font-size:12px;line-height:1.5">Pais e mães vêm dos vínculos cadastrados. Irmãos e filhos são identificados automaticamente a partir desses vínculos, sem criar ou alterar cadastros.</p></div><label class="msa-tree-search" style="margin:0;flex:1 1 220px">🔎 Buscar na árvore<input id="msaFamilyTreeSearch" type="search" placeholder="Nome ou parentesco..." style="margin-top:5px"></label></div>'+
-   '<div class="msa-tree-legend"><span>👆 Toque em um nome para abrir a ficha</span><span>👫 Irmãos: compartilham pai/mãe cadastrado</span><span>🔒 Relações sugeridas não são gravadas automaticamente</span></div>'+
-   '<div class="msa-tree-generations">'+(list.length?[...treeGroups.entries()].sort((a,b)=>a[0]-b[0]).map(([depth,members])=>'<div class="msa-tree-generation" data-fam-tree-generation="'+depth+'"><div class="msa-tree-generation-title">🌱 Geração '+(depth+1)+' <span style="font-weight:500;color:#64748b">('+members.length+' pessoa(s))</span></div><div class="msa-tree-nodes">'+members.slice().sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR')).map(treeNode).join('')+'</div></div>').join(''):'<div class="empty">Cadastre familiares para montar a árvore automaticamente.</div>')+'</div>';
+  const treeAffinityContextNode=p=>{
+   const search=[p.nome,p.parentesco].filter(Boolean).join(' ').toLocaleLowerCase('pt-BR');
+   return '<article class="msa-tree-node" data-fam-tree-node="'+esc(p.id)+'" data-search="'+esc(search)+'">'+
+    '<button type="button" class="msa-tree-person" data-fam-tree-open="'+esc(p.id)+'">👤 '+esc(p.nome||'Sem nome')+'</button>'+
+    '<div class="msa-tree-rel">'+esc(p.parentesco||'Parentesco não informado')+'</div>'+
+    '<div class="msa-tree-status">🤝 Família de origem de um parente por afinidade</div>'+
+    '<div class="msa-tree-rel">Cadastro separado da linhagem genealógica principal.</div></article>';
+  };
+  treePanel.innerHTML='<div class="msa-tree-head"><div><div style="font-size:11px;font-weight:900;letter-spacing:.05em;color:#1d4ed8">🌳 ÁRVORE GENEALÓGICA</div><h3 style="margin:4px 0 5px">Família organizada por gerações</h3><p style="margin:0;color:#64748b;font-size:12px;line-height:1.5">A árvore principal usa apenas vínculos genealógicos cadastrados. Cônjuges por afinidade aparecem ligados à pessoa, mas os pais e ancestrais deles ficam separados e não alteram sua linhagem.</p></div><label class="msa-tree-search" style="margin:0;flex:1 1 220px">🔎 Buscar na árvore<input id="msaFamilyTreeSearch" type="search" placeholder="Nome ou parentesco..." style="margin-top:5px"></label></div>'+
+   '<div class="msa-tree-legend"><span>👆 Toque em um nome para abrir a ficha</span><span>👫 Irmãos: compartilham pai/mãe cadastrado</span><span>🤝 Afinidade: pais opcionais, fora da linhagem principal</span><span>🔒 Relações sugeridas não são gravadas automaticamente</span></div>'+
+   '<div class="msa-tree-generations">'+(treePeople.length?[...treeGroups.entries()].sort((a,b)=>a[0]-b[0]).map(([depth,members])=>'<div class="msa-tree-generation" data-fam-tree-generation="'+depth+'"><div class="msa-tree-generation-title">🌱 Geração '+(depth+1)+' <span style="font-weight:500;color:#64748b">('+members.length+' pessoa(s))</span></div><div class="msa-tree-nodes">'+members.slice().sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR')).map(treeNode).join('')+'</div></div>').join(''):'<div class="empty">Cadastre familiares para montar a árvore automaticamente.</div>')+'</div>'+
+   (affinityFamilyPeople.length?'<div class="msa-tree-generation" data-fam-tree-generation="afinidade-contexto" style="margin-top:13px"><div class="msa-tree-generation-title">🤝 Família de origem dos parentes por afinidade <span style="font-weight:500;color:#64748b">('+affinityFamilyPeople.length+' pessoa(s))</span></div><p style="margin:0 0 10px;color:#64748b;font-size:12px;line-height:1.5">Esses cadastros ficam disponíveis para consulta, mas não entram na linhagem biológica nem nos padrões genéticos da sua família.</p><div class="msa-tree-nodes">'+affinityFamilyPeople.slice().sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR')).map(treeAffinityContextNode).join('')+'</div></div>':'');
   const treeSearch=treePanel.querySelector('#msaFamilyTreeSearch');
   const applyTreeSearch=()=>{
    const q=String(treeSearch?.value||'').trim().toLocaleLowerCase('pt-BR');
@@ -840,7 +901,7 @@ const sexChoices=['','Masculino','Feminino','Outro','Não informado'];
 const sexOptions=sexChoices.map(function(sex){return '<option value="'+esc(sex)+'" '+(sex===String(sel.sexo||'')?'selected':'')+'>'+(sex||'Não informado')+'</option>'}).join('');
 const bloodChoices=['','A+','A-','B+','B-','AB+','AB-','O+','O-','Não informado'];
 const bloodOptions=bloodChoices.map(function(b){return '<option value="'+esc(b)+'" '+(b===String(sel.sangue||'')?'selected':'')+'>'+(b||'Não informado')+'</option>'}).join('');
-basicEdit.innerHTML='<summary style="cursor:pointer;font-weight:900;font-size:16px;list-style:none">✏️ Editar dados pessoais <span style="float:right;color:#2563eb">Abrir / fechar ▾</span></summary><p class="muted" style="margin:7px 0 12px">Edite nome, relação, nascimento, alergias e outras informações desta pessoa. Medicamentos e consultas cadastrados são mantidos.</p><form id="familiarBasicEditForm"><div class="grid2"><label>Nome<input id="fbNome" required value="'+esc(sel.nome||'')+'"></label><label>Relação<select id="fbRelacao">'+relationOptions+'</select></label></div><div class="grid2"><label>👨 Pai / filiação paterna<select id="fbPai"><option value="">Não informado</option>'+famOpcoesPais(sel,list,'M')+'</select></label><label>👩 Mãe / filiação materna<select id="fbMae"><option value="">Não informado</option>'+famOpcoesPais(sel,list,'F')+'</select></label></div><small style="display:block;color:var(--muted,#64748b);margin:6px 0 10px">Registre pai e mãe separadamente. Isso não altera o vínculo de cônjuge.</small><label>💍 Cônjuge / pessoa vinculada<select id="fbConjuge"><option value="">Não vinculado</option>'+famOpcoesConjuge(sel,list,false).html+'</select><small style="display:block;font-weight:500;color:var(--muted,#64748b);margin-top:4px">Selecione o cônjuge para mostrar o vínculo nos dois cadastros.</small></label><label class="fam-chk"><input type="checkbox" id="fbConjugeTodas"> Mostrar todas as pessoas na lista de cônjuge</label><small id="fbConjugeDica" style="display:block;color:var(--muted,#64748b);margin:-2px 0 10px"></small><div class="grid2"><label>❤️ Situação<select id="fbStatus">'+famOpcoesSituacao(sel.statusFamiliar)+'</select></label><label>📅 Data de falecimento<input id="fbDeathDate" type="date" max="'+famHoje()+'" value="'+esc(sel.dataFalecimento||'')+'"></label></div><label>🕊️ Causa do falecimento (opcional)<input id="fbCause" value="'+esc(sel.causaFalecimento||'')+'" placeholder="Ex.: causa conhecida ou não informada"></label><div class="grid2"><label>Sexo<select id="fbSexo">'+sexOptions+'</select></label><label>Data de nascimento<input id="fbNasc" type="date" value="'+esc(sel.nasc||'')+'"></label></div><div class="grid2"><label>Idade<input id="fbIdade" type="number" min="0" max="130" value="'+esc(sel.idade||'')+'"></label><label>Tipo sanguíneo<select id="fbSangue">'+bloodOptions+'</select></label></div><label>🧠 Condição principal<input id="fbCondicao" value="'+esc(sel.condicao||'')+'" placeholder="Ex.: condição conhecida (opcional)"></label><label>🚨 Alergias<textarea id="fbAlergias" placeholder="Medicamentos, alimentos ou outras alergias">'+esc(sel.alergias||'')+'</textarea></label><label>📞 Contato / responsável<input id="fbContato" value="'+esc(sel.contato||'')+'" placeholder="Opcional"></label><label>📌 Observações importantes<textarea id="fbObs" placeholder="Informações úteis para consultas e cuidados">'+esc(sel.obs||'')+'</textarea></label><button class="btn green" type="submit" style="width:100%">💾 Salvar alterações</button><div class="muted" style="font-size:11px;margin-top:6px">Salvar altera apenas este perfil. Seus outros perfis não serão modificados.</div></form>';
+basicEdit.innerHTML='<summary style="cursor:pointer;font-weight:900;font-size:16px;list-style:none">✏️ Editar dados pessoais <span style="float:right;color:#2563eb">Abrir / fechar ▾</span></summary><p class="muted" style="margin:7px 0 12px">Edite nome, relação, nascimento, alergias e outras informações desta pessoa. Medicamentos e consultas cadastrados são mantidos.</p><form id="familiarBasicEditForm"><div class="grid2"><label>Nome<input id="fbNome" required value="'+esc(sel.nome||'')+'"></label><label>Relação<select id="fbRelacao">'+relationOptions+'</select></label></div><div class="grid2"><label>👨 Pai / filiação paterna<select id="fbPai"><option value="">Não informado</option>'+famOpcoesPais(sel,list,'M')+'</select></label><label>👩 Mãe / filiação materna<select id="fbMae"><option value="">Não informado</option>'+famOpcoesPais(sel,list,'F')+'</select></label></div><small style="display:block;color:var(--muted,#64748b);margin:6px 0 10px">Pai e mãe são opcionais. Se a pessoa for parente por afinidade, essa família de origem fica separada e não altera sua árvore genealógica. O vínculo de cônjuge é independente.</small><label>💍 Cônjuge / pessoa vinculada<select id="fbConjuge"><option value="">Não vinculado</option>'+famOpcoesConjuge(sel,list,false).html+'</select><small style="display:block;font-weight:500;color:var(--muted,#64748b);margin-top:4px">Selecione o cônjuge para mostrar o vínculo nos dois cadastros.</small></label><label class="fam-chk"><input type="checkbox" id="fbConjugeTodas"> Mostrar todas as pessoas na lista de cônjuge</label><small id="fbConjugeDica" style="display:block;color:var(--muted,#64748b);margin:-2px 0 10px"></small><div class="grid2"><label>❤️ Situação<select id="fbStatus">'+famOpcoesSituacao(sel.statusFamiliar)+'</select></label><label>📅 Data de falecimento<input id="fbDeathDate" type="date" max="'+famHoje()+'" value="'+esc(sel.dataFalecimento||'')+'"></label></div><label>🕊️ Causa do falecimento (opcional)<input id="fbCause" value="'+esc(sel.causaFalecimento||'')+'" placeholder="Ex.: causa conhecida ou não informada"></label><div class="grid2"><label>Sexo<select id="fbSexo">'+sexOptions+'</select></label><label>Data de nascimento<input id="fbNasc" type="date" value="'+esc(sel.nasc||'')+'"></label></div><div class="grid2"><label>Idade<input id="fbIdade" type="number" min="0" max="130" value="'+esc(sel.idade||'')+'"></label><label>Tipo sanguíneo<select id="fbSangue">'+bloodOptions+'</select></label></div><label>🧠 Condição principal<input id="fbCondicao" value="'+esc(sel.condicao||'')+'" placeholder="Ex.: condição conhecida (opcional)"></label><label>🚨 Alergias<textarea id="fbAlergias" placeholder="Medicamentos, alimentos ou outras alergias">'+esc(sel.alergias||'')+'</textarea></label><label>📞 Contato / responsável<input id="fbContato" value="'+esc(sel.contato||'')+'" placeholder="Opcional"></label><label>📌 Observações importantes<textarea id="fbObs" placeholder="Informações úteis para consultas e cuidados">'+esc(sel.obs||'')+'</textarea></label><button class="btn green" type="submit" style="width:100%">💾 Salvar alterações</button><div class="muted" style="font-size:11px;margin-top:6px">Salvar altera apenas este perfil. Seus outros perfis não serão modificados.</div></form>';
 const profileSummary=detail.querySelector('.familiar-summary-grid');
 if(profileSummary)profileSummary.insertAdjacentElement('afterend',basicEdit);
 famLigarEdicaoVinculos(basicEdit,sel,list);const bf=basicEdit.querySelector('#familiarBasicEditForm');
@@ -965,7 +1026,7 @@ function familiaArray(){const a=getList();return Array.isArray(a)?a.map(ensure):
 function familiaCondicaoTexto(p){return String(p.condicao||'').trim()}
 function familiaLado(p){if(p.ladoFamilia)return p.ladoFamilia;const s=(String(p.parentesco||'')+' '+String(p.obs||'')).toLowerCase();if(/materna|materno/.test(s))return 'Materno';if(/paterna|paterno/.test(s))return 'Paterno';return 'Não informado'}
 function familiaIdade(p){const nasc=p&&(p.nasc||p.dataNascimento||p.nascimento),fim=p&&(p.dataFalecimento||p.falecimento);if(nasc){const n=new Date(String(nasc).slice(0,10)+'T12:00:00'),h=fim?new Date(String(fim).slice(0,10)+'T12:00:00'):new Date();if(!isNaN(n.getTime())&&!isNaN(h.getTime())&&h>=n){let a=h.getFullYear()-n.getFullYear();if(h.getMonth()<n.getMonth()||(h.getMonth()===n.getMonth()&&h.getDate()<n.getDate()))a--;return String(Math.max(0,a))}}if(p&&p.idade!==undefined&&p.idade!==null&&String(p.idade).trim()!=='')return String(p.idade).trim().replace(/\s*anos?\s*$/i,'').trim();return ''}
-function familiaPatterns(list){const defs=[['Diabetes',/\bdiabet(?:e|es|ica|ico|icos|icas)\b/i],['Hipertensão',/\bhipertens(?:ão|ao|ivo|iva|ivos|ivas)\b/i],['Doenças cardíacas',/\b(infarto|cardíac|coronar|insufici[eê]ncia card|angina)\b/i],['AVC',/\b(avc|acidente vascular cerebral|derrame)\b/i],['Câncer',/\b(câncer|cancer|tumor|neoplas)\b/i],['Colesterol',/\b(colesterol|dislipidem)\b/i],['Tireoide',/\b(tireoide|hipotireoid|hipertireoid)\b/i],['Doença renal',/\b(renal|rim|insufici[eê]ncia renal)\b/i],['Doença hepática',/\b(fígado|figado|hepat|cirrose)\b/i],['Autoimune / reumatológica',/\b(autoimun|artrite|lúpus|lupus|psorías|psorias|espondil|reumat)\b/i],['Demência / Alzheimer',/\b(demência|demencia|alzheimer|parkinson)\b/i],['Saúde mental',/\b(depress[aã]o|ansiedade|bipolar|esquizofren|transtorno mental)\b/i]];return defs.map(d=>{const members=list.filter(p=>p.vinculoFamilia!=='Afinidade'&&p.ladoFamilia!=='Afinidade'&&d[1].test(familiaCondicaoTexto(p)+' '+String(p.obs||'')));return {nome:d[0],count:members.length,members}}).filter(x=>x.count>0).sort((a,b)=>b.count-a.count||a.nome.localeCompare(b.nome))}
+function familiaPatterns(list){const defs=[['Diabetes',/\bdiabet(?:e|es|ica|ico|icos|icas)\b/i],['Hipertensão',/\bhipertens(?:ão|ao|ivo|iva|ivos|ivas)\b/i],['Doenças cardíacas',/\b(infarto|cardíac|coronar|insufici[eê]ncia card|angina)\b/i],['AVC',/\b(avc|acidente vascular cerebral|derrame)\b/i],['Câncer',/\b(câncer|cancer|tumor|neoplas)\b/i],['Colesterol',/\b(colesterol|dislipidem)\b/i],['Tireoide',/\b(tireoide|hipotireoid|hipertireoid)\b/i],['Doença renal',/\b(renal|rim|insufici[eê]ncia renal)\b/i],['Doença hepática',/\b(fígado|figado|hepat|cirrose)\b/i],['Autoimune / reumatológica',/\b(autoimun|artrite|lúpus|lupus|psorías|psorias|espondil|reumat)\b/i],['Demência / Alzheimer',/\b(demência|demencia|alzheimer|parkinson)\b/i],['Saúde mental',/\b(depress[aã]o|ansiedade|bipolar|esquizofren|transtorno mental)\b/i]];const ctx=famContextoAfinidade(list);return defs.map(d=>{const members=list.filter(p=>!ctx.contextIds.has(String(p.id))&&d[1].test(familiaCondicaoTexto(p)+' '+String(p.obs||'')));return {nome:d[0],count:members.length,members}}).filter(x=>x.count>0).sort((a,b)=>b.count-a.count||a.nome.localeCompare(b.nome))}
 function normalizarChaveVinculoFamilia(v){return String(v==null?'':v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'')}
 function acrescentarCondicaoSeFaltar(p,frase,padroes){const todos=normalizarChaveVinculoFamilia(JSON.stringify(p));if(padroes.some(re=>re.test(todos)))return false;const atual=String(p.condicao||'').trim().replace(/[;,\s]+$/,'');p.condicao=(atual?atual+'; ':'')+frase;return true}
 function atualizarCampoSeDiferente(p,chave,valor){if(p[chave]===valor)return false;p[chave]=valor;return true}
@@ -1071,8 +1132,9 @@ function filtrarMapaFamiliaGrupo(chave){
 function familiaMapaHTML(list){
  instalarEstilosMapaInterativo();
  const groups={Materno:[],Paterno:[],'Núcleo próximo':[],'Parentes por afinidade':[],'Lado a confirmar':[],'Não informado':[]};
+ const affinityContext=famContextoAfinidade(list);
  list.forEach(function(p){
-  if(p.vinculoFamilia==='Afinidade'||p.ladoFamilia==='Afinidade'){groups['Parentes por afinidade'].push(p);return}
+  if(affinityContext.contextIds.has(String(p.id))){groups['Parentes por afinidade'].push(p);return}
   if(p.vinculoLadoPendente){groups['Lado a confirmar'].push(p);return}
   const l=familiaLado(p);if(l==='Ambos'||l==='Ambos / não sei'){groups.Materno.push(p);groups.Paterno.push(p);return}
   if(l==='Materno'){groups.Materno.push(p);return}if(l==='Paterno'){groups.Paterno.push(p);return}if(l==='Núcleo próximo'){groups['Núcleo próximo'].push(p);return}
