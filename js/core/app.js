@@ -422,6 +422,7 @@ function aplicarPreferencias(){
  $('reproSection')?.classList.toggle('msa-feature-off',pref.ciclo==='off');
  document.querySelectorAll('#dashActivityEdit,#dashActivity').forEach(el=>el.closest('.metric-kpi')?.classList.toggle('msa-feature-off',pref.academia==='off'));
  $('medidasCorporaisCard')?.classList.toggle('msa-feature-off',pref.academia==='off');
+ try{window.dispatchEvent(new CustomEvent('msa:preferences-changed'))}catch(e){}
 }
 function aplicarExperiencia(){
  const level=experienciaPadrao();
@@ -430,6 +431,7 @@ function aplicarExperiencia(){
  document.documentElement.dataset.msaExperience=level;
  document.querySelectorAll('[data-experience="advanced"]').forEach(el=>el.classList.toggle('msa-experience-off',level!=='advanced'));
  document.querySelectorAll('[data-experience="simple-hidden"]').forEach(el=>el.classList.toggle('msa-experience-off',level==='simple'));
+ try{window.dispatchEvent(new CustomEvent('msa:experience-changed'))}catch(e){}
 }
 function abrirPrivacidadeAjuda(tipo){
  let old=document.getElementById('msaInfoModal');if(old)old.remove();
