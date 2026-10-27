@@ -592,12 +592,12 @@ function bindForms(id){
 window.marcarFamiliaresComDadosDeFalecimento=function(){
  const list=getList();
  if(!list.length){alert('Ainda não há familiares cadastrados.');return}
- const norm=s=>String(s==null?'':s).normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLocaleLowerCase('pt-BR').replace(/\\s+/g,' ').trim();
+ const norm=s=>String(s==null?'':s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').replace(/\s+/g,' ').trim();
  const genericCause=new Set(['','-','n/a','na','nao informado','nao informada','nao sei','sem informacao','sem dados','nao preenchido','nao preenchida']);
  const validDeathDate=p=>{
   const raw=String(p.dataFalecimento||p.dataObito||p.falecimento||'').trim();
   if(!raw)return false;
-  const m=raw.match(/^(\\d{4})-(\\d{2})-(\\d{2})$/);
+  const m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if(!m)return false;
   const d=new Date(raw+'T12:00:00');
   return !isNaN(d.getTime())&&d.toISOString().slice(0,10)===raw&&raw<=famHoje();
@@ -605,8 +605,8 @@ window.marcarFamiliaresComDadosDeFalecimento=function(){
  const hasCause=p=>!genericCause.has(norm(p.causaFalecimento||p.causaObito||''));
  const deathText=p=>{
   const fields=[p.obs,p.observacao,p.observacoes,p.historico,p.historicoFamiliar,p.condicao,p.descricao,p.nota,p.notas];
-  const positive=/\\b(?:falecid[oa]s?|faleceu|morreu|veio a obito|foi a obito|obito confirmado|data de obito|data do obito|data de falecimento|data do falecimento)\\b/;
-  const negative=/\\b(?:nao|nunca|jamais)\\s+(?:faleceu|morreu|esta falecid[oa]|e falecid[oa]|veio a obito|foi a obito)\\b/;
+  const positive=/\b(?:falecid[oa]s?|faleceu|morreu|veio a obito|foi a obito|obito confirmado|data de obito|data do obito|data de falecimento|data do falecimento)\b/;
+  const negative=/\b(?:nao|nunca|jamais)\s+(?:faleceu|morreu|esta falecid[oa]|e falecid[oa]|veio a obito|foi a obito)\b/;
   return fields.some(value=>{
    const t=norm(value);
    return !!t&&!negative.test(t)&&positive.test(t);
