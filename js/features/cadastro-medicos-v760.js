@@ -112,7 +112,7 @@ function renderList(){
  host.querySelectorAll('[data-doc-delete760]').forEach(b=>b.addEventListener('click',()=>deleteDoctor(b.dataset.docDelete760)));
 }
 function ensureSettingsCard(){
- const section=$('configuracoes'),parent=$('msaSettingsProfessional');
+ const section=$('configuracoes'),parent=$('msaConfigPanelMedicos')||$('msaSettingsProfessional');
  if(!section)return;
  let card=$('msaDoctorsSettings760');
  if(!card){
