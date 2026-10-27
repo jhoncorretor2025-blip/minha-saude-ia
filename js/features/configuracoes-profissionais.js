@@ -31,19 +31,19 @@ function render(){
  if(!existing){
   existing=document.createElement('div');existing.id='msaSettingsProfessional';existing.className='msa-settings-professional';
   existing.innerHTML=
-   '<div class="card"><h2>🎨 Aparência e acessibilidade</h2><p class="muted">Estas opções afetam a apresentação neste navegador, sem alterar seu histórico de saúde.</p>'+
+   '<div class="card" id="msaSettingsAppearanceCard"><h2>🎨 Aparência e acessibilidade</h2><p class="muted">Estas opções afetam a apresentação neste navegador, sem alterar seu histórico de saúde.</p>'+
    '<div class="msa-settings-grid">'+
    '<label>🌗 Tema<select id="msaThemeSelect"><option value="light">Claro</option><option value="dark">Escuro</option></select><small>O tema também pode ser alterado pelo botão no topo.</small></label>'+
    '<label>🔠 Tamanho do texto<select id="msaFontSize"><option value="normal">Normal</option><option value="large">Maior</option><option value="larger">Bem maior</option></select><small>Ajuda na leitura, inclusive no celular.</small></label>'+
    '<label>◐ Contraste<select id="msaContrast"><option value="normal">Padrão</option><option value="high">Alto contraste</option></select><small>Reforça bordas e legibilidade.</small></label>'+
    '<label class="msa-settings-check"><span><input type="checkbox" id="msaReduceMotion"> ♿ Reduzir animações</span><small>Útil para quem prefere menos movimento na tela.</small></label>'+
    '</div><div class="row" style="margin-top:12px"><button type="button" class="btn" id="msaSaveAccessibility">💾 Salvar acessibilidade</button><button type="button" class="btn secondary" id="msaRestoreAccessibility">↩️ Restaurar aparência padrão</button></div></div>'+
-   '<div class="card"><h2>💾 Dados e segurança</h2><p class="muted">O histórico de saúde é diferente das preferências visuais. Restaurar a aparência não apaga registros.</p>'+
+   '<div class="card" id="msaSettingsDataCard"><h2>💾 Dados e segurança</h2><p class="muted">O histórico de saúde é diferente das preferências visuais. Restaurar a aparência não apaga registros.</p>'+
    '<div class="alert warn">🔒 Os registros principais ficam no armazenamento deste navegador. Isso não significa sincronização automática entre dispositivos. Um arquivo de backup pode conter informações médicas sensíveis; guarde-o em local seguro.</div>'+
    '<div class="row" style="margin-top:12px"><button type="button" class="btn green" id="msaGoBackup">💾 Abrir backup e restauração</button><button type="button" class="btn secondary" id="msaGoExport">📤 Exportar dados</button></div></div>'+
-   '<div class="card"><h2>🧪 Diagnóstico rápido</h2><p class="muted">Verifica recursos básicos do navegador sem ler nem exibir seus registros médicos.</p><div id="msaSettingsDiagnostics" class="list" aria-live="polite"><div class="empty">Toque em “Executar diagnóstico” para verificar este navegador.</div></div><div class="row" style="margin-top:12px"><button type="button" class="btn secondary" id="msaRunDiagnostics">🧪 Executar diagnóstico</button><button type="button" class="btn secondary" id="msaOpenHelp">❓ Ajuda e privacidade</button></div></div>'+
-   '<div class="card"><h2>⚙️ Restaurar preferências do aplicativo</h2><p class="muted">Restaura experiência e módulos opcionais para o padrão. Não exclui sintomas, medicamentos, exames, consultas, documentos, relatórios ou backups.</p><button type="button" class="btn red" id="msaRestorePrefs">↩️ Restaurar preferências padrão</button></div>';
-  section.appendChild(existing);
+   '<div class="card" id="msaSettingsDiagnosticsCard"><h2>🧪 Diagnóstico rápido</h2><p class="muted">Verifica recursos básicos do navegador sem ler nem exibir seus registros médicos.</p><div id="msaSettingsDiagnostics" class="list" aria-live="polite"><div class="empty">Toque em “Executar diagnóstico” para verificar este navegador.</div></div><div class="row" style="margin-top:12px"><button type="button" class="btn secondary" id="msaRunDiagnostics">🧪 Executar diagnóstico</button><button type="button" class="btn secondary" id="msaOpenHelp">❓ Ajuda e privacidade</button></div></div>'+
+   '<div class="card" id="msaSettingsRestoreCard"><h2>⚙️ Restaurar preferências do aplicativo</h2><p class="muted">Restaura experiência e módulos opcionais para o padrão. Não exclui sintomas, medicamentos, exames, consultas, documentos, relatórios ou backups.</p><button type="button" class="btn red" id="msaRestorePrefs">↩️ Restaurar preferências padrão</button></div>';
+  var destination=document.getElementById("msaConfigPanelAparencia")||section;destination.appendChild(existing);
  }
  apply(read());
  document.getElementById('msaSaveAccessibility').onclick=function(){
