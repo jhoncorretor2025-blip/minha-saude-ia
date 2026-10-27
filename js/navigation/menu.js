@@ -262,12 +262,12 @@
           '<button type="button" data-mobile-tab="acompanhamento">❤️<span>Sinal vital</span></button>'+
         '</div>'+
         mobileSection('Início',[
-          ['home','🏠 Visão geral'],['perfil','👤 Meu perfil'],['timeline','🕐 Linha do tempo',null,'simple-hidden']
+          ['home','🏠 Visão geral'],['perfil','👤 Meu perfil']
         ])+
         mobileSection('Registrar',[
           ['dor','😣 Sintoma ou dor'],['meds','💊 Medicamentos'],['consultas','👨‍⚕️ Consultas'],['exames','🧪 Exames'],['acompanhamento','❤️ Sinais vitais'],
           ['acompanhamento','📏 Medidas corporais','academia','simple-hidden'],['nutricao','🥗 Nutrição','nutricao','simple-hidden']
-        ])+
+        ],'simple-hidden')+
         mobileSection('Acompanhar',[
           ['msa87Panel','📊 Meu painel de saúde',null,'advanced'],['timeline','🕐 Linha do tempo',null,'simple-hidden'],
           ['sono','😴 Sono e bem-estar','sonoBem','simple-hidden'],['avisos','🔔 Atenção e avisos'],
@@ -299,8 +299,8 @@
     document.body.appendChild(backdrop);
     document.body.appendChild(drawer);
     document.body.appendChild(bar);
-    function mobileSection(title,items){
-      return '<div class="msa-mobile-section"><div class="msa-mobile-section-title">'+title+'</div><div class="msa-mobile-links">'+
+    function mobileSection(title,items,experience){
+      return '<div class="msa-mobile-section"'+(experience?' data-experience="'+experience+'"':'')+'><div class="msa-mobile-section-title">'+title+'</div><div class="msa-mobile-links">'+
         items.map(function(x){
           var f=x[2]||((x[0]==='nutricao')?'nutricao':(x[0]==='sono')?'sonoBem':null);
           return '<button type="button" data-mobile-tab="'+x[0]+'"'+(f?' data-feature-nav="'+f+'"':'')+(x[3]?' data-experience="'+x[3]+'"':'')+'>'+x[1]+'</button>';
