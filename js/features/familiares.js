@@ -588,6 +588,53 @@ function bindForms(id){
  const c=document.getElementById('familiarConsultaForm');if(c)c.onsubmit=e=>{e.preventDefault();addRecord(id,'consultas',{data:val('fConData'),especialidade:val('fConEsp'),medico:val('fConMed'),retorno:val('fConRet'),motivo:val('fConMot'),obs:val('fConObs')})};
  const cr=document.getElementById('familiarCriseForm');if(cr)cr.onsubmit=e=>{e.preventDefault();addRecord(id,'crises',{data:val('fCriData'),hora:val('fCriHora'),tipo:val('fCriTipo'),intensidade:val('fCriInt'),descricao:val('fCriDesc'),gatilho:val('fCriGatilho'),conduta:val('fCriConduta')})};
 }
+
+window.marcarFamiliaresComDadosDeFalecimento=function(){
+ const list=getList();
+ if(!list.length){alert('Ainda não há familiares cadastrados.');return}
+ const norm=s=>String(s==null?'':s).normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLocaleLowerCase('pt-BR').replace(/\\s+/g,' ').trim();
+ const genericCause=new Set(['','-','n/a','na','nao informado','nao informada','nao sei','sem informacao','sem dados','nao preenchido','nao preenchida']);
+ const validDeathDate=p=>{
+  const raw=String(p.dataFalecimento||p.dataObito||p.falecimento||'').trim();
+  if(!raw)return false;
+  const m=raw.match(/^(\\d{4})-(\\d{2})-(\\d{2})$/);
+  if(!m)return false;
+  const d=new Date(raw+'T12:00:00');
+  return !isNaN(d.getTime())&&d.toISOString().slice(0,10)===raw&&raw<=famHoje();
+ };
+ const hasCause=p=>!genericCause.has(norm(p.causaFalecimento||p.causaObito||''));
+ const deathText=p=>{
+  const fields=[p.obs,p.observacao,p.observacoes,p.historico,p.historicoFamiliar,p.condicao,p.descricao,p.nota,p.notas];
+  const positive=/\\b(?:falecid[oa]s?|faleceu|morreu|veio a obito|foi a obito|obito confirmado|data de obito|data do obito|data de falecimento|data do falecimento)\\b/;
+  const negative=/\\b(?:nao|nunca|jamais)\\s+(?:faleceu|morreu|esta falecid[oa]|e falecid[oa]|veio a obito|foi a obito)\\b/;
+  return fields.some(value=>{
+   const t=norm(value);
+   return !!t&&!negative.test(t)&&positive.test(t);
+  });
+ };
+ const evidence=p=>validDeathDate(p)||hasCause(p)||deathText(p);
+ const candidates=list.filter(p=>String(p.statusFamiliar||'').trim()!=='Falecido'&&evidence(p));
+ const conflicts=candidates.filter(p=>String(p.statusFamiliar||'').trim()==='Vivo');
+ const already=list.filter(p=>String(p.statusFamiliar||'').trim()==='Falecido').length;
+ if(!candidates.length){
+  alert('Nenhuma alteração necessária. Não encontrei familiares ainda não marcados como falecidos com data de falecimento válida, causa de falecimento preenchida ou anotação explícita de óbito. Os registros já marcados como falecidos foram mantidos.');
+  return;
+ }
+ const names=candidates.slice(0,12).map(p=>'• '+String(p.nome||'Sem nome')).join('\\n');
+ const more=candidates.length>12?'\\n… e mais '+(candidates.length-12)+' familiar(es).':'';
+ const msg='Foram encontrados '+candidates.length+' familiar(es) com informação explícita de falecimento.\\n\\n'+
+  names+more+'\\n\\n'+
+  'A ação vai marcar essas pessoas como “Falecido(a)”, preservando nomes, vínculos, consultas, medicamentos e demais históricos.'+
+  (conflicts.length?'\\n\\n⚠️ '+conflicts.length+' cadastro(s) estão atualmente como “Vivo(a)”, mas têm informação de falecimento. A situação será corrigida para “Falecido(a)”.':'')+
+  '\\n\\n'+already+' familiar(es) já marcado(s) como falecido(s) não precisam de alteração.\\n\\nDeseja continuar?';
+ if(!confirm(msg))return;
+ const updated=list.map(p=>String(p.statusFamiliar||'').trim()!=='Falecido'&&evidence(p)?Object.assign({},p,{statusFamiliar:'Falecido'}):p);
+ const changed=updated.filter((p,i)=>p!==list[i]).length;
+ if(!changed){alert('Nenhuma alteração foi aplicada.');return}
+ if(!saveList(updated)){alert('Não foi possível salvar a atualização automática.');return}
+ renderFamiliares();
+ alert('✅ '+changed+' familiar(es) atualizado(s) para “Falecido(a)”. Os demais registros e históricos foram preservados.');
+};
 window.marcarFamiliaresNaoInformadosVivos=function(){
   const list=getList();if(!list.length){alert('Ainda não há familiares cadastrados.');return}
   const unknown=p=>!['Vivo','Falecido'].includes(String(p.statusFamiliar||'').trim());
