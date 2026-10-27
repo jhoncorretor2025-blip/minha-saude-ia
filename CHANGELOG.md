@@ -1,3 +1,10 @@
+## V7.76 — Revisão segura de qualidade dos registros
+- Adicionado painel por perfil para localizar possíveis duplicidades e dados incompletos em exames e medicamentos.
+- A revisão nunca apaga dados automaticamente: registros podem ser corrigidos ou movidos para a lixeira do próprio perfil, com restauração.
+- Novos cadastros de exames e medicamentos avisam antes de salvar registros semelhantes.
+- Exames agora têm status explícito; somente exames marcados como agendados entram na lista de próximos cuidados.
+- Atualizada a versão do aplicativo e invalidado o cache antigo do service worker.
+
 ## V7.56 — Família sem rolar: sub-categorias dentro das abas
 - 👥 Pessoas: chips 👥 Lista · 👤 Ficha aberta (com o nome da pessoa) · 📊 Resumo · 🌳 Gerações · 🔗 Vínculos. Tocar numa pessoa abre direto a ficha dela.
 - 🧬 Padrões familiares: chips 🤖 Com IA · 🌳 Árvore · 📊 Padrões · 🔗 Corrigir vínculos.
