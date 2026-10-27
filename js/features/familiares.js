@@ -531,7 +531,7 @@ function renderFamiliares(){
    const sideMatch=!side||(side==='Não informado'?(!person.ladoFamilia&&person.vinculoFamilia!=='Afinidade'):side==='Ambos'?['Ambos','Ambos / não sei'].includes(sideValue):sideValue===side);
    const missing=!person.sexo||!person.parentesco||!person.statusFamiliar||!person.ladoFamilia;
    const rawStatus=String(person.statusFamiliar||'Não informado').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').trim();
-   const statusValue=/^vivo(?:a|\(a\))?$/.test(rawStatus)?'Vivo':/^falecid[oa](?:\(a\))?$/.test(rawStatus)?'Falecido':'Não informado';
+   const statusValue=/^viv[oa](?:\([oa]\))?$/.test(rawStatus)?'Vivo':/^falecid[oa](?:\(a\))?$/.test(rawStatus)?'Falecido':'Não informado';
    const visibleCard=(!query||text.includes(query))&&(!relQuick||person.parentesco===relQuick)&&(!relation||person.parentesco===relation)&&(!status||statusValue===status)&&sideMatch&&(!completeness||(completeness==='incomplete'?missing:!missing));
    card.hidden=!visibleCard;card.style.display=visibleCard?'':'none';if(visibleCard)visible++;
   });
