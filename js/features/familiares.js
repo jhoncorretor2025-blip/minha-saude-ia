@@ -411,13 +411,14 @@ function renderFamiliares(){
  const vivos=list.filter(p=>String(p.statusFamiliar||'')==='Vivo').length;
  const falecidos=list.filter(p=>String(p.statusFamiliar||'')==='Falecido').length;
  const naoInformados=list.filter(p=>!['Vivo','Falecido'].includes(String(p.statusFamiliar||'').trim())).length;
+ const elegiveisParaVivo=list.filter(p=>!['Vivo','Falecido'].includes(String(p.statusFamiliar||'').trim())&&!p.dataFalecimento&&!p.causaFalecimento).length;
  const desconhecidosComDataMorte=list.filter(p=>!['Vivo','Falecido'].includes(String(p.statusFamiliar||'').trim())&&(p.dataFalecimento||p.causaFalecimento)).length;
  const bulk=document.createElement('div');bulk.id='msaFamilyBulkStatus';bulk.className='card';
  bulk.style.cssText='margin:10px 0;padding:13px;border:1px solid #bbd0ff;background:linear-gradient(135deg,#eff6ff,#fff);border-radius:15px';
  bulk.innerHTML='<div style="font-weight:900;color:#1d4ed8">⚡ Atualização em massa</div>'+
   '<p style="margin:5px 0 10px;color:#475569;font-size:13px;line-height:1.5">Marque somente os familiares cuja situação está como “Não informado” como vivos. Quem já está marcado como falecido será preservado.</p>'+ 
   '<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px"><span style="font-size:12px;font-weight:800;padding:6px 9px;border-radius:99px;background:#dcfce7;color:#166534">💚 Vivos: '+vivos+'</span><span style="font-size:12px;font-weight:800;padding:6px 9px;border-radius:99px;background:#f1f5f9;color:#475569">❔ Não informados: '+naoInformados+'</span><span style="font-size:12px;font-weight:800;padding:6px 9px;border-radius:99px;background:#f3e8ff;color:#6b21a8">🕊️ Falecidos: '+falecidos+'</span></div>'+
-  '<button type="button" class="btn green" id="msaFamMarkUnknownAlive" '+(naoInformados?'':'disabled')+'>💚 Marcar '+naoInformados+' não informado(s) como vivos</button>'+ 
+  '<button type="button" class="btn green" id="msaFamMarkUnknownAlive" '+(elegiveisParaVivo?'':'disabled')+'>💚 Marcar '+elegiveisParaVivo+' não informado(s) como vivos</button>'+ 
   '<p style="margin:8px 0 0;color:#64748b;font-size:11px;line-height:1.45">Pede confirmação e altera apenas quem ainda não tem situação definida. Registros já marcados como vivos ou falecidos permanecem intactos.'+(desconhecidosComDataMorte?'<br><b>⚠️ '+desconhecidosComDataMorte+' cadastro(s) não informado(s) têm data ou causa de falecimento e serão mantidos para revisão.</b>':'')+'</p>';
  toolbar.after(bulk);
  bulk.querySelector('#msaFamMarkUnknownAlive')?.addEventListener('click',()=>window.marcarFamiliaresNaoInformadosVivos());
