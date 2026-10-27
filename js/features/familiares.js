@@ -599,8 +599,7 @@ window.marcarFamiliaresNaoInformadosVivos=function(){
    (revisar.length?revisar.length+' cadastro(s) com data/causa de falecimento serão ignorados para evitar conflito.\n\n':'')+
    'Deseja continuar?';
   if(!confirm(msg))return;
-  const ids=new Set(candidatos.map(p=>String(p.id)));
-  const updated=list.map(p=>ids.has(String(p.id))?Object.assign({},p,{statusFamiliar:'Vivo'}):p);
+  const updated=list.map(p=>unknown(p)&&!p.dataFalecimento&&!p.causaFalecimento?Object.assign({},p,{statusFamiliar:'Vivo'}):p);
   if(!saveList(updated)){alert('Não foi possível salvar a atualização em massa.');return}
   renderFamiliares();
   alert('✅ '+candidatos.length+' familiar(es) marcados como vivos. Os falecidos existentes foram preservados.'+(revisar.length?' '+revisar.length+' cadastro(s) com dados de falecimento ficaram para revisão.':''));
