@@ -119,7 +119,7 @@ function describe(item,kind){
  return [item.nome||'Nome não informado',item.dose||'Dose não informada',item.freq||'Frequência não informada',item.inicio||'Início não informado',item.fim?'até '+item.fim:''].filter(Boolean).join(' · ');
 }
 function rowAction(key,index,record,kind,label){
- return '<div class="item" style="margin-top:7px"><div><b>'+esc(label)+'</b></div><p>'+esc(describe(record,kind))+'</p><div class="row" style="margin-top:8px"><button type="button" class="btn secondary small" data-dq-fix="'+esc(index)+'" data-dq-fp="'+fingerprint(record)+'" data-dq-key="'+esc(key)+'" data-dq-kind="'+esc(kind)+'">✏️ Corrigir dados</button><button type="button" class="btn red small" data-dq-trash="'+esc(index)+'" data-dq-fp="'+fingerprint(record)+'" data-dq-key="'+esc(key)+'">🗑️ Mover para lixeira</button></div></div>';
+ return '<div class="item" style="margin-top:7px"><div><b>'+esc(label)+'</b></div><p>'+esc(describe(record,kind))+'</p><div class="row" style="margin-top:8px"><button type="button" class="btn red small" data-dq-trash="'+esc(index)+'" data-dq-fp="'+fingerprint(record)+'" data-dq-key="'+esc(key)+'">🗑️ Mover para lixeira</button></div></div>';
 }
 function renderFindings(findings){
  const box=byId('msaDQResults');if(!box)return;
@@ -179,21 +179,38 @@ function fixRecord(key,index,expectedFingerprint,kind){
  const record=Object.assign({},items[idx]||{});
  if(expectedFingerprint&&fingerprint(items[idx])!==expectedFingerprint){alert('Este registro mudou desde a análise. Faça uma nova verificação.');scan();return}
  if(kind==='exame'){
-  const currentName=genericExam(record.nome)?'':String(record.nome||'');
-  const name=window.prompt('Confirme o nome do exame. Não adivinhe; use o laudo ou comprovante quando possível.',currentName);
-  if(name===null)return;
-  if(!name.trim()){alert('Informe um nome de exame antes de salvar.');return}
-  const currentDate=dateValue(record.data)||'';
-  const date=window.prompt('Informe a data do exame no formato AAAA-MM-DD. Se não souber, cancele e mantenha o registro para revisão.',currentDate);
-  if(date===null)return;
-  if(!dateValue(date)||dateValue(date)!==date.trim()){alert('Data inválida. Use o formato AAAA-MM-DD.');return}
-  record.nome=name.trim();record.data=date.trim();
+  if(genericExam(record.nome)){
+   const name=window.prompt('Confirme o nome do exame. Não adivinhe; use o laudo ou comprovante quando possível.','');
+   if(name===null)return;
+   if(!name.trim()){alert('Informe um nome de exame antes de salvar.');return}
+   record.nome=name.trim();
+  }
+  if(!dateValue(record.data)){
+   const date=window.prompt('Informe a data do exame no formato AAAA-MM-DD. Se não souber, cancele e mantenha o registro para revisão.','');
+   if(date===null)return;
+   if(!dateValue(date)||dateValue(date)!==date.trim()){alert('Data inválida. Use o formato AAAA-MM-DD.');return}
+   record.data=date.trim();
+  }
+  if(!String(record.res||record.resultado||record.obs||'').trim()){
+   const result=window.prompt('Se souber, informe o resultado ou uma observação literal do laudo. Não invente valores.','');
+   if(result===null)return;
+   if(result.trim())record.res=result.trim();
+  }
  }else{
-  const name=window.prompt('Confirme o nome do medicamento.',String(record.nome||''));
-  if(name===null)return;
-  if(!name.trim()){alert('Informe o nome do medicamento antes de salvar.');return}
-  record.nome=name.trim();
-  if(record.inicio&&record.fim&&dateValue(record.inicio)&&dateValue(record.fim)&&record.fim<record.inicio){alert('A data final não pode ser anterior à data inicial. Corrija o período antes de salvar.');return}
+  if(!String(record.nome||'').trim()){
+   const name=window.prompt('Confirme o nome do medicamento.','');
+   if(name===null)return;
+   if(!name.trim()){alert('Informe o nome do medicamento antes de salvar.');return}
+   record.nome=name.trim();
+  }
+  if(record.inicio&&record.fim&&dateValue(record.inicio)&&dateValue(record.fim)&&record.fim<record.inicio){
+   const start=window.prompt('Corrija a data de início (AAAA-MM-DD).',dateValue(record.inicio)||'');
+   if(start===null)return;
+   const finish=window.prompt('Corrija a data final (AAAA-MM-DD).',dateValue(record.fim)||'');
+   if(finish===null)return;
+   if((start&&!dateValue(start))||(finish&&!dateValue(finish))||(start&&finish&&finish<start)){alert('Período inválido. Confira as datas no formato AAAA-MM-DD.');return}
+   record.inicio=start;record.fim=finish;
+  }
  }
  items[idx]=record;
  if(storage.set(key,items)===false){alert('Não foi possível salvar a correção. O registro anterior foi preservado.');return}
