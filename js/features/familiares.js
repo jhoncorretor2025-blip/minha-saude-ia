@@ -70,6 +70,33 @@ function inferirSexoVinculo(p){
  if(/^(pai|tio|avo (materno|paterno)|irmao|filho|primo|marido|namorado|companheiro|parceiro|neto)(?:\b|$)/.test(rel))return 'Masculino';
  return '';
 }
+function sexoConhecidoVinculoFamiliar(p){
+ const raw=normalizarSexoVinculo(p&&p.sexo);
+ if(/^(f|fem|feminino|feminina|mulher|female|woman|femea)$/.test(raw))return 'Feminino';
+ if(/^(m|masc|masculino|masculina|homem|male|man)$/.test(raw))return 'Masculino';
+ return inferirSexoVinculo(p);
+}
+function inferirSexoPeloConjuge(p,list){
+ if(!p||String(p.sexo||'').trim()||!p.conjugeId)return '';
+ const porRelacao=inferirSexoVinculo(Object.assign({},p,{sexo:''}));
+ if(porRelacao)return porRelacao;
+ const arr=Array.isArray(list)?list:getList();
+ const parceiro=arr.find(function(x){return String(x&&x.id||'')===String(p.conjugeId)&&String(x&&x.id||'')!==String(p.id||'')});
+ if(!parceiro)return '';
+ const sexoParceiro=sexoConhecidoVinculoFamiliar(parceiro);
+ if(sexoParceiro==='Masculino')return 'Feminino';
+ if(sexoParceiro==='Feminino')return 'Masculino';
+ return '';
+}
+function aplicarInferenciasSexoPeloConjuge(list){
+ const arr=Array.isArray(list)?list:[];let mudou=false;
+ arr.forEach(function(p){
+  if(!p||String(p.sexo||'').trim()||!p.conjugeId)return;
+  const inferido=inferirSexoPeloConjuge(p,arr);
+  if(inferido){p.sexo=inferido;mudou=true}
+ });
+ return mudou;
+}
 function famHoje(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function famClasseRelacao(p){
  const r=normalizarSexoVinculo(p&&p.parentesco);
@@ -214,12 +241,21 @@ function famLigarEdicaoVinculos(root,sel,list){
  if(st&&dd){const sync=()=>{const fal=st.value==='Falecido';dd.disabled=!fal;if(ca)ca.disabled=!fal;if(!fal){dd.value='';if(ca)ca.value=''}};st.addEventListener('change',sync);sync()}
  const cj=g('fbConjuge'),todas=g('fbConjugeTodas'),dica=g('fbConjugeDica');
  if(!cj)return;
- const atual=()=>Object.assign({},sel,{sexo:(g('fbSexo')||{}).value||sel.sexo,parentesco:(g('fbRelacao')||{}).value||sel.parentesco,paiId:(g('fbPai')||{}).value||'',maeId:(g('fbMae')||{}).value||'',conjugeId:cj.value||''});
+ const atual=()=>Object.assign({},sel,{sexo:g('fbSexo')?g('fbSexo').value:sel.sexo,parentesco:(g('fbRelacao')||{}).value||sel.parentesco,paiId:(g('fbPai')||{}).value||'',maeId:(g('fbMae')||{}).value||'',conjugeId:cj.value||''});
  const refill=()=>{const r=famOpcoesConjuge(atual(),list,!!(todas&&todas.checked));cj.innerHTML='<option value="">Não vinculado</option>'+r.html;
   if(dica)dica.textContent=(todas&&todas.checked)?('Mostrando '+(r.sugeridos+r.outras)+' pessoa(s).'):(r.sugeridos?('Mostrando '+r.sugeridos+' sugestão(ões). Não achou? Marque “Mostrar todas as pessoas”.'):'Nenhuma sugestão para esta pessoa. Marque “Mostrar todas as pessoas” para escolher.')};
  ['fbSexo','fbRelacao','fbPai','fbMae'].forEach(id=>{const e=g(id);if(e)e.addEventListener('change',refill)});
+ const completarSexoConjuge=()=>{
+  const campo=g('fbSexo');
+  if(!campo||String(campo.value||'').trim())return;
+  const candidato=atual();candidato.sexo='';
+  const inferido=inferirSexoPeloConjuge(candidato,list);
+  if(inferido){campo.value=inferido;refill()}
+ };
+ [cj,g('fbSexo'),g('fbRelacao')].forEach(function(campo){if(campo)campo.addEventListener('change',completarSexoConjuge)});
  if(todas)todas.addEventListener('change',refill);
  refill();
+ completarSexoConjuge();
 }
 function famAtualizarCadastro(){
  const form=document.getElementById('familiarForm');if(!form)return;
@@ -237,12 +273,20 @@ function famAtualizarCadastro(){
   mae.innerHTML='<option value="">Não informado</option>'+famOpcoesPais(s,list,'F');
   const r=famOpcoesConjuge(s,list,!!(todas&&todas.checked));cj.innerHTML='<option value="">Não vinculado</option>'+r.html;
   if(dica)dica.textContent=list.length?((todas&&todas.checked)?('Mostrando '+(r.sugeridos+r.outras)+' pessoa(s).'):(r.sugeridos?('Mostrando '+r.sugeridos+' sugestão(ões). Não achou? Marque “Mostrar todas as pessoas”.'):'Nenhuma sugestão ainda. Marque “Mostrar todas as pessoas” para escolher.')):'Cadastre outras pessoas primeiro para poder vincular pai, mãe ou cônjuge.'};
+ const completarSexoConjuge=()=>{
+  const campo=document.getElementById('fSexo');
+  if(!campo||String(campo.value||'').trim())return;
+  const inferido=inferirSexoPeloConjuge(atual(),getList());
+  if(inferido)campo.value=inferido;
+ };
  if(!form.getAttribute('data-fam-vinc')){form.setAttribute('data-fam-vinc','1');
-  ['fParentesco','fSexo'].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener('change',()=>{const a=pai.value,b=mae.value,c=cj.value;refill();pai.value=a;mae.value=b;cj.value=c})});
-  [pai,mae].forEach(e=>e.addEventListener('change',()=>{const c=cj.value;refill();cj.value=c}));
-  if(todas)todas.addEventListener('change',()=>{const a=pai.value,b=mae.value,c=cj.value;refill();pai.value=a;mae.value=b;cj.value=c});
+  ['fParentesco','fSexo'].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener('change',()=>{const a=pai.value,b=mae.value,c=cj.value;refill();pai.value=a;mae.value=b;cj.value=c;completarSexoConjuge()})});
+  [pai,mae].forEach(e=>e.addEventListener('change',()=>{const c=cj.value;refill();cj.value=c;completarSexoConjuge()}));
+  if(todas)todas.addEventListener('change',()=>{const a=pai.value,b=mae.value,c=cj.value;refill();pai.value=a;mae.value=b;cj.value=c;completarSexoConjuge()});
+  cj.addEventListener('change',completarSexoConjuge);
  }
  refill();
+ completarSexoConjuge();
 }
 function familiaGrau(p){if(p.grauParentesco)return p.grauParentesco;const r=String(p.parentesco||'').toLowerCase();if(/pai|mãe|mae|irm[aã]o|filh/.test(r))return '1º grau';if(/av[oó]|tio|tia|sobrinh/.test(r))return '2º grau';return 'Não informado'}
 function familiaStatus(p){return p.statusFamiliar||'Não informado'}
@@ -502,7 +546,6 @@ function validarCompatibilidadeDuplicata(pessoas,keeperId){
  if(!keeper)return 'O cadastro escolhido para manter não foi encontrado.';
  const campos=['nasc','dataNascimento','nascimento'];
  const nascimento=function(p){for(let i=0;i<campos.length;i++){if(p&&p[campos[i]])return String(p[campos[i]]).slice(0,10)}return ''};
- const sexo=function(p){return sexoCanonicoDuplicata(p)};
  const refs=['paiId','maeId','conjugeId'];
  const ids=new Set(pessoas.map(function(p){return String(p.id)}));
  const canon=function(value){const v=String(value||'');return ids.has(v)?'@grupo':v};
@@ -510,8 +553,6 @@ function validarCompatibilidadeDuplicata(pessoas,keeperId){
   if(String(p.id)===String(keeper.id))continue;
   const na=nascimento(keeper),nb=nascimento(p);
   if(na&&nb&&na!==nb)return 'Os cadastros de '+(keeper.nome||'esta pessoa')+' têm datas de nascimento diferentes. Para evitar unir pessoas distintas, revise-os manualmente.';
-  const sa=sexo(keeper),sb=sexo(p);
-  if(sa&&sb&&sa!==sb)return 'Os cadastros têm sexo informado de formas diferentes. Revise-os manualmente antes de consolidar.';
   for(const ref of refs){
    const a=canon(keeper[ref]),b=canon(p[ref]);
    if(a&&b&&a!==b)return 'Os cadastros têm vínculos diferentes em '+ref+'. Revise pai, mãe ou cônjuge antes de consolidar.';
@@ -526,10 +567,27 @@ function consolidarGrupoDuplicatasFamilia(chave,keeperId){
  const pessoas=grupo.pessoas,keeper=pessoas.find(function(p){return String(p.id)===String(keeperId)});
  if(!keeper){alert('Escolha qual cadastro você quer manter.');return}
  const bloqueio=validarCompatibilidadeDuplicata(pessoas,String(keeperId));
- if(bloqueio){alert('⚠️ Não consolidei os cadastros automaticamente.\n\n'+bloqueio+'\n\nNenhum dado foi alterado.');return}
+ if(bloqueio){
+  alert(['⚠️ Não consolidei os cadastros automaticamente.','',bloqueio,'','Nenhum dado foi alterado.'].join(String.fromCharCode(10)));
+  return;
+ }
  const remover=pessoas.filter(function(p){return String(p.id)!==String(keeperId)}),idsRemover=new Set(remover.map(function(p){return String(p.id)}));
- const detalhes=pessoas.map(function(p){return '• '+(p.nome||'Sem nome')+' — '+descreverCadastroDuplicata(p)}).join('\n');
- const mensagem='Foram encontrados '+pessoas.length+' cadastros com o mesmo nome:\n\n'+detalhes+'\n\nSerá mantido: '+(keeper.nome||'Sem nome')+' — '+descreverCadastroDuplicata(keeper)+'.\n\nOs campos vazios serão completados com informações dos outros cadastros; listas de consultas, medicamentos, crises e demais registros serão reunidas. Valores que divergirem serão preservados no histórico de consolidação. Referências de pai, mãe e cônjuge serão atualizadas para o cadastro mantido.\n\nO nome igual não garante que seja a mesma pessoa. Confirme somente se todos os registros são realmente da mesma pessoa.\n\nDeseja consolidar e retirar os outros cadastros da lista principal?';
+ const detalhes=pessoas.map(function(p){return '• '+(p.nome||'Sem nome')+' — '+descreverCadastroDuplicata(p)}).join(String.fromCharCode(10));
+ const sexoKeeper=sexoCanonicoDuplicata(keeper);
+ const sexoConflitante=!!sexoKeeper&&pessoas.some(function(p){return String(p.id)!==String(keeper.id)&&!!sexoCanonicoDuplicata(p)&&sexoCanonicoDuplicata(p)!==sexoKeeper});
+ const linhasMensagem=[
+  'Foram encontrados '+pessoas.length+' cadastros com o mesmo nome:',
+  '',
+  detalhes,
+  '',
+  'Será mantido: '+(keeper.nome||'Sem nome')+' — '+descreverCadastroDuplicata(keeper)+'.',
+  '',
+  'Os campos vazios serão completados com informações dos outros cadastros; listas de consultas, medicamentos, crises e demais registros serão reunidas. Valores que divergirem serão preservados no histórico de consolidação. Referências de pai, mãe e cônjuge serão atualizadas para o cadastro mantido.',
+  ''
+ ];
+ if(sexoConflitante)linhasMensagem.push('⚠️ ATENÇÃO: há cadastros com sexo informado de forma diferente. O sexo do cadastro escolhido para manter será preservado; os dados originais completos ficarão arquivados. Continue somente se tiver certeza de que se trata da mesma pessoa.','');
+ linhasMensagem.push('O nome igual não garante que seja a mesma pessoa. Confirme somente se todos os registros são realmente da mesma pessoa.','','Deseja consolidar e retirar os outros cadastros da lista principal?');
+ const mensagem=linhasMensagem.join(String.fromCharCode(10));
  if(!confirm(mensagem))return;
  const keeperOriginal=clonarDuplicata(keeper),sources=remover.map(clonarDuplicata),merged=clonarDuplicata(keeper),conflicts=[];
  sources.forEach(function(src){mesclarObjetoDuplicata(merged,src,'',conflicts)});
@@ -566,7 +624,7 @@ function consolidarGrupoDuplicatasFamilia(chave,keeperId){
  setSelected(String(keeperId));
  window.dispatchEvent(new CustomEvent('msa:familiares-atualizados'));
  renderFamiliares();
- const extra=conflicts.length?'\n\nHá '+conflicts.length+' campo(s) com valores diferentes. O registro que você escolheu foi mantido nesses campos; a cópia completa dos registros originais permanece no histórico.':'';
+ const extra=conflicts.length?[ '', '', 'Há '+conflicts.length+' campo(s) com valores diferentes. O registro que você escolheu foi mantido nesses campos; a cópia completa dos registros originais permanece no histórico.' ].join(String.fromCharCode(10)):'';
  alert('✅ Consolidação concluída. '+remover.length+' cadastro(s) repetido(s) foi/foram retirado(s) da lista principal e seus dados foram reunidos no cadastro mantido. Os registros originais foram preservados no histórico.'+extra);
 }
 function renderGestorDuplicatasFamiliares(list){
@@ -609,7 +667,7 @@ function renderFamiliares(){
  instalarCamposPerfilSaudePessoa();
  renderAlertasHistoricoFamiliar();
  const box=document.getElementById('familiares');if(!box||!box.classList.contains('active'))return;
- const list=getList();renderFamiliaInteligencia();instalarEstilosPainelGeralFamilia();renderPainelGeralFamilia(list);renderVerificadorVinculosFamilia(list);renderGestorDuplicatasFamiliares(list);const pending=__msaFamPendingEdit?findMember(__msaFamPendingEdit):null;let sel=pending||findMember(selectedId());if(!sel&&list.length){sel=list[0];setSelected(sel.id)}if(sel){setSelected(sel.id);ensure(sel)}
+ const list=getList();if(aplicarInferenciasSexoPeloConjuge(list)){if(!saveList(list))console.warn('[Minha Saúde IA] Não foi possível salvar a inferência de sexo do cônjuge.')}renderFamiliaInteligencia();instalarEstilosPainelGeralFamilia();renderPainelGeralFamilia(list);renderVerificadorVinculosFamilia(list);renderGestorDuplicatasFamiliares(list);const pending=__msaFamPendingEdit?findMember(__msaFamPendingEdit):null;let sel=pending||findMember(selectedId());if(!sel&&list.length){sel=list[0];setSelected(sel.id)}if(sel){setSelected(sel.id);ensure(sel)}
  const cadastroCard=document.getElementById('familiaCadastroCard');if(cadastroCard)cadastroCard.dataset.famArea='cadastro';
  const pessoasCard=document.getElementById('familiaPessoasCard');if(pessoasCard)pessoasCard.dataset.famArea='cadastro';
  const cards=document.getElementById('familiaresList');
