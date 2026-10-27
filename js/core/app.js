@@ -292,13 +292,15 @@ const RECURSOS_PERSONALIZAVEIS=[
  {key:'ciclo',icon:'🌸',label:'Ciclo menstrual',desc:'Recursos de ciclo menstrual e acompanhamento reprodutivo.',targets:['ciclo']}
 ];
 function experienciaPadrao(){
+ /* V7.79: o modo vale para o aparelho todo; antes ficava só na pessoa ativa e voltava a Confortável ao cuidar de outro familiar */
+ try{const g=window.localStorage.getItem('msa2_experiencia_global');if(['simple','comfortable','advanced'].includes(g))return g}catch(e){}
  const saved=get(K.preferencias)[0];
  return saved&&typeof saved==='object'&&['simple','comfortable','advanced'].includes(saved.experiencia)?saved.experiencia:'comfortable';
 }
 function preferenciasPadrao(){
  const p=get(K.p)[0]||{},saved=get(K.preferencias)[0];
- const base={academia:p.academia==='Não'?'off':'on',nutricao:'on',sonoBem:'on',ciclo:'on',experiencia:'comfortable',ias:iaPadrao()};
- if(saved&&typeof saved==='object')return Object.assign(base,saved);
+ const base={academia:p.academia==='Não'?'off':'on',nutricao:'on',sonoBem:'on',ciclo:'on',experiencia:experienciaPadrao(),ias:iaPadrao()};
+ if(saved&&typeof saved==='object')return Object.assign(base,saved,{experiencia:experienciaPadrao()});
  return base;
 }
 function iaPadrao(){
@@ -380,6 +382,7 @@ function renderMinhasIAs(){
 }
 function salvarPreferenciasObjeto(pref){
  set(K.preferencias,[Object.assign({},preferenciasPadrao(),pref)]);
+ if(pref&&['simple','comfortable','advanced'].includes(pref.experiencia)){try{window.localStorage.setItem('msa2_experiencia_global',pref.experiencia)}catch(e){}}
  aplicarPreferencias();
  aplicarExperiencia();
  renderConfiguracoes();
@@ -426,6 +429,7 @@ function aplicarPreferencias(){
 }
 function aplicarExperiencia(){
  const level=experienciaPadrao();
+ try{if(!window.localStorage.getItem('msa2_experiencia_global')){const sv=get(K.preferencias)[0];if(sv&&['simple','comfortable','advanced'].includes(sv.experiencia))window.localStorage.setItem('msa2_experiencia_global',sv.experiencia)}}catch(e){}
  document.body.classList.remove('msa-exp-simple','msa-exp-comfortable','msa-exp-advanced');
  document.body.classList.add('msa-exp-'+level);
  document.documentElement.dataset.msaExperience=level;

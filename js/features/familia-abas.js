@@ -120,6 +120,7 @@ function aplicarChips(){
  });
 }
 document.addEventListener('click',function(e){var b=e.target.closest('[data-fam-chip]');if(!b)return;var p=b.getAttribute('data-fam-chip').split(':');try{sessionStorage.setItem('msaFamChip_'+p[0],p[1])}catch(x){}aplicarChips()});
+window.msaFamIrChip=function(aba,chip,alvoId){try{sessionStorage.setItem('msaFamChip_'+aba,chip)}catch(e){}abrir(aba,false);aplicarChips();setTimeout(function(){var el=alvoId&&$(alvoId);if(el&&el.scrollIntoView)el.scrollIntoView({behavior:'smooth',block:'start'})},150)};
 /* formulário de cadastro: o essencial aparece; o resto fica em “Mais informações (opcional)” */
 function formEnxuto(){
  var f=$('familiarForm');if(!f||f.dataset.v756)return;var mover=['fVinculosBox','msaFamilyClinicalFields','fPerfilSaudeCampos'].map($).filter(Boolean);if(!mover.length)return;f.dataset.v756='1';

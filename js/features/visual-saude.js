@@ -73,7 +73,7 @@ var VAZIO={listD:['🤒','Nenhum sintoma anotado.','Que bom! Se sentir algo, ano
 function telasVazias(){
  document.querySelectorAll('.empty').forEach(function(e){if(e.dataset.vs||!/Nenhum registro ainda/.test(e.textContent))return;var lista=e.parentNode,id=lista&&lista.id,info=VAZIO[id];e.dataset.vs='1';
   if(!info){e.classList.add('vs-vazio');e.innerHTML='<span>📭</span><b>Nada por aqui ainda.</b>';return}
-  e.classList.add('vs-vazio');e.innerHTML='<span>'+info[0]+'</span><b>'+info[1]+'</b><small>'+info[2]+'</small>'+($(info[3])?'<button type="button" data-vs-form="'+info[3]+'">➕ Anotar agora</button>':'');});
+  e.classList.add('vs-vazio');e.innerHTML='<span>'+info[0]+'</span><b>'+info[1]+'</b><small>'+info[2]+'</small>'+($(info[3])?'<button type="button" data-vs-form="'+info[3]+'">➕ Registrar agora</button>':'');});
 }
 document.addEventListener('click',function(e){var b=e.target.closest('[data-vs-form]');if(!b)return;var f=$(b.getAttribute('data-vs-form'));if(!f)return;f.scrollIntoView({behavior:'smooth',block:'start'});var i=f.querySelector('input:not([type=hidden]),select,textarea');if(i)setTimeout(function(){try{i.focus({preventScroll:true})}catch(x){}},350)});
 

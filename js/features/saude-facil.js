@@ -47,7 +47,7 @@ var PAG={
 var SIMPLES={acompanhamento:'❤️ Pressão, açúcar e batimentos',exportar:'📤 Guardar ou enviar minha ficha',backup:'💾 Cópia de segurança',dor:'🤒 Como estou me sentindo',perfil:'👤 Meus dados',familia:'🧬 Doenças na família'};
 function infoDe(id){return PAG[id]||['📄',id,'']}
 function aplicarPalavras(){
- document.querySelectorAll('#nav [data-tab], #msaMobileDrawer [data-tab], .msa-mobile-drawer [data-tab]').forEach(function(b){var id=b.getAttribute('data-tab');if(SIMPLES[id]&&!b.dataset.sfOrig&&!b.children.length){b.dataset.sfOrig=b.textContent;b.textContent=SIMPLES[id]}});
+ document.querySelectorAll('#nav [data-tab], #msaMobileDrawer [data-tab], .msa-mobile-drawer [data-tab]').forEach(function(b){var id=b.getAttribute('data-tab');if(SIMPLES[id]&&!b.dataset.sfOrig&&!b.children.length&&!b.getAttribute('data-feature-nav')){b.dataset.sfOrig=b.textContent;b.textContent=SIMPLES[id]}});
  var ex=$('exportar');
  if(ex&&!ex.querySelector('.sf-avancado')){var h=[].slice.call(ex.querySelectorAll('h2,h3')).filter(function(x){return /FHIR/.test(x.textContent)})[0];var card=h&&h.closest('.card');
   if(card){var det=document.createElement('details');det.className='sf-avancado card';det.innerHTML='<summary>⚙️ Avançado (para profissionais e sistemas)</summary>';card.parentNode.insertBefore(det,card);det.appendChild(card)}}
@@ -120,7 +120,7 @@ function montarInicio(){
 function montarMenuSimples(){
  var nav=$('nav');if(!nav||$('sfMenu'))return;
  var m=document.createElement('div');m.id='sfMenu';m.className='sf-menu';
- m.innerHTML='<button type="button" data-sf-ir="home">🏠 Minha saúde</button><button type="button" data-sf="anotar">➕ Anotar</button><button type="button" data-sf-ir="familiares">👨‍👩‍👧 Família</button><button type="button" data-sf="mais" aria-expanded="false">☰ Mais</button>';
+ m.innerHTML='<button type="button" data-sf-ir="home">🏠 Minha saúde</button><button type="button" data-sf="anotar">➕ Registrar</button><button type="button" data-sf-ir="familiares">👨‍👩‍👧 Família</button><button type="button" data-sf="mais" aria-expanded="false">☰ Menu</button>';
  nav.insertBefore(m,nav.firstChild);document.body.classList.add('sf-menu-on');
 }
 function anotar(){
@@ -168,14 +168,14 @@ document.addEventListener('click',function(e){
  else if(ac==='voltar1')passoSintoma(1);else if(ac==='voltar2')passoSintoma(2);
  else if(ac==='fechar-modal')fecharModal();
  else if(ac==='anotar')anotar();
- else if(ac==='mais'){var on=document.body.classList.toggle('sf-menu-completo');a.setAttribute('aria-expanded',String(on));a.textContent=on?'✕ Menos':'☰ Mais'}
+ else if(ac==='mais'){var on=document.body.classList.toggle('sf-menu-completo');a.setAttribute('aria-expanded',String(on));a.textContent=on?'✕ Menos':'☰ Menu'}
  else if(ac==='letra'){ui('letra',ui('letra')==='1'?'0':'1');aplicarVisao();ajuda()}
  else if(ac==='contraste'){ui('contraste',ui('contraste')==='1'?'0':'1');aplicarVisao();ajuda()}
  else if(ac==='fechar'){$('sfAjudaBox').hidden=true;$('sfAjuda').setAttribute('aria-expanded','false')}
 });
 
 /* ---------- juntando tudo ---------- */
-function aoMudar(id){if(pilha[pilha.length-1]!==id)pilha.push(id);if(pilha.length>30)pilha.shift();atualizarTopo(id);if(id==='home')montarInicio();aplicarPalavras();if(document.body.classList.contains('sf-menu-completo')){document.body.classList.remove('sf-menu-completo');var mb=document.querySelector('[data-sf="mais"]');if(mb){mb.textContent='☰ Mais';mb.setAttribute('aria-expanded','false')}}}
+function aoMudar(id){if(pilha[pilha.length-1]!==id)pilha.push(id);if(pilha.length>30)pilha.shift();atualizarTopo(id);if(id==='home')montarInicio();aplicarPalavras();if(document.body.classList.contains('sf-menu-completo')){document.body.classList.remove('sf-menu-completo');var mb=document.querySelector('[data-sf="mais"]');if(mb){mb.textContent='☰ Menu';mb.setAttribute('aria-expanded','false')}}}
 function iniciar(){
  aplicarVisao();montarTopo();montarMenuSimples();montarCuidando();montarInicio();aplicarPalavras();
  if(typeof window.go==='function'&&!window.go.__sf){var o=window.go;window.go=function(id){var r=o.apply(this,arguments);try{aoMudar(id)}catch(e){}return r};window.go.__sf=true}

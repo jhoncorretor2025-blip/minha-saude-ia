@@ -1,3 +1,18 @@
+## V7.79 — Modos Simples/Confortável/Completo corrigidos, navegação mais simples e erros da Família
+- 🎚️ **O modo escolhido vale para o aparelho todo.** Antes ficava só na pessoa ativa: ao abrir a Família (que passa a cuidar do primeiro familiar) o app voltava a Confortável.
+- 🔰 **Simples de verdade:** “Áreas principais” (menu e Início), “Compartilhar” e “IA e ferramentas”, Lixeira e Histórico clínico não aparecem no Simples. O menu fica igual no celular e no computador.
+- 🏠 **Início por modo:** Simples só com o essencial; Confortável com o painel recolhido atrás de “Ver painel completo”; Completo com tudo aberto (o botão recolhe). A escolha de cada modo é lembrada.
+- 📱 **Celular, uma navegação só:** saíram o quadro de 5 botões e o menu fixo de cima (repetiam a barra de baixo e a gaveta).
+- 🖥️ **Computador, menu lateral fixo** com os grupos que o modo mostra e a página atual destacada.
+- 🔎 **Busca geral (Ctrl+K ou /)** acha páginas, pessoas e ações do modo atual e leva à busca nos registros. No celular, o botão Buscar abre a mesma janela.
+- ➕ **Registrar rápido:** folha com Sintoma, Medicamento, Consulta, Exame, Pressão e açúcar e Peso e medidas (este some no Simples). O Menu abre só o menu.
+- 👤 **Pessoa sempre visível** em todas as páginas, com troca.
+- 🏷️ **Nomes iguais:** Registrar (antes Anotar), Menu (antes Mais / Todos os menus), Ferramentas (antes Mais opções). “Medidas corporais” não aparece mais com o nome de “Pressão, açúcar e batimentos”.
+- ⭐ **Fixados e recentes** no Menu, no menu lateral e na busca (só páginas que o modo mostra). 🧭 **Caminho na tela.** ⌨️ **Atalhos no computador** (? mostra a lista), **Salvar fixo** em formulários longos do celular e botões de pelo menos 44 px.
+- 🤖 **Perguntar à IA** não dá mais “list.find is not a function”. **Gerar prompt para buscar familiares** não dá mais erro e o botão do NotebookLM funciona. **Ver mapa** e **Ver padrões** trocam para a sub-aba certa.
+- 🔄 Corrigido o recarregamento automático: `APP_VERSION` estava em V7.76 e o `version.json` em V7.78.
+- 🔢 Versão visível, rodapé, constante, `version.json` e cache sincronizados em V7.79.
+
 ## V7.77 — Parentesco por afinidade separado da linhagem genealógica
 - Pais e ancestrais ligados somente a pessoas por afinidade são opcionais e não alimentam a árvore genealógica principal.
 - Parentes por afinidade continuam visíveis e ligados ao cônjuge; sua família de origem fica em seção separada.

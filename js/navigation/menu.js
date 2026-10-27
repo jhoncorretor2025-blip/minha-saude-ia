@@ -34,7 +34,7 @@
         '<button type="button" data-tab="familiares">👨‍👩‍👧‍👦 Familiares</button>'+
         '<button type="button" data-tab="parceiro" data-experience="simple-hidden">💑 Meu círculo de saúde</button>'+
       '</div></div>'+
-      '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="more">☰ Mais opções ▾</button><div class="nav-menu">'+
+      '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="more">🧰 Ferramentas ▾</button><div class="nav-menu">'+
         '<button type="button" data-tab="inteligencia" data-experience="advanced">🧠 Central de Inteligência</button>'+
         '<button type="button" data-tab="ia">🤖 Assistente de saúde</button>'+
         '<button type="button" data-tab="perguntas">❓ Preparar consulta</button>'+
@@ -276,7 +276,7 @@
         mobileSection('Família',[
           ['familia','🧬 Histórico familiar'],['familiares','👨‍👩‍👧‍👦 Familiares'],['parceiro','💑 Meu círculo de saúde',null,'simple-hidden']
         ])+
-        mobileSection('Mais opções',[
+        mobileSection('Ferramentas',[
           ['inteligencia','🧠 Central de Inteligência',null,'advanced'],['ia','🤖 Assistente de saúde'],['perguntas','❓ Preparar consulta'],
           ['importar','⚡ Importar com IA',null,'advanced'],['documentos','📄 Documentos'],['leitor','📄 Leitor inteligente',null,'advanced'],
           ['relatorios','📊 Relatórios',null,'simple-hidden'],['carteirinha','🪪 Carteirinha',null,'advanced'],
