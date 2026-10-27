@@ -10,7 +10,6 @@
     nav.innerHTML=
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="overview">🏠 Início ▾</button><div class="nav-menu">'+
         '<button type="button" data-tab="home">🏠 Visão geral</button>'+
-        '<button type="button" data-tab="timeline" data-experience="simple-hidden">🕐 Linha do tempo</button><button type="button" data-tab="inteligencia" data-experience="advanced">🧠 Central de Inteligência</button>'+
         '<button type="button" data-tab="perfil">👤 Meu perfil</button>'+
       '</div></div>'+
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="register">➕ Registrar ▾</button><div class="nav-menu">'+
@@ -31,27 +30,57 @@
         '<button type="button" data-tab="lembretes">⏰ Lembretes</button>'+
       '</div></div>'+
       '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="family">👨‍👩‍👧 Família ▾</button><div class="nav-menu">'+
-        '<button type="button" data-tab="familia">🧬 Histórico Familiar e Genética</button>'+
+        '<button type="button" data-tab="familia">🧬 Histórico familiar</button>'+
         '<button type="button" data-tab="familiares">👨‍👩‍👧‍👦 Familiares</button>'+
         '<button type="button" data-tab="parceiro" data-experience="simple-hidden">💑 Meu círculo de saúde</button>'+
       '</div></div>'+
-      '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="organization">📁 Organizar ▾</button><div class="nav-menu">'+
-        '<button type="button" data-tab="documentos">📄 Documentos</button><button type="button" data-tab="leitor" data-experience="advanced">📄 Leitor inteligente</button>'+
+      '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="more">☰ Mais opções ▾</button><div class="nav-menu">'+
+        '<button type="button" data-tab="inteligencia" data-experience="advanced">🧠 Central de Inteligência</button>'+
+        '<button type="button" data-tab="ia">🤖 Assistente de saúde</button>'+
+        '<button type="button" data-tab="perguntas">❓ Preparar consulta</button>'+
+        '<button type="button" data-tab="importar" data-experience="advanced">⚡ Importar com IA</button>'+
+        '<button type="button" data-tab="documentos">📄 Documentos</button>'+
+        '<button type="button" data-tab="leitor" data-experience="advanced">📄 Leitor inteligente</button>'+
         '<button type="button" data-tab="relatorios" data-experience="simple-hidden">📊 Relatórios</button>'+
         '<button type="button" data-tab="carteirinha" data-experience="advanced">🪪 Carteirinha</button>'+
-      '</div></div>'+
-      '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="ai">🤖 IA ▾</button><div class="nav-menu">'+
-        '<button type="button" data-tab="ia">🤖 Assistente</button>'+
-        '<button type="button" data-tab="importar" data-experience="advanced">⚡ Importar com IA</button>'+
-        '<button type="button" data-tab="perguntas">❓ Preparar consulta</button>'+
-      '</div></div>'+
-      '<div class="nav-group"><button type="button" class="nav-toggle" data-menu="security">🔐 Segurança ▾</button><div class="nav-menu">'+
         '<button type="button" data-tab="exportar" data-experience="simple-hidden">📤 Exportar e compartilhar</button>'+
         '<button type="button" data-tab="backup">💾 Backup e restauração</button>'+
         '<button type="button" data-tab="configuracoes">⚙️ Configurações</button>'+
       '</div></div>';
     if(tools)nav.appendChild(tools);
     nav.setAttribute('data-menu-v582','1');
+  }
+
+  function elementoMenuVisivel(el){
+    return !!el && !el.hidden && !el.classList.contains('msa-experience-off') && !el.classList.contains('msa-feature-off');
+  }
+  function atualizarVisibilidadeMenus(){
+    var nav=document.getElementById('nav');
+    if(nav){
+      nav.querySelectorAll('.nav-group').forEach(function(group){
+        var links=Array.prototype.slice.call(group.querySelectorAll('.nav-menu > button[data-tab]'));
+        var visible=links.some(elementoMenuVisivel);
+        group.style.display=visible?'':'none';
+        if(!visible){
+          group.classList.remove('open');
+          var toggle=group.querySelector('.nav-toggle');
+          if(toggle){toggle.classList.remove('open');toggle.setAttribute('aria-expanded','false');}
+        }
+      });
+    }
+    var drawer=document.getElementById('msaMobileDrawer');
+    if(drawer){
+      drawer.querySelectorAll('.msa-mobile-section').forEach(function(section){
+        var links=Array.prototype.slice.call(section.querySelectorAll('button[data-mobile-tab],button[data-mobile-emergency]'));
+        if(!links.length)return;
+        section.style.display=links.some(elementoMenuVisivel)?'':'none';
+      });
+      var quick=drawer.querySelector('.msa-mobile-quick');
+      if(quick){
+        var quickLinks=Array.prototype.slice.call(quick.querySelectorAll('button'));
+        quick.style.display=quickLinks.some(elementoMenuVisivel)?'':'none';
+      }
+    }
   }
 
   function fechar(){
@@ -168,10 +197,13 @@
 
     window.fecharMenus=fechar;
     window.__msaMenuReady=true;
+    window.addEventListener('msa:experience-changed',atualizarVisibilidadeMenus);
+    window.addEventListener('msa:preferences-changed',atualizarVisibilidadeMenus);
     try{if(typeof window.aplicarPreferencias==='function')window.aplicarPreferencias()}catch(e){}
     prepararAcessibilidade();
     criarNavegacaoMobile();
     try{if(typeof window.aplicarExperiencia==='function')window.aplicarExperiencia()}catch(e){}
+    atualizarVisibilidadeMenus();
     var secaoInicial=document.querySelector('#main-content > section.active');
     sincronizarAtalhoMobile(secaoInicial?secaoInicial.id:'home');
     if(window.MutationObserver){
@@ -218,46 +250,42 @@
 
     drawer.innerHTML=
       '<div class="msa-mobile-drawer-head">'+
-        '<div><h2>🩺 Minha Saúde IA</h2><div class="muted">Escolha pelo que você quer fazer</div></div>'+
+        '<div><h2>🩺 Minha Saúde IA</h2><div class="muted">Acesse por objetivo</div></div>'+
         '<button class="msa-mobile-drawer-close" type="button" aria-label="Fechar menu">✕</button>'+
       '</div>'+
       '<div class="msa-mobile-drawer-body">'+
         '<div class="msa-mobile-quick">'+
-          '<button type="button" data-mobile-tab="dor">😣<span>Registrar sintoma</span></button>'+
+          '<button type="button" data-mobile-tab="dor">😣<span>Sintoma</span></button>'+
           '<button type="button" data-mobile-tab="meds">💊<span>Medicamento</span></button>'+
           '<button type="button" data-mobile-tab="consultas">👨‍⚕️<span>Consulta</span></button>'+
           '<button type="button" data-mobile-tab="exames">🧪<span>Exame</span></button>'+
           '<button type="button" data-mobile-tab="acompanhamento">❤️<span>Sinal vital</span></button>'+
-          '<button type="button" data-mobile-tab="acompanhamento" data-feature-nav="academia" data-experience="simple-hidden">📏<span>Medidas</span></button>'+
         '</div>'+
-        mobileSection('Principal',[['home','🏠 Início'],['timeline','🕐 Linha do tempo',null,'simple-hidden'],['inteligencia','🧠 Inteligência',null,'advanced'],['perfil','👤 Meu perfil']])+ 
+        mobileSection('Início',[
+          ['home','🏠 Visão geral'],['perfil','👤 Meu perfil'],['timeline','🕐 Linha do tempo',null,'simple-hidden']
+        ])+
         mobileSection('Registrar',[
-          ['dor','😣 Sintoma ou dor'],['meds','💊 Medicamentos'],['consultas','👨‍⚕️ Consultas'],
-          ['msa87Panel','📊 Meu painel de saúde',null,'advanced'],['exames','🧪 Exames'],['acompanhamento','❤️ Sinais vitais'],['acompanhamento','📏 Medidas corporais','academia','simple-hidden'],
-          ['nutricao','🥗 Nutrição','nutricao','simple-hidden']
+          ['dor','😣 Sintoma ou dor'],['meds','💊 Medicamentos'],['consultas','👨‍⚕️ Consultas'],['exames','🧪 Exames'],['acompanhamento','❤️ Sinais vitais'],
+          ['acompanhamento','📏 Medidas corporais','academia','simple-hidden'],['nutricao','🥗 Nutrição','nutricao','simple-hidden']
         ])+
         mobileSection('Acompanhar',[
+          ['msa87Panel','📊 Meu painel de saúde',null,'advanced'],['timeline','🕐 Linha do tempo',null,'simple-hidden'],
           ['sono','😴 Sono e bem-estar','sonoBem','simple-hidden'],['avisos','🔔 Atenção e avisos'],
           ['calendario','📅 Calendário',null,'simple-hidden'],['lembretes','⏰ Lembretes']
         ])+
         mobileSection('Família',[
-          ['familia','🧬 Histórico Familiar e Genética'],['familiares','👨‍👩‍👧‍👦 Familiares'],['parceiro','💑 Meu círculo de saúde',null,'simple-hidden']
+          ['familia','🧬 Histórico familiar'],['familiares','👨‍👩‍👧‍👦 Familiares'],['parceiro','💑 Meu círculo de saúde',null,'simple-hidden']
         ])+
-        mobileSection('Organizar',[
-          ['documentos','📄 Documentos'],['leitor','📄 Leitor inteligente',null,'advanced'],['relatorios','📊 Relatórios',null,'simple-hidden'],['carteirinha','🪪 Carteirinha',null,'advanced']
+        mobileSection('Mais opções',[
+          ['inteligencia','🧠 Central de Inteligência',null,'advanced'],['ia','🤖 Assistente de saúde'],['perguntas','❓ Preparar consulta'],
+          ['importar','⚡ Importar com IA',null,'advanced'],['documentos','📄 Documentos'],['leitor','📄 Leitor inteligente',null,'advanced'],
+          ['relatorios','📊 Relatórios',null,'simple-hidden'],['carteirinha','🪪 Carteirinha',null,'advanced'],
+          ['exportar','📤 Exportar e compartilhar',null,'simple-hidden'],['backup','💾 Backup e restauração'],['configuracoes','⚙️ Configurações']
         ])+
-        mobileSection('IA',[
-          ['perguntas-saude','💬 Perguntar sobre minha saúde'],['ia','🤖 Assistente'],['importar','⚡ Importar com IA',null,'advanced'],['perguntas','❓ Preparar consulta']
-        ])+
-        mobileSection('Dados e segurança',[
-          ['exportar','📤 Enviar minha ficha para a família',null,'simple-hidden'],['backup','💾 Backup e restauração'],['configuracoes','⚙️ Configurações']
-        ])+
-        '<div class="msa-mobile-section"><div class="msa-mobile-section-title">Ação especial</div>'+ 
-          '<div class="msa-mobile-links"><button type="button" class="danger" data-mobile-emergency="1">🚨 Modo emergência</button>'+ 
-          '<button type="button" data-mobile-tab="perfil" data-mobile-ciclo="1" data-feature-nav="ciclo">🌸 Ciclo menstrual</button></div></div>'+ 
-      '</div>';
-
-    var bar=document.createElement('nav');
+        '<div class="msa-mobile-section"><div class="msa-mobile-section-title">Ação especial</div>'+
+          '<div class="msa-mobile-links"><button type="button" class="danger" data-mobile-emergency="1">🚨 Modo emergência</button>'+
+          '<button type="button" data-mobile-tab="perfil" data-mobile-ciclo="1" data-feature-nav="ciclo" data-experience="simple-hidden">🌸 Ciclo menstrual</button></div></div>'+
+      '</div>';    var bar=document.createElement('nav');
     bar.id='msaMobileBar';
     bar.className='msa-mobile-bar';
     bar.setAttribute('aria-label','Navegação rápida');
