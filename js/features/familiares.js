@@ -574,7 +574,8 @@ function consolidarGrupoDuplicatasFamilia(chave,keeperId){
  const remover=pessoas.filter(function(p){return String(p.id)!==String(keeperId)}),idsRemover=new Set(remover.map(function(p){return String(p.id)}));
  const detalhes=pessoas.map(function(p){return '• '+(p.nome||'Sem nome')+' — '+descreverCadastroDuplicata(p)}).join(String.fromCharCode(10));
  const sexoKeeper=sexoCanonicoDuplicata(keeper);
- const sexoConflitante=!!sexoKeeper&&pessoas.some(function(p){return String(p.id)!==String(keeper.id)&&!!sexoCanonicoDuplicata(p)&&sexoCanonicoDuplicata(p)!==sexoKeeper});
+ const sexosConhecidos=new Set(pessoas.map(function(p){return sexoCanonicoDuplicata(p)}).filter(Boolean));
+ const sexoConflitante=sexosConhecidos.size>1;
  const linhasMensagem=[
   'Foram encontrados '+pessoas.length+' cadastros com o mesmo nome:',
   '',
