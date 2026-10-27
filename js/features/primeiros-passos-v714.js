@@ -15,6 +15,62 @@ function storage(){try{return window.MSAStorage||null}catch(e){return null}}
 function read(k){try{return localStorage.getItem(k)||''}catch(e){return ''}}
 function write(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function profile(){try{var k=window.MSA_K||window.K||{},s=storage(),p=s&&k.p?s.get(k.p):null;return Array.isArray(p)?(p[0]||{}):(p||{})}catch(e){return {}}}
+
+var EXPERIENCE_CHOICE_KEY='msa2_experience_choice_v765';
+function savedExperience(){
+ try{
+  var k=window.MSA_K||window.K||{},s=storage(),a=s&&k.preferencias?s.get(k.preferencias):null;
+  var v=Array.isArray(a)&&a[0]&&typeof a[0]==='object'?a[0].experiencia:'';
+  return ['simple','comfortable','advanced'].includes(v)?v:'';
+ }catch(e){return ''}
+}
+function saveExperience(level){
+ if(!['simple','comfortable','advanced'].includes(level))return false;
+ try{
+  if(typeof window.salvarPreferenciasObjeto==='function'){
+   window.salvarPreferenciasObjeto({experiencia:level});
+  }else{
+   var k=window.MSA_K||window.K||{},s=storage();
+   if(!s||!k.preferencias||typeof s.get!=='function'||typeof s.set!=='function')return false;
+   var a=s.get(k.preferencias),old=Array.isArray(a)&&a[0]&&typeof a[0]==='object'?Object.assign({},a[0]):{};
+   if(s.set(k.preferencias,[Object.assign(old,{experiencia:level})])===false)return false;
+  }
+  try{if(typeof window.aplicarPreferencias==='function')window.aplicarPreferencias()}catch(e){}
+  try{if(typeof window.aplicarExperiencia==='function')window.aplicarExperiencia()}catch(e){}
+  var select=document.getElementById('prefExperiencia');if(select)select.value=level;
+  return savedExperience()===level;
+ }catch(e){console.warn('[Minha Saúde IA] não foi possível salvar a experiência escolhida:',e);return false}
+}
+function openExperienceChoice(after){
+ var existing=document.getElementById('msaExperienceChoice');if(existing)existing.remove();
+ var wrap=document.createElement('div');wrap.id='msaExperienceChoice';wrap.setAttribute('role','dialog');wrap.setAttribute('aria-modal','true');wrap.setAttribute('aria-labelledby','msaExperienceTitle');
+ wrap.innerHTML='<div class="msa-exp-choice-backdrop"></div><div class="msa-exp-choice-box"><button type="button" class="msa-exp-choice-close" aria-label="Escolher depois">×</button><div class="msa-exp-choice-kicker">PERSONALIZE SUA EXPERIÊNCIA</div><h2 id="msaExperienceTitle">Como você prefere usar o Minha Saúde IA?</h2><p class="msa-exp-choice-intro">Cada pessoa usa o aplicativo de um jeito. Escolha o nível de detalhes que combina com você. Você poderá mudar isso em Configurações quando quiser.</p><div class="msa-exp-choice-options">'+
+ '<button type="button" data-exp-choice="simple" class="msa-exp-choice-option"><span class="msa-exp-choice-icon">🧭</span><span class="msa-exp-choice-copy"><b>Simples</b><small>Menos opções no menu, passos diretos e foco no essencial.</small></span><span class="msa-exp-choice-arrow">›</span></button>'+
+ '<button type="button" data-exp-choice="comfortable" class="msa-exp-choice-option"><span class="msa-exp-choice-icon">🙂</span><span class="msa-exp-choice-copy"><b>Confortável</b><small>Um equilíbrio entre facilidade e recursos, sem esconder opções secundárias.</small></span><span class="msa-exp-choice-arrow">›</span></button>'+
+ '<button type="button" data-exp-choice="advanced" class="msa-exp-choice-option"><span class="msa-exp-choice-icon">⚡</span><span class="msa-exp-choice-copy"><b>Completo / avançado</b><small>Mais abas, gráficos, ferramentas e acesso rápido aos detalhes.</small></span><span class="msa-exp-choice-arrow">›</span></button></div>'+
+ '<button type="button" class="msa-exp-choice-later">Agora não — continuar com a experiência atual</button><div class="msa-exp-choice-note">A escolha muda apenas a forma de navegar. Ela não apaga nem altera seus registros de saúde.</div></div>';
+ var style=document.createElement('style');style.textContent='#msaExperienceChoice{position:fixed;inset:0;z-index:2147483200;color:#172033;font-family:inherit}#msaExperienceChoice .msa-exp-choice-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.62);backdrop-filter:blur(3px)}#msaExperienceChoice .msa-exp-choice-box{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);box-sizing:border-box;width:min(calc(100% - 30px),540px);max-height:calc(100dvh - 28px);overflow:auto;padding:22px;border-radius:22px;background:#fff;box-shadow:0 28px 90px #0004}#msaExperienceChoice .msa-exp-choice-kicker{font-size:11px;letter-spacing:.09em;font-weight:900;color:#2563eb}#msaExperienceChoice h2{font-size:24px;line-height:1.2;margin:10px 32px 8px 0}#msaExperienceChoice .msa-exp-choice-intro{font-size:14px;line-height:1.5;color:#475569;margin:0 0 15px}#msaExperienceChoice .msa-exp-choice-close{position:absolute;right:12px;top:12px;width:37px;height:37px;border:0;border-radius:50%;background:#f1f5f9;color:#334155;font-size:25px;cursor:pointer}#msaExperienceChoice .msa-exp-choice-options{display:grid;gap:9px}#msaExperienceChoice .msa-exp-choice-option{display:flex;align-items:center;gap:12px;width:100%;min-height:76px;text-align:left;padding:13px;border:1px solid #d8e2f0;border-radius:15px;background:#fff;color:#172033;cursor:pointer;font:inherit}#msaExperienceChoice .msa-exp-choice-option:hover,#msaExperienceChoice .msa-exp-choice-option:focus-visible{border-color:#2563eb;background:#eff6ff;outline:2px solid #bfdbfe;outline-offset:1px}#msaExperienceChoice .msa-exp-choice-icon{font-size:26px;flex:0 0 34px;text-align:center}#msaExperienceChoice .msa-exp-choice-copy{display:grid;gap:4px;flex:1}#msaExperienceChoice .msa-exp-choice-copy b{font-size:15px}#msaExperienceChoice .msa-exp-choice-copy small{font-size:12px;line-height:1.4;color:#64748b}#msaExperienceChoice .msa-exp-choice-arrow{font-size:25px;color:#64748b}#msaExperienceChoice .msa-exp-choice-later{display:block;width:100%;margin-top:12px;min-height:42px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;color:#475569;font:inherit;font-size:13px;font-weight:750;cursor:pointer}#msaExperienceChoice .msa-exp-choice-note{font-size:11px;line-height:1.45;color:#64748b;margin-top:11px}@media(max-width:420px){#msaExperienceChoice .msa-exp-choice-box{padding:18px}#msaExperienceChoice h2{font-size:21px}}body.msa-dark #msaExperienceChoice .msa-exp-choice-box{background:#111827;color:#e5e7eb}body.msa-dark #msaExperienceChoice .msa-exp-choice-option{background:#1f2937;color:#e5e7eb;border-color:#334155}body.msa-dark #msaExperienceChoice .msa-exp-choice-copy small,body.msa-dark #msaExperienceChoice .msa-exp-choice-intro,body.msa-dark #msaExperienceChoice .msa-exp-choice-note{color:#cbd5e1}';
+ document.head.appendChild(style);document.body.appendChild(wrap);document.body.style.overflow='hidden';
+ function close(choice){
+  document.body.style.overflow='';wrap.remove();style.remove();
+  if(choice)write(EXPERIENCE_CHOICE_KEY,choice);
+  if(typeof after==='function')after();
+ }
+ wrap.querySelectorAll('[data-exp-choice]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+   var level=btn.getAttribute('data-exp-choice');
+   if(!saveExperience(level)){alert('Não foi possível salvar sua preferência agora. Você pode escolher depois em Configurações.');return;}
+   close('chosen');
+  });
+ });
+ function later(){close('skipped')}
+ wrap.querySelector('.msa-exp-choice-later').addEventListener('click',later);
+ wrap.querySelector('.msa-exp-choice-close').addEventListener('click',later);
+ wrap.querySelector('.msa-exp-choice-backdrop').addEventListener('click',later);
+ document.addEventListener('keydown',function esc(e){
+  if(e.key==='Escape'&&document.getElementById('msaExperienceChoice')){later();document.removeEventListener('keydown',esc);}
+ });
+}
 function hasData(){var p=profile();return !!(String(p.nome||'').trim()||String(p.nasc||'').trim()||String(p.alerg||'').trim()||String(p.cond||'').trim())}
 function goProfile(){try{if(typeof window.go==='function')window.go('perfil');else location.hash='perfil'}catch(e){}}
 function remove(){var x=document.getElementById('msa714Tour');if(x)x.remove();document.body.style.overflow=''}
@@ -48,8 +104,15 @@ function showProfileCard(){
 /* V7.24: a chave acima tinha sido apagada e o arquivo inteiro deixava de funcionar */
 function init(){
  if(!document.getElementById('home'))return;
- if(!read(TOUR_KEY)){
-   setTimeout(function(){if(!document.getElementById('msa714Tour')&&!read(TOUR_KEY))openTour(0)},1800);
+ function maybeTour(){if(!read(TOUR_KEY))openTour(0)}
+ if(!read(EXPERIENCE_CHOICE_KEY)){
+   setTimeout(function(){
+    if(document.getElementById('msa714Tour')||document.getElementById('msaExperienceChoice'))return;
+    if(savedExperience()){write(EXPERIENCE_CHOICE_KEY,'existing');maybeTour();return;}
+    openExperienceChoice(maybeTour);
+   },1500);
+ }else if(!read(TOUR_KEY)){
+   setTimeout(function(){if(!document.getElementById('msa714Tour'))openTour(0)},1800);
  }else if((read(TOUR_KEY)==='done'||read(TOUR_KEY)==='later')&&!hasData()&&Date.now()-Number(read(REMIND_KEY)||0)>3*86400000){
    showProfileCard();
  }
