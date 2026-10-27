@@ -39,7 +39,7 @@
       limpar.then(function(){
         var u=new URL(window.location.href);
         u.searchParams.set('cb',Date.now().toString());
-        u.searchParams.set('v','V7.63');
+        u.searchParams.set('v','V7.64');
         window.location.replace(u.toString());
       });
     }catch(e){}
@@ -49,7 +49,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V7.63</title>
+<title>Minha Saúde IA — V7.64</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -377,7 +377,7 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
  body.msa-exp-simple .msa-mobile-quick button{min-height:78px}
 }
 
-/* V7.63 — navegação mobile: áreas de toque maiores, menu legível e scroll seguro */
+/* V7.64 — navegação mobile: áreas de toque maiores, menu legível e scroll seguro */
 @media(max-width:760px){
  html{scroll-padding-top:calc(84px + env(safe-area-inset-top));-webkit-text-size-adjust:100%}
  body{overflow-x:hidden}
@@ -429,7 +429,7 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
 @media(max-width:520px){.home-profile-stats{gap:6px}.home-profile-stats #homeProfileBMIChip,.home-profile-stats #homeProfileWaistChip{border-radius:10px}.home-profile-metric-chip small{font-size:9px}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V7.63">
+  <link rel="stylesheet" href="css/design-system.css?v=V7.64">
 
 <style id="v519-progressive-ui">
 /* V7.37 — melhorias progressivas de dashboard, favoritos e alertas */
@@ -677,6 +677,32 @@ body.msa-dark #settingsPreferences label{background:#111827!important;color:#e5e
 @media(prefers-reduced-motion:reduce){#msaPendenciasModal *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style>
 
+
+<style id="msaConfigTabsStyles764">
+.msa-config-tabs{display:flex;align-items:stretch;gap:8px;flex-wrap:nowrap;overflow-x:auto;padding:4px 2px 10px;margin:0 0 8px;scrollbar-width:thin}
+.msa-config-tabs [role="tab"]{appearance:none;flex:0 0 auto;min-height:42px;border:1px solid var(--border,#dbe3ef);border-radius:13px;padding:10px 13px;background:var(--card,#fff);color:var(--text,#172033);font:inherit;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s}
+.msa-config-tabs [role="tab"][aria-selected="true"]{background:#1d4ed8;color:#fff;border-color:#1d4ed8;box-shadow:0 3px 10px rgba(29,78,216,.16)}
+.msa-config-tabs [role="tab"]:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}
+.msa-config-panels{display:block;min-width:0}
+.msa-config-panel{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;min-width:0}
+.msa-config-panel[hidden]{display:none!important}
+.msa-config-panel .card,.msa-config-panel .alert{margin:0}
+.msa-config-panel-intro{padding:14px}
+#settingsPreferences{margin-top:0!important}
+#settingsAI{margin-top:0!important}
+#msaSettingsProfessional:empty{display:none}
+.msa-config-panel .row>.btn{flex:0 1 auto}
+body.msa-dark .msa-config-tabs [role="tab"]{background:#111827;color:#e5e7eb;border-color:#334155}
+body.msa-dark .msa-config-tabs [role="tab"][aria-selected="true"]{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+body.msa-dark #msaConfigFamiliaresVivos{background:linear-gradient(135deg,#10281d,#111827)!important;border-color:#166534!important}
+@media(max-width:600px){
+ .msa-config-tabs{gap:6px;margin-left:-2px;margin-right:-2px}
+ .msa-config-tabs [role="tab"]{min-height:44px;padding:10px 12px;font-size:12px}
+ .msa-config-panel .row{flex-direction:column;align-items:stretch}
+ .msa-config-panel .row>.btn{flex:1 1 auto;width:100%}
+}
+</style>
+
 </head>
 <body>
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
@@ -755,7 +781,7 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V7.63</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V7.64</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 
 <!-- V6.20 — retorno persistente, feedback de navegação e validação do perfil -->
@@ -1003,20 +1029,52 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  <div class="nav-group"><button type="button" class="nav-toggle" data-menu="more">🔐 Dados e segurança ▾</button><div class="nav-menu"><button type="button" data-tab="carteirinha">🪪 Carteirinha</button><button type="button" data-tab="exportar">📤 Exportar</button><button type="button" data-tab="backup">💾 Backup e segurança</button><button type="button" data-tab="configuracoes">⚙️ Configurações</button></div></div>
 </nav>
 
-<section id="configuracoes"><div class="card"><h2>⚙️ Configurações e personalização</h2><div class="muted">O aplicativo pode se adaptar ao jeito que cada pessoa prefere usar tecnologia. Escolha a experiência e os recursos que fazem sentido para você.</div>
-<div id="settingsPreferences" class="grid2" style="margin-top:14px"></div>
-<div id="settingsAI" class="card" style="margin-top:14px"></div>
-<div class="card" id="msaConfigFamiliaresVivos" style="margin-top:14px;border:1px solid #bbf7d0;background:linear-gradient(135deg,#f0fdf4,#fff)">
- <h3 style="margin-top:0">💚 Marcar familiares como vivos</h3>
- <div class="muted" style="margin-bottom:12px">Use esta opção para atualizar de uma só vez os familiares cuja situação está como “Não informado”. Os familiares já marcados como falecidos serão preservados. Cadastros com data ou causa de falecimento ficam para revisão manual.</div>
- <button class="btn primary" type="button" onclick="window.marcarFamiliaresNaoInformadosVivos()" style="min-height:44px">💚 Marcar todos os não informados como vivos</button>
+<section id="configuracoes">
+<div class="card" id="msaConfigIntro" style="margin-bottom:12px">
+ <h2 style="margin-top:0">⚙️ Configurações e personalização</h2>
+ <p class="muted" style="margin-bottom:0">As opções agora estão organizadas por assunto. Escolha uma aba para encontrar mais facilmente o que precisa.</p>
 </div>
-<div class="grid2" style="margin-top:14px">
- <div class="card" style="margin:0"><h3>🔐 Privacidade e dados</h3><div class="muted">Entenda onde seus dados ficam, o que é compartilhado e como proteger seu histórico.</div><button class="btn secondary small" type="button" onclick="abrirPrivacidadeAjuda('privacidade')">🔐 Ver privacidade</button></div>
- <div class="card" style="margin:0"><h3>❓ Central de ajuda</h3><div class="muted">Respostas rápidas sobre backup, PDF, IA, armazenamento local e segurança.</div><button class="btn secondary small" type="button" onclick="abrirPrivacidadeAjuda('ajuda')">❓ Abrir ajuda</button></div>
+<div id="msaConfigTabs" class="msa-config-tabs" role="tablist" aria-label="Categorias de configurações">
+ <button type="button" role="tab" id="msaConfigTabBtnGeral" aria-controls="msaConfigPanelGeral" aria-selected="true" tabindex="0" data-config-tab="geral">⚙️ Geral</button>
+ <button type="button" role="tab" id="msaConfigTabBtnAparencia" aria-controls="msaConfigPanelAparencia" aria-selected="false" tabindex="-1" data-config-tab="aparencia">🎨 Aparência</button>
+ <button type="button" role="tab" id="msaConfigTabBtnMedicos" aria-controls="msaConfigPanelMedicos" aria-selected="false" tabindex="-1" data-config-tab="medicos">🩺 Médicos</button>
+ <button type="button" role="tab" id="msaConfigTabBtnFamilia" aria-controls="msaConfigPanelFamilia" aria-selected="false" tabindex="-1" data-config-tab="familia">👨‍👩‍👧‍👦 Família</button>
+ <button type="button" role="tab" id="msaConfigTabBtnDados" aria-controls="msaConfigPanelDados" aria-selected="false" tabindex="-1" data-config-tab="dados">💾 Dados e segurança</button>
+ <button type="button" role="tab" id="msaConfigTabBtnAjuda" aria-controls="msaConfigPanelAjuda" aria-selected="false" tabindex="-1" data-config-tab="ajuda">❓ Ajuda</button>
 </div>
-<div class="alert warn" style="margin-top:12px">⚠️ O Minha Saúde IA é uma ferramenta de organização pessoal. Ele não substitui avaliação, diagnóstico ou tratamento por profissionais de saúde.</div>
-<div class="alert safe" style="margin-top:12px">💡 Você pode mudar essas escolhas quando quiser. Elas não alteram nem apagam seus registros.</div></div></section>
+<div id="msaConfigPanels" class="msa-config-panels">
+ <div id="msaConfigPanelGeral" class="msa-config-panel" role="tabpanel" aria-labelledby="msaConfigTabBtnGeral" tabindex="0" data-config-panel="geral">
+  <div class="card msa-config-panel-intro"><h3 style="margin-top:0">Preferências gerais</h3><p class="muted" style="margin-bottom:0">Ajustes gerais do aplicativo, experiência de uso e preferências dos módulos.</p></div>
+  <div id="settingsPreferences" class="grid2" style="margin-top:0"></div>
+  <div id="settingsAI" class="card" style="margin-top:0"></div>
+ </div>
+ <div id="msaConfigPanelAparencia" class="msa-config-panel" role="tabpanel" aria-labelledby="msaConfigTabBtnAparencia" tabindex="0" data-config-panel="aparencia" hidden>
+  <div class="card msa-config-panel-intro"><h3 style="margin-top:0">Aparência e acessibilidade</h3><p class="muted" style="margin-bottom:0">Personalize a leitura e a apresentação do aplicativo.</p></div>
+ </div>
+ <div id="msaConfigPanelMedicos" class="msa-config-panel" role="tabpanel" aria-labelledby="msaConfigTabBtnMedicos" tabindex="0" data-config-panel="medicos" hidden>
+  <div class="card msa-config-panel-intro"><h3 style="margin-top:0">Médicos que me atendem</h3><p class="muted" style="margin-bottom:0">Cadastre médicos, clínicas e contatos vinculados ao perfil de saúde ativo.</p></div>
+ </div>
+ <div id="msaConfigPanelFamilia" class="msa-config-panel" role="tabpanel" aria-labelledby="msaConfigTabBtnFamilia" tabindex="0" data-config-panel="familia" hidden>
+  <div class="card" id="msaConfigFamiliaresVivos" style="margin-top:0;border:1px solid #bbf7d0;background:linear-gradient(135deg,#f0fdf4,#fff)">
+   <h3 style="margin-top:0">💚 Marcar familiares como vivos</h3>
+   <div class="muted" style="margin-bottom:12px">Use esta opção para atualizar de uma só vez os familiares cuja situação está como “Não informado”. Os familiares já marcados como falecidos serão preservados. Cadastros com data ou causa de falecimento ficam para revisão manual.</div>
+   <button class="btn primary" type="button" onclick="window.marcarFamiliaresNaoInformadosVivos()" style="min-height:44px">💚 Marcar todos os não informados como vivos</button>
+  </div>
+ </div>
+ <div id="msaConfigPanelDados" class="msa-config-panel" role="tabpanel" aria-labelledby="msaConfigTabBtnDados" tabindex="0" data-config-panel="dados" hidden>
+  <div class="card msa-config-panel-intro"><h3 style="margin-top:0">Dados, segurança e backup</h3><p class="muted" style="margin-bottom:0">Consulte onde seus dados ficam guardados e acesse os recursos de backup e exportação.</p></div>
+ </div>
+ <div id="msaConfigPanelAjuda" class="msa-config-panel" role="tabpanel" aria-labelledby="msaConfigTabBtnAjuda" tabindex="0" data-config-panel="ajuda" hidden>
+  <div class="card msa-config-panel-intro"><h3 style="margin-top:0">Ajuda e diagnóstico</h3><p class="muted" style="margin-bottom:0">Encontre orientações e confira recursos básicos do navegador.</p></div>
+  <div class="grid2" id="msaConfigHelpLinks" style="margin-top:0">
+   <div class="card" style="margin:0"><h3>🔐 Privacidade e dados</h3><div class="muted">Entenda onde seus dados ficam, o que é compartilhado e como proteger seu histórico.</div><button class="btn secondary small" type="button" onclick="abrirPrivacidadeAjuda('privacidade')">🔐 Ver privacidade</button></div>
+   <div class="card" style="margin:0"><h3>❓ Central de ajuda</h3><div class="muted">Respostas rápidas sobre backup, PDF, IA, armazenamento local e segurança.</div><button class="btn secondary small" type="button" onclick="abrirPrivacidadeAjuda('ajuda')">❓ Abrir ajuda</button></div>
+  </div>
+  <div class="alert warn" style="margin-top:0">⚠️ O Minha Saúde IA é uma ferramenta de organização pessoal. Ele não substitui avaliação, diagnóstico ou tratamento por profissionais de saúde.</div>
+  <div class="alert safe" style="margin-top:0">💡 Você pode mudar suas escolhas quando quiser. Elas não alteram nem apagam seus registros.</div>
+ </div>
+</div>
+</section>
 
 <section id="home" class="active"><div id="homeProfileHero" class="home-profile-hero"><div class="home-avatar" id="homeAvatar" role="button" tabindex="0" aria-label="Trocar foto do perfil" title="Toque para trocar a foto"><span>👤</span></div><div class="home-profile-main"><div class="home-greeting">👋 Olá!</div><h2 id="homeProfileName">Seu nome</h2><div class="home-profile-stats"><span>🎂 <b id="homeProfileAge">—</b> anos</span><span>⚖️ <b id="homeProfileWeight">—</b> kg</span><span>📏 <b id="homeProfileHeight">—</b></span><span id="homeProfileBloodBadge" title="Grupo sanguíneo e fator Rh" aria-label="Grupo sanguíneo"><span aria-hidden="true">🩸</span> <b id="homeProfileBlood">—</b><small id="homeProfileBloodFull" class="home-profile-blood-full"></small></span><span id="homeProfileBMIChip" class="home-profile-metric-chip" title="IMC calculado pelo peso e altura do perfil">🧮 IMC <b id="homeProfileBMI">—</b><small id="homeProfileBMIClass">Informe peso e altura</small></span><span id="homeProfileWaistChip" class="home-profile-metric-chip" title="Última circunferência da cintura registrada">📏 Cintura <b id="homeProfileWaist">—</b><small id="homeProfileWaistDate">Registre em medidas corporais</small></span></div></div><div class="home-profile-actions"><button class="home-profile-edit" type="button" onclick="go('perfil')">✏️ Editar</button><button class="home-profile-card" type="button" onclick="go('carteirinha')">🪪 Ver carteirinha</button></div></div>
 <section id="homeSmartHealth" class="home-smart-health" aria-label="Resumo inteligente de saúde">
@@ -2079,7 +2137,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V7.63. Importação instantânea por IA com revisão antes de salvar. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V7.64. Importação instantânea por IA com revisão antes de salvar. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -2100,19 +2158,19 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/features/areas-principais-v738.js?v=V7.63" defer></script>
-<script src="js/core/constants.js?v=V7.63" defer></script>
-<script src="js/core/storage.js?v=V7.63" defer></script>
-<script src="js/core/utils.js?v=V7.63" defer></script>
-<script src="js/core/stability-v599.js?v=V7.63" defer></script>
-<script src="js/features/comeco-rapido.js?v=V7.63" defer></script>
-<script src="js/navigation/menu.js?v=V7.63" defer></script>
-<script src="js/core/app.js?v=V7.63" defer></script>
-<script src="js/features/notificacoes-remotas.js?v=V7.63" defer></script>
-<script src="js/features/perfil-compartilhado.js?v=V7.63" defer></script>
-<script src="js/features/perfil-save.js?v=V7.63" defer></script>
-<script src="js/features/familiares.js?v=V7.63" defer></script>
-<script src="js/features/recursos.js?v=V7.63" defer></script>
+<script src="js/features/areas-principais-v738.js?v=V7.64" defer></script>
+<script src="js/core/constants.js?v=V7.64" defer></script>
+<script src="js/core/storage.js?v=V7.64" defer></script>
+<script src="js/core/utils.js?v=V7.64" defer></script>
+<script src="js/core/stability-v599.js?v=V7.64" defer></script>
+<script src="js/features/comeco-rapido.js?v=V7.64" defer></script>
+<script src="js/navigation/menu.js?v=V7.64" defer></script>
+<script src="js/core/app.js?v=V7.64" defer></script>
+<script src="js/features/notificacoes-remotas.js?v=V7.64" defer></script>
+<script src="js/features/perfil-compartilhado.js?v=V7.64" defer></script>
+<script src="js/features/perfil-save.js?v=V7.64" defer></script>
+<script src="js/features/familiares.js?v=V7.64" defer></script>
+<script src="js/features/recursos.js?v=V7.64" defer></script>
 
 
 <script>
@@ -2135,12 +2193,12 @@ function iniciarImportacao(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
-<script src="js/features/inteligencia.js?v=V7.63" defer></script>
-<script src="js/ai/importacao.js?v=V7.63" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/legacy/melhorias-primeiras.js?v=V7.63" defer></script>
-<script src="js/features/expansoes.js?v=V7.63" defer></script>
-<script src="js/ai/importacao-fluxo-v514.js?v=V7.63" defer></script>
-<script src="js/legacy/melhorias-v513.js?v=V7.63" defer></script>
+<script src="js/features/inteligencia.js?v=V7.64" defer></script>
+<script src="js/ai/importacao.js?v=V7.64" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/legacy/melhorias-primeiras.js?v=V7.64" defer></script>
+<script src="js/features/expansoes.js?v=V7.64" defer></script>
+<script src="js/ai/importacao-fluxo-v514.js?v=V7.64" defer></script>
+<script src="js/legacy/melhorias-v513.js?v=V7.64" defer></script>
 
 
 <script>
@@ -2245,7 +2303,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
-<script src="js/reports/relatorios-v599.js?v=V7.63" defer></script>
+<script src="js/reports/relatorios-v599.js?v=V7.64" defer></script>
 
 
 
@@ -3092,12 +3150,12 @@ body.msa-dark .msa-settings-grid>label small{color:#cbd5e1}
 body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 @media(max-width:600px){.msa-settings-grid{grid-template-columns:minmax(0,1fr)}.msa-settings-professional .row>.btn{flex:1 1 100%;width:100%}}
 </style>
-<script src="js/features/configuracoes-profissionais.js?v=V7.63" defer></script>
-<script src="js/features/perguntas-saude.js?v=V7.63" defer></script>
-<script src="js/features/navegacao-facil.js?v=V7.63" defer></script>
-<script src="js/features/saude-facil.js?v=V7.63" defer></script>
-<script src="js/features/saude-plus.js?v=V7.63" defer></script>
-<script src="js/features/visual-saude.js?v=V7.63" defer></script>
+<script src="js/features/configuracoes-profissionais.js?v=V7.64" defer></script>
+<script src="js/features/perguntas-saude.js?v=V7.64" defer></script>
+<script src="js/features/navegacao-facil.js?v=V7.64" defer></script>
+<script src="js/features/saude-facil.js?v=V7.64" defer></script>
+<script src="js/features/saude-plus.js?v=V7.64" defer></script>
+<script src="js/features/visual-saude.js?v=V7.64" defer></script>
 
 <style id="msa-welcome-v623">
 #msaWelcomeModal{position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.64);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto}
@@ -3247,13 +3305,13 @@ body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion
  });
 })();
 </script>
-<script src="js/features/painel-intermediario.js?v=V7.63" defer></script>
-<script src="js/features/saude-avancada-v688.js?v=V7.63" defer></script>
-<script src="js/features/doencas-linha-tempo-v690.js?v=V7.63" defer></script>
-<script src="js/features/linha-tempo-melhorias-v692.js?v=V7.63" defer></script>
-<script src="js/features/perguntas-proxima-consulta-v693.js?v=V7.63" defer></script>
-<script src="js/ai/prompt-importacao-contexto-v698.js?v=V7.63" defer></script>
-<script src="js/ai/importar-facil.js?v=V7.63" defer></script>
+<script src="js/features/painel-intermediario.js?v=V7.64" defer></script>
+<script src="js/features/saude-avancada-v688.js?v=V7.64" defer></script>
+<script src="js/features/doencas-linha-tempo-v690.js?v=V7.64" defer></script>
+<script src="js/features/linha-tempo-melhorias-v692.js?v=V7.64" defer></script>
+<script src="js/features/perguntas-proxima-consulta-v693.js?v=V7.64" defer></script>
+<script src="js/ai/prompt-importacao-contexto-v698.js?v=V7.64" defer></script>
+<script src="js/ai/importar-facil.js?v=V7.64" defer></script>
 
 <style id="msaV712MissingPromptStyles">
 .home-secondary-actions .home-missing-prompt-btn{border-radius:12px!important;border:1px solid #c7d2fe!important;background:#eef2ff!important;color:#3730a3!important;padding:10px 13px!important;font-weight:850!important;cursor:pointer}
@@ -3316,11 +3374,11 @@ body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion
 })();
 </script>
 
-<script src="js/features/primeiros-passos-v714.js?v=V7.63" defer></script>
-<script src="js/features/compartilhar-perfil-basico-v715.js?v=V7.63" defer></script>
-<script src="js/features/familia-abas.js?v=V7.63" defer></script>
-<script src="js/features/cuidado-a-dois-v716.js?v=V7.63" defer></script>
-<script src="js/features/compartilhar-facil-v717.js?v=V7.63" defer></script>
+<script src="js/features/primeiros-passos-v714.js?v=V7.64" defer></script>
+<script src="js/features/compartilhar-perfil-basico-v715.js?v=V7.64" defer></script>
+<script src="js/features/familia-abas.js?v=V7.64" defer></script>
+<script src="js/features/cuidado-a-dois-v716.js?v=V7.64" defer></script>
+<script src="js/features/compartilhar-facil-v717.js?v=V7.64" defer></script>
 </body></html>
 
 <!-- V7.37 — correção de fechamento do menu móvel sobre as páginas -->
@@ -3397,6 +3455,7 @@ body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion
 </script>
 
 
-<script src="js/features/familia-inteligencia-v758.js?v=V7.63&rev=3" defer></script>
-<script src="js/features/dashboard-graficos-v759.js?v=V7.63" defer></script>
-<script src="js/features/cadastro-medicos-v760.js?v=V7.63" defer></script>
+<script src="js/features/familia-inteligencia-v758.js?v=V7.64&rev=3" defer></script>
+<script src="js/features/dashboard-graficos-v759.js?v=V7.64" defer></script>
+<script src="js/features/cadastro-medicos-v760.js?v=V7.64" defer></script>
+<script src="js/features/configuracoes-abas-v764.js?v=V7.64" defer></script>
