@@ -314,7 +314,7 @@ function parseNarrative(text){
  ];
  let parentesco='Outro',sexo='';
  for(const r of rels){if(r[0].test(n)){parentesco=r[1];sexo=r[2];break}}
- if(/\bavó\b/i.test(t))sexo='Feminino';else if(/\bavô\b/i.test(t))sexo='Masculino';
+ const lowerText=t.toLocaleLowerCase('pt-BR');if(lowerText.includes('avó'))sexo='Feminino';else if(lowerText.includes('avô'))sexo='Masculino';
  let nome='';
  const nm=t.match(/(?:minha|minha\s+fam[ií]lia|meu)?\s*(?:av[oó]|m[aã]e|pai|tia|tio|irm[aã]o|irm[aã]|prima|primo|filha|filho|neta|neto)\s+(?:materna|paterna|materno|paterno\s+)?([A-ZÀ-Ý][a-zà-ÿ'-]{1,})(?:\s+([A-ZÀ-Ý][a-zà-ÿ'-]{1,}))?/i);
  if(nm)nome=[nm[1],nm[2]].filter(Boolean).join(' ');
