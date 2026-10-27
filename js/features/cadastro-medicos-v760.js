@@ -58,7 +58,6 @@ function connectConsultation(){
  if(!nameInput.dataset.msaDoctorDirectory760){
   nameInput.dataset.msaDoctorDirectory760='1';nameInput.setAttribute('list','msaDoctorsDatalist760');
   nameInput.addEventListener('focus',renderDatalist);
-  nameInput.addEventListener('input',renderDatalist);
   nameInput.addEventListener('change',()=>{
    const current=norm(nameInput.value),doctor=getList().find(d=>norm(d.nome)===current);
    if(doctor&&specialty&&!specialty.value.trim()&&doctor.especialidade)specialty.value=doctor.especialidade;
