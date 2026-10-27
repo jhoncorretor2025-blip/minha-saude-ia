@@ -1,3 +1,10 @@
+## V7.77 — Parentesco por afinidade separado da linhagem genealógica
+- Pais e ancestrais ligados somente a pessoas por afinidade são opcionais e não alimentam a árvore genealógica principal.
+- Parentes por afinidade continuam visíveis e ligados ao cônjuge; sua família de origem fica em seção separada.
+- A família de origem por afinidade não influencia os padrões genéticos.
+- Fichas não mostram avisos de filiação pendente para pessoas por afinidade.
+- Atualizados textos de ajuda, versão e cache do aplicativo.
+
 ## V7.76 — Revisão segura de qualidade dos registros
 - Adicionado painel por perfil para localizar possíveis duplicidades e dados incompletos em exames e medicamentos.
 - A revisão nunca apaga dados automaticamente: registros podem ser corrigidos ou movidos para a lixeira do próprio perfil, com restauração.
