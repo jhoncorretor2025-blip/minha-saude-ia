@@ -173,12 +173,14 @@ function montarLinha(){
   var l=document.createElement('div');l.id='nvLinha';l.className='nv-linha';
   l.innerHTML='<div class="nv-chips">'+
     '<button type="button" id="nvPessoa" class="nv-chip" aria-haspopup="menu" aria-expanded="false" title="Trocar a pessoa que estou cuidando">👤 <b id="nvPessoaNome">Eu</b> ▾</button>'+
+    '<button type="button" id="nvFamiliaBtn" class="nv-chip" title="Abrir o módulo Família">👨‍👩‍👧 Família</button>'+
     '<button type="button" id="nvRegistrarBtn" class="nv-chip nv-chip-forte" title="Registrar sintoma, remédio, consulta…">➕ Registrar</button>'+
     '<button type="button" id="nvBusca" class="nv-chip" title="Buscar páginas, pessoas e registros (Ctrl+K)">🔎 Buscar</button>'+
     '<button type="button" id="nvPin" class="nv-chip" aria-pressed="false">📌 Fixar</button>'+
   '</div><nav id="nvCaminho" class="nv-caminho" aria-label="Você está aqui"></nav>';
   var ref=$('sfAjudaBox')||topo;ref.insertAdjacentElement('afterend',l);
   $('nvPessoa').onclick=abrirMenuPessoa;
+  $('nvFamiliaBtn').onclick=function(){ir('familiares')};
   $('nvRegistrarBtn').onclick=abrirRegistrar;
   $('nvBusca').onclick=function(){abrirPaleta('')};
   $('nvPin').onclick=function(){alternarFixo(paginaAtual())};
@@ -462,3 +464,5 @@ else setTimeout(iniciar,300);
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
  else install();
 })();
+
+/* V7.82 — atalho Família visível na navegação superior, sem menu lateral. */
