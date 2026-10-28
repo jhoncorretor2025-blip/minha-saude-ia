@@ -39,7 +39,7 @@
       limpar.then(function(){
         var u=new URL(window.location.href);
         u.searchParams.set('cb',Date.now().toString());
-        u.searchParams.set('v','V7.79');
+        u.searchParams.set('v','V7.80');
         window.location.replace(u.toString());
       });
     }catch(e){}
@@ -49,7 +49,7 @@
 })();
 </script>
 
-<title>Minha Saúde IA — V7.79</title>
+<title>Minha Saúde IA — V7.80</title>
 <style>
 
 :root{--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#687386;--blue:#2563eb;--purple:#6d28d9;--green:#059669;--yellow:#d97706;--red:#dc2626;--border:#e3e8f0;--shadow:0 8px 24px rgba(20,35,70,.08)}
@@ -429,7 +429,7 @@ body.msa-exp-advanced .home-secondary-actions{display:flex}
 @media(max-width:520px){.home-profile-stats{gap:6px}.home-profile-stats #homeProfileBMIChip,.home-profile-stats #homeProfileWaistChip{border-radius:10px}.home-profile-metric-chip small{font-size:9px}}
 </style>
 <link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#2563eb"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/design-system.css?v=V7.79">
+  <link rel="stylesheet" href="css/design-system.css?v=V7.80">
 
 <style id="v519-progressive-ui">
 /* V7.37 — melhorias progressivas de dashboard, favoritos e alertas */
@@ -781,26 +781,31 @@ document.addEventListener('DOMContentLoaded',checkPinGate);
 </script>
 
 <a class="msa-skip-link" href="#main-content">Pular para o conteúdo principal</a>
-<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V7.79</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
+<header><div class="head"><div class="brand">🩺 Minha Saúde IA <span style="font-size:12px;opacity:.8">V7.80</span></div><div class="sub">Seu diário pessoal para organizar sintomas, consultas, medicamentos e exames.</div></div></header>
 <div class="wrap" id="main-content" tabindex="-1">
 
 <!-- V6.20 — retorno persistente, feedback de navegação e validação do perfil -->
-<style id="msa-v679-visible-primary-nav">
+<!-- V7.80 — remove o menu fixo à esquerda e devolve espaço ao conteúdo principal. -->
+<style id="msa-v780-top-navigation">
 #msaPrimaryNav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 14px;padding:9px;background:#fff;border:1px solid #dbe5f5;border-radius:16px;box-shadow:0 6px 20px rgba(15,23,42,.07);position:relative;z-index:1005}
 #msaPrimaryNav button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:10px 14px;border:1px solid #dbe5f0;border-radius:11px;background:#f8fafc;color:#1e293b;font:inherit;font-size:13px;font-weight:850;cursor:pointer}
 #msaPrimaryNav button:hover,#msaPrimaryNav button:focus-visible{background:#eaf1ff;border-color:#93b4ff;color:#1d4ed8;outline-offset:2px}
 #msaPrimaryNav .msa-nav-ai{background:#eef2ff;border-color:#c7d2fe;color:#4338ca}
 #msaPrimaryNav .msa-nav-family{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
 #msaPrimaryNav .msa-nav-share{background:#ecfdf5;border-color:#a7f3d0;color:#065f46;font-weight:900}
+#msaPrimaryNav #msaOpenAllMenus{background:#2563eb;border-color:#2563eb;color:white}
+#msaPrimaryNav #msaOpenAllMenus:hover{background:#1d4ed8;color:white}
 @media(max-width:760px){#msaPrimaryNav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:8px}#msaPrimaryNav button{width:100%;min-height:46px;padding:9px 7px;font-size:12px;white-space:normal}}
 @media(max-width:360px){#msaPrimaryNav{grid-template-columns:1fr 1fr}#msaPrimaryNav button{font-size:11px}}
+/* Segurança visual: impede que qualquer navegação lateral introduzida por versões antigas ocupe a tela. */
+body > .msa-desktop-sidebar,body > #msaSidebar,body > aside.sidebar,.app-sidebar,.desktop-sidebar,.sidebar-nav,.left-sidebar{display:none!important}
 </style>
 <nav id="msaPrimaryNav" aria-label="Atalhos principais">
 <button type="button" data-tab="home">🏠 Início</button>
 <button type="button" class="msa-nav-family" data-tab="familiares">👨‍👩‍👧 Família</button>
 <button type="button" class="msa-nav-share" data-tab="familiares" title="Abrir o compartilhamento dos meus dados básicos" aria-label="Compartilhar meus dados básicos com minha namorada">💑 Compartilhar</button>
 <button type="button" class="msa-nav-ai" data-tab="ia">🤖 IA e ferramentas</button>
-<button type="button" id="msaOpenAllMenus">☰ Menu</button>
+<button type="button" id="msaOpenAllMenus">☰ Menu completo</button>
 </nav>
 <script>
 (function(){
@@ -2137,7 +2142,7 @@ REGRAS:
 <div><span>🚨 Alergias</span><b id="emAllergy">—</b></div><div><span>🩺 Condições</span><b id="emCond">—</b></div>
 <div class="wide"><span>💊 Medicamentos</span><b id="emMeds">—</b></div><div class="wide"><span>📞 Contato de emergência</span><b id="emContact">—</b></div>
 </div><div class="row emergency-actions"><button class="btn" onclick="imprimirModoEmergencia()">🖨️ Imprimir</button><button class="btn secondary" onclick="exportarResumoEmergencia()">📄 Salvar resumo</button><button class="btn red" onclick="fecharModoEmergencia()">Fechar</button></div>
-<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V7.79. Importação instantânea por IA com revisão antes de salvar. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
+<div class="alert warn">Este cartão é apenas um resumo pessoal. Em uma emergência, procure atendimento e informe também seus documentos médicos quando disponíveis.</div></div></div><footer><button class="msa-update-fab" type="button" aria-label="Atualizar o sistema" title="Atualizar o sistema" onclick="forcarAtualizacao()">↻</button>🔒 V7.80. Importação instantânea por IA com revisão antes de salvar. Os dados são armazenados somente neste navegador. Para produção, será necessário segurança, autenticação, banco de dados e revisão especializada.</footer>
 </div>
 
 <script>
@@ -2158,19 +2163,19 @@ REGRAS:
  window.msaStoragePerfil=perfil;
 })();
 </script>
-<script src="js/features/areas-principais-v738.js?v=V7.79" defer></script>
-<script src="js/core/constants.js?v=V7.79" defer></script>
-<script src="js/core/storage.js?v=V7.79" defer></script>
-<script src="js/core/utils.js?v=V7.79" defer></script>
-<script src="js/core/stability-v599.js?v=V7.79" defer></script>
-<script src="js/features/comeco-rapido.js?v=V7.79" defer></script>
-<script src="js/navigation/menu.js?v=V7.79" defer></script>
-<script src="js/core/app.js?v=V7.79" defer></script>
-<script src="js/features/notificacoes-remotas.js?v=V7.79" defer></script>
-<script src="js/features/perfil-compartilhado.js?v=V7.79" defer></script>
-<script src="js/features/perfil-save.js?v=V7.79" defer></script>
-<script src="js/features/familiares.js?v=V7.79" defer></script>
-<script src="js/features/recursos.js?v=V7.79" defer></script>
+<script src="js/features/areas-principais-v738.js?v=V7.80" defer></script>
+<script src="js/core/constants.js?v=V7.80" defer></script>
+<script src="js/core/storage.js?v=V7.80" defer></script>
+<script src="js/core/utils.js?v=V7.80" defer></script>
+<script src="js/core/stability-v599.js?v=V7.80" defer></script>
+<script src="js/features/comeco-rapido.js?v=V7.80" defer></script>
+<script src="js/navigation/menu.js?v=V7.80" defer></script>
+<script src="js/core/app.js?v=V7.80" defer></script>
+<script src="js/features/notificacoes-remotas.js?v=V7.80" defer></script>
+<script src="js/features/perfil-compartilhado.js?v=V7.80" defer></script>
+<script src="js/features/perfil-save.js?v=V7.80" defer></script>
+<script src="js/features/familiares.js?v=V7.80" defer></script>
+<script src="js/features/recursos.js?v=V7.80" defer></script>
 
 
 <script>
@@ -2193,12 +2198,12 @@ function iniciarImportacao(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
-<script src="js/features/inteligencia.js?v=V7.79" defer></script>
-<script src="js/ai/importacao.js?v=V7.79" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
-<script src="js/legacy/melhorias-primeiras.js?v=V7.79" defer></script>
-<script src="js/features/expansoes.js?v=V7.79" defer></script>
-<script src="js/ai/importacao-fluxo-v514.js?v=V7.79" defer></script>
-<script src="js/legacy/melhorias-v513.js?v=V7.79" defer></script>
+<script src="js/features/inteligencia.js?v=V7.80" defer></script>
+<script src="js/ai/importacao.js?v=V7.80" defer onload="window._importacaoScriptCarregado=true" onerror="window._importacaoScriptErro=true"></script>
+<script src="js/legacy/melhorias-primeiras.js?v=V7.80" defer></script>
+<script src="js/features/expansoes.js?v=V7.80" defer></script>
+<script src="js/ai/importacao-fluxo-v514.js?v=V7.80" defer></script>
+<script src="js/legacy/melhorias-v513.js?v=V7.80" defer></script>
 
 
 <script>
@@ -2303,7 +2308,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
-<script src="js/reports/relatorios-v599.js?v=V7.79" defer></script>
+<script src="js/reports/relatorios-v599.js?v=V7.80" defer></script>
 
 
 
@@ -3150,12 +3155,12 @@ body.msa-dark .msa-settings-grid>label small{color:#cbd5e1}
 body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 @media(max-width:600px){.msa-settings-grid{grid-template-columns:minmax(0,1fr)}.msa-settings-professional .row>.btn{flex:1 1 100%;width:100%}}
 </style>
-<script src="js/features/configuracoes-profissionais.js?v=V7.79" defer></script>
-<script src="js/features/perguntas-saude.js?v=V7.79" defer></script>
-<script src="js/features/navegacao-facil.js?v=V7.79" defer></script>
-<script src="js/features/saude-facil.js?v=V7.79" defer></script>
-<script src="js/features/saude-plus.js?v=V7.79" defer></script>
-<script src="js/features/visual-saude.js?v=V7.79" defer></script>
+<script src="js/features/configuracoes-profissionais.js?v=V7.80" defer></script>
+<script src="js/features/perguntas-saude.js?v=V7.80" defer></script>
+<script src="js/features/navegacao-facil.js?v=V7.80" defer></script>
+<script src="js/features/saude-facil.js?v=V7.80" defer></script>
+<script src="js/features/saude-plus.js?v=V7.80" defer></script>
+<script src="js/features/visual-saude.js?v=V7.80" defer></script>
 
 <style id="msa-welcome-v623">
 #msaWelcomeModal{position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.64);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto}
@@ -3305,13 +3310,13 @@ body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion
  });
 })();
 </script>
-<script src="js/features/painel-intermediario.js?v=V7.79" defer></script>
-<script src="js/features/saude-avancada-v688.js?v=V7.79" defer></script>
-<script src="js/features/doencas-linha-tempo-v690.js?v=V7.79" defer></script>
-<script src="js/features/linha-tempo-melhorias-v692.js?v=V7.79" defer></script>
-<script src="js/features/perguntas-proxima-consulta-v693.js?v=V7.79" defer></script>
-<script src="js/ai/prompt-importacao-contexto-v698.js?v=V7.79" defer></script>
-<script src="js/ai/importar-facil.js?v=V7.79" defer></script>
+<script src="js/features/painel-intermediario.js?v=V7.80" defer></script>
+<script src="js/features/saude-avancada-v688.js?v=V7.80" defer></script>
+<script src="js/features/doencas-linha-tempo-v690.js?v=V7.80" defer></script>
+<script src="js/features/linha-tempo-melhorias-v692.js?v=V7.80" defer></script>
+<script src="js/features/perguntas-proxima-consulta-v693.js?v=V7.80" defer></script>
+<script src="js/ai/prompt-importacao-contexto-v698.js?v=V7.80" defer></script>
+<script src="js/ai/importar-facil.js?v=V7.80" defer></script>
 
 <style id="msaV712MissingPromptStyles">
 .home-secondary-actions .home-missing-prompt-btn{border-radius:12px!important;border:1px solid #c7d2fe!important;background:#eef2ff!important;color:#3730a3!important;padding:10px 13px!important;font-weight:850!important;cursor:pointer}
@@ -3374,13 +3379,13 @@ body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion
 })();
 </script>
 
-<script src="js/features/primeiros-passos-v714.js?v=V7.79" defer></script>
-<script src="js/features/compartilhar-perfil-basico-v715.js?v=V7.79" defer></script>
-<script src="js/features/familia-abas.js?v=V7.79" defer></script>
-<script src="js/features/cuidado-a-dois-v716.js?v=V7.79" defer></script>
-<script src="js/features/compartilhar-facil-v717.js?v=V7.79" defer></script>
+<script src="js/features/primeiros-passos-v714.js?v=V7.80" defer></script>
+<script src="js/features/compartilhar-perfil-basico-v715.js?v=V7.80" defer></script>
+<script src="js/features/familia-abas.js?v=V7.80" defer></script>
+<script src="js/features/cuidado-a-dois-v716.js?v=V7.80" defer></script>
+<script src="js/features/compartilhar-facil-v717.js?v=V7.80" defer></script>
 
-<script src="js/features/data-quality-v776.js?v=V7.79" defer></script>
+<script src="js/features/data-quality-v776.js?v=V7.80" defer></script>
 </body></html>
 
 <!-- V7.37 — correção de fechamento do menu móvel sobre as páginas -->
@@ -3457,8 +3462,8 @@ body.msa-reduce-motion *,body.msa-reduce-motion *::before,body.msa-reduce-motion
 </script>
 
 
-<script src="js/features/familia-inteligencia-v758.js?v=V7.79&rev=3" defer></script>
-<script src="js/features/dashboard-graficos-v759.js?v=V7.79" defer></script>
-<script src="js/features/cadastro-medicos-v760.js?v=V7.79" defer></script>
-<script src="js/features/configuracoes-abas-v764.js?v=V7.79" defer></script>
-<script src="js/features/navegacao-v779.js?v=V7.79"></script>
+<script src="js/features/familia-inteligencia-v758.js?v=V7.80&rev=3" defer></script>
+<script src="js/features/dashboard-graficos-v759.js?v=V7.80" defer></script>
+<script src="js/features/cadastro-medicos-v760.js?v=V7.80" defer></script>
+<script src="js/features/configuracoes-abas-v764.js?v=V7.80" defer></script>
+<script src="js/features/navegacao-v779.js?v=V7.80"></script>
