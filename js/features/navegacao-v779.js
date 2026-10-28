@@ -394,3 +394,71 @@ function iniciar(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(iniciar,300)},{once:true});
 else setTimeout(iniciar,300);
 })();
+
+
+/* Minha Saúde IA — V7.81
+ * Preferência permanente de interface: nunca usar menu lateral fixo no desktop.
+ * A navegação fica no topo e o menu completo só abre sob demanda.
+ */
+(function(){
+ 'use strict';
+ if(window.__msaNavNoSidebarV781)return;
+ window.__msaNavNoSidebarV781=true;
+ var css=`
+  /* Desativa a navegação lateral no desktop e não reserva largura para ela. */
+  body.nv-lateral-on #nav,
+  #nav.nv-lateral,
+  .nv-lateral,
+  .nv-sidebar,
+  .msa-desktop-sidebar,
+  #msaSidebar,
+  aside.sidebar,
+  .app-sidebar,
+  .desktop-sidebar,
+  .sidebar-nav,
+  .left-sidebar {
+    display:none!important;
+    visibility:hidden!important;
+    width:0!important;
+    min-width:0!important;
+    max-width:0!important;
+    flex:0 0 0!important;
+    transform:translateX(-110%)!important;
+    pointer-events:none!important;
+  }
+  body.nv-lateral-on,
+  body.nv-lateral-on #main-content,
+  body.nv-lateral-on .wrap,
+  body.nv-lateral-on main {
+    margin-left:0!important;
+    padding-left:0;
+    width:auto;
+    max-width:100%;
+  }
+  #msaPrimaryNav {
+    display:flex!important;
+    position:relative!important;
+    top:auto!important;
+    left:auto!important;
+    right:auto!important;
+    width:100%!important;
+    margin:0 0 14px!important;
+  }
+  #msaMobileMenuFab {display:none!important}
+  @media(max-width:760px) {
+    #msaPrimaryNav {display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  }
+ `;
+ function install(){
+   if(!document.getElementById('msaV781NoSidebarStyle')){
+     var st=document.createElement('style');st.id='msaV781NoSidebarStyle';st.textContent=css;document.head.appendChild(st);
+   }
+   document.body.classList.add('msa-no-left-menu');
+   var nav=document.getElementById('nav');
+   if(nav){nav.classList.remove('nv-lateral');nav.setAttribute('aria-hidden','true');nav.style.setProperty('display','none','important');}
+   var fab=document.getElementById('msaMobileMenuFab');
+   if(fab){fab.style.setProperty('display','none','important');fab.setAttribute('aria-hidden','true');}
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
+ else install();
+})();
