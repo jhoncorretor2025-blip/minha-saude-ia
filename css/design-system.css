@@ -859,3 +859,36 @@ body.msa-dark .nv-home-mais small,body.msa-dark .nv-caminho,body.msa-dark .nv-pa
 body.msa-dark .nv-caminho button{color:#93c5fd}
 .nv-folha h2,.nv-folha-topo h2,.nv-paleta h2{color:inherit}
 body.msa-dark .nv-folha h2{color:#f1f5f9}
+
+/* V7.84 — backup fora do navegador, lembretes no calendário e instalar o app */
+.bk-card{margin-top:13px}
+.bk-linha{margin-top:12px;gap:8px;flex-wrap:wrap}
+.bk-dica{margin-top:8px;font-size:13px;color:var(--muted,#64748b);line-height:1.5}
+.bk-ok{margin-top:8px;font-weight:800;color:#047857}
+.bk-status{margin:12px 0 0}
+.bk-freq{display:flex;flex-direction:column;gap:6px;margin-top:12px;font-weight:800}
+.bk-freq select{max-width:320px}
+.bk-fundo{position:fixed;inset:0;z-index:14000;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;padding:14px}
+.bk-folha{width:100%;max-width:520px;max-height:90vh;overflow:auto;background:var(--card,#fff);color:var(--text,#0f172a);border-radius:20px;padding:20px;box-shadow:0 24px 60px rgba(15,23,42,.35)}
+.bk-folha h2{margin:0 0 6px;font-size:20px;color:inherit}
+.bk-meta,.bk-nota{font-size:13px;color:#64748b;margin:6px 0;line-height:1.5}
+.bk-selo{padding:10px 12px;border-radius:12px;font-size:14px;margin:10px 0}
+.bk-selo.ok{background:#ecfdf5;color:#065f46}
+.bk-selo.aviso{background:#fff7ed;color:#9a3412}
+.bk-selo.info{background:#eff6ff;color:#1e3a8a}
+.bk-sub{font-weight:900;margin-top:10px}
+.bk-lista{margin:6px 0 10px;padding-left:20px;line-height:1.7}
+.bk-risco{display:flex;gap:8px;align-items:flex-start;font-size:14px;font-weight:700;margin:8px 0}
+.bk-acoes{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px}
+.bk-acoes .btn{min-height:46px}
+.bk-fundo button:focus-visible,.bk-card button:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}
+body.msa-dark .bk-folha{background:#111827;color:#e5e7eb}
+body.msa-dark .bk-meta,body.msa-dark .bk-nota,body.msa-dark .bk-dica{color:#cbd5e1}
+body.msa-dark .bk-selo.ok{background:#064e3b;color:#d1fae5}
+body.msa-dark .bk-selo.aviso{background:#7c2d12;color:#ffedd5}
+body.msa-dark .bk-selo.info{background:#1e3a8a;color:#dbeafe}
+body.msa-dark .bk-ok{color:#6ee7b7}
+/* verde mais escuro nos botões novos: branco sobre #047857 = 5,5:1 (o verde padrão do site dava 3,3:1) */
+.bk-card .btn.green,.bk-acoes .btn.green{background:#047857;border-color:#047857;color:#fff}
+.bk-card .btn.green:hover,.bk-acoes .btn.green:hover{background:#065f46}
+.bk-card .btn.green:disabled{background:#6b7280;border-color:#6b7280;color:#fff;opacity:.85}

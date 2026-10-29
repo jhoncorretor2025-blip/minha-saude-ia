@@ -9,6 +9,89 @@
   "background_color": "#f3f6fb",
   "theme_color": "#2563eb",
   "icons": [
-    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "id": "./",
+  "categories": [
+    "health",
+    "medical",
+    "lifestyle"
+  ],
+  "shortcuts": [
+    {
+      "name": "Registrar sintoma",
+      "short_name": "Sintoma",
+      "description": "Anotar como estou me sentindo",
+      "url": "./?pagina=dor",
+      "icons": [
+        {
+          "src": "./icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Meus remédios",
+      "short_name": "Remédios",
+      "description": "Rotina e confirmação de doses",
+      "url": "./?pagina=meds",
+      "icons": [
+        {
+          "src": "./icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Consultas",
+      "short_name": "Consultas",
+      "description": "Registrar e ver consultas",
+      "url": "./?pagina=consultas",
+      "icons": [
+        {
+          "src": "./icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Carteirinha de saúde",
+      "short_name": "Carteirinha",
+      "description": "Dados de emergência",
+      "url": "./?pagina=carteirinha",
+      "icons": [
+        {
+          "src": "./icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
   ]
 }

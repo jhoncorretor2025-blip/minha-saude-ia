@@ -24,7 +24,9 @@ const BACKUP_EXTRA_KEYS=[
 function backupExcluded(k){
  return k==='msa2_pin'||k==='msa2_theme'||k==='msa2_import_diagnostic_tmp'||
   k==='msa2_rascunhos_painel_fechado'||k.startsWith('msa2_backup_')||
-  k.startsWith('msa2_onboarding')||k.startsWith('msa2_update_attempt_');
+  k.startsWith('msa2_onboarding')||k.startsWith('msa2_update_attempt_')||
+  /* V7.84: estado da interface gravado como texto puro (não são dados de saúde e quebravam o backup) */
+  k==='msa2_primeiros_passos_v714'||k==='msa2_perfil_lembrete_v714'||k==='msa2_experience_choice_v765'||k==='msa2_experiencia_global'||k==='msa2_notifications'||k.startsWith('msa2_alerta_')||k.startsWith('msa2_nav_')||k.startsWith('msa2_home_expandida');
 }
 function backupLogicalKeys(){
  const out=new Set([...Object.values(K),...BACKUP_EXTRA_KEYS]);
@@ -43,7 +45,7 @@ function backupLogicalKeys(){
 function readRawJSON(k){
  const raw=window.msaStorage.getItem(k);
  if(raw===null)return null;
- try{return JSON.parse(raw)}catch(e){throw new Error('O registro local "'+k+'" contém dados inválidos. Nenhum backup foi criado para evitar uma cópia incompleta.')}
+ try{return JSON.parse(raw)}catch(e){if(new Set([...Object.values(K),...BACKUP_EXTRA_KEYS]).has(k))throw new Error('O registro local "'+k+'" contém dados inválidos. Nenhum backup foi criado para evitar uma cópia incompleta.');console.warn('[Minha Saúde IA] chave fora do backup (não é JSON):',k);return null}
 }
 function downloadJSON(name,value){
  const blob=new Blob([JSON.stringify(value,null,2)],{type:'application/json;charset=utf-8'});
@@ -51,26 +53,31 @@ function downloadJSON(name,value){
  a.href=url;a.download=name;a.style.display='none';document.body.appendChild(a);a.click();a.remove();
  setTimeout(()=>URL.revokeObjectURL(url),1500);
 }
-window.exportarJSONCompleto=function(){
- try{
+function crc32(str){const b=new TextEncoder().encode(str);let crc=-1;for(let i=0;i<b.length;i++){crc^=b[i];for(let k=0;k<8;k++)crc=(crc>>>1)^(0xEDB88320&-(crc&1))}return ((crc^-1)>>>0).toString(16).padStart(8,'0')}
+ /* V7.84: monta o pacote sem baixar (usado por “Enviar backup”) e inclui conferência de integridade */
+ window.msaMontarPacoteBackup=function(){
   const data={},keys=backupLogicalKeys();
   keys.forEach(k=>{const value=readRawJSON(k);if(value!==null)data[k]=value});
-  const pkg={app:'Minha Saúde IA',formatVersion:'2.0',exportedAt:new Date().toISOString(),scope:'perfil-atual',keyCount:Object.keys(data).length,data:data};
-  const bytes=JSON.stringify(pkg);
   if(!Object.keys(data).length)throw new Error('Não encontrei registros para exportar. Verifique se você está no perfil correto.');
-  downloadJSON('minha-saude-ia-backup-'+new Date().toISOString().slice(0,10)+'.json',pkg);
-  try{window.msaStorage.setItem(BACKUP_LAST_EXPORT_KEY,new Date().toISOString())}catch(storageErr){console.warn('[Minha Saúde IA] backup gerado, mas não foi possível registrar a data do lembrete.',storageErr)}
-  renderBackupReminder();
-  if(window.msaToast)window.msaToast('✅ Backup criado com '+Object.keys(data).length+' grupos de dados.');
-  else alert('✅ Backup criado com '+Object.keys(data).length+' grupos de dados. Guarde o arquivo em local seguro.');
-  return true;
- }catch(e){
-  console.error('[Minha Saúde IA] backup',e);
-  alert('❌ Não foi possível criar o backup completo. '+(e.message||'Confira o armazenamento e tente novamente.'));
-  return false;
- }
-};
-window.baixarBackup=function(){return window.exportarJSONCompleto()};
+  const json=JSON.stringify(data);
+  return {app:'Minha Saúde IA',formatVersion:'2.1',appVersion:window.MSA_VERSION||'',exportedAt:new Date().toISOString(),scope:'perfil-atual',keyCount:Object.keys(data).length,integrity:{algo:'crc32',value:crc32(json),bytes:json.length},data:data};
+ };
+ window.exportarJSONCompleto=function(){
+  try{
+   const pkg=window.msaMontarPacoteBackup();
+   downloadJSON('minha-saude-ia-backup-'+new Date().toISOString().slice(0,10)+'.json',pkg);
+   try{window.msaStorage.setItem(BACKUP_LAST_EXPORT_KEY,new Date().toISOString())}catch(storageErr){console.warn('[Minha Saúde IA] backup gerado, mas não foi possível registrar a data do lembrete.',storageErr)}
+   renderBackupReminder();
+   if(window.msaToast)window.msaToast('✅ Backup criado com '+pkg.keyCount+' grupos de dados.');
+   else alert('✅ Backup criado com '+pkg.keyCount+' grupos de dados. Guarde o arquivo em local seguro.');
+   return true;
+  }catch(e){
+   console.error('[Minha Saúde IA] backup',e);
+   alert('❌ Não foi possível criar o backup completo. '+(e.message||'Confira o armazenamento e tente novamente.'));
+   return false;
+  }
+ };
+ window.baixarBackup=function(){return window.exportarJSONCompleto()};
 
 const BACKUP_REMINDER_KEY='msa2_backup_reminder_enabled';
 const BACKUP_LAST_EXPORT_KEY='msa2_backup_last_export_at';
@@ -80,10 +87,14 @@ function backupReminderEnabled(){
 function backupLastExport(){
  try{const v=window.msaStorage.getItem(BACKUP_LAST_EXPORT_KEY);return v?new Date(v):null}catch(e){return null}
 }
-function renderBackupReminder(){
+ const BACKUP_FREQ_KEY='msa2_backup_freq_days';
+ function backupFreqDays(){try{const n=parseInt(window.msaStorage.getItem(BACKUP_FREQ_KEY),10);return [3,7,15,30].includes(n)?n:7}catch(e){return 7}}
+ window.msaBackupInfo=function(){return {ativo:backupReminderEnabled(),dias:backupFreqDays(),ultimo:backupLastExport()}};
+ window.msaDefinirFrequenciaBackup=function(n){try{if(!n){window.msaStorage.setItem(BACKUP_REMINDER_KEY,'false')}else{window.msaStorage.setItem(BACKUP_FREQ_KEY,String(n));window.msaStorage.setItem(BACKUP_REMINDER_KEY,'true')}}catch(e){alert('Não foi possível salvar essa preferência no navegador.');return}renderBackupReminder()};
+ function renderBackupReminder(){
  const enabled=backupReminderEnabled(),last=backupLastExport(),now=new Date(),day=24*60*60*1000;
  let message='',style='safe';
- if(!enabled){message='🔕 Lembrete semanal desativado. Você ainda pode criar um backup manualmente a qualquer momento.';style='';}
+ if(!enabled){message='🔕 Lembrete de backup desativado. Você ainda pode criar um backup manualmente a qualquer momento.';style='';}
  else if(!last||!Number.isFinite(last.getTime())){
    const semDados=typeof window.msaTotalRegistrosBackup==='function'&&window.msaTotalRegistrosBackup()===0;
    const recente=typeof window.msaQuickRecente==='function'&&window.msaQuickRecente(2);
@@ -92,14 +103,14 @@ function renderBackupReminder(){
   }
  else{
   const days=Math.max(0,Math.floor((now-last)/day));
-  if(days>=7){message='⚠️ Seu último backup foi gerado há '+days+' dia(s). Recomendamos criar uma nova cópia agora.';style='warn';}
-  else{message='✅ Último backup gerado em '+last.toLocaleDateString('pt-BR')+'. O próximo lembrete será exibido quando completar 7 dias.';style='safe';}
+  if(days>=backupFreqDays()){message='⚠️ Seu último backup foi gerado há '+days+' dia(s). Recomendamos criar uma nova cópia agora.';style='warn';}
+  else{message='✅ Último backup gerado em '+last.toLocaleDateString('pt-BR')+'. O próximo lembrete será exibido quando completar '+backupFreqDays()+' dias.';style='safe';}
  }
  ['msaBackupHomeStatus','msaBackupSettingsStatus'].forEach(id=>{
   const el=document.getElementById(id);if(el){el.className='alert '+style;el.textContent=message;el.setAttribute('role','status')}
  });
  ['msaBackupHomeToggle','msaBackupSettingsToggle'].forEach(id=>{
-  const el=document.getElementById(id);if(el)el.textContent=enabled?'🔕 Desativar lembrete semanal':'🔔 Ativar lembrete semanal';
+  const el=document.getElementById(id);if(el)el.textContent=enabled?'🔕 Desativar lembrete de backup':'🔔 Ativar lembrete de backup';
  });
 }
 window.msaAtualizarLembreteBackup=renderBackupReminder;
@@ -139,7 +150,9 @@ window.restaurarBackup=async function(ev){
  const snapshots=[];
  try{
   if(file.size>25*1024*1024)throw new Error('O arquivo excede 25 MB. Confira se selecionou um backup válido.');
-  const pkg=JSON.parse(await file.text());
+  let pkg=JSON.parse(await file.text());
+   /* V7.84: backups antigos (formato 4, só 6 grupos) continuam podendo ser restaurados */
+   if(pkg&&!pkg.data&&Array.isArray(pkg.dores)&&Array.isArray(pkg.consultas)&&Array.isArray(pkg.medicamentos)&&Array.isArray(pkg.exames)){pkg={app:'Minha Saúde IA',formatVersion:'legado-'+(pkg.version||4),exportedAt:pkg.createdAt,data:{[K.d]:pkg.dores,[K.c]:pkg.consultas,[K.m]:pkg.medicamentos,[K.e]:pkg.exames,[K.p]:Array.isArray(pkg.perfil)?pkg.perfil:[],[K.medidas]:Array.isArray(pkg.medidasCorporais)?pkg.medidasCorporais:[]}}}
   if(!pkg||pkg.app!=='Minha Saúde IA'||!pkg.data||typeof pkg.data!=='object'||Array.isArray(pkg.data))throw new Error('Arquivo incompatível. Selecione um backup JSON do Minha Saúde IA.');
   const entries=Object.entries(pkg.data);
   if(!entries.length)throw new Error('O backup está vazio.');
@@ -161,7 +174,9 @@ window.restaurarBackup=async function(ev){
    return;
   }
   const summary='Backup validado: '+valid.length+' grupos reconhecidos'+(ignored?' e '+ignored+' item(ns) ignorado(s)':'')+'.\n\nA restauração mescla os registros, mantém itens atuais e não importa seu PIN.\n\nDeseja continuar?';
-  if(!confirm(summary))return;
+  let integridade='nenhuma';try{if(pkg.integrity&&pkg.integrity.value)integridade=crc32(JSON.stringify(pkg.data))===pkg.integrity.value?'ok':'falhou'}catch(e){}
+   const seguir=typeof window.msaPreviaRestauracao==='function'?await window.msaPreviaRestauracao({pkg:pkg,prepared:prepared,valid:valid.length,ignored:ignored,integridade:integridade,file:file}):confirm(summary+(integridade==='falhou'?'\n\n⚠️ A conferência de integridade falhou: o arquivo pode ter sido alterado ou corrompido.':''));
+   if(!seguir)return;
   for(const item of prepared){
    snapshots.push(item);
    const ok=storage.set(item.key,JSON.parse(item.nextRaw));
@@ -184,6 +199,12 @@ window.restaurarBackup=async function(ev){
   alert('❌ '+(e.message||'Não foi possível restaurar o backup.')+(snapshots.length?(rollbackOk?'\nAs alterações parciais foram revertidas.':'\n⚠️ Confira os registros e crie um backup imediatamente.'):''));
  }finally{if(ev?.target)ev.target.value=''}
 };
+ /* V7.84: relatorios-v599.js ainda declara baixarBackup e restaurarBackup (versão antiga: só 6 grupos de dados, restauração que substitui)
+    e, por carregar depois, sobrescrevia as versões completas daqui. Depois que todos os scripts carregam, as completas voltam a valer. */
+ const _restaurarCompleto=window.restaurarBackup;
+ function usarBackupCompleto(){window.baixarBackup=function(){return window.exportarJSONCompleto()};window.restaurarBackup=_restaurarCompleto}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',usarBackupCompleto,{once:true});else usarBackupCompleto();
+ window.addEventListener('load',usarBackupCompleto);
 window.abrirModoEmergencia=function(){
  const p=profile(), meds=g(key('m','msa2_meds')), modal=document.getElementById('emergencyOverlay');
  if(!modal)return;

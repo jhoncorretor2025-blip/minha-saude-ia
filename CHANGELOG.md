@@ -1,3 +1,16 @@
+## V7.84 — Backup fora do navegador, lembretes no calendário e abertura mais rápida
+- 📤 **Enviar backup** direto para o Google Drive, WhatsApp ou e-mail pelo menu de compartilhar do celular (no computador o arquivo é salvo). Em Segurança e backup, novo cartão “Levar o backup para fora do navegador”.
+- 🔔 **Lembrete de backup a cada 3, 7, 15 ou 30 dias** (antes só havia o semanal) ou desligado, com a data do último backup.
+- 🛠️ **Corrigido: “Fazer backup completo” não era completo.** Os botões usavam uma versão antiga (`relatorios-v599.js`) que guardava só 6 tipos de dado (sintomas, consultas, remédios, exames, perfil e medidas) e deixava de fora familiares, sinais vitais, rotina e doses de remédio, lembretes, documentos e outros. Agora valem o backup completo e a restauração por mesclagem (com validação e reversão em caso de erro). Backups antigos continuam podendo ser restaurados. O lembrete de backup também passa a reconhecer que você fez a cópia.
+- 🛠️ **Corrigido: o backup falhava** (“contém dados inválidos”) (“contém dados inválidos”) para quem concluiu ou dispensou o tour de primeiros passos, escolheu a experiência ou ativou avisos: esses marcadores de interface eram gravados como texto puro e agora ficam fora do backup (e uma chave que não é JSON deixa de derrubar o backup inteiro).
+- 🔍 **Prévia antes de restaurar:** mostra o arquivo, a data, quantos registros novos entram por tipo e se o arquivo está íntegro. Nada do que existe é apagado.
+- ✅ **Conferência de integridade** nos backups novos (detecta arquivo alterado ou corrompido). Backups antigos continuam funcionando.
+- 📅 **Lembretes no calendário do celular (.ics):** remédios todo dia no horário da rotina, lembretes, consultas, retornos e exames futuros, com alarme que toca **mesmo com o app fechado**. Botões em Medicamentos, Lembretes e Consultas.
+- 📲 **Instalar o app:** botão quando o navegador permite; instruções para iPhone. O manifesto ganhou ícones 192/512, ícone “maskable”, ícone do iPhone e atalhos (Sintoma, Remédios, Consultas, Carteirinha).
+- ⚡ **Abre mais rápido:** os arquivos de cada versão ficam guardados no aparelho (service worker com cache primeiro), e os módulos pesados da **Família** (~270 KB) só carregam quando você abre a Família ou quando o app fica ocioso.
+- 🔄 Corrigido o recarregamento automático: `APP_VERSION` estava em V7.79 e o `version.json` em V7.83.
+- 🔢 Versão visível, rodapé, constante, `version.json` e cache sincronizados em V7.84.
+
 ## V7.79 — Modos Simples/Confortável/Completo corrigidos, navegação mais simples e erros da Família
 - 🎚️ **O modo escolhido vale para o aparelho todo.** Antes ficava só na pessoa ativa: ao abrir a Família (que passa a cuidar do primeiro familiar) o app voltava a Confortável.
 - 🔰 **Simples de verdade:** “Áreas principais” (menu e Início), “Compartilhar” e “IA e ferramentas”, Lixeira e Histórico clínico não aparecem no Simples. O menu fica igual no celular e no computador.
