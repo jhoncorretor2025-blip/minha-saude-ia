@@ -79,7 +79,7 @@ function salvarPerfilRobusto(e){
     if(!confirmado)throw new Error('A gravação não pôde ser confirmada.');
 
     // Confirma um conjunto de campos que o usuário acabou de editar.
-    const checks=['nome','nasc','idade','peso','sexo','sangue','altura','supl','alerg','cond','info','emerg','tel','academia','aguaDia','urinaDia'];
+    const checks=['nome','nasc','idade','peso','sexo','conjugeFamiliarId','sangue','altura','supl','alerg','cond','info','emerg','tel','academia','aguaDia','urinaDia'];
     const falhas=checks.filter(k=>String(confirmado[k]??'')!==String(perfil[k]??''));
     if(falhas.length)throw new Error('A confirmação falhou em: '+falhas.join(', '));
 
