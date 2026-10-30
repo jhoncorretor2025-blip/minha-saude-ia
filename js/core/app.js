@@ -729,6 +729,157 @@ function exportarPDF(){
  setTimeout(()=>{if(document.getElementById('msaPdfPrintRoot'))cleanup()},120000);
  try{window.print()}catch(e){cleanup();alert('Não foi possível abrir a impressão. Tente novamente.')}
 }
+
+function exportarPDFCompleto(){
+ const K=window.MSA_K||window.K||{};
+ const storage=window.MSAStorage;
+ const perfil=((get(K.p)||[])[0]||{});
+ const nome=String(perfil.nome||'Pessoa acompanhada').trim();
+ const selectedId=storage&&typeof storage.selectedProfileId==='function'?String(storage.selectedProfileId()||''):'';
+ let cadastroFamiliar=null;
+ try{
+  const familias=storage&&storage.getGlobal?storage.getGlobal(K.familiares||'msa2_familiares'):[];
+  if(selectedId&&Array.isArray(familias))cadastroFamiliar=familias.find(x=>String(x&&x.id||'')===selectedId)||null;
+ }catch(e){console.warn('[Minha Saúde IA] não foi possível ler dados cadastrais familiares para o PDF:',e)}
+ const ignorar=/^(id|uuid|foto|avatar|imagem|image|base64|dataurl|arquivoData|conjugeFamiliarId|conjugeId|paiId|maeId|medId|userId|profileId|createdAt|updatedAt|criadoEm|atualizadoEm)$/i;
+ const labelMap={
+  nome:'Nome',parentesco:'Parentesco',grauParentesco:'Grau de parentesco',nasc:'Data de nascimento',nascimento:'Data de nascimento',
+  idade:'Idade',sexo:'Sexo',sangue:'Tipo sanguíneo',altura:'Altura',peso:'Peso',alerg:'Alergias',alergias:'Alergias',
+  cond:'Condições de saúde',condicao:'Condição principal',condicoes:'Condições',circ:'Cirurgias e internações',info:'Informações importantes',
+  obs:'Observações',emerg:'Contato de emergência',tel:'Telefone de emergência',contato:'Contato',contatoEmergencia:'Contato de emergência',
+  data:'Data',hora:'Horário',local:'Local',int:'Intensidade',tipo:'Tipo',sint:'Sintomas',esp:'Especialidade',med:'Profissional de saúde',
+  mot:'Motivo',perg:'Perguntas',ret:'Retorno',dose:'Dose',freq:'Frequência',frequencia:'Frequência',inicio:'Início',fim:'Fim',
+  pres:'Prescrito por',res:'Resultado',fc:'Frequência cardíaca',temp:'Temperatura',glic:'Glicemia',sat:'Saturação',pressao:'Pressão arterial',
+  nomeExame:'Nome do exame',especialidade:'Especialidade',medico:'Médico',medicamento:'Medicamento',medicamentosRelato:'Medicamentos relatados',
+  objetivoCorporal:'Objetivo corporal',academia:'Academia',academiaFreq:'Frequência de academia',atividadeFisica:'Atividade física',
+  trabalhoTipo:'Tipo de trabalho',horasSentado:'Horas sentado',horasPe:'Horas em pé',aguaDia:'Água por dia',urinaDia:'Frequência urinária',
+  evacuacaoDia:'Frequência de evacuação',calorSuor:'Exposição a calor e suor',alimentacao:'Alimentação',supl:'Suplementos',
+  menstruacao:'Última menstruação',ciclo:'Ciclo menstrual',duracaoMenstr:'Duração da menstruação',regularidade:'Regularidade do ciclo',
+  sexoFreqMin:'Frequência sexual mínima',sexoFreqMax:'Frequência sexual máxima',masturbacaoDia:'Masturbação por dia',
+  camisinha:'Uso de preservativo',engravidou:'Já engravidou',mae:'Já foi mãe',gestacoes:'Número de gestações',
+  reproObs:'Histórico reprodutivo',usaAnticoncepcional:'Usa anticoncepcional',anticoncepcionalMetodo:'Método anticoncepcional',
+  anticoncepcionalNome:'Nome do anticoncepcional',anticoncepcionalHora:'Horário do anticoncepcional',
+  anticoncepcionalInicio:'Início do anticoncepcional',anticoncepcionalRegime:'Regime do anticoncepcional',
+  minipilulaTipo:'Tipo de minipílula',prevColo:'Último preventivo do colo do útero',mamografia:'Última mamografia',
+  ist:'Último teste de IST',hpv:'Vacina HPV',prevProx:'Próximo preventivo',prevObs:'Observações de prevenção',
+  dorcelaxFreq:'Uso de Dorcelax',paracetamolFreq:'Uso de paracetamol',outrosDor:'Outros medicamentos para dor',
+  catapora:'Já teve catapora',cataporaQuando:'Quando teve catapora',fuma:'Tabagismo',fumaObs:'Observações sobre tabagismo',
+  alcool:'Consumo de álcool',alcoolObs:'Observações sobre álcool',retorno:'Retorno',frequenciaUso:'Frequência de uso',
+  conduta:'Conduta',gatilho:'Gatilho',intensidade:'Intensidade',descricao:'Descrição',resultado:'Resultado',observacoes:'Observações'
+ };
+ const nomeCampo=function(k){
+  if(labelMap[k])return labelMap[k];
+  return String(k||'Campo').replace(/([a-z0-9])([A-Z])/g,'$1 $2').replace(/[_-]+/g,' ').replace(/\s+/g,' ').trim().replace(/^./,c=>c.toUpperCase());
+ };
+ const vazio=function(v){return v===null||v===undefined||String(v).trim()===''};
+ const fmt=function(v){
+  if(v===null||v===undefined)return '';
+  if(typeof v==='boolean')return v?'Sim':'Não';
+  if(Array.isArray(v))return v.map(fmt).filter(Boolean).join('; ');
+  if(typeof v==='object'){
+   return Object.keys(v).filter(k=>!ignorar.test(k)&&!/(base64|dataurl|arquivoData)/i.test(k)).map(k=>nomeCampo(k)+': '+fmt(v[k])).filter(x=>!/: $/.test(x)).join(' · ');
+  }
+  return String(v).trim();
+ };
+ const fieldsHtml=function(obj,skip){
+  if(!obj||typeof obj!=='object'||Array.isArray(obj))return '';
+  return Object.keys(obj).filter(k=>!(skip||ignorar).test(k)&&!/(base64|dataurl|arquivoData)/i.test(k)&&!vazio(obj[k])&&!(Array.isArray(obj[k])&&!obj[k].length))
+   .map(k=>'<div class="msa-pdf-full-field"><b>'+esc(nomeCampo(k))+':</b><span>'+esc(fmt(obj[k]))+'</span></div>').join('');
+ };
+ const blocoRegistro=function(item,i){
+  if(item===null||item===undefined)return '';
+  if(typeof item!=='object')return '<div class="msa-pdf-full-record"><b>Registro '+(i+1)+':</b> '+esc(fmt(item))+'</div>';
+  const title=item.nome||item.tipo||item.esp||item.especialidade||item.local||item.parente||('Registro '+(i+1));
+  const data=item.data||item.inicio||item.nasc||'';
+  return '<article class="msa-pdf-full-record"><h3>'+esc(String(title))+(data?' <small>· '+esc(String(data))+'</small>':'')+'</h3><div class="msa-pdf-full-fields">'+fieldsHtml(item)+'</div></article>';
+ };
+ const secoes=[
+  ['Sintomas e dores',K.d],
+  ['Consultas e atendimentos',K.c],
+  ['Medicamentos',K.m],
+  ['Exames',K.e],
+  ['Sinais vitais',K.v],
+  ['Vacinas',K.vax],
+  ['Histórico familiar',K.fam],
+  ['Lembretes',K.r],
+  ['Documentos',K.doc],
+  ['Alimentação e nutrição',K.nutri],
+  ['Suplementos',K.suplReg],
+  ['Reações alimentares',K.food],
+  ['Hidratação',K.agua],
+  ['Sono',K.sono],
+  ['Bem-estar',K.bem],
+  ['Gatilhos e fatores associados',K.gat],
+  ['Rotinas de medicamentos',K.medRot],
+  ['Doses registradas',K.medTaken],
+  ['Acompanhamento menstrual',K.ciclo],
+  ['Anticoncepcional',K.anticoncepcional],
+  ['Medidas corporais',K.medidas],
+  ['Profissionais de saúde cadastrados',K.medicos]
+ ];
+ const familyFallback={};
+ if(cadastroFamiliar){
+  familyFallback[K.m||'msa2_meds']=cadastroFamiliar.medicamentos;
+  familyFallback[K.c||'msa2_consultas']=cadastroFamiliar.consultas;
+  familyFallback[K.d||'msa2_dores']=cadastroFamiliar.crises;
+ }
+ const blocoPerfil=fieldsHtml(perfil,/^(id|foto|avatar|imagem|image|base64|dataurl|arquivoData|conjugeFamiliarId)$/i);
+ let htmlSecoes='';
+ if(blocoPerfil)htmlSecoes+='<section class="msa-pdf-full-section"><h2>👤 Dados do cadastro pessoal</h2><div class="msa-pdf-full-fields">'+blocoPerfil+'</div></section>';
+ if(cadastroFamiliar){
+  const famFields=fieldsHtml(cadastroFamiliar,/^(id|foto|avatar|imagem|image|base64|dataurl|arquivoData|conjugeId|paiId|maeId|medicamentos|consultas|crises)$/i);
+  if(famFields)htmlSecoes+='<section class="msa-pdf-full-section"><h2>👪 Dados do cadastro familiar</h2><div class="msa-pdf-full-fields">'+famFields+'</div></section>';
+ }
+ secoes.forEach(function(spec){
+  const key=spec[1];if(!key)return;
+  let rows=[];try{const value=get(key);rows=Array.isArray(value)?value:[]}catch(e){rows=[]}
+  if(!rows.length&&Array.isArray(familyFallback[key]))rows=familyFallback[key];
+  if(!rows.length)return;
+  htmlSecoes+='<section class="msa-pdf-full-section"><h2>📋 '+esc(spec[0])+' <small>('+rows.length+')</small></h2>'+rows.map(blocoRegistro).join('')+'</section>';
+ });
+ const extras=[
+  ['Histórico médico complementar','msa2_historico_medico'],
+  ['Alergias complementares','msa2_alergias'],
+  ['Condições de saúde complementares','msa2_condicoes'],
+  ['Atividade física','msa2_atividade_fisica'],
+  ['Alimentação complementar','msa2_alimentacao'],
+  ['Peso registrado','msa2_peso'],
+  ['Medidas de cintura','msa2_cintura'],
+  ['Pressão arterial','msa2_pressao'],
+  ['Glicemia','msa2_glicemia'],
+  ['Documentos médicos','msa2_documentos_medicos'],
+  ['Humor','msa2_humor'],
+  ['Metas pessoais','msa2_metas_pessoais'],
+  ['Perguntas para consulta','msa2_perguntas_consulta']
+ ];
+ extras.forEach(function(spec){
+  try{
+   const value=storage&&storage.get?storage.get(spec[1]):[];
+   if(value===null||value===undefined||Array.isArray(value)&&!value.length)return;
+   if(!Array.isArray(value)&&typeof value==='object'&&!Object.keys(value).length)return;
+   htmlSecoes+='<section class="msa-pdf-full-section"><h2>📋 '+esc(spec[0])+'</h2>';
+   if(Array.isArray(value))htmlSecoes+=value.map(blocoRegistro).join('');
+   else if(typeof value==='object')htmlSecoes+='<div class="msa-pdf-full-fields">'+fieldsHtml(value)+'</div>';
+   else htmlSecoes+='<p>'+esc(fmt(value))+'</p>';
+   htmlSecoes+='</section>';
+  }catch(e){console.warn('[Minha Saúde IA] seção adicional ignorada no PDF:',spec[1],e)}
+ });
+ if(!htmlSecoes)htmlSecoes='<p>Nenhum dado adicional foi encontrado neste perfil além dos campos pessoais.</p>';
+ const old=document.getElementById('msaPdfPrintRoot');if(old)old.remove();
+ const oldStyle=document.getElementById('msaPdfPrintStyle');if(oldStyle)oldStyle.remove();
+ const root=document.createElement('div');root.id='msaPdfPrintRoot';
+ root.innerHTML='<div class="msa-pdf-full-sheet"><div class="msa-pdf-full-brand">🩺 Minha Saúde IA</div><h1>Ficha completa de saúde — '+esc(nome)+'</h1><p class="msa-pdf-full-meta">Gerada em '+esc(new Date().toLocaleString('pt-BR'))+' · Versão '+esc((typeof APP_VERSION!=='undefined'&&APP_VERSION)||window.MSA_VERSION||'')+' · Perfil ativo: '+esc(nome)+'</p><p class="msa-pdf-full-note">Este documento reúne os dados preenchidos e os registros encontrados somente no perfil ativo. Revise o conteúdo antes de compartilhar.</p>'+htmlSecoes+'<footer>Documento informativo baseado nos registros do aplicativo. Não constitui diagnóstico, prescrição ou laudo médico.</footer></div>';
+ const style=document.createElement('style');style.id='msaPdfPrintStyle';
+ style.textContent='#msaPdfPrintRoot{position:fixed;inset:0;z-index:99999;overflow:auto;background:#fff;padding:24px;color:#172033;font-family:Arial,sans-serif}.msa-pdf-full-sheet{max-width:900px;margin:0 auto;line-height:1.48}.msa-pdf-full-brand{font-size:18px;font-weight:900;color:#1d4ed8;padding-bottom:9px;border-bottom:2px solid #dbeafe}.msa-pdf-full-sheet h1{font-size:25px;margin:14px 0 4px}.msa-pdf-full-meta,.msa-pdf-full-note{font-size:11px;color:#64748b;margin:4px 0 12px}.msa-pdf-full-note{padding:9px;background:#f8fafc;border-radius:8px}.msa-pdf-full-section{margin:18px 0 12px;break-inside:auto}.msa-pdf-full-section h2{font-size:15px;color:#173b8f;background:#eff6ff;border-left:4px solid #2563eb;padding:8px 10px;margin:0 0 9px;break-after:avoid}.msa-pdf-full-section h2 small{font-size:10px;color:#64748b}.msa-pdf-full-fields{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px}.msa-pdf-full-field{font-size:10.5px;line-height:1.45;padding:4px 2px;border-bottom:1px solid #edf0f5;overflow-wrap:anywhere;white-space:pre-wrap}.msa-pdf-full-field b{color:#0f172a;margin-right:4px}.msa-pdf-full-record{border:1px solid #e2e8f0;border-radius:8px;padding:8px;margin:7px 0;break-inside:avoid}.msa-pdf-full-record h3{font-size:11px;margin:0 0 6px;color:#1e293b}.msa-pdf-full-record h3 small{font-size:9px;color:#64748b;font-weight:500}.msa-pdf-full-sheet footer{font-size:9px;color:#64748b;border-top:1px solid #e2e8f0;margin-top:20px;padding-top:9px}@media(max-width:650px){.msa-pdf-full-fields{grid-template-columns:1fr}}@media print{body>*:not(#msaPdfPrintRoot){display:none!important}#msaPdfPrintRoot{position:static!important;inset:auto!important;overflow:visible!important;padding:8mm!important;background:#fff!important;color:#000!important}.msa-pdf-full-sheet{max-width:none!important}.msa-pdf-full-section{break-inside:auto;page-break-inside:auto}.msa-pdf-full-record{break-inside:avoid;page-break-inside:avoid}.msa-pdf-full-fields{grid-template-columns:1fr 1fr}.msa-pdf-full-section h2{background:#eff6ff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}@media screen{#msaPdfPrintRoot:before{content:"Prévia da ficha completa — selecione “Salvar como PDF” na janela de impressão.";display:block;max-width:900px;margin:0 auto 12px;color:#1d4ed8;font-weight:800}}';
+ document.head.appendChild(style);document.body.appendChild(root);
+ const oldTitle=document.title;document.title='Ficha completa de saúde - '+nome;
+ let finalizado=false;
+ const cleanup=function(){if(finalizado)return;finalizado=true;window.removeEventListener('afterprint',cleanup);root.remove();style.remove();document.title=oldTitle};
+ window.addEventListener('afterprint',cleanup,{once:true});
+ setTimeout(function(){if(document.getElementById('msaPdfPrintRoot'))cleanup()},120000);
+ try{window.print()}catch(e){cleanup();alert('Não foi possível abrir a impressão. Tente novamente.')}
+}
+
 function abrirCartaoEmergencia(){const p=get(K.p)[0]||{},m=get(K.m);const body='<div class="box"><h2>🚨 Informações de emergência</h2><b>Nome:</b> '+esc(p.nome||'Não informado')+'<br><b>Nascimento:</b> '+esc(p.nasc||'Não informado')+'<br><b>Alergias:</b> '+esc(p.alerg||'Não informado')+'<br><b>Condições:</b> '+esc(p.cond||'Não informado')+'<br><b>Medicamentos registrados:</b> '+esc(m.map(x=>x.nome+(x.dose?' — '+x.dose:'')).join('; ')||'Não informado')+'<br><b>Contato:</b> '+esc(p.emerg||'Não informado')+' — '+esc(p.tel||'')+'<br><b>Informações:</b> '+esc(p.info||'Não informado')+'</div>';openReport('Cartão de emergência',body)}
 function copiarCartaoEmergencia(){const p=get(K.p)[0]||{},m=get(K.m);const text='CARTÃO DE EMERGÊNCIA\nNome: '+(p.nome||'Não informado')+'\nNascimento: '+(p.nasc||'Não informado')+'\nAlergias: '+(p.alerg||'Não informado')+'\nCondições: '+(p.cond||'Não informado')+'\nMedicamentos: '+(m.map(x=>x.nome+(x.dose?' — '+x.dose:'')).join('; ')||'Não informado')+'\nContato: '+(p.emerg||'Não informado')+' — '+(p.tel||'');if(navigator.clipboard)navigator.clipboard.writeText(text).then(()=>alert('✅ Cartão copiado.'));else copiarTextoFallback(text)}
 
