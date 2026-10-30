@@ -5,6 +5,26 @@
 function el(id){return document.getElementById(id)}
 function val(id){const x=el(id);return x ? (x.value||'') : ''}
 
+function sincronizarConjugePerfil(perfil,old,storage,K){
+ const key=K.familiares||'msa2_familiares',raw=storage.get(key),lista=Array.isArray(raw)?raw.slice():[];
+ const anterior=String(old&&old.conjugeFamiliarId||''),novo=String(perfil&&perfil.conjugeFamiliarId||'');
+ if(novo&&!lista.some(x=>String(x&&x.id||'')===novo)){alert('A pessoa selecionada não foi encontrada na lista de familiares. Atualize o perfil e tente novamente.');return false}
+ if(anterior===novo)return true;
+ const parceiro=novo?lista.find(x=>String(x.id)===novo):null;
+ if(parceiro&&parceiro.conjugeId&&String(parceiro.conjugeId)!=='__perfil_principal__'&&String(parceiro.conjugeId)!==anterior){
+  const vinculado=lista.find(x=>String(x.id)===String(parceiro.conjugeId));
+  const nome=vinculado?(vinculado.nome||'outra pessoa'):'outro cadastro';
+  if(!confirm((parceiro.nome||'A pessoa selecionada')+' já está vinculada a '+nome+'. Deseja substituir o vínculo?'))return false;
+  if(vinculado&&String(vinculado.conjugeId||'')===String(parceiro.id))delete vinculado.conjugeId;
+ }
+ if(anterior){const antiga=lista.find(x=>String(x.id)===anterior);if(antiga&&String(antiga.conjugeId||'')==='__perfil_principal__')delete antiga.conjugeId}
+ if(parceiro)parceiro.conjugeId='__perfil_principal__';
+ if(!storage.set(key,lista)){alert('Não foi possível atualizar o vínculo familiar. Nenhuma alteração no relacionamento foi concluída.');return false}
+ try{if(window.MSAProfileBridge)window.MSAProfileBridge.publishFamilies(lista)}catch(e){}
+ try{window.dispatchEvent(new CustomEvent('msa:familiares-atualizados'))}catch(e){}
+ return true;
+}
+
 function salvarPerfilRobusto(e){
   if(e)e.preventDefault();
 
@@ -27,7 +47,7 @@ function salvarPerfilRobusto(e){
     const old=Array.isArray(antigo)&&antigo[0] ? antigo[0] : {};
 
     const perfil=Object.assign({},old,{
-      nome:val('pNome'),nasc:val('pNasc'),idade:val('pIdade'),peso:val('pPeso'),sexo:sexo,
+      nome:val('pNome'),nasc:val('pNasc'),idade:val('pIdade'),peso:val('pPeso'),sexo:sexo,conjugeFamiliarId:val('pConjugeFamiliarId'),
       sangue:val('pSangue'),altura:val('pAltura'),supl:val('pSupl'),alerg:val('pAlerg'),cond:val('pCond'),
       circ:val('pCirc'),info:val('pInfo'),emerg:val('pEmerg'),tel:val('pTel'),
       menstruacao:val('pMenstruacao'),ciclo:val('pCiclo'),duracaoMenstr:val('pDuracaoMenstr'),regularidade:val('pRegularidade'),
@@ -47,6 +67,10 @@ function salvarPerfilRobusto(e){
 
     const ok=storage.set(K.p,[perfil]);
     if(!ok)throw new Error('O navegador recusou a gravação.');
+    if(!sincronizarConjugePerfil(perfil,old,storage,K)){
+      storage.set(K.p,antigo);
+      return false;
+    }
 
     try{const idAtivo=storage.raw('msa2_familiar_selecionado');const pessoaAtiva=idAtivo?JSON.parse(idAtivo):'';if(!pessoaAtiva&&window.MSAProfileBridge)window.MSAProfileBridge.publishProfile({nome:perfil.nome,idade:perfil.idade,nascimento:perfil.nasc,pesoKg:perfil.peso,alturaCm:perfil.altura,sexo:perfil.sexo})}catch(syncErr){console.warn('[Minha Saúde IA] sincronização do perfil central:',syncErr)}
 
