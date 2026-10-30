@@ -6,19 +6,25 @@ const storage=window.MSAStorage;
 const KEY=K.familiares||'msa2_familiares',SELECTED='msa2_familiar_selecionado',PERFIL_PRINCIPAL_ID='__perfil_principal__';
 function getList(){try{const v=storage.get(KEY);return Array.isArray(v)?v:[]}catch(e){return[]}}
 function famPerfilPrincipal(){
- try{const raw=storage.get(K.p||'msa2_perfil'),p=Array.isArray(raw)?(raw[0]||{}):(raw||{});return {id:PERFIL_PRINCIPAL_ID,nome:p.nome||'Você (perfil principal)',parentesco:'Titular',sexo:p.sexo||'',conjugeId:String(p.conjugeFamiliarId||''),paiId:'',maeId:''}}
- catch(e){return {id:PERFIL_PRINCIPAL_ID,nome:'Você (perfil principal)',parentesco:'Titular',sexo:'',conjugeId:'',paiId:'',maeId:''}}
+ try{
+  const chave=K.p||'msa2_perfil',raw=storage.getGlobal?storage.getGlobal(chave):JSON.parse(storage.rawGlobal(chave)||'[]');
+  const p=Array.isArray(raw)?(raw[0]||{}):(raw||{});
+  return {id:PERFIL_PRINCIPAL_ID,nome:p.nome||'Você (perfil principal)',parentesco:'Titular',sexo:p.sexo||'',conjugeId:String(p.conjugeFamiliarId||''),paiId:'',maeId:''};
+ }catch(e){return {id:PERFIL_PRINCIPAL_ID,nome:'Você (perfil principal)',parentesco:'Titular',sexo:'',conjugeId:'',paiId:'',maeId:''}}
 }
 function famAtualizarVinculoPerfil(familiarId){
  try{
-  const raw=storage.get(K.p||'msa2_perfil'),perfil=Array.isArray(raw)?(raw[0]||{}):(raw||{});
-  const anterior=String(perfil.conjugeFamiliarId||''),novo=String(familiarId||'');
-  if(anterior===novo)return true;
-  const lista=getList();
+  const chave=K.p||'msa2_perfil',raw=storage.getGlobal?storage.getGlobal(chave):JSON.parse(storage.rawGlobal(chave)||'[]');
+  const perfil=Array.isArray(raw)?(raw[0]||{}):(raw||{});
+  const anterior=String(perfil.conjugeFamiliarId||''),novo=String(familiarId||''),lista=getList();
+  if(novo&&!lista.some(x=>String(x.id||'')===novo)&&novo!==String(arguments[1]||''))return false;
   if(anterior){const old=lista.find(x=>String(x.id||'')===anterior);if(old&&String(old.conjugeId||'')===PERFIL_PRINCIPAL_ID)delete old.conjugeId}
   perfil.conjugeFamiliarId=novo;
-  if(!storage.set(K.p||'msa2_perfil',[perfil]))return false;
-  if(!storage.set(KEY,lista))return false;
+  if(novo){const atual=lista.find(x=>String(x.id||'')===novo);if(atual)atual.conjugeId=PERFIL_PRINCIPAL_ID}
+  const salvaPerfil=storage.setGlobal?storage.setGlobal(chave,[perfil]):storage.set(chave,[perfil]);
+  if(!salvaPerfil)return false;
+  const salvaLista=storage.setGlobal?storage.setGlobal(KEY,lista):storage.set(KEY,lista);
+  if(!salvaLista)return false;
   try{if(window.MSAProfileBridge)window.MSAProfileBridge.publishFamilies(lista)}catch(e){}
   try{window.dispatchEvent(new CustomEvent('msa:familiares-atualizados'))}catch(e){}
   return true;
